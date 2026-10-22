@@ -484,6 +484,61 @@ def _llama_a(ruta: Path, nombres) -> bool:
     return False
 
 
+def _token_permanente():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("tp", ROOT / "scripts" / "token_permanente.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestElegirLaPagina(unittest.TestCase):
+    """Con varias páginas, cuál. Elegir sola es como se publica en la
+    página equivocada, y eso ya pasó una vez."""
+
+    PAGINAS = [{"id": "1348366165029009", "name": "Luis Del Carpio Merino"},
+               {"id": "105045932147427", "name": "Josdelcarpio"},
+               {"id": "108520517695384", "name": "Ian de Travesía"}]
+
+    def setUp(self):
+        self.elegir = _token_permanente().elegir_pagina
+
+    def test_con_varias_y_sin_decir_cual_no_elige(self):
+        elegida, motivo = self.elegir(self.PAGINAS, None, None)
+        self.assertIsNone(elegida)
+        self.assertIn("3", motivo)
+
+    def test_elige_por_id(self):
+        elegida, _ = self.elegir(self.PAGINAS, "105045932147427", None)
+        self.assertEqual(elegida["name"], "Josdelcarpio")
+
+    def test_elige_por_parte_del_nombre_sin_acentos(self):
+        elegida, _ = self.elegir(self.PAGINAS, "travesia", None)
+        self.assertEqual(elegida["id"], "108520517695384")
+
+    def test_un_nombre_ambiguo_no_elige(self):
+        elegida, motivo = self.elegir(self.PAGINAS, "carpio", None)
+        self.assertIsNone(elegida)
+        self.assertIn("mas de una", motivo)
+
+    def test_usa_el_id_del_env_cuando_no_se_pide_otra(self):
+        elegida, _ = self.elegir(self.PAGINAS, None, "108520517695384")
+        self.assertEqual(elegida["name"], "Ian de Travesía")
+
+    def test_un_id_del_env_que_no_existe_no_elige(self):
+        elegida, motivo = self.elegir(self.PAGINAS, None, "999")
+        self.assertIsNone(elegida)
+        self.assertIn("999", motivo)
+
+    def test_con_una_sola_pagina_no_pregunta(self):
+        elegida, _ = self.elegir(self.PAGINAS[:1], None, None)
+        self.assertEqual(elegida["id"], "1348366165029009")
+
+    def test_lo_pedido_le_gana_al_env(self):
+        elegida, _ = self.elegir(self.PAGINAS, "Josdelcarpio", "1348366165029009")
+        self.assertEqual(elegida["id"], "105045932147427")
+
+
 class TestLosScripts(unittest.TestCase):
 
     def test_solo_frase_del_dia_publica(self):

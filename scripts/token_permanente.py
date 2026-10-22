@@ -15,6 +15,15 @@ Por eso, si lo que tenes es un token de PAGINA corto, este script no puede
 hacerlo permanente: hay que volver al Explorador de Meta, pedir el token del
 USUARIO (no el de la pagina) y correr esto con ese.
 
+CON VARIAS PAGINAS hay que decir cual: `--pagina <id>` o `--pagina <parte del
+nombre>`. Si no se dice y PSI_FB_PAGE_ID esta vacio, el script PARA y las
+lista. No elige la primera: elegir sola es como se termina publicando en la
+pagina equivocada, y un post en la pagina equivocada ya salio.
+
+El token largo de usuario queda guardado como FB_USER_TOKEN, asi que cambiar
+de pagina despues es correr esto de nuevo con otro `--pagina`, sin volver al
+Explorador de Meta.
+
 Necesita FB_APP_ID y FB_APP_SECRET en el .env: el intercambio lo firma la app.
 
 SOLO LEE Y CAMBIA EL .env. No publica nada.
@@ -72,6 +81,44 @@ def _contar(vence: Optional[int]) -> str:
                                       (cuando - datetime.now(timezone.utc)).days)
 
 
+def _sin_acentos(t: str) -> str:
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFD", t)
+                   if unicodedata.category(c) != "Mn").lower()
+
+
+def elegir_pagina(paginas: list, pedido: Optional[str], declarado: Optional[str]):
+    """Cual de las paginas del usuario, o None si hay que preguntar.
+
+    Devuelve (pagina, motivo). Con `pedido` busca por id exacto o por parte
+    del nombre; sin pedido usa el id declarado en el .env; y si no hay ninguno
+    de los dos, solo decide cuando hay UNA sola pagina.
+
+    Nunca cae en «tomo la primera». Esa era la version anterior y dejo el .env
+    apuntando a una pagina que no era, con el token correcto: el error no se
+    ve hasta que el post sale publicado en otro lado.
+    """
+    if pedido:
+        exacto = [p for p in paginas if p.get("id") == pedido]
+        if exacto:
+            return exacto[0], "coincide el id"
+        clave = _sin_acentos(pedido)
+        porNombre = [p for p in paginas if clave in _sin_acentos(p.get("name") or "")]
+        if len(porNombre) == 1:
+            return porNombre[0], "coincide el nombre"
+        if len(porNombre) > 1:
+            return None, "«%s» coincide con mas de una pagina" % pedido
+        return None, "ninguna pagina coincide con «%s»" % pedido
+    if declarado:
+        exacto = [p for p in paginas if p.get("id") == declarado]
+        if exacto:
+            return exacto[0], "es la que ya estaba en el .env"
+        return None, "la pagina %s del .env no esta entre las tuyas" % declarado
+    if len(paginas) == 1:
+        return paginas[0], "es la unica"
+    return None, "tenes %d paginas y ninguna elegida" % len(paginas)
+
+
 def _guardar(valores: dict) -> None:
     """Reescribe esas claves del .env dejando el resto como estaba."""
     lineas = ENV.read_text(encoding="utf-8").split("\n") if ENV.exists() else []
@@ -94,6 +141,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--guardar", action="store_true", help="escribir el resultado en el .env")
+    ap.add_argument("--pagina", help="id de la pagina, o parte de su nombre")
     args = ap.parse_args(argv)
 
     load_dotenv(ENV)
@@ -111,6 +159,16 @@ def main(argv=None) -> int:
     if "error" in yo:
         print("El token no sirve: %s" % yo["error"])
         return 1
+
+    guardado = os.environ.get("FB_USER_TOKEN")
+    if yo["tipo"] == "pagina" and guardado:
+        # Ya se hizo la conversion antes: con el token de usuario guardado se
+        # puede cambiar de pagina sin volver al Explorador de Meta.
+        quien = facebook.identificar(guardado, app_id, app_secret)
+        if quien.get("tipo") == "usuario":
+            print("El .env ya tiene el token de una pagina; uso el de usuario guardado "
+                  "(%s) para elegir." % quien.get("nombre"))
+            token, yo = guardado, quien
 
     if yo["tipo"] == "pagina":
         # Es un token de PAGINA. Puede ya ser permanente, o no poder serlo.
@@ -150,20 +208,28 @@ def main(argv=None) -> int:
         print("Ese usuario no administra ninguna pagina, o falta pages_show_list.")
         return 1
 
-    elegida = None
     print()
     for c in paginas:
-        estado = _vencimiento(c["access_token"], app_id, app_secret)
-        print("  %s (id %s): %s" % (c.get("name"), c.get("id"), _contar(estado)))
-        if c.get("id") == pagina.fb_page_id:
-            elegida = c
-    if elegida is None:
-        elegida = paginas[0]
-        print()
-        print("Ninguna coincide con %s=%s, asi que tomo la primera: %s."
-              % (pagina.page_id_env, pagina.fb_page_id, elegida.get("name")))
+        print("  %s (id %s): %s"
+              % (c.get("name"), c.get("id"), _contar(_vencimiento(c["access_token"], app_id, app_secret))))
 
-    valores = {pagina.page_id_env: elegida["id"], pagina.token_env: elegida["access_token"]}
+    elegida, motivo = elegir_pagina(paginas, args.pagina, pagina.fb_page_id)
+    if elegida is None:
+        print()
+        print("NO elijo yo: %s." % motivo)
+        print("Corre esto otra vez agregando cual, por id o por nombre:")
+        print("  scripts/token_permanente.py --guardar --pagina %s" % (paginas[0].get("id")))
+        if args.guardar:
+            _guardar({"FB_USER_TOKEN": usuario_largo})
+            print()
+            print("Guarde el token de usuario largo como FB_USER_TOKEN, asi la proxima")
+            print("corrida no tiene que volver al Explorador de Meta.")
+        return 1
+    print()
+    print("Elegida: %s (%s)." % (elegida.get("name"), motivo))
+
+    valores = {pagina.page_id_env: elegida["id"], pagina.token_env: elegida["access_token"],
+               "FB_USER_TOKEN": usuario_largo}
     print()
     print("Esto es lo que va en el .env:")
     print("%s=%s" % (pagina.page_id_env, elegida["id"]))
