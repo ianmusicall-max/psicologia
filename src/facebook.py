@@ -14,6 +14,46 @@ class FacebookError(RuntimeError):
     pass
 
 
+def identificar(token, app_id=None, app_secret=None):
+    """Dice de quién es el token y si es de USUARIO o de PÁGINA.
+
+    Devuelve {"tipo": "usuario"|"pagina"|"", "id": ..., "nombre": ...} o
+    {"error": "..."} si el token no sirve.
+
+    El tipo NO se pregunta pidiendo `fields=id,name,category` y mirando si
+    vino `category`. Cuando el objeto no tiene ese campo, la API no lo omite:
+    devuelve el ERROR «(#100) Tried accessing nonexisting field (category)»,
+    y entonces un token de usuario perfectamente válido se lee como un token
+    roto. Pasó, y el mensaje no deja adivinar la causa.
+
+    Se pregunta con `metadata=1`, que es la introspección de la propia API:
+    contesta qué clase de objeto es `/me`. Si por lo que sea no viniera, se
+    cae a `debug_token`, que trae el tipo cuando hay credenciales de la app.
+    """
+    r = _leer("me", metadata=1, fields="id,name", access_token=token)
+    if "error" in r:
+        return {"error": r["error"].get("message") or str(r["error"])}
+    tipo = str((r.get("metadata") or {}).get("type") or "").lower()
+    if not tipo and app_id and app_secret:
+        d = _leer("debug_token", input_token=token,
+                  access_token="%s|%s" % (app_id, app_secret)).get("data") or {}
+        tipo = str(d.get("type") or "").lower()
+    return {"tipo": {"user": "usuario", "page": "pagina"}.get(tipo, ""),
+            "id": r.get("id"), "nombre": r.get("name")}
+
+
+def _leer(camino, **params):
+    """GET a la API, devolviendo siempre un dict (con "error" si algo falló)."""
+    try:
+        r = requests.get("%s/%s" % (GRAPH, camino), params=params, timeout=30)
+    except requests.RequestException as e:
+        return {"error": {"message": "no se pudo llegar a Facebook: %s" % e}}
+    try:
+        return r.json()
+    except ValueError:
+        return {"error": {"message": "respuesta que no es JSON: %s" % r.text[:200]}}
+
+
 def publicar(pagina: Pagina, caption: str, imagen: Path) -> str:
     """Sube el flyer con su caption y devuelve el id del post.
 

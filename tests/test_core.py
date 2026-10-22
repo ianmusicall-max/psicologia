@@ -396,6 +396,46 @@ class _Respuesta:
         return self._datos
 
 
+class TestIdentificarElToken(unittest.TestCase):
+    """Saber si un token es de usuario o de página, que es lo que decide todo
+    lo demás: solo el de usuario se puede convertir en uno permanente."""
+
+    def _respuesta(self, datos, status=200):
+        return mock.patch.object(facebook.requests, "get", return_value=_Respuesta(status, datos))
+
+    def test_un_token_de_usuario_no_se_lee_como_roto(self):
+        # La primera versión preguntaba `fields=id,name,category` y daba por
+        # roto cualquier token que no trajera `category`. Un usuario no tiene
+        # ese campo, así que la API devolvía «(#100) Tried accessing
+        # nonexisting field» y el token válido se descartaba.
+        with self._respuesta({"id": "9", "name": "David", "metadata": {"type": "user"}}):
+            yo = facebook.identificar("tok")
+        self.assertNotIn("error", yo)
+        self.assertEqual(yo["tipo"], "usuario")
+        self.assertEqual(yo["nombre"], "David")
+
+    def test_no_le_pide_a_la_api_un_campo_que_el_objeto_puede_no_tener(self):
+        with self._respuesta({"id": "9", "name": "David", "metadata": {"type": "user"}}) as get:
+            facebook.identificar("tok")
+        campos = get.call_args[1]["params"]
+        self.assertNotIn("category", campos.get("fields", ""))
+        self.assertEqual(campos.get("metadata"), 1)
+
+    def test_reconoce_un_token_de_pagina(self):
+        with self._respuesta({"id": "7", "name": "Mi página", "metadata": {"type": "page"}}):
+            self.assertEqual(facebook.identificar("tok")["tipo"], "pagina")
+
+    def test_sin_metadata_cae_a_debug_token(self):
+        respuestas = [_Respuesta(200, {"id": "9", "name": "David"}),
+                      _Respuesta(200, {"data": {"type": "USER"}})]
+        with mock.patch.object(facebook.requests, "get", side_effect=respuestas):
+            self.assertEqual(facebook.identificar("tok", "app", "secreto")["tipo"], "usuario")
+
+    def test_un_token_de_verdad_roto_si_da_error(self):
+        with self._respuesta({"error": {"message": "Session has expired"}}, status=400):
+            self.assertIn("expired", facebook.identificar("tok")["error"])
+
+
 class TestPublicar(unittest.TestCase):
 
     def _pagina(self, **env):

@@ -35,7 +35,7 @@ from dotenv import load_dotenv  # noqa: E402
 import os  # noqa: E402
 import requests  # noqa: E402
 
-from src import config  # noqa: E402
+from src import config, facebook  # noqa: E402
 
 GRAPH = "https://graph.facebook.com/v21.0"
 # Lo que hace falta para que `frase_del_dia.py --publicar` funcione.
@@ -61,14 +61,15 @@ def main() -> int:
         print("No hay %s en el .env." % pagina.token_env)
         return 2
 
-    yo = _pedir("me", fields="id,name,category", access_token=token)
+    app_id, app_secret = os.environ.get("FB_APP_ID"), os.environ.get("FB_APP_SECRET")
+    yo = facebook.identificar(token, app_id, app_secret)
     if "error" in yo:
-        print("El token no sirve: %s" % yo["error"].get("message"))
+        print("El token no sirve: %s" % yo["error"])
         return 1
 
-    es_pagina = "category" in yo
+    es_pagina = yo["tipo"] == "pagina"
     print("El token es de %s: %s (id %s)"
-          % ("una PÁGINA" if es_pagina else "un USUARIO", yo.get("name"), yo.get("id")))
+          % ("una PÁGINA" if es_pagina else "un USUARIO", yo.get("nombre"), yo.get("id")))
 
     declarado = pagina.fb_page_id
     if es_pagina:
@@ -88,7 +89,6 @@ def main() -> int:
         print("El token de PÁGINA se saca del Explorador de Meta eligiendo la página,")
         print("o con GET /me/accounts, que devuelve uno por página.")
 
-    app_id, app_secret = os.environ.get("FB_APP_ID"), os.environ.get("FB_APP_SECRET")
     if not (app_id and app_secret):
         print()
         print("Sin FB_APP_ID y FB_APP_SECRET en el .env no puedo ver permisos ni vencimiento.")

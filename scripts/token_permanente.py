@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv  # noqa: E402
 import requests  # noqa: E402
 
-from src import config  # noqa: E402
+from src import config, facebook  # noqa: E402
 
 GRAPH = "https://graph.facebook.com/v21.0"
 ENV = ROOT / ".env"
@@ -107,14 +107,14 @@ def main(argv=None) -> int:
         print("Faltan FB_APP_ID y FB_APP_SECRET en el .env: el intercambio lo firma la app.")
         return 2
 
-    yo = _pedir("me", fields="id,name,category", access_token=token)
+    yo = facebook.identificar(token, app_id, app_secret)
     if "error" in yo:
-        print("El token no sirve: %s" % yo["error"].get("message"))
+        print("El token no sirve: %s" % yo["error"])
         return 1
 
-    if "category" in yo:
+    if yo["tipo"] == "pagina":
         # Es un token de PAGINA. Puede ya ser permanente, o no poder serlo.
-        print("El token que tenes es de la PAGINA %s (id %s)." % (yo.get("name"), yo.get("id")))
+        print("El token que tenes es de la PAGINA %s (id %s)." % (yo.get("nombre"), yo.get("id")))
         estado = _vencimiento(token, app_id, app_secret)
         print("Hoy %s." % _contar(estado))
         if estado == 0:
@@ -135,7 +135,7 @@ def main(argv=None) -> int:
         return 1
 
     # Es un token de usuario: este es el camino que da el token permanente.
-    print("El token es del usuario %s (id %s)." % (yo.get("name"), yo.get("id")))
+    print("El token es del usuario %s (id %s)." % (yo.get("nombre"), yo.get("id")))
     largo = _pedir("oauth/access_token", grant_type="fb_exchange_token",
                    client_id=app_id, client_secret=app_secret, fb_exchange_token=token)
     if "error" in largo or not largo.get("access_token"):
