@@ -3,7 +3,7 @@
 pagina:
   # Cómo se firma el flyer arriba a la izquierda y en el pie. Cambiar cuando
   # la página tenga nombre definitivo: el dibujo lo lee de aquí.
-  nombre: FRASES DE PSICOLOGÍA
+  nombre: JOSDELCARPIO
   # Pie del flyer. Vacío usa el nombre.
   firma: ""
 
