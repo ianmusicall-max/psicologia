@@ -14,7 +14,7 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import bot, config, diseno, facebook, frases, libro, telegram
+from src import bot, config, diseno, entorno, facebook, frases, libro, telegram
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -627,6 +627,71 @@ class TestElBot(unittest.TestCase):
         self.assertIn("problemas", b.todo)
 
 
+def _chat_id():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("cid", ROOT / "scripts" / "chat_id.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestElEnv(unittest.TestCase):
+
+    def test_pone_una_clave_nueva_sin_tocar_las_otras(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / ".env"
+            ruta.write_text("# un comentario\nPSI_FB_PAGE_ID=7\n", encoding="utf-8")
+            entorno.guardar({"TELEGRAM_CHAT_ID": "55"}, ruta)
+            texto = ruta.read_text(encoding="utf-8")
+            self.assertIn("# un comentario", texto)
+            self.assertIn("PSI_FB_PAGE_ID=7", texto)
+            self.assertIn("TELEGRAM_CHAT_ID=55", texto)
+
+    def test_reemplaza_una_que_ya_estaba_sin_duplicarla(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / ".env"
+            ruta.write_text("PSI_FB_PAGE_ID=7\nPSI_FB_PAGE_TOKEN=viejo\n", encoding="utf-8")
+            entorno.guardar({"PSI_FB_PAGE_TOKEN": "nuevo"}, ruta)
+            texto = ruta.read_text(encoding="utf-8")
+            self.assertIn("PSI_FB_PAGE_TOKEN=nuevo", texto)
+            self.assertNotIn("viejo", texto)
+            self.assertEqual(texto.count("PSI_FB_PAGE_TOKEN"), 1)
+
+    def test_queda_en_600_porque_son_credenciales(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = entorno.guardar({"X": "1"}, Path(d) / ".env")
+            self.assertEqual(ruta.stat().st_mode & 0o777, 0o600)
+
+    def test_no_deja_un_parcial(self):
+        with tempfile.TemporaryDirectory() as d:
+            entorno.guardar({"X": "1"}, Path(d) / ".env")
+            self.assertFalse(list(Path(d).glob("*.parcial")))
+
+
+class TestElChatId(unittest.TestCase):
+
+    def setUp(self):
+        self.chats_de = _chat_id().chats_de
+
+    def test_lo_saca_de_un_mensaje(self):
+        novedades = [{"message": {"chat": {"id": 55, "first_name": "José", "last_name": "Del Carpio"}}}]
+        self.assertEqual(self.chats_de(novedades), {"55": "José Del Carpio"})
+
+    def test_tambien_de_un_boton_o_de_un_mensaje_editado(self):
+        # Si solo mirara "message", alguien que apretó un botón y nada más
+        # quedaría sin chat id y el script diría que no le escribió nunca.
+        self.assertEqual(self.chats_de([{"callback_query": {"message": {"chat": {"id": 7}}}}]), {"7": ""})
+        self.assertEqual(self.chats_de([{"edited_message": {"chat": {"id": 8}}}]), {"8": ""})
+
+    def test_no_repite_el_mismo_chat(self):
+        novedades = [{"message": {"chat": {"id": 55, "first_name": "José"}}}] * 3
+        self.assertEqual(len(self.chats_de(novedades)), 1)
+
+    def test_sin_novedades_no_inventa_ninguno(self):
+        self.assertEqual(self.chats_de([]), {})
+        self.assertEqual(self.chats_de([{"update_id": 1}]), {})
+
+
 class TestLosCaminosPorDefecto(unittest.TestCase):
     """Un `ruta: Path = CONSTANTE` en la firma se evalúa al importar, así que
     queda clavado y cambiar la constante no cambia nada: lo que corre sigue
@@ -638,7 +703,7 @@ class TestLosCaminosPorDefecto(unittest.TestCase):
         # bot tenía `publicar_fn=facebook.publicar` y quedaba atado a esa
         # función desde el import.
         import inspect
-        for modulo in (frases, diseno, bot, telegram, facebook, libro):
+        for modulo in (frases, diseno, bot, telegram, facebook, libro, entorno):
             for nombre, fn in vars(modulo).items():
                 if not inspect.isfunction(fn) or fn.__module__ != modulo.__name__:
                     continue

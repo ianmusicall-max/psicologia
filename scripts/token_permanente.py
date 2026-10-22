@@ -43,7 +43,7 @@ sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv  # noqa: E402
 import requests  # noqa: E402
 
-from src import config, facebook  # noqa: E402
+from src import config, entorno, facebook  # noqa: E402
 
 GRAPH = "https://graph.facebook.com/v21.0"
 ENV = ROOT / ".env"
@@ -120,21 +120,7 @@ def elegir_pagina(paginas: list, pedido: Optional[str], declarado: Optional[str]
 
 
 def _guardar(valores: dict) -> None:
-    """Reescribe esas claves del .env dejando el resto como estaba."""
-    lineas = ENV.read_text(encoding="utf-8").split("\n") if ENV.exists() else []
-    for clave, valor in valores.items():
-        puesto = False
-        for i, l in enumerate(lineas):
-            if l.split("=", 1)[0].strip() == clave:
-                lineas[i] = "%s=%s" % (clave, valor)
-                puesto = True
-                break
-        if not puesto:
-            lineas.append("%s=%s" % (clave, valor))
-    tmp = ENV.with_suffix(".parcial")
-    tmp.write_text("\n".join(lineas), encoding="utf-8")
-    tmp.chmod(0o600)
-    tmp.replace(ENV)
+    entorno.guardar(valores, ENV)
 
 
 def main(argv=None) -> int:
