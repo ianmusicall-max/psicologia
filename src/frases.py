@@ -243,10 +243,16 @@ def _tema(datos: dict, archivo: str) -> Tema:
     return tema
 
 
-def leer(carpeta: Path = CARPETA) -> List[Tema]:
-    """Todos los temas, en orden de capítulo."""
+def leer(carpeta: Optional[Path] = None) -> List[Tema]:
+    """Todos los temas, en orden de capítulo.
+
+    El valor por defecto se resuelve ACÁ y no en la firma. Un `carpeta: Path =
+    CARPETA` se evalúa al importar el módulo, así que queda clavado: cambiar
+    `frases.CARPETA` después no cambia nada, y lo que de verdad corre es el
+    camino viejo. Lo mismo vale para las funciones de abajo.
+    """
     temas = []
-    for ruta in sorted(Path(carpeta).glob("*.yaml")):
+    for ruta in sorted(Path(carpeta or CARPETA).glob("*.yaml")):
         datos = yaml.safe_load(ruta.read_text(encoding="utf-8")) or {}
         temas.append(_tema(datos, ruta.name))
     temas.sort(key=lambda t: t.capitulo)
@@ -291,9 +297,9 @@ def revisar(temas: Iterable[Tema], pagina: Optional[Pagina] = None) -> List[str]
 # Lo publicado y la siguiente.
 # ---------------------------------------------------------------------------
 
-def publicadas(ruta: Path = PUBLICADAS) -> Dict[str, dict]:
+def publicadas(ruta: Optional[Path] = None) -> Dict[str, dict]:
     """{id: {"dia", "post_id", "pagina"}} de lo que ya salió."""
-    ruta = Path(ruta)
+    ruta = Path(ruta or PUBLICADAS)
     if not ruta.exists():
         return {}
     try:
@@ -303,9 +309,9 @@ def publicadas(ruta: Path = PUBLICADAS) -> Dict[str, dict]:
 
 
 def anotar_publicada(frase_id: str, dia: date, post_id: str, pagina: str,
-                     ruta: Path = PUBLICADAS) -> None:
+                     ruta: Optional[Path] = None) -> None:
     """Relee antes de escribir: si dos procesos anotan seguido, ninguno pisa al otro."""
-    ruta = Path(ruta)
+    ruta = Path(ruta or PUBLICADAS)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     actual = publicadas(ruta)
     actual[frase_id] = {"dia": dia.isoformat(), "post_id": post_id, "pagina": pagina}

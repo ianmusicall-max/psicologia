@@ -19,6 +19,8 @@ src/frases.py  lee el banco, lo valida contra la línea editorial y dice cuál t
 src/diseno.py  el flyer: 1080x1350, papel cálido, la frase grande, una palabra en color
 src/libro.py   arma libro/borrador.md con todas las frases y sus reflexiones
 src/facebook.py  publica una foto con su caption. Es el único que habla con Meta
+src/bot.py     el bot de Telegram: qué botones hay y qué hace cada uno
+src/telegram.py  mandar y recoger de Telegram. Transporte y nada más
 config/pagina.yaml  el nombre, la paleta, los hashtags fijos y el pie sensible
 LINEA_EDITORIAL.md  qué se puede decir y qué no, y por qué
 libro/PLAN.md       cómo pasa el banco a ser un libro
@@ -43,6 +45,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/armar_libro.py` | vuelve a escribir `libro/borrador.md` desde el banco |
 | `scripts/revisar_token.py` | si el token es de página o de usuario, de cuál, qué permisos y cuándo vence. Solo lee |
 | `scripts/token_permanente.py` | convierte el token en uno de página que no vence y lo deja en el `.env` |
+| `scripts/bot.py` | el bot de Telegram: muestra la frase que toca y la publica si aprietas el botón |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
@@ -109,6 +112,33 @@ el 91% de LaFreniere y Newman, que es lo que el estudio midió, y no añade el
 «y salió mejor de lo esperado» que circula pegado a ese dato y que no se pudo
 comprobar; la de moverse nombra caminar, yoga y fuerza, que es lo que la
 revisión de Noetel sostiene, y no bailar, que no está entre sus resultados.
+
+## El bot de Telegram
+
+Para no abrir la Terminal. Le escribes cualquier cosa y aparece el menú:
+
+- **Ver la que toca**, que manda el flyer y el texto que saldría, con dos
+  botones: Publicar y Saltar.
+- **Qué queda**, cuántas faltan por tema.
+- **Ya salieron**, las últimas diez, marcando las que se saltearon.
+
+```
+.venv/bin/python scripts/bot.py            # escucha hasta que lo cortes
+.venv/bin/python scripts/bot.py --una-vez  # atiende lo pendiente y sale
+```
+
+Hace falta `TELEGRAM_TOKEN` y `TELEGRAM_CHAT_ID` en el `.env`. El token lo da
+@BotFather; el chat id sale de escribirle al bot y abrir
+`https://api.telegram.org/bot<TOKEN>/getUpdates`.
+
+**Nada se publica sin el botón**, y hay una prueba que le manda al bot el texto
+«publica todo ya» y exige que no publique nada. Tampoco le hace caso a otro
+chat: el nombre de un bot se puede encontrar, y sin ese filtro cualquiera
+publicaría en la página.
+
+**Saltar no es posponer**: la frase queda anotada y no vuelve a tocar. Se anota
+en el mismo archivo que las publicadas, con el post vacío, porque dos listas
+separadas serían dos cosas que consultar y `siguiente` miraría una sola.
 
 ## El token
 

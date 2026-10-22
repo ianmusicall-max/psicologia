@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -174,6 +174,9 @@ def guardar(img: Image.Image, ruta: Path) -> Path:
     return ruta
 
 
-def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta: Path = FLYERS,
+def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta=None,
             escala: int = 2) -> Path:
-    return guardar(render(frase, tema, pagina, escala), Path(carpeta) / ("%s.jpg" % frase.id))
+    """El valor por defecto se resuelve acá y no en la firma: en la firma se
+    evalúa al importar y `diseno.FLYERS` dejaría de mandar."""
+    return guardar(render(frase, tema, pagina, escala),
+                   Path(carpeta or FLYERS) / ("%s.jpg" % frase.id))

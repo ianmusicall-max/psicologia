@@ -14,7 +14,7 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import config, diseno, facebook, frases, libro
+from src import bot, config, diseno, facebook, frases, libro, telegram
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -484,6 +484,220 @@ def _llama_a(ruta: Path, nombres) -> bool:
     return False
 
 
+class _Bot:
+    """Caja para mirar qué mandó el bot a Telegram sin tocar la red."""
+
+    def __init__(self, chat="55"):
+        self.textos, self.fotos, self.botones, self.acuses = [], [], [], []
+        self.chat = chat
+
+    def __enter__(self):
+        self._p = [
+            mock.patch.object(telegram, "chat", return_value=self.chat),
+            mock.patch.object(telegram, "enviar", side_effect=self._enviar),
+            mock.patch.object(telegram, "enviar_foto", side_effect=self._foto),
+            mock.patch.object(telegram, "responder_boton", side_effect=self.acuses.append),
+        ]
+        for p in self._p:
+            p.start()
+        return self
+
+    def __exit__(self, *a):
+        for p in self._p:
+            p.stop()
+
+    def _enviar(self, texto, botones=None, destino=None):
+        self.textos.append(texto)
+        self.botones.append(botones)
+        return {}
+
+    def _foto(self, ruta, pie="", botones=None, destino=None):
+        self.fotos.append((Path(ruta), pie))
+        return {}
+
+    @property
+    def todo(self):
+        return "\n".join(self.textos)
+
+    def datos_de_botones(self):
+        return [d for fila in self.botones if fila for linea in fila for _, d in linea]
+
+
+def _update(texto=None, data=None, chat="55"):
+    if data is not None:
+        return {"update_id": 1,
+                "callback_query": {"id": "cb", "data": data, "message": {"chat": {"id": chat}}}}
+    return {"update_id": 1, "message": {"text": texto, "chat": {"id": chat}}}
+
+
+class TestElBot(unittest.TestCase):
+    """El bot muestra y publica con el botón. La regla que no se toca: nada
+    llega a Facebook sin que lo aprieten."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        d = Path(self.tmp.name)
+        for modulo, campo, valor in ((frases, "PUBLICADAS", d / "publicadas.json"),
+                                     (diseno, "FLYERS", d / "flyers")):
+            p = mock.patch.object(modulo, campo, valor)
+            p.start()
+            self.addCleanup(p.stop)
+        # Si esto no aislara de verdad, las pruebas escribirían en los datos
+        # reales; pasó, y el síntoma fue otra prueba fallando por un archivo
+        # que no era suyo.
+        self.assertEqual(frases.publicadas(), {})
+
+    def test_un_mensaje_de_texto_no_publica_nunca(self):
+        with _Bot() as b, mock.patch.object(facebook, "publicar",
+                                            side_effect=AssertionError("publicó")):
+            bot.atender(_update(texto="publica todo ya"), PAGINA)
+        self.assertIn("Publicar", b.todo)          # es el menú, que lo explica
+        self.assertEqual(frases.publicadas(), {})
+
+    def test_el_chat_de_otro_se_ignora(self):
+        # El nombre de un bot se puede encontrar; sin este filtro, cualquiera
+        # publicaría en la página.
+        with _Bot(chat="55") as b, mock.patch.object(facebook, "publicar",
+                                                     side_effect=AssertionError("publicó")):
+            bot.atender(_update(data="publicar:aut-01", chat="99"), PAGINA)
+        self.assertEqual(b.textos, [])
+        self.assertEqual(b.acuses, [])
+
+    def test_ver_la_que_toca_manda_el_flyer_y_el_texto(self):
+        with _Bot() as b:
+            bot.atender(_update(data="siguiente"), PAGINA)
+        self.assertEqual(len(b.fotos), 1)
+        ruta, pie = b.fotos[0]
+        self.assertTrue(ruta.exists())
+        self.assertIn("aut-01", pie)
+        self.assertIn("Hablarte mal", b.todo)      # el caption que saldría
+        self.assertIn("publicar:aut-01", b.datos_de_botones())
+
+    def test_el_boton_publicar_es_el_unico_que_publica(self):
+        with _Bot() as b, mock.patch.object(facebook, "publicar", return_value="105_1") as fb:
+            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+        fb.assert_called_once()
+        self.assertEqual(fb.call_args[0][1], frases.caption(
+            frases.por_id(TEMAS, "aut-01"), TEMAS[2], PAGINA))
+        self.assertIn("aut-01", frases.publicadas())
+        self.assertIn("facebook.com/105_1", b.todo)
+
+    def test_no_publica_dos_veces_la_misma(self):
+        with _Bot(), mock.patch.object(facebook, "publicar", return_value="105_1"):
+            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+        with _Bot() as b, mock.patch.object(facebook, "publicar",
+                                            side_effect=AssertionError("publicó de nuevo")):
+            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+        self.assertIn("ya había salido", b.todo)
+
+    def test_si_facebook_falla_no_la_anota_como_publicada(self):
+        # Anotarla igual la perdería: no salió y no volvería a tocar.
+        with _Bot() as b, mock.patch.object(facebook, "publicar",
+                                            side_effect=facebook.FacebookError("(#200) permiso")):
+            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+        self.assertEqual(frases.publicadas(), {})
+        self.assertIn("(#200)", b.todo)
+
+    def test_saltar_la_descarta_y_ofrece_la_siguiente(self):
+        with _Bot() as b, mock.patch.object(facebook, "publicar",
+                                            side_effect=AssertionError("publicó")):
+            bot.atender(_update(data="saltar:aut-01"), PAGINA)
+        self.assertIn("aut-01", frases.publicadas())
+        self.assertEqual(frases.publicadas()["aut-01"]["post_id"], "")
+        self.assertNotIn("publicar:aut-01", b.datos_de_botones())
+
+    def test_el_boton_siempre_recibe_su_acuse(self):
+        # Sin esto el teléfono se queda con el relojito girando.
+        with _Bot() as b:
+            bot.atender(_update(data="estado"), PAGINA)
+        self.assertEqual(len(b.acuses), 1)
+
+    def test_que_queda_cuenta_por_tema(self):
+        with _Bot() as b:
+            bot.atender(_update(data="estado"), PAGINA)
+        self.assertIn("Quedan 113 de 113", b.todo)
+        self.assertIn("autoestima", b.todo)
+
+    def test_un_banco_roto_frena_la_publicacion(self):
+        roto = [tema(frases=[una(texto="Esto cura la ansiedad para siempre.")])]
+        with _Bot() as b, mock.patch.object(frases, "leer", return_value=roto):
+            bot.atender(_update(data="siguiente"), PAGINA)
+        self.assertEqual(b.fotos, [])
+        self.assertIn("problemas", b.todo)
+
+
+class TestLosCaminosPorDefecto(unittest.TestCase):
+    """Un `ruta: Path = CONSTANTE` en la firma se evalúa al importar, así que
+    queda clavado y cambiar la constante no cambia nada: lo que corre sigue
+    siendo el camino viejo. Es un error que no se ve, porque las pruebas que
+    pasan la ruta a mano nunca ejercitan el valor por defecto."""
+
+    def test_ninguna_firma_clava_una_ruta_ni_una_funcion(self):
+        # Vale igual para una función de otro módulo puesta por defecto: el
+        # bot tenía `publicar_fn=facebook.publicar` y quedaba atado a esa
+        # función desde el import.
+        import inspect
+        for modulo in (frases, diseno, bot, telegram, facebook, libro):
+            for nombre, fn in vars(modulo).items():
+                if not inspect.isfunction(fn) or fn.__module__ != modulo.__name__:
+                    continue
+                try:
+                    firma = inspect.signature(fn)
+                except (TypeError, ValueError):
+                    continue
+                for param, valor in firma.parameters.items():
+                    clavado = isinstance(valor.default, Path) or (
+                        callable(valor.default)
+                        and getattr(valor.default, "__module__", "").startswith("src."))
+                    if clavado:
+                        self.fail("%s.%s tiene %s=%r clavado en la firma, así que parchear "
+                                  "el original no cambia nada"
+                                  % (modulo.__name__, nombre, param, valor.default))
+
+    def test_cambiar_la_constante_cambia_donde_escribe(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "publicadas.json"
+            with mock.patch.object(frases, "PUBLICADAS", ruta):
+                frases.anotar_publicada("aut-01", date(2026, 11, 1), "1", "x")
+                self.assertEqual(list(frases.publicadas()), ["aut-01"])
+            self.assertTrue(ruta.exists())
+
+
+class TestElOffsetDeTelegram(unittest.TestCase):
+
+    def test_se_guarda_antes_de_atender(self):
+        # Si se guardara después, un mensaje que revienta volvería a llegar
+        # para siempre y el bot no atendería nada más.
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "offset.json"
+            with mock.patch.object(telegram, "_llamar",
+                                   return_value=[{"update_id": 7}, {"update_id": 9}]):
+                telegram.recoger(espera=0, ruta=ruta)
+            self.assertEqual(telegram._offset(ruta), 10)
+
+    def test_sin_novedades_no_lo_mueve(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "offset.json"
+            telegram._guardar_offset(4, ruta)
+            with mock.patch.object(telegram, "_llamar", return_value=[]):
+                telegram.recoger(espera=0, ruta=ruta)
+            self.assertEqual(telegram._offset(ruta), 4)
+
+    def test_un_archivo_roto_no_lo_tumba(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "offset.json"
+            ruta.write_text("{roto", encoding="utf-8")
+            self.assertEqual(telegram._offset(ruta), 0)
+
+    def test_el_pie_de_una_foto_se_recorta_a_1024(self):
+        # Telegram rechaza el mensaje entero si el pie se pasa, no lo recorta.
+        with mock.patch.object(telegram, "_llamar", return_value={}) as llamar, \
+                mock.patch.object(telegram, "chat", return_value="55"):
+            telegram.enviar_foto(Path(__file__), "x" * 2000)
+        self.assertEqual(len(llamar.call_args[1]["caption"]), 1024)
+
+
 def _token_permanente():
     import importlib.util
     spec = importlib.util.spec_from_file_location("tp", ROOT / "scripts" / "token_permanente.py")
@@ -541,10 +755,13 @@ class TestElegirLaPagina(unittest.TestCase):
 
 class TestLosScripts(unittest.TestCase):
 
-    def test_solo_frase_del_dia_publica(self):
-        # Cualquier otro script que llame a `publicar` es un post saliendo sin
-        # que nadie lo haya pedido. Se mira el AST y no el texto: los docstrings
-        # nombran la palabra para explicar que NO lo hacen.
+    def test_ningun_script_publica_por_su_cuenta(self):
+        # Los dos caminos hacia Facebook son explícitos: `frase_del_dia.py
+        # --publicar`, que lo corre una persona, y el botón Publicar del bot,
+        # que vive en src/bot.py y tiene sus propias pruebas. Cualquier otro
+        # script que llame a `publicar` sería un post saliendo sin que nadie
+        # lo haya pedido. Se mira el AST y no el texto: los docstrings nombran
+        # la palabra para explicar que NO lo hacen.
         publican = sorted(p.name for p in (ROOT / "scripts").glob("*.py") if _llama_a(p, {"publicar"}))
         self.assertEqual(publican, ["frase_del_dia.py"])
 
