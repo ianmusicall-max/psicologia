@@ -36,8 +36,14 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     load_dotenv(ROOT / ".env")
-    if not telegram.configurado():
-        print("Faltan TELEGRAM_TOKEN y TELEGRAM_CHAT_ID en el .env.")
+    faltan = [n for n, v in (("TELEGRAM_TOKEN", telegram.token()),
+                             ("TELEGRAM_CHAT_ID", telegram.chat())) if not v]
+    if faltan:
+        # Nombrar solo lo que falta: decir las dos cuando sobra una manda a
+        # buscar un problema que no existe.
+        print("Falta %s en el .env." % " y ".join(faltan))
+        if "TELEGRAM_CHAT_ID" in faltan:
+            print("Lo saca solo: scripts/chat_id.py --guardar")
         return 2
     pagina = config.cargar()
 
@@ -51,6 +57,10 @@ def main(argv=None) -> int:
         try:
             novedades = telegram.recoger(espera=0 if args.una_vez else 25)
         except telegram.TelegramError as e:
+            if telegram.hay_conflicto_de_webhook(e):
+                print("Este bot tiene un webhook puesto y por eso no recibe nada.")
+                print("Borralo con: scripts/chat_id.py --borrar-webhook")
+                return 1
             print("Telegram: %s" % e)
             if args.una_vez:
                 return 1

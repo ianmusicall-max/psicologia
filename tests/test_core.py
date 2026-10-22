@@ -692,6 +692,57 @@ class TestElChatId(unittest.TestCase):
         self.assertEqual(self.chats_de([{"update_id": 1}]), {})
 
 
+class TestElWebhook(unittest.TestCase):
+    """Telegram entrega los mensajes de una de dos maneras y no de las dos: o
+    el bot los pide (getUpdates) o los empuja a una URL (webhook). Con un
+    webhook puesto, el bot no recibe nada y el error no lo dice en castellano."""
+
+    def test_reconoce_el_conflicto(self):
+        e = telegram.TelegramError("Telegram dijo que no: Conflict: can't use getUpdates "
+                                   "method while webhook is active; use deleteWebhook first")
+        self.assertTrue(telegram.hay_conflicto_de_webhook(e))
+
+    def test_no_confunde_cualquier_otro_error(self):
+        self.assertFalse(telegram.hay_conflicto_de_webhook(
+            telegram.TelegramError("Unauthorized")))
+
+    def test_sin_webhook_devuelve_vacio(self):
+        with mock.patch.object(telegram, "_llamar", return_value={"url": ""}):
+            self.assertEqual(telegram.webhook(), {})
+
+    def test_con_webhook_dice_a_donde_apunta(self):
+        with mock.patch.object(telegram, "_llamar",
+                               return_value={"url": "https://x.com/hook", "pending_update_count": 3}):
+            self.assertEqual(telegram.webhook()["url"], "https://x.com/hook")
+
+    def test_borrarlo_no_tira_los_mensajes_pendientes(self):
+        # Si el webhook estaba cortado, esos mensajes son lo único que quedó.
+        with mock.patch.object(telegram, "_llamar", return_value={}) as llamar:
+            telegram.borrar_webhook()
+        self.assertEqual(llamar.call_args[0][0], "deleteWebhook")
+        self.assertFalse(llamar.call_args[1]["drop_pending_updates"])
+
+    def test_el_script_explica_el_conflicto_en_vez_de_repetir_el_error(self):
+        cid = _chat_id()
+        llamadas = {"getMe": {"username": "bot"},
+                    "getWebhookInfo": {"url": "https://x.com/hook"}}
+
+        def falso(metodo, **kw):
+            if metodo == "getUpdates":
+                raise telegram.TelegramError("Conflict: can't use getUpdates method "
+                                             "while webhook is active")
+            return llamadas[metodo]
+
+        with mock.patch.object(telegram, "_llamar", side_effect=falso), \
+                mock.patch.object(telegram, "token", return_value="t"), \
+                mock.patch("builtins.print") as imprimir:
+            self.assertEqual(cid.main([]), 1)
+        dicho = " ".join(str(c[0][0]) for c in imprimir.call_args_list if c[0])
+        self.assertIn("WEBHOOK", dicho)
+        self.assertIn("https://x.com/hook", dicho)
+        self.assertIn("--borrar-webhook", dicho)
+
+
 class TestLosCaminosPorDefecto(unittest.TestCase):
     """Un `ruta: Path = CONSTANTE` en la firma se evalúa al importar, así que
     queda clavado y cambiar la constante no cambia nada: lo que corre sigue

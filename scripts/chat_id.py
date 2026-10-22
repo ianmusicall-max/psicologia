@@ -42,6 +42,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--guardar", action="store_true", help="escribirlo en el .env")
+    ap.add_argument("--borrar-webhook", action="store_true",
+                    help="sacar el webhook que impide leer los mensajes")
     args = ap.parse_args(argv)
 
     load_dotenv(ROOT / ".env")
@@ -51,13 +53,33 @@ def main(argv=None) -> int:
 
     try:
         quien = telegram._llamar("getMe") or {}
-        # Sin offset: no consume nada, asi que se puede correr las veces que haga falta.
-        novedades = telegram._llamar("getUpdates", timeout=0) or []
     except telegram.TelegramError as e:
         print("Telegram: %s" % e)
         return 1
-
     print("El bot es @%s." % quien.get("username"))
+
+    if args.borrar_webhook:
+        telegram.borrar_webhook()
+        print("Webhook borrado.")
+    try:
+        # Sin offset: no consume nada, asi que se puede correr las veces que haga falta.
+        novedades = telegram._llamar("getUpdates", timeout=0) or []
+    except telegram.TelegramError as e:
+        if not telegram.hay_conflicto_de_webhook(e):
+            print("Telegram: %s" % e)
+            return 1
+        print()
+        print("Este bot tiene un WEBHOOK puesto, y mientras exista Telegram no deja")
+        print("leer los mensajes: los manda a una direccion en vez de entregarlos aca.")
+        donde = telegram.webhook()
+        if donde.get("url"):
+            print("Apunta a: %s" % donde["url"])
+            if donde.get("pending_update_count"):
+                print("Tiene %d mensajes sin entregar." % donde["pending_update_count"])
+        print()
+        print("Si ese webhook no lo usa ningun otro sistema tuyo, borralo:")
+        print("  scripts/chat_id.py --guardar --borrar-webhook")
+        return 1
     chats = chats_de(novedades)
     if not chats:
         print()

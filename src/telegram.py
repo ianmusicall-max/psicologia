@@ -90,6 +90,33 @@ def responder_boton(callback_id: str, texto: str = "") -> None:
     _llamar("answerCallbackQuery", callback_query_id=callback_id, text=texto[:200])
 
 
+# Telegram entrega los mensajes de UNA de dos maneras: o los pide el bot
+# (getUpdates, que es lo que hace este) o los empuja a una URL (webhook). Las
+# dos a la vez no se pueden, y si hay un webhook puesto, getUpdates contesta
+# «Conflict» y el bot no recibe nada.
+CONFLICTO = "can't use getupdates method while webhook is active"
+
+
+def hay_conflicto_de_webhook(error: Exception) -> bool:
+    return CONFLICTO in str(error).lower()
+
+
+def webhook() -> dict:
+    """A dónde está apuntando el webhook, si hay uno. {} si no hay ninguno."""
+    info = _llamar("getWebhookInfo") or {}
+    return info if info.get("url") else {}
+
+
+def borrar_webhook() -> None:
+    """Saca el webhook para que getUpdates vuelva a funcionar.
+
+    No tira los mensajes pendientes: si el webhook estaba cortado, esos
+    mensajes son lo único que quedó, y perderlos sería perder lo que alguien
+    escribió mientras tanto.
+    """
+    _llamar("deleteWebhook", drop_pending_updates=False)
+
+
 def _offset(ruta: Optional[Path] = None) -> int:
     ruta = Path(ruta or OFFSET)
     if not ruta.exists():
