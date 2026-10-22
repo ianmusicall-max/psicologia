@@ -1,0 +1,115 @@
+# Capítulo 13 · Cuando se termina, y cuando se vuelve
+#
+# Este es el capítulo que la página promete como «recuperar a tu ex» y que no
+# se puede escribir así: no hay ninguna técnica con respaldo para que alguien
+# vuelva, y lo que circula con ese nombre es manipulación. Lo que sí hay, y es
+# lo que está acá, es evidencia sobre cuánto dura el dolor, sobre qué pasa con
+# las parejas que vuelven y sobre qué hace falta para que volver no sea repetir.
+tema: ruptura
+capitulo: 13
+eje: nucleo
+sensible: true
+titulo: Cuando se termina, y cuando se vuelve
+hashtags: [ruptura, duelo, decidir]
+tesis: >-
+  Una ruptura duele menos tiempo del que uno cree y desordena más cosas de las
+  que uno espera, porque no solo se pierde a alguien: se pierde la versión de
+  uno que existía con esa persona. Volver no está prohibido, pero no viene con
+  final asegurado: lo que dice la investigación es que, si nada cambió, vuelve
+  también la relación que había.
+
+frases:
+  - id: rup-01
+    texto: "Vas a sufrir menos tiempo del que crees ahora. Casi todo el mundo predice peor de lo que después resulta."
+    destacar: [menos tiempo]
+    principio: "La predicción afectiva sobrestima la intensidad y la duración del malestar tras una ruptura."
+    fuente: "Eastwick, Finkel, Krishnamurti & Loewenstein (2008), JPSP: el error al predecir el dolor de una ruptura."
+    reflexion: >-
+      En un estudio se les preguntó a personas en pareja cuánto sufrirían si
+      los dejaran, y después se siguió a quienes efectivamente pasaron por eso.
+      Sufrieron, pero bastante menos y por bastante menos tiempo de lo que
+      habían anticipado. Es un dato útil justo cuando parece que esto no se
+      acaba nunca: tu cálculo de hoy está hecho con el peor material.
+
+  - id: rup-02
+    texto: "Las parejas que se dejan y vuelven varias veces reportan, en cada vuelta, menos satisfacción y más conflicto."
+    destacar: [cada vuelta]
+    principio: "Las relaciones cíclicas se asocian a menor satisfacción, más incertidumbre y más conflicto que las no cíclicas."
+    fuente: "Vennum, Lindstrom, Monk & Adams (2014); Halpern-Meekin et al. (2013), relationship churning."
+    reflexion: >-
+      Volver se siente como recuperar algo. En los datos, las parejas que
+      entran en ese ciclo de cortar y volver llegan con el tiempo a peor lugar
+      que las que no: menos satisfacción, más dudas, más peleas. No significa
+      que volver esté mal; significa que volver sin que nada se haya movido
+      tiene un desenlace bastante predecible.
+
+  - id: rup-03
+    texto: "La pregunta no es cómo hacer que vuelva. Es qué cambió desde entonces, porque si no cambió nada, vuelve también el motivo."
+    destacar: [qué cambió]
+    principio: "La reconciliación sostenible exige que cambie la causa de la ruptura; sin eso, el ciclo se repite."
+    fuente: "Dailey, Pfiester, Jin, Beck & Clark (2009), relaciones intermitentes; Vennum et al. (2014)."
+    reflexion: >-
+      Las dos preguntas parecen la misma y no lo son. La primera busca una
+      técnica y no existe: nadie tiene una frase que haga volver a otra
+      persona, y lo que se vende con ese nombre es manipulación. La segunda sí
+      tiene respuesta, y es incómoda porque obliga a mirar qué hizo cada uno y
+      qué está dispuesto a hacer distinto.
+
+  - id: rup-04
+    texto: "Después de una ruptura no duele solo la otra persona. Duele no saber quién eres sin ella."
+    destacar: [quién eres]
+    principio: "La ruptura reduce la claridad del autoconcepto, y esa pérdida de identidad explica parte del malestar."
+    fuente: "Slotter, Gardner & Finkel (2010), PSPB: ¿quién soy yo sin ti?"
+    reflexion: >-
+      Los estudios de Slotter midieron algo que mucha gente siente y no sabe
+      nombrar: después de una separación, las personas se describen a sí mismas
+      de forma más confusa que antes. Dos vidas compartidas construyen una
+      versión de uno que solo existía ahí. Parte de lo que se reconstruye
+      después no es la vida social: es saber otra vez quién eres.
+
+  - id: rup-05
+    texto: "Revisar su perfil no es información. Es una dosis, y cada visita reinicia el reloj."
+    destacar: [reinicia]
+    principio: "La vigilancia del ex en redes se asocia a más angustia, más deseo por el otro y menor crecimiento personal tras la ruptura."
+    fuente: "Marshall (2012), Cyberpsychology: seguir al ex en Facebook y la recuperación posterior."
+    reflexion: >-
+      Mirar qué publica se siente como estar al tanto, y funciona como lo
+      contrario: quienes más lo hacen reportan más malestar, más añoranza y
+      menos sensación de haber avanzado. El contacto visual repetido no deja
+      que el recuerdo se enfríe. Dejar de mirar no es orgullo; es sacar la mano
+      del fuego.
+
+  - id: rup-06
+    texto: "Escribir lo que pasó le sirve a casi todo el mundo. A quien ya le está dando vueltas, lo hunde más."
+    destacar: [vueltas]
+    principio: "La escritura expresiva ayuda en general tras una separación, pero puede empeorar el estado de quienes tienden a rumiar."
+    fuente: "Sbarra, Boals, Mason, Larson & Mehl (2013), Clinical Psychological Science."
+    reflexion: >-
+      Escribir sobre lo que dolió es una de las intervenciones más estudiadas y
+      suele funcionar. Pero Sbarra encontró el límite: en personas que ya
+      repasaban la historia una y otra vez, escribirla la fijó más. Si al
+      terminar de escribir estás más cerca de entender, sirve. Si estás más
+      cerca de la escena, no.
+
+  - id: rup-07
+    texto: "Volver no es un fracaso ni una victoria. Es una decisión, y las decisiones se toman con lo que pasó, no con lo que se extraña."
+    destacar: [decisión]
+    principio: "Las transiciones de pareja decididas de forma explícita tienen mejor pronóstico que las que ocurren por inercia."
+    fuente: "Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir."
+    reflexion: >-
+      Extrañar es información sobre lo que compartieron, no sobre si conviene
+      volver. Casi nadie extraña la peor noche; se extraña el domingo a la
+      mañana. Una decisión que se toma desde ahí no está tomando en cuenta la
+      mitad de la relación, y es la mitad que la terminó.
+
+  - id: rup-08
+    texto: "Si hubo violencia o miedo, nada de esto aplica. Ahí la pregunta no es cómo volver, sino cómo estar a salvo."
+    destacar: [a salvo]
+    principio: "Ante violencia en la pareja, las recomendaciones de reparación del vínculo no corresponden: la prioridad es la seguridad."
+    fuente: "OMS (2013), violencia de pareja; Johnson (2008), tipologías de violencia en la pareja."
+    reflexion: >-
+      Todo lo que dice este capítulo supone dos personas que se trataron mal
+      como se tratan mal las parejas, no una en la que alguien tiene miedo del
+      otro. Cuando hay golpes, amenazas, control o miedo, el ciclo de cortar y
+      volver no es un patrón a mejorar: es parte de cómo funciona la violencia.
+      Eso se habla con alguien preparado, y no con una publicación.

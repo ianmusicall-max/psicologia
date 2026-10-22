@@ -17,7 +17,7 @@ pagina:
 
   # Cinco hashtags por post: estos dos fijos y los tres del tema. Mismo
   # criterio que las páginas de salud.
-  hashtags_fijos: [psicología, saludmental]
+  hashtags_fijos: [psicología, relaciones]
 
   # Va al final del caption en los temas marcados `sensible: true` (duelo) o
   # en una frase marcada así. Nunca en el flyer: un flyer con aviso legal se

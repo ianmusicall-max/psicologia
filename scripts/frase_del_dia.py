@@ -36,7 +36,7 @@ def main(argv=None) -> int:
     load_dotenv(ROOT / ".env")
     pagina = config.cargar()
     temas = frases.leer()
-    problemas = frases.revisar(temas)
+    problemas = frases.revisar(temas, pagina)
     if problemas:
         print("El banco tiene %d problemas; arréglalos antes de publicar (revisar_banco.py)." % len(problemas))
         for p in problemas[:10]:

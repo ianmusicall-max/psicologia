@@ -6,10 +6,15 @@ frase se escribe una vez, con el principio que la sostiene y la fuente al lado,
 y de ahí salen el flyer, el caption y el capítulo. Si se escribieran por
 separado, el libro terminaría contradiciendo a la página.
 
+La página es de amor propio y vínculos: desarrollar el amor propio, recuperar
+el amor de la pareja actual, qué hacer con una ex pareja, encontrar a alguien y
+resolver problemas de comunicación. Son 14 temas y 113 frases, y están
+repartidos en dos ejes.
+
 ## Cómo está armado
 
 ```
-frases/        un archivo por tema = un capítulo del libro (10 temas, 81 frases)
+frases/        un archivo por tema = un capítulo del libro (14 temas, 113 frases)
 src/frases.py  lee el banco, lo valida contra la línea editorial y dice cuál toca
 src/diseno.py  el flyer: 1080x1350, papel cálido, la frase grande, una palabra en color
 src/libro.py   arma libro/borrador.md con todas las frases y sus reflexiones
@@ -41,13 +46,31 @@ Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
 aprobación tiene que seguir estando, como en el proyecto de salud.
 
+## Los dos ejes
+
+Cada tema declara `eje: nucleo` o `eje: apoyo`.
+
+- **Núcleo**, los siete temas que la página promete: amor propio, límites,
+  apego, comunicación, reconexión, ruptura y elegir pareja.
+- **Apoyo**, los siete que sostienen a los otros sin ser el motivo por el que
+  alguien sigue la página: emociones, ansiedad, hábitos, duelo, pensamientos,
+  descanso y sentido. No se publican menos porque valgan menos: se publican
+  menos porque no son lo que alguien vino a buscar.
+
+**Dos de cada tres posts son del núcleo**, y la cuota se cumple turno a turno y
+no contando al final, así que los temas se intercalan en vez de salir primero
+un mes de pareja y después un mes de lo demás. Es una preferencia y no un
+filtro: si un día no quedan frases del núcleo sin publicar, sale una de apoyo.
+Perder un día de publicación sería mucho peor que romper la proporción.
+
 ## Cuál toca
 
-Lo decide `frases.siguiente`: rota por tema y dentro del tema va en orden, así
-que no salen dos días seguidos del mismo tema ni se repite una frase hasta que
-el banco entero haya salido. Es determinista, depende de `data/publicadas.json`
-y no del reloj: mirarla dos veces el mismo día da la misma frase. Con 81 frases
-y un post por día son casi tres meses sin repetir.
+Lo decide `frases.siguiente`: rota por tema dentro de su eje y dentro del tema
+va en orden, así que no salen dos días seguidos del mismo tema ni se repite una
+frase hasta que el banco entero haya salido. Es determinista, depende de
+`data/publicadas.json` y no del reloj: mirarla dos veces el mismo día da la
+misma frase. Con 113 frases y un post por día son casi cuatro meses sin
+repetir.
 
 ## Agregar frases
 
@@ -56,6 +79,10 @@ nada y después `armar_libro.py`. Una prueba exige que el borrador versionado
 esté al día con el banco, así que olvidarse se ve en rojo y no en el libro.
 
 Cada frase lleva:
+
+El archivo del tema abre con `tema`, `capitulo`, `eje`, `titulo`, tres
+`hashtags` (ninguno puede repetir uno de los fijos de la página) y la `tesis`
+del capítulo. Después vienen las frases:
 
 ```yaml
   - id: emo-10                  # tres letras del tema y dos dígitos, en orden

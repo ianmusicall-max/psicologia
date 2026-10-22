@@ -7,9 +7,36 @@ cambia aquí y en el código a la vez.
 
 ## Lo que la página es
 
-Divulgación de psicología con respaldo. Cada frase tiene un principio detrás y
-una fuente, y las dos viajan con ella aunque no se publiquen. La página no da
-terapia, no diagnostica y no acompaña una crisis.
+Divulgación de psicología con respaldo sobre amor propio y vínculos. Cada frase
+tiene un principio detrás y una fuente, y las dos viajan con ella aunque no se
+publiquen. La página no da terapia, no diagnostica y no acompaña una crisis.
+
+## Lo que la descripción promete y no se puede escribir
+
+La página ofrece «recuperar el amor de tu actual pareja, o a tu ex-pareja».
+Sobre lo primero hay bastante evidencia y es el capítulo de reconexión. Sobre
+lo segundo **no existe ninguna técnica con respaldo para que una persona
+vuelva**, y lo que circula con ese nombre -contacto cero como táctica, dar
+celos, mensajes calculados- es manipulación: trata al otro como un mecanismo
+con botones en vez de como alguien que decide.
+
+Lo que sí se puede escribir, y es el capítulo de ruptura, es lo que la
+investigación mide de verdad: cuánto dura el dolor y por qué dura menos de lo
+que uno cree, qué les pasa a las parejas que cortan y vuelven varias veces, qué
+hace la vigilancia del ex en redes, y cuál es la única pregunta con respuesta,
+que no es cómo hacer que vuelva sino qué cambió desde entonces.
+
+Es, además, mejor contenido: le habla a quien está pasándolo mal en vez de
+venderle una receta que no funciona, y no deja a la página prometiendo algo que
+no puede cumplir.
+
+## La excepción de la violencia
+
+Nada de lo que la página dice sobre reparar un vínculo o sobre volver aplica
+cuando hay golpes, amenazas, control o miedo. Ahí el ciclo de cortar y volver
+no es un patrón a mejorar: es parte de cómo funciona la violencia. El capítulo
+de ruptura lo dice explícitamente en una frase y el tema entero lleva el pie de
+los temas sensibles.
 
 ## Las seis reglas
 

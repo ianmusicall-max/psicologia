@@ -2,7 +2,7 @@
 
 # Frases para pensar
 
-*Borrador armado del banco de frases: 10 capítulos, 81 frases.*
+*Borrador armado del banco de frases: 14 capítulos, 113 frases.*
 
 ## Índice
 
@@ -16,6 +16,10 @@
 8. No todo lo que piensas es cierto (8 frases)
 9. El cuerpo también piensa (8 frases)
 10. Para qué, no solo por qué (8 frases)
+11. Hablar para que el otro pueda escuchar (8 frases)
+12. Volver a encontrarse con quien ya está (8 frases)
+13. Cuando se termina, y cuando se vuelve (8 frases)
+14. Elegir a alguien, y qué predice que funcione (8 frases)
 
 
 ## Capítulo 1 · Sentir no es un error
@@ -716,16 +720,295 @@ Parece lógico que ayudar reste horas. En los estudios pasa lo contrario: quien 
 *Fuente:* Mogilner, Chance & Norton (2012), Psychological Science; Dunn et al. (2008), gasto prosocial.
 
 
+## Capítulo 11 · Hablar para que el otro pueda escuchar
+
+La mayoría de los problemas de una pareja no se resuelven, se administran. Lo que decide una conversación no es quién tiene razón sino cómo empieza, si el otro se siente escuchado y si alguien sabe frenar a tiempo. Comunicarse mejor no es hablar más: es hablar de otra manera.
+
+
+> El 69% de los problemas de una pareja no se resuelven. Las que duran no los resolvieron: aprendieron a convivir con ellos.
+
+Gottman siguió a cientos de parejas durante años y encontró que dos tercios de sus peleas eran las mismas a los cinco años y a los veinte. Las parejas felices no habían encontrado la solución: habían encontrado la forma de hablar del tema sin lastimarse. Perseguir la solución de algo que no la tiene es lo que convierte una diferencia en una guerra.
+
+*Principio:* La mayoría del conflicto en pareja es perpetuo: nace de diferencias estables de personalidad o de necesidades.  
+*Fuente:* Gottman (1999), The Seven Principles: el 69% de los conflictos son problemas perpetuos.
+
+
+> Cómo empieza una conversación decide cómo termina. Los primeros tres minutos ya cuentan el final.
+
+En un estudio, mirar los tres primeros minutos de una discusión alcanzó para predecir qué parejas seguirían juntas seis años más tarde. No es magia: una conversación que empieza con un reproche ya tiene al otro defendiéndose antes de la segunda frase. Empezar suave no es ser tibio; es dejar la puerta abierta el tiempo suficiente para que entre algo.
+
+*Principio:* El arranque duro (reproche, sarcasmo, crítica global) determina el curso de la discusión; el arranque suave la mantiene abierta.  
+*Fuente:* Carrère & Gottman (1999), Family Process: los tres primeros minutos predijeron el desenlace seis años después.
+
+
+> Cómo reaccionas cuando te cuenta algo bueno dice más del vínculo que cómo reaccionas cuando te cuenta algo malo.
+
+Todos sabemos que hay que estar en las malas. Lo que casi nadie mira es el momento en que el otro llega con una buena noticia y recibe un «qué bien» sin levantar la vista. Entusiasmarse de verdad, preguntar, pedir que lo cuente otra vez: eso, medido en varios estudios, predice mejor que una pareja dure que el apoyo que se da en una crisis.
+
+*Principio:* La respuesta activa y constructiva a las buenas noticias predice satisfacción y estabilidad mejor que el apoyo en la adversidad.  
+*Fuente:* Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien.
+
+
+> Un vínculo no se sostiene en las conversaciones importantes. Se sostiene en las veces al día que alguien pide atención sin pedirla.
+
+«Mira qué pájaro», «¿viste la hora?», una mano en el hombro. Son pedidos de atención disfrazados de comentarios sin importancia, y pasan decenas de veces por día. En el laboratorio de Gottman, las parejas que seguían juntas respondían al 86% de ellos y las que se separaron, al 33%. Una relación se construye ahí, no en la charla del domingo.
+
+*Principio:* Las parejas estables responden a los intentos cotidianos de conexión (bids) mucho más que las que se separan.  
+*Fuente:* Gottman & Driver (2002): quienes seguían juntos respondían al 86% de esos pedidos; los que se separaron, al 33%.
+
+
+> Antes de contestar, repite con tus palabras lo que entendiste. Muchas peleas terminan ahí, cuando se ve que nadie dijo lo que el otro escuchó.
+
+Cuesta creer cuántas discusiones son sobre dos frases distintas: la que uno dijo y la que el otro oyó. Repetir lo entendido antes de contestar se siente artificial las primeras veces y después deja de notarse. Lo que hace no es ceder: es asegurarse de que, si van a pelear, al menos peleen por lo mismo.
+
+*Principio:* Verificar la comprensión antes de responder corta las escaladas que nacen de un malentendido, no de un desacuerdo.  
+*Fuente:* Rogers (1951), escucha reflexiva; Markman, Stanley & Blumberg (1994), programa PREP.
+
+
+> Decir lo que no quieres no le dice a nadie qué hacer. Pide lo que sí quieres, y pídelo en concreto.
+
+«Nunca me ayudas» no tiene traducción en ninguna acción. «¿Puedes bañar a los chicos los martes?» sí. La queja general obliga al otro a defender quién es; la petición concreta le da algo que hacer esta semana. Es el mismo reclamo, y uno de los dos tiene arreglo.
+
+*Principio:* Una petición observable y específica se puede cumplir; una queja general solo se puede discutir.  
+*Fuente:* Gottman (1999), arranque suave; Christensen & Jacobson (2000), terapia conductual integrativa de pareja.
+
+
+> Hablar claro de un problema serio incomoda hoy y mejora la relación después. Esquivarlo es al revés.
+
+La investigación de Overall encontró algo incómodo: las conversaciones que se sienten peor en el momento son las que más mejoran la relación un año después, siempre que el problema sea real y se pueda cambiar. Y al revés, suavizarlo todo deja a la pareja tranquila hoy y con el mismo problema intacto en un año.
+
+*Principio:* La comunicación directa sobre problemas importantes baja la satisfacción a corto plazo y la mejora a largo; la indirecta hace lo contrario.  
+*Fuente:* Overall & McNulty (2017), Current Opinion in Psychology; Overall et al. (2009).
+
+
+> Si el corazón se te acelera, ya no estás discutiendo: estás defendiéndote. Ahí se para veinte minutos.
+
+Cuando el pulso sube, el cuerpo entra en modo defensa: se achica la escucha, se agranda la memoria de agravios y sale lo peor del repertorio. Nada que se diga ahí va a servir. Veinte minutos haciendo otra cosa, de verdad otra cosa y no repasando la pelea, alcanzan para volver a ser dos personas hablando.
+
+*Principio:* Con activación fisiológica alta se pierde el acceso al razonamiento complejo y a la escucha; la pausa permite recuperarlo.  
+*Fuente:* Gottman & Levenson (1986), desbordamiento fisiológico; Gottman (1999), la pausa de veinte minutos.
+
+
+## Capítulo 12 · Volver a encontrarse con quien ya está
+
+Las relaciones no se apagan de golpe: se apagan por falta de mantenimiento. Lo que las vuelve a encender está medido y es mucho más pequeño de lo que la gente cree: la proporción entre lo bueno y lo áspero, la novedad compartida, el agradecimiento dicho en voz alta y saber que lo que entra por la puerta no siempre es del otro.
+
+
+> En las parejas que duran hay cinco gestos buenos por cada roce. No es que no discutan: es la proporción.
+
+El número importa menos que la idea: lo áspero pesa más que lo bueno, así que hace falta bastante más de lo bueno para equilibrar. No se arregla con un gesto grande al mes. Se arregla con cosas chicas y seguidas, que son justamente las que se dejan de hacer cuando la relación se da por hecha.
+
+*Principio:* La razón entre interacciones positivas y negativas durante el conflicto distingue a las parejas estables de las que se separan.  
+*Fuente:* Gottman & Levenson (1992), JPSP: alrededor de 5 a 1 en las parejas estables.
+
+
+> El aburrimiento no se arregla con más tiempo juntos. Se arregla con tiempo juntos haciendo algo que ninguno de los dos hizo antes.
+
+En los experimentos de Aron, las parejas que hacían juntas algo nuevo y un poco difícil reportaban después más satisfacción que las que hacían algo agradable pero conocido. La explicación es que el vínculo se asocia con crecer. Por eso otra cena en el mismo lugar no mueve nada: no es tiempo lo que falta.
+
+*Principio:* Las actividades compartidas novedosas y activantes aumentan la calidad percibida de la relación (expansión del yo).  
+*Fuente:* Aron, Norman, Aron, McKenna & Heyman (2000), JPSP; Aron & Aron (1986), modelo de autoexpansión.
+
+
+> La pregunta no es solo si te hace feliz. Es en quién te estás convirtiendo al lado de esa persona.
+
+Hay personas al lado de las cuales uno se vuelve más parecido a quien quería ser, y otras al lado de las cuales se vuelve más chico, más callado, más a la defensiva. Eso se midió y predice que la relación funcione mejor que casi cualquier rasgo del otro. Es una buena pregunta para hacerse sin avisarle a nadie.
+
+*Principio:* Las parejas se esculpen mutuamente hacia quien cada uno quiere llegar a ser, y eso predice satisfacción y permanencia.  
+*Fuente:* Drigotas, Rusbult, Wieselquist & Whitton (1999), JPSP: el fenómeno de Miguel Ángel.
+
+
+> Agradecer en voz alta lo que ya das por hecho es de lo poco que se probó que vuelve a acercar.
+
+Lo que sostiene una casa es invisible justamente porque funciona: el que cocina, el que recuerda los cumpleaños, el que se levanta de noche. Nombrarlo cambia dos cosas a la vez, porque el que agradece también mira de nuevo lo que tiene. Y no sirve el agradecimiento genérico: sirve el que dice qué hiciste y qué significó.
+
+*Principio:* Expresar gratitud por actos concretos del otro aumenta la satisfacción de ambos y la conducta de mantenimiento del vínculo.  
+*Fuente:* Algoe, Gable & Maisel (2010), Personal Relationships; Gordon et al. (2012), JPSP.
+
+
+> Siete minutos, tres veces al año, mirando la última pelea como la miraría alguien de afuera. Eso solo ya frena el desgaste.
+
+Finkel probó esto con parejas casadas durante dos años. Las que no hicieron nada perdieron satisfacción, como es habitual. Las que tres veces al año escribieron siete minutos sobre su última pelea desde los ojos de un tercero imparcial, no. Veintiún minutos al año no arreglan una relación rota, pero frenan la erosión de una que está bien.
+
+*Principio:* Reencuadrar el conflicto desde una perspectiva neutral y benevolente preserva la calidad de la relación a lo largo del tiempo.  
+*Fuente:* Finkel, Slotter, Luchies, Walton & Gross (2013), Psychological Science: 21 minutos al año.
+
+
+> El deseo no vuelve por insistencia. Vuelve donde hay descanso, novedad y alguien que de verdad te presta atención.
+
+En parejas de años, lo que más se asocia con el deseo no es la técnica ni la frecuencia: es sentirse visto. Alguien que escucha, que pregunta, que se interesa de verdad resulta deseable, y eso se mide. El reproche hace lo contrario, aunque el reclamo sea justo: nadie desea desde la defensa.
+
+*Principio:* La responsividad percibida del otro, el descanso y la novedad predicen el deseo sexual en relaciones de larga duración.  
+*Fuente:* Birnbaum et al. (2016), JPSP: responsividad y deseo; Mark & Lasslo (2018), revisión.
+
+
+> Perdonar a quien no cambia no repara nada. Le enseña que no hacía falta cambiar.
+
+El perdón tiene buena prensa y se la ganó: en las parejas donde la falta no se repite, perdonar protege el vínculo. Pero los estudios de McNulty encontraron lo otro: cuando el que falla vuelve a fallar, perdonar predice que siga haciéndolo. Perdonar y permitir no son la misma cosa, y la diferencia la marca lo que pasa después, no lo que se dice.
+
+*Principio:* El perdón beneficia a la relación cuando el otro corrige la conducta; con un transgresor reiterado, se asocia a que la conducta siga.  
+*Fuente:* McNulty (2011), PSPB: el lado oscuro del perdón; McNulty (2008).
+
+
+> Muchas peleas de pareja no son de la pareja. Son del trabajo, entrando por la puerta sin avisar.
+
+En los días de más estrés fuera de casa, las mismas conductas del otro se leen peor y se responden más áspero. Eso está medido día por día. Saberlo no evita el mal día, pero cambia la pregunta: antes de discutir el tema, conviene preguntarse qué trajo cada uno puesto.
+
+*Principio:* El estrés externo se transfiere a la relación: aumenta la reactividad y hace interpretar al otro de forma más negativa.  
+*Fuente:* Neff & Karney (2004, 2009), JPSP: desbordamiento del estrés a la pareja.
+
+
+## Capítulo 13 · Cuando se termina, y cuando se vuelve
+
+Una ruptura duele menos tiempo del que uno cree y desordena más cosas de las que uno espera, porque no solo se pierde a alguien: se pierde la versión de uno que existía con esa persona. Volver no está prohibido, pero no viene con final asegurado: lo que dice la investigación es que, si nada cambió, vuelve también la relación que había.
+
+
+> Vas a sufrir menos tiempo del que crees ahora. Casi todo el mundo predice peor de lo que después resulta.
+
+En un estudio se les preguntó a personas en pareja cuánto sufrirían si los dejaran, y después se siguió a quienes efectivamente pasaron por eso. Sufrieron, pero bastante menos y por bastante menos tiempo de lo que habían anticipado. Es un dato útil justo cuando parece que esto no se acaba nunca: tu cálculo de hoy está hecho con el peor material.
+
+*Principio:* La predicción afectiva sobrestima la intensidad y la duración del malestar tras una ruptura.  
+*Fuente:* Eastwick, Finkel, Krishnamurti & Loewenstein (2008), JPSP: el error al predecir el dolor de una ruptura.
+
+
+> Las parejas que se dejan y vuelven varias veces reportan, en cada vuelta, menos satisfacción y más conflicto.
+
+Volver se siente como recuperar algo. En los datos, las parejas que entran en ese ciclo de cortar y volver llegan con el tiempo a peor lugar que las que no: menos satisfacción, más dudas, más peleas. No significa que volver esté mal; significa que volver sin que nada se haya movido tiene un desenlace bastante predecible.
+
+*Principio:* Las relaciones cíclicas se asocian a menor satisfacción, más incertidumbre y más conflicto que las no cíclicas.  
+*Fuente:* Vennum, Lindstrom, Monk & Adams (2014); Halpern-Meekin et al. (2013), relationship churning.
+
+
+> La pregunta no es cómo hacer que vuelva. Es qué cambió desde entonces, porque si no cambió nada, vuelve también el motivo.
+
+Las dos preguntas parecen la misma y no lo son. La primera busca una técnica y no existe: nadie tiene una frase que haga volver a otra persona, y lo que se vende con ese nombre es manipulación. La segunda sí tiene respuesta, y es incómoda porque obliga a mirar qué hizo cada uno y qué está dispuesto a hacer distinto.
+
+*Principio:* La reconciliación sostenible exige que cambie la causa de la ruptura; sin eso, el ciclo se repite.  
+*Fuente:* Dailey, Pfiester, Jin, Beck & Clark (2009), relaciones intermitentes; Vennum et al. (2014).
+
+
+> Después de una ruptura no duele solo la otra persona. Duele no saber quién eres sin ella.
+
+Los estudios de Slotter midieron algo que mucha gente siente y no sabe nombrar: después de una separación, las personas se describen a sí mismas de forma más confusa que antes. Dos vidas compartidas construyen una versión de uno que solo existía ahí. Parte de lo que se reconstruye después no es la vida social: es saber otra vez quién eres.
+
+*Principio:* La ruptura reduce la claridad del autoconcepto, y esa pérdida de identidad explica parte del malestar.  
+*Fuente:* Slotter, Gardner & Finkel (2010), PSPB: ¿quién soy yo sin ti?
+
+
+> Revisar su perfil no es información. Es una dosis, y cada visita reinicia el reloj.
+
+Mirar qué publica se siente como estar al tanto, y funciona como lo contrario: quienes más lo hacen reportan más malestar, más añoranza y menos sensación de haber avanzado. El contacto visual repetido no deja que el recuerdo se enfríe. Dejar de mirar no es orgullo; es sacar la mano del fuego.
+
+*Principio:* La vigilancia del ex en redes se asocia a más angustia, más deseo por el otro y menor crecimiento personal tras la ruptura.  
+*Fuente:* Marshall (2012), Cyberpsychology: seguir al ex en Facebook y la recuperación posterior.
+
+
+> Escribir lo que pasó le sirve a casi todo el mundo. A quien ya le está dando vueltas, lo hunde más.
+
+Escribir sobre lo que dolió es una de las intervenciones más estudiadas y suele funcionar. Pero Sbarra encontró el límite: en personas que ya repasaban la historia una y otra vez, escribirla la fijó más. Si al terminar de escribir estás más cerca de entender, sirve. Si estás más cerca de la escena, no.
+
+*Principio:* La escritura expresiva ayuda en general tras una separación, pero puede empeorar el estado de quienes tienden a rumiar.  
+*Fuente:* Sbarra, Boals, Mason, Larson & Mehl (2013), Clinical Psychological Science.
+
+
+> Volver no es un fracaso ni una victoria. Es una decisión, y las decisiones se toman con lo que pasó, no con lo que se extraña.
+
+Extrañar es información sobre lo que compartieron, no sobre si conviene volver. Casi nadie extraña la peor noche; se extraña el domingo a la mañana. Una decisión que se toma desde ahí no está tomando en cuenta la mitad de la relación, y es la mitad que la terminó.
+
+*Principio:* Las transiciones de pareja decididas de forma explícita tienen mejor pronóstico que las que ocurren por inercia.  
+*Fuente:* Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
+
+
+> Si hubo violencia o miedo, nada de esto aplica. Ahí la pregunta no es cómo volver, sino cómo estar a salvo.
+
+Todo lo que dice este capítulo supone dos personas que se trataron mal como se tratan mal las parejas, no una en la que alguien tiene miedo del otro. Cuando hay golpes, amenazas, control o miedo, el ciclo de cortar y volver no es un patrón a mejorar: es parte de cómo funciona la violencia. Eso se habla con alguien preparado, y no con una publicación.
+
+*Principio:* Ante violencia en la pareja, las recomendaciones de reparación del vínculo no corresponden: la prioridad es la seguridad.  
+*Fuente:* OMS (2013), violencia de pareja; Johnson (2008), tipologías de violencia en la pareja.
+
+
+## Capítulo 14 · Elegir a alguien, y qué predice que funcione
+
+Lo que mejor predice que una relación funcione no es quién es la otra persona sino cómo se siente uno dentro de ella. Eso desarma dos creencias caras: la de la media naranja que viene lista y la de la lista de requisitos. No hay un amor de tu vida esperando: hay personas con las que se puede construir uno.
+
+
+> Lo que mejor predice que una relación funcione no es quién es el otro. Es cómo te sientes tú dentro de ella.
+
+El equipo de Joel juntó cuarenta y tres estudios y le preguntó a un modelo qué predecía la calidad de una relación. Ganaron, lejos, las respuestas sobre cómo se sentía la propia persona en el vínculo. Los rasgos del otro, los que todos miramos al elegir, explicaron muy poco. No es a quién elegiste: es qué están haciendo los dos con eso.
+
+*Principio:* Las variables propias de la relación (satisfacción, compromiso, aprecio) predicen la calidad mucho mejor que los rasgos del otro.  
+*Fuente:* Joel et al. (2020), PNAS: 43 estudios longitudinales y más de 11.000 parejas.
+
+
+> Creer que existe una persona hecha para ti hace que abandones a la primera pelea. Una pelea no es la señal de que te equivocaste.
+
+Quien cree que las parejas son cuestión de encontrar a la persona correcta interpreta cada problema como prueba de que esta no era. Quien cree que se construyen interpreta el mismo problema como algo que hay que trabajar. Los dos tienen peleas; solo uno sigue ahí al año siguiente. La creencia no es inocente: decide qué haces el martes.
+
+*Principio:* Creer en el destino lleva a leer el conflicto como incompatibilidad; creer en el crecimiento lleva a resolverlo.  
+*Fuente:* Knee (1998), JPSP: teorías implícitas de las relaciones; Franiuk, Cohen & Pomerantz (2002).
+
+
+> Tu lista de requisitos no predice de quién te vas a enamorar. Lo que la gente dice que quiere y lo que elige no coinciden.
+
+En estudios con citas rápidas, los participantes decían de antemano qué valoraban y después se enamoraban de quien no cumplía casi nada de eso. La lista describe bien lo que uno admira en abstracto y bastante mal lo que le pasa cuando conoce a alguien. Sirve para descartar lo que no negocias, no para buscar.
+
+*Principio:* Las preferencias declaradas de pareja no predicen la atracción real en el encuentro cara a cara.  
+*Fuente:* Eastwick & Finkel (2008), JPSP; Eastwick, Luchies, Finkel & Hunt (2014), revisión.
+
+
+> Te enamoras de quien ves seguido. La química casi nunca es un rayo: es tiempo compartido.
+
+El estudio clásico encontró que la gente se hacía amiga, y pareja, de quien vivía en su mismo piso, incluso a pocos metros de diferencia. Décadas después se confirmó que conocer más a alguien, en general, hace que guste más. Por eso quien espera el flechazo en el primer minuto descarta a la mayoría de las personas con las que podría haber funcionado.
+
+*Principio:* La proximidad y la familiaridad repetida aumentan la atracción; la exposición frecuente es uno de sus mejores predictores.  
+*Fuente:* Festinger, Schachter & Back (1950), proximidad; Reis, Maniaci, Caprariello, Eastwick & Finkel (2011), JPSP.
+
+
+> Lo que más enamora no es parecerse ni ser perfecto. Es que el otro muestre que te está prestando atención de verdad.
+
+En los experimentos, alguien que escucha, que recuerda lo que dijiste la vez anterior y que responde a lo que de verdad contaste resulta más atractivo que alguien con mejores credenciales. Es una buena noticia práctica: casi nada de lo que te hace querible es algo que tengas que ser, y casi todo es algo que puedes hacer.
+
+*Principio:* La responsividad percibida (sentirse comprendido, validado y cuidado) predice la atracción y el deseo mejor que los rasgos.  
+*Fuente:* Reis & Shaver (1988), modelo de intimidad; Birnbaum & Reis (2012, 2016), responsividad y atracción.
+
+
+> Buscar a alguien que te complete es pedirle un trabajo que no es suyo.
+
+Hace un siglo a una pareja se le pedía compañía y sustento. Hoy se le pide además crecimiento personal, amistad, deseo, terapia y proyecto. El trabajo de Finkel muestra que las relaciones que logran eso son más satisfactorias que nunca, y que la mayoría no llega. Repartir esas necesidades entre amigos, trabajo y familia no es conformarse: es dejar de pedirle a una persona que sea todas.
+
+*Principio:* Esperar que una sola relación cubra todas las necesidades personales aumenta la exigencia y baja la satisfacción.  
+*Fuente:* Finkel, Hui, Carswell & Larson (2014), Psychological Inquiry: el modelo de la asfixia del matrimonio.
+
+
+> Lo que sostiene una relación no es solo lo bien que estás. Es lo que construiste y lo que crees que hay afuera.
+
+Saber esto sirve en los dos sentidos. Explica por qué hay gente que se queda donde está mal, porque invirtió años y no ve alternativas, y explica también por qué una relación buena se sostiene aunque pase un mes duro. Lo que conviene preguntarse es cuál de los tres te está sosteniendo hoy.
+
+*Principio:* El compromiso se predice por tres cosas: satisfacción, inversión acumulada y calidad percibida de las alternativas.  
+*Fuente:* Le & Agnew (2003), Personal Relationships: metaanálisis del modelo de inversión de Rusbult.
+
+
+> Las relaciones también se deciden. Muchas no se deciden: se deslizan, un paso por inercia detrás del anterior.
+
+Se empieza a salir, después se queda a dormir siempre, después se junta la ropa, después se alquila algo juntos. Ningún paso se habló; todos pasaron. Stanley llama a eso deslizarse, y encontró que las parejas que llegan así a los compromisos grandes la pasan peor que las que los eligieron en voz alta. Decidir no es desconfiar: es saber qué estás haciendo.
+
+*Principio:* Las transiciones que ocurren por inercia, sin una decisión explícita, tienen peor pronóstico que las decididas.  
+*Fuente:* Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
+
+
 ## Fuentes citadas
 
 - Ainsworth et al. (1978); Hazan & Shaver (1987); Mikulincer & Shaver (2016).
 - Alberti & Emmons (2017), asertividad; Lerner (1985), The Dance of Anger.
 - Alberti & Emmons (2017); Gottman & Silver (1999), quejas vs. críticas.
+- Algoe, Gable & Maisel (2010), Personal Relationships; Gordon et al. (2012), JPSP.
+- Aron, Norman, Aron, McKenna & Heyman (2000), JPSP; Aron & Aron (1986), modelo de autoexpansión.
 - Averill (1982); Gross (1998), modelo de regulación emocional.
 - Barrett (2017); Ekman (1992), funciones de las emociones básicas.
 - Beck (1976), pensamientos automáticos; Hayes et al. (2012).
 - Beck (1976); Burns (1980), distorsiones cognitivas.
 - Beck (1976); Rozin & Royzman (2001), sesgo de negatividad.
+- Birnbaum et al. (2016), JPSP: responsividad y deseo; Mark & Lasslo (2018), revisión.
 - Bonanno & Keltner (1997), J. Abnormal Psychology; Keltner & Bonanno (1997), JPSP.
 - Borkovec (1994); Watkins (2008), pensamiento repetitivo constructivo y no constructivo.
 - Borkovec et al. (1983); Wells (1995), modelo metacognitivo.
@@ -735,20 +1018,34 @@ Parece lógico que ayudar reste horas. En los estudios pasa lo contrario: quien 
 - Bowlby (1969); Feeney (2007), JPSP 92(2): la paradoja de la dependencia.
 - Burns (1980); Beck et al. (1979), terapia cognitiva.
 - Cacioppo & Patrick (2008); Hawkley & Cacioppo (2010).
+- Carrère & Gottman (1999), Family Process: los tres primeros minutos predijeron el desenlace seis años después.
 - Crocker & Wolfe (2001), Psychological Review; Rogers (1959), consideración positiva incondicional.
+- Dailey, Pfiester, Jin, Beck & Clark (2009), relaciones intermitentes; Vennum et al. (2014).
 - Doka (1989, 2002), disenfranchised grief.
 - Doka (2002); Harris (2010), reglas sociales del duelo.
+- Drigotas, Rusbult, Wieselquist & Whitton (1999), JPSP: el fenómeno de Miguel Ángel.
 - Dugas & Robichaud (2007); Carleton (2016).
+- Eastwick & Finkel (2008), JPSP; Eastwick, Luchies, Finkel & Hunt (2014), revisión.
+- Eastwick, Finkel, Krishnamurti & Loewenstein (2008), JPSP: el error al predecir el dolor de una ruptura.
 - Ellis (1962), modelo ABC; Beck (1976). Idea con linaje estoico (Epicteto).
 - Festinger (1954); Vogel et al. (2014), Psychology of Popular Media Culture 3(4).
+- Festinger, Schachter & Back (1950), proximidad; Reis, Maniaci, Caprariello, Eastwick & Finkel (2011), JPSP.
+- Finkel, Hui, Carswell & Larson (2014), Psychological Inquiry: el modelo de la asfixia del matrimonio.
+- Finkel, Slotter, Luchies, Walton & Gross (2013), Psychological Science: 21 minutos al año.
 - Fogg (2019), Tiny Habits; Lally et al. (2010), formación de hábitos.
 - Frijda (1986), tendencias de acción; terapia de aceptación y compromiso (Hayes).
+- Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien.
 - Gilbert & Irons (2005); Young et al. (2003), esquemas tempranos.
 - Gilbert (2009), terapia centrada en la compasión; Breines & Chen (2012).
+- Gottman & Driver (2002): quienes seguían juntos respondían al 86% de esos pedidos; los que se separaron, al 33%.
+- Gottman & Levenson (1986), desbordamiento fisiológico; Gottman (1999), la pausa de veinte minutos.
+- Gottman & Levenson (1992), JPSP: alrededor de 5 a 1 en las parejas estables.
 - Gottman & Silver (1999), los cuatro jinetes.
 - Gottman (1994), harsh start-up; Carrère & Gottman (1999).
 - Gottman (1994); Gottman & Levenson (2000).
+- Gottman (1999), arranque suave; Christensen & Jacobson (2000), terapia conductual integrativa de pareja.
 - Gottman (1999), repair attempts; Gottman & Levenson (2000).
+- Gottman (1999), The Seven Principles: el 69% de los conflictos son problemas perpetuos.
 - Gross & Levenson (1997); Wegner (1994), procesos irónicos.
 - Hayes et al. (1996), evitación experiencial; Kashdan et al. (2006).
 - Hayes et al. (2012), ACT; activación conductual (Jacobson et al., 1996).
@@ -757,41 +1054,55 @@ Parece lógico que ayudar reste horas. En los estudios pasa lo contrario: quien 
 - Hayes et al. (2012), «en tu dolor están tus valores»; Wilson & DuFrene (2009).
 - Hewitt & Flett (1991); Curran & Hill (2019), Psychological Bulletin: 41.641 estudiantes entre 1989 y 2016.
 - Jacobson et al. (1996); Martell et al. (2001), activación conductual.
+- Joel et al. (2020), PNAS: 43 estudios longitudinales y más de 11.000 parejas.
 - Kabat-Zinn (1990); Bishop et al. (2004), definición operacional de mindfulness.
 - Kahneman (1973); Simon (1971), economía de la atención.
 - Karasek (1979), modelo demanda-control; Sapolsky (2004).
 - Killingsworth & Gilbert (2010), Science; Kabat-Zinn (1990).
 - Klass, Silverman & Nickman (1996), continuing bonds; Field et al. (2005).
+- Knee (1998), JPSP: teorías implícitas de las relaciones; Franiuk, Cohen & Pomerantz (2002).
 - LaFreniere & Newman (2020), Behavior Therapy 51(3): el 91,4% de las preocupaciones no se cumplió.
 - Lally et al. (2010): saltarse una ocasión no afectó la formación del hábito; Marlatt & Gordon (1985).
+- Le & Agnew (2003), Personal Relationships: metaanálisis del modelo de inversión de Rusbult.
 - Lieberman et al. (2007), Psychological Science; Torre & Lieberman (2018).
 - Main et al. (1985), apego ganado; Roisman et al. (2002); Fraley (2019).
+- Marshall (2012), Cyberpsychology: seguir al ex en Facebook y la recuperación posterior.
 - Mauss et al. (2011), Emotion 11(4); Frankl (1946), la felicidad como consecuencia.
 - McAdams (2001), identidad narrativa; Bonanno (2004), resiliencia.
+- McNulty (2011), PSPB: el lado oscuro del perdón; McNulty (2008).
 - Mikulincer & Shaver (2016), estrategias de hiperactivación; Levine & Heller (2010).
 - Mikulincer & Shaver (2016); Johnson (2008), terapia focalizada en las emociones.
 - Mikulincer & Shaver (2016); Levine & Heller (2010), conducta de protesta.
 - Mogilner, Chance & Norton (2012), Psychological Science; Dunn et al. (2008), gasto prosocial.
 - Mowrer (1947), teoría de los dos factores; Craske et al. (2014), aprendizaje inhibitorio.
 - Neff & Germer (2013), programa Mindful Self-Compassion.
+- Neff & Karney (2004, 2009), JPSP: desbordamiento del estrés a la pareja.
 - Neff (2003, 2011); Breines & Chen (2012), motivación de mejora.
 - Nesse (1990); Barrett (2017), emociones construidas.
 - Noetel et al. (2024), BMJ: 218 estudios y 14.170 personas; Schuch et al. (2016).
 - Nolen-Hoeksema (1991, 2008), rumiación.
 - Nolen-Hoeksema et al. (2008); Watkins (2008).
+- OMS (2013), violencia de pareja; Johnson (2008), tipologías de violencia en la pareja.
+- Overall & McNulty (2017), Current Opinion in Psychology; Overall et al. (2009).
 - Prochaska & DiClemente (1983), modelo transteórico.
 - Prochaska & DiClemente (1983); Marlatt & Donovan (2005).
 - Rando (1993), sudden temporary upsurges of grief.
+- Reis & Shaver (1988), modelo de intimidad; Birnbaum & Reis (2012, 2016), responsividad y atracción.
 - Reis & Shaver (1988), modelo de responsividad; Laurenceau et al. (1998).
+- Rogers (1951), escucha reflexiva; Markman, Stanley & Blumberg (1994), programa PREP.
 - Rubinstein et al. (2001); Mark et al. (2008), interrupciones.
 - Ryan & Deci (2000), teoría de la autodeterminación; Erikson (1950), generatividad.
 - Sapolsky (2004), Why Zebras Don't Get Ulcers; LeDoux (1996).
 - Sapolsky (2004); McEwen (1998), carga alostática.
+- Sbarra, Boals, Mason, Larson & Mehl (2013), Clinical Psychological Science.
 - Skinner (1953); Haynes & O'Brien (1990), análisis funcional.
+- Slotter, Gardner & Finkel (2010), PSPB: ¿quién soy yo sin ti?
 - Sonnentag & Fritz (2007), recuperación del trabajo; Meijman & Mulder (1998).
+- Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
 - Steger (2012); Martela & Steger (2016); Ryan & Deci (2000), necesidad de relación.
 - Stroebe & Schut (1999), modelo de proceso dual; Bonanno (2009).
 - Van Boven & Gilovich (2003); Dunn, Aknin & Norton (2008).
+- Vennum, Lindstrom, Monk & Adams (2014); Halpern-Meekin et al. (2013), relationship churning.
 - Watkins (2008), procesamiento abstracto vs. concreto; Kross & Ayduk (2017).
 - Wood & Neal (2007); Gollwitzer (1999), intenciones de implementación.
 - Wood et al. (2005); Thaler & Sunstein (2008), arquitectura de decisiones.

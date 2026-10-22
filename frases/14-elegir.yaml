@@ -1,0 +1,110 @@
+# Capítulo 14 · Elegir a alguien, y qué predice que funcione
+tema: elegir
+capitulo: 14
+eje: nucleo
+titulo: Elegir a alguien, y qué predice que funcione
+hashtags: [amor, elegir, vinculos]
+tesis: >-
+  Lo que mejor predice que una relación funcione no es quién es la otra persona
+  sino cómo se siente uno dentro de ella. Eso desarma dos creencias caras: la
+  de la media naranja que viene lista y la de la lista de requisitos. No hay un
+  amor de tu vida esperando: hay personas con las que se puede construir uno.
+
+frases:
+  - id: ele-01
+    texto: "Lo que mejor predice que una relación funcione no es quién es el otro. Es cómo te sientes tú dentro de ella."
+    destacar: [dentro]
+    principio: "Las variables propias de la relación (satisfacción, compromiso, aprecio) predicen la calidad mucho mejor que los rasgos del otro."
+    fuente: "Joel et al. (2020), PNAS: 43 estudios longitudinales y más de 11.000 parejas."
+    reflexion: >-
+      El equipo de Joel juntó cuarenta y tres estudios y le preguntó a un
+      modelo qué predecía la calidad de una relación. Ganaron, lejos, las
+      respuestas sobre cómo se sentía la propia persona en el vínculo. Los
+      rasgos del otro, los que todos miramos al elegir, explicaron muy poco. No
+      es a quién elegiste: es qué están haciendo los dos con eso.
+
+  - id: ele-02
+    texto: "Creer que existe una persona hecha para ti hace que abandones a la primera pelea. Una pelea no es la señal de que te equivocaste."
+    destacar: [primera pelea]
+    principio: "Creer en el destino lleva a leer el conflicto como incompatibilidad; creer en el crecimiento lleva a resolverlo."
+    fuente: "Knee (1998), JPSP: teorías implícitas de las relaciones; Franiuk, Cohen & Pomerantz (2002)."
+    reflexion: >-
+      Quien cree que las parejas son cuestión de encontrar a la persona
+      correcta interpreta cada problema como prueba de que esta no era. Quien
+      cree que se construyen interpreta el mismo problema como algo que hay que
+      trabajar. Los dos tienen peleas; solo uno sigue ahí al año siguiente. La
+      creencia no es inocente: decide qué haces el martes.
+
+  - id: ele-03
+    texto: "Tu lista de requisitos no predice de quién te vas a enamorar. Lo que la gente dice que quiere y lo que elige no coinciden."
+    destacar: [no coinciden]
+    principio: "Las preferencias declaradas de pareja no predicen la atracción real en el encuentro cara a cara."
+    fuente: "Eastwick & Finkel (2008), JPSP; Eastwick, Luchies, Finkel & Hunt (2014), revisión."
+    reflexion: >-
+      En estudios con citas rápidas, los participantes decían de antemano qué
+      valoraban y después se enamoraban de quien no cumplía casi nada de eso. La
+      lista describe bien lo que uno admira en abstracto y bastante mal lo que
+      le pasa cuando conoce a alguien. Sirve para descartar lo que no negocias,
+      no para buscar.
+
+  - id: ele-04
+    texto: "Te enamoras de quien ves seguido. La química casi nunca es un rayo: es tiempo compartido."
+    destacar: [tiempo compartido]
+    principio: "La proximidad y la familiaridad repetida aumentan la atracción; la exposición frecuente es uno de sus mejores predictores."
+    fuente: "Festinger, Schachter & Back (1950), proximidad; Reis, Maniaci, Caprariello, Eastwick & Finkel (2011), JPSP."
+    reflexion: >-
+      El estudio clásico encontró que la gente se hacía amiga, y pareja, de
+      quien vivía en su mismo piso, incluso a pocos metros de diferencia.
+      Décadas después se confirmó que conocer más a alguien, en general, hace
+      que guste más. Por eso quien espera el flechazo en el primer minuto
+      descarta a la mayoría de las personas con las que podría haber funcionado.
+
+  - id: ele-05
+    texto: "Lo que más enamora no es parecerse ni ser perfecto. Es que el otro muestre que te está prestando atención de verdad."
+    destacar: [atención]
+    principio: "La responsividad percibida (sentirse comprendido, validado y cuidado) predice la atracción y el deseo mejor que los rasgos."
+    fuente: "Reis & Shaver (1988), modelo de intimidad; Birnbaum & Reis (2012, 2016), responsividad y atracción."
+    reflexion: >-
+      En los experimentos, alguien que escucha, que recuerda lo que dijiste la
+      vez anterior y que responde a lo que de verdad contaste resulta más
+      atractivo que alguien con mejores credenciales. Es una buena noticia
+      práctica: casi nada de lo que te hace querible es algo que tengas que
+      ser, y casi todo es algo que puedes hacer.
+
+  - id: ele-06
+    texto: "Buscar a alguien que te complete es pedirle un trabajo que no es suyo."
+    destacar: [complete]
+    principio: "Esperar que una sola relación cubra todas las necesidades personales aumenta la exigencia y baja la satisfacción."
+    fuente: "Finkel, Hui, Carswell & Larson (2014), Psychological Inquiry: el modelo de la asfixia del matrimonio."
+    reflexion: >-
+      Hace un siglo a una pareja se le pedía compañía y sustento. Hoy se le
+      pide además crecimiento personal, amistad, deseo, terapia y proyecto. El
+      trabajo de Finkel muestra que las relaciones que logran eso son más
+      satisfactorias que nunca, y que la mayoría no llega. Repartir esas
+      necesidades entre amigos, trabajo y familia no es conformarse: es dejar
+      de pedirle a una persona que sea todas.
+
+  - id: ele-07
+    texto: "Lo que sostiene una relación no es solo lo bien que estás. Es lo que construiste y lo que crees que hay afuera."
+    destacar: [construiste]
+    principio: "El compromiso se predice por tres cosas: satisfacción, inversión acumulada y calidad percibida de las alternativas."
+    fuente: "Le & Agnew (2003), Personal Relationships: metaanálisis del modelo de inversión de Rusbult."
+    reflexion: >-
+      Saber esto sirve en los dos sentidos. Explica por qué hay gente que se
+      queda donde está mal, porque invirtió años y no ve alternativas, y
+      explica también por qué una relación buena se sostiene aunque pase un mes
+      duro. Lo que conviene preguntarse es cuál de los tres te está sosteniendo
+      hoy.
+
+  - id: ele-08
+    texto: "Las relaciones también se deciden. Muchas no se deciden: se deslizan, un paso por inercia detrás del anterior."
+    destacar: [se deslizan]
+    principio: "Las transiciones que ocurren por inercia, sin una decisión explícita, tienen peor pronóstico que las decididas."
+    fuente: "Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir."
+    reflexion: >-
+      Se empieza a salir, después se queda a dormir siempre, después se junta
+      la ropa, después se alquila algo juntos. Ningún paso se habló; todos
+      pasaron. Stanley llama a eso deslizarse, y encontró que las parejas que
+      llegan así a los compromisos grandes la pasan peor que las que los
+      eligieron en voz alta. Decidir no es desconfiar: es saber qué estás
+      haciendo.

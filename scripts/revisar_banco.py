@@ -12,11 +12,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import frases  # noqa: E402
+from src import config, frases  # noqa: E402
 
 
 def main() -> int:
     temas = frases.leer()
+    pagina = config.cargar()
     ya = frases.publicadas()
     print("%-14s %-38s %6s %10s %7s" % ("tema", "capítulo", "frases", "publicadas", "quedan"))
     total = 0
@@ -26,7 +27,7 @@ def main() -> int:
         print("%-14s %-38s %6d %10d %7d" % (t.tema, t.titulo[:38], len(t.frases), salieron, len(t.frases) - salieron))
     print("%-14s %-38s %6d %10d %7d" % ("total", "", total, len(ya), total - len(ya)))
     print()
-    problemas = frases.revisar(temas)
+    problemas = frases.revisar(temas, pagina)
     if not problemas:
         print("Sin problemas: las %d frases pasan la línea editorial." % total)
         return 0

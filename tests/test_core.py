@@ -32,7 +32,7 @@ def una(**kw) -> frases.Frase:
 
 
 def tema(**kw) -> frases.Tema:
-    base = dict(tema="prueba", capitulo=99, titulo="Un capítulo de prueba",
+    base = dict(tema="prueba", capitulo=99, titulo="Un capítulo de prueba", eje="apoyo",
                 tesis="Una tesis lo bastante larga como para contar como tesis de un capítulo del libro.",
                 hashtags=["uno", "dos", "tres"], sensible=False, frases=[])
     base.update(kw)
@@ -121,11 +121,27 @@ class TestLaLineaEditorial(unittest.TestCase):
 
 class TestElBanco(unittest.TestCase):
 
-    def test_diez_capitulos_sin_repetir(self):
-        self.assertEqual([t.capitulo for t in TEMAS], list(range(1, 11)))
+    def test_los_capitulos_van_de_uno_en_uno_sin_repetir(self):
+        self.assertEqual([t.capitulo for t in TEMAS], list(range(1, len(TEMAS) + 1)))
+
+    def test_el_nucleo_son_los_cinco_pilares_de_la_pagina(self):
+        # La descripción de la página promete amor propio, recuperar a la
+        # pareja, la ex pareja, encontrar a alguien y comunicación. Estos son
+        # los temas que contestan eso, y son los que la cuota publica más.
+        self.assertEqual(sorted(t.tema for t in TEMAS if t.eje == "nucleo"),
+                         ["apego", "autoestima", "comunicacion", "elegir",
+                          "limites", "reconexion", "ruptura"])
+
+    def test_un_eje_que_no_existe_rebota(self):
+        self.assertTrue(any("eje" in x for x in frases.validar_tema(tema(eje="central"))))
 
     def test_pasa_entero_la_linea_editorial(self):
-        self.assertEqual(frases.revisar(TEMAS), [])
+        self.assertEqual(frases.revisar(TEMAS, PAGINA), [])
+
+    def test_un_tema_que_repite_un_hashtag_fijo_rebota(self):
+        # Dejaría el post con cuatro etiquetas en vez de cinco, en silencio.
+        malo = tema(hashtags=["relaciones", "dos", "tres"])
+        self.assertTrue(any("fijos" in x for x in frases.revisar([malo], PAGINA)))
 
     def test_al_menos_ocho_frases_por_tema(self):
         for t in TEMAS:
@@ -143,8 +159,8 @@ class TestElBanco(unittest.TestCase):
         for f in frases.todas(TEMAS):
             self.assertTrue(f.destacar, f.id)
 
-    def test_el_duelo_es_el_unico_tema_sensible(self):
-        self.assertEqual([t.tema for t in TEMAS if t.sensible], ["duelo"])
+    def test_los_temas_sensibles_son_el_duelo_y_la_ruptura(self):
+        self.assertEqual(sorted(t.tema for t in TEMAS if t.sensible), ["duelo", "ruptura"])
 
     def test_la_revision_detecta_un_id_repetido(self):
         t = tema(frases=[una(id="pru-01"), una(id="pru-01")])
@@ -167,11 +183,37 @@ class TestLaSiguiente(unittest.TestCase):
             orden.append(f)
             dia = date.fromordinal(dia.toordinal() + 1)
 
-    def test_rota_por_tema(self):
+    def test_dos_de_cada_tres_son_del_nucleo(self):
+        # La cuota: la página publica sobre todo lo que su descripción promete.
         orden = self._publicar_todo(TEMAS)
-        primeros = [f.tema for f in orden[:len(TEMAS)]]
-        self.assertEqual(len(set(primeros)), len(TEMAS))
-        self.assertEqual(primeros, [t.tema for t in TEMAS])
+        eje_de = {t.tema: t.eje for t in TEMAS}
+        for corte in (15, 30, 60):
+            nucleo = sum(1 for f in orden[:corte] if eje_de[f.tema] == "nucleo")
+            self.assertEqual(nucleo, round(corte * 2 / 3), corte)
+
+    def test_el_nucleo_sale_intercalado_y_no_todo_junto(self):
+        # Cumplir la cuota turno a turno y no contando al final es lo que evita
+        # un mes de pareja seguido de un mes de lo demás.
+        orden = self._publicar_todo(TEMAS)
+        eje_de = {t.tema: t.eje for t in TEMAS}
+        ejes = [eje_de[f.tema] for f in orden[:60]]
+        self.assertNotIn(["nucleo"] * 3, [ejes[i:i + 3] for i in range(len(ejes) - 2)])
+        self.assertNotIn(["apoyo"] * 2, [ejes[i:i + 2] for i in range(len(ejes) - 1)])
+
+    def test_la_cuota_es_una_preferencia_y_no_un_filtro(self):
+        # Sin frases del núcleo pendientes sale una de apoyo igual: perder un
+        # día de publicación sería mucho peor que romper la proporción.
+        ya = {f.id: {"dia": "2026-11-01", "post_id": "p", "pagina": "x"}
+              for t in TEMAS if t.eje == "nucleo" for f in t.frases}
+        f = frases.siguiente(TEMAS, ya)
+        self.assertIsNotNone(f)
+        self.assertEqual(frases.tema_de(TEMAS, f).eje, "apoyo")
+
+    def test_rota_por_tema(self):
+        # Dentro de cada eje, el tema que hace más que no sale va primero.
+        orden = self._publicar_todo(TEMAS)
+        nucleo = [f.tema for f in orden if frases.tema_de(TEMAS, f).eje == "nucleo"]
+        self.assertEqual(len(set(nucleo[:7])), 7)
 
     def test_no_repite_hasta_agotar_el_banco(self):
         orden = self._publicar_todo(TEMAS)
@@ -190,8 +232,10 @@ class TestLaSiguiente(unittest.TestCase):
         self.assertEqual(frases.siguiente(TEMAS, ya).id, frases.siguiente(TEMAS, ya).id)
 
     def test_el_tema_que_acaba_de_salir_va_al_final(self):
+        # Salió uno de apoyo, así que ahora toca núcleo, y dentro del núcleo el
+        # de capítulo más bajo que nunca salió.
         ya = {"emo-01": {"dia": "2026-11-01", "post_id": "p", "pagina": "x"}}
-        self.assertEqual(frases.siguiente(TEMAS, ya).tema, "ansiedad")
+        self.assertEqual(frases.siguiente(TEMAS, ya).tema, "autoestima")
 
     def test_anotar_relee_antes_de_escribir(self):
         # Si entre leer y escribir alguien anotó otra cosa, no se le pisa.
@@ -222,7 +266,7 @@ class TestElCaption(unittest.TestCase):
         for t in TEMAS:
             hs = frases.hashtags(t, PAGINA)
             self.assertEqual(len(hs), 5, t.tema)
-            self.assertEqual(hs[:2], ["#psicología", "#saludmental"])
+            self.assertEqual(hs[:2], ["#psicología", "#relaciones"])
 
     def test_un_hashtag_del_tema_no_repite_uno_fijo(self):
         t = tema(hashtags=["psicologia", "dos", "tres"])
@@ -230,10 +274,10 @@ class TestElCaption(unittest.TestCase):
         self.assertEqual(len(hs), 4)
         self.assertEqual(hs.count("#psicología") + hs.count("#psicologia"), 1)
 
-    def test_el_duelo_lleva_el_pie_y_los_demas_no(self):
+    def test_solo_los_temas_sensibles_llevan_el_pie(self):
         for t in TEMAS:
             c = frases.caption(t.frases[0], t, PAGINA)
-            self.assertEqual(PAGINA.pie_sensible in c, t.tema == "duelo", t.tema)
+            self.assertEqual(PAGINA.pie_sensible in c, t.tema in ("duelo", "ruptura"), t.tema)
 
     def test_una_frase_puede_pedir_el_pie_sola(self):
         t = tema(sensible=False)

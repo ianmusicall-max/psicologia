@@ -1,0 +1,107 @@
+# Capítulo 12 · Volver a encontrarse con quien ya está
+tema: reconexion
+capitulo: 12
+eje: nucleo
+titulo: Volver a encontrarse con quien ya está
+hashtags: [pareja, reconectar, convivencia]
+tesis: >-
+  Las relaciones no se apagan de golpe: se apagan por falta de mantenimiento.
+  Lo que las vuelve a encender está medido y es mucho más pequeño de lo que la
+  gente cree: la proporción entre lo bueno y lo áspero, la novedad compartida,
+  el agradecimiento dicho en voz alta y saber que lo que entra por la puerta no
+  siempre es del otro.
+
+frases:
+  - id: rec-01
+    texto: "En las parejas que duran hay cinco gestos buenos por cada roce. No es que no discutan: es la proporción."
+    destacar: [proporción]
+    principio: "La razón entre interacciones positivas y negativas durante el conflicto distingue a las parejas estables de las que se separan."
+    fuente: "Gottman & Levenson (1992), JPSP: alrededor de 5 a 1 en las parejas estables."
+    reflexion: >-
+      El número importa menos que la idea: lo áspero pesa más que lo bueno, así
+      que hace falta bastante más de lo bueno para equilibrar. No se arregla
+      con un gesto grande al mes. Se arregla con cosas chicas y seguidas, que
+      son justamente las que se dejan de hacer cuando la relación se da por
+      hecha.
+
+  - id: rec-02
+    texto: "El aburrimiento no se arregla con más tiempo juntos. Se arregla con tiempo juntos haciendo algo que ninguno de los dos hizo antes."
+    destacar: [algo]
+    principio: "Las actividades compartidas novedosas y activantes aumentan la calidad percibida de la relación (expansión del yo)."
+    fuente: "Aron, Norman, Aron, McKenna & Heyman (2000), JPSP; Aron & Aron (1986), modelo de autoexpansión."
+    reflexion: >-
+      En los experimentos de Aron, las parejas que hacían juntas algo nuevo y
+      un poco difícil reportaban después más satisfacción que las que hacían
+      algo agradable pero conocido. La explicación es que el vínculo se asocia
+      con crecer. Por eso otra cena en el mismo lugar no mueve nada: no es
+      tiempo lo que falta.
+
+  - id: rec-03
+    texto: "La pregunta no es solo si te hace feliz. Es en quién te estás convirtiendo al lado de esa persona."
+    destacar: [convirtiendo]
+    principio: "Las parejas se esculpen mutuamente hacia quien cada uno quiere llegar a ser, y eso predice satisfacción y permanencia."
+    fuente: "Drigotas, Rusbult, Wieselquist & Whitton (1999), JPSP: el fenómeno de Miguel Ángel."
+    reflexion: >-
+      Hay personas al lado de las cuales uno se vuelve más parecido a quien
+      quería ser, y otras al lado de las cuales se vuelve más chico, más
+      callado, más a la defensiva. Eso se midió y predice que la relación
+      funcione mejor que casi cualquier rasgo del otro. Es una buena pregunta
+      para hacerse sin avisarle a nadie.
+
+  - id: rec-04
+    texto: "Agradecer en voz alta lo que ya das por hecho es de lo poco que se probó que vuelve a acercar."
+    destacar: [en voz alta]
+    principio: "Expresar gratitud por actos concretos del otro aumenta la satisfacción de ambos y la conducta de mantenimiento del vínculo."
+    fuente: "Algoe, Gable & Maisel (2010), Personal Relationships; Gordon et al. (2012), JPSP."
+    reflexion: >-
+      Lo que sostiene una casa es invisible justamente porque funciona: el que
+      cocina, el que recuerda los cumpleaños, el que se levanta de noche.
+      Nombrarlo cambia dos cosas a la vez, porque el que agradece también mira
+      de nuevo lo que tiene. Y no sirve el agradecimiento genérico: sirve el
+      que dice qué hiciste y qué significó.
+
+  - id: rec-05
+    texto: "Siete minutos, tres veces al año, mirando la última pelea como la miraría alguien de afuera. Eso solo ya frena el desgaste."
+    destacar: [alguien de afuera]
+    principio: "Reencuadrar el conflicto desde una perspectiva neutral y benevolente preserva la calidad de la relación a lo largo del tiempo."
+    fuente: "Finkel, Slotter, Luchies, Walton & Gross (2013), Psychological Science: 21 minutos al año."
+    reflexion: >-
+      Finkel probó esto con parejas casadas durante dos años. Las que no
+      hicieron nada perdieron satisfacción, como es habitual. Las que tres
+      veces al año escribieron siete minutos sobre su última pelea desde los
+      ojos de un tercero imparcial, no. Veintiún minutos al año no arreglan una
+      relación rota, pero frenan la erosión de una que está bien.
+
+  - id: rec-06
+    texto: "El deseo no vuelve por insistencia. Vuelve donde hay descanso, novedad y alguien que de verdad te presta atención."
+    destacar: [atención]
+    principio: "La responsividad percibida del otro, el descanso y la novedad predicen el deseo sexual en relaciones de larga duración."
+    fuente: "Birnbaum et al. (2016), JPSP: responsividad y deseo; Mark & Lasslo (2018), revisión."
+    reflexion: >-
+      En parejas de años, lo que más se asocia con el deseo no es la técnica ni
+      la frecuencia: es sentirse visto. Alguien que escucha, que pregunta, que
+      se interesa de verdad resulta deseable, y eso se mide. El reproche hace
+      lo contrario, aunque el reclamo sea justo: nadie desea desde la defensa.
+
+  - id: rec-07
+    texto: "Perdonar a quien no cambia no repara nada. Le enseña que no hacía falta cambiar."
+    destacar: [no cambia]
+    principio: "El perdón beneficia a la relación cuando el otro corrige la conducta; con un transgresor reiterado, se asocia a que la conducta siga."
+    fuente: "McNulty (2011), PSPB: el lado oscuro del perdón; McNulty (2008)."
+    reflexion: >-
+      El perdón tiene buena prensa y se la ganó: en las parejas donde la falta
+      no se repite, perdonar protege el vínculo. Pero los estudios de McNulty
+      encontraron lo otro: cuando el que falla vuelve a fallar, perdonar
+      predice que siga haciéndolo. Perdonar y permitir no son la misma cosa, y
+      la diferencia la marca lo que pasa después, no lo que se dice.
+
+  - id: rec-08
+    texto: "Muchas peleas de pareja no son de la pareja. Son del trabajo, entrando por la puerta sin avisar."
+    destacar: [del trabajo]
+    principio: "El estrés externo se transfiere a la relación: aumenta la reactividad y hace interpretar al otro de forma más negativa."
+    fuente: "Neff & Karney (2004, 2009), JPSP: desbordamiento del estrés a la pareja."
+    reflexion: >-
+      En los días de más estrés fuera de casa, las mismas conductas del otro se
+      leen peor y se responden más áspero. Eso está medido día por día. Saberlo
+      no evita el mal día, pero cambia la pregunta: antes de discutir el tema,
+      conviene preguntarse qué trajo cada uno puesto.

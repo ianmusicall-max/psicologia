@@ -112,12 +112,22 @@ class Frase:
     sensible: Optional[bool] = None
 
 
+# Los dos ejes de la página. `nucleo` son los temas que su descripción
+# promete -amor propio, vínculos, comunicación, elegir, ruptura-; `apoyo` son
+# los que sostienen a esos sin ser el motivo por el que alguien la sigue.
+# La cuota de abajo hace que dos de cada tres posts sean del núcleo.
+EJES = ("nucleo", "apoyo")
+NUCLEO_DE_CADA = 3      # ...de cada tres
+NUCLEO_CUANTOS = 2      # ...son del núcleo
+
+
 @dataclass
 class Tema:
     tema: str
     capitulo: int
     titulo: str
     tesis: str
+    eje: str = "apoyo"
     hashtags: List[str] = field(default_factory=list)
     sensible: bool = False
     frases: List[Frase] = field(default_factory=list)
@@ -191,6 +201,8 @@ def validar(frase: Frase) -> List[str]:
 
 def validar_tema(tema: Tema) -> List[str]:
     p = []
+    if tema.eje not in EJES:
+        p.append("%s: eje «%s»: tiene que ser %s" % (tema.tema, tema.eje, " o ".join(EJES)))
     if not tema.titulo.strip():
         p.append("%s: sin título de capítulo" % tema.tema)
     if len(tema.tesis.strip()) < 80:
@@ -211,6 +223,7 @@ def _tema(datos: dict, archivo: str) -> Tema:
         tema=str(datos["tema"]),
         capitulo=int(datos["capitulo"]),
         titulo=str(datos.get("titulo") or ""),
+        eje=str(datos.get("eje") or "apoyo"),
         tesis=str(datos.get("tesis") or "").strip(),
         hashtags=[str(h) for h in (datos.get("hashtags") or [])],
         sensible=bool(datos.get("sensible", False)),
@@ -244,14 +257,25 @@ def todas(temas: Iterable[Tema]) -> List[Frase]:
     return [f for t in temas for f in t.frases]
 
 
-def revisar(temas: Iterable[Tema]) -> List[str]:
-    """Todos los problemas del banco entero, con el id delante de cada uno."""
+def revisar(temas: Iterable[Tema], pagina: Optional[Pagina] = None) -> List[str]:
+    """Todos los problemas del banco entero, con el id delante de cada uno.
+
+    Con la página delante revisa además que ningún tema repita uno de los
+    hashtags fijos. Esa colisión no rompe nada visible -`hashtags` quita el
+    repetido- pero deja el post con cuatro etiquetas en vez de cinco, y eso
+    no se nota mirando un caption.
+    """
     temas = list(temas)
     problemas = []
     vistos: Dict[str, str] = {}
     capitulos: Dict[int, str] = {}
+    fijos = {_plano(h) for h in (pagina.hashtags_fijos if pagina else [])}
     for t in temas:
         problemas += validar_tema(t)
+        for h in t.hashtags:
+            if _plano(h) in fijos:
+                problemas.append("%s: el hashtag «%s» ya es uno de los fijos de la página, "
+                                 "así que el post saldría con cuatro y no con cinco" % (t.tema, h))
         if t.capitulo in capitulos:
             problemas.append("capítulo %d repetido: %s y %s" % (t.capitulo, capitulos[t.capitulo], t.tema))
         capitulos[t.capitulo] = t.tema
@@ -290,6 +314,20 @@ def anotar_publicada(frase_id: str, dia: date, post_id: str, pagina: str,
     tmp.replace(ruta)
 
 
+def toca_nucleo(temas: Iterable[Tema], ya: Dict[str, dict]) -> bool:
+    """Si el turno que sigue tiene que buscar primero un tema del núcleo.
+
+    La cuota se cumple turno a turno y no contando al final: así los temas de
+    la página quedan INTERCALADOS con los de apoyo en vez de salir todos
+    primero, y si un día se corta la racha, lo que alcanzó a salir también
+    respeta la proporción.
+    """
+    eje_de = {f.id: t.eje for t in temas for f in t.frases}
+    nucleo = sum(1 for fid in ya if eje_de.get(fid) == "nucleo")
+    apoyo = sum(1 for fid in ya if eje_de.get(fid) == "apoyo")
+    return nucleo < NUCLEO_CUANTOS * (apoyo + 1)
+
+
 def siguiente(temas: Iterable[Tema], ya: Dict[str, dict]) -> Optional[Frase]:
     """La próxima frase a publicar: del tema que hace más que no sale, la
     primera que todavía no salió.
@@ -298,6 +336,10 @@ def siguiente(temas: Iterable[Tema], ya: Dict[str, dict]) -> Optional[Frase]:
     que nunca salieron manda el orden de capítulo; entre los que ya salieron,
     el que publicó hace más tiempo. Es determinista: depende de lo publicado
     y no del reloj, así que mirarla dos veces el mismo día da la misma frase.
+
+    Encima de esa rotación va la cuota del núcleo. **No es un filtro**: si
+    ningún tema del núcleo tiene frases pendientes, sale el que haya. Perder
+    un día de publicación sería mucho peor que romper la proporción.
     """
     temas = list(temas)
     candidatos = []
@@ -306,11 +348,15 @@ def siguiente(temas: Iterable[Tema], ya: Dict[str, dict]) -> Optional[Frase]:
         if not pendientes:
             continue
         ultima = max((ya[f.id]["dia"] for f in t.frases if f.id in ya), default="")
-        candidatos.append((ultima, t.capitulo, pendientes[0]))
+        candidatos.append((ultima, t.capitulo, t.eje, pendientes[0]))
     if not candidatos:
         return None
     candidatos.sort(key=lambda c: (c[0], c[1]))
-    return candidatos[0][2]
+    if toca_nucleo(temas, ya):
+        del_nucleo = [c for c in candidatos if c[2] == "nucleo"]
+        if del_nucleo:
+            return del_nucleo[0][3]
+    return candidatos[0][3]
 
 
 def por_id(temas: Iterable[Tema], frase_id: str) -> Optional[Frase]:

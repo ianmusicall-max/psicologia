@@ -1,0 +1,107 @@
+# Capítulo 11 · Hablar para que el otro pueda escuchar
+tema: comunicacion
+capitulo: 11
+eje: nucleo
+titulo: Hablar para que el otro pueda escuchar
+hashtags: [comunicacion, pareja, escuchar]
+tesis: >-
+  La mayoría de los problemas de una pareja no se resuelven, se administran. Lo
+  que decide una conversación no es quién tiene razón sino cómo empieza, si el
+  otro se siente escuchado y si alguien sabe frenar a tiempo. Comunicarse mejor
+  no es hablar más: es hablar de otra manera.
+
+frases:
+  - id: com-01
+    texto: "El 69% de los problemas de una pareja no se resuelven. Las que duran no los resolvieron: aprendieron a convivir con ellos."
+    destacar: [convivir]
+    principio: "La mayoría del conflicto en pareja es perpetuo: nace de diferencias estables de personalidad o de necesidades."
+    fuente: "Gottman (1999), The Seven Principles: el 69% de los conflictos son problemas perpetuos."
+    reflexion: >-
+      Gottman siguió a cientos de parejas durante años y encontró que dos
+      tercios de sus peleas eran las mismas a los cinco años y a los veinte.
+      Las parejas felices no habían encontrado la solución: habían encontrado
+      la forma de hablar del tema sin lastimarse. Perseguir la solución de algo
+      que no la tiene es lo que convierte una diferencia en una guerra.
+
+  - id: com-02
+    texto: "Cómo empieza una conversación decide cómo termina. Los primeros tres minutos ya cuentan el final."
+    destacar: [empieza]
+    principio: "El arranque duro (reproche, sarcasmo, crítica global) determina el curso de la discusión; el arranque suave la mantiene abierta."
+    fuente: "Carrère & Gottman (1999), Family Process: los tres primeros minutos predijeron el desenlace seis años después."
+    reflexion: >-
+      En un estudio, mirar los tres primeros minutos de una discusión alcanzó
+      para predecir qué parejas seguirían juntas seis años más tarde. No es
+      magia: una conversación que empieza con un reproche ya tiene al otro
+      defendiéndose antes de la segunda frase. Empezar suave no es ser tibio;
+      es dejar la puerta abierta el tiempo suficiente para que entre algo.
+
+  - id: com-03
+    texto: "Cómo reaccionas cuando te cuenta algo bueno dice más del vínculo que cómo reaccionas cuando te cuenta algo malo."
+    destacar: [algo bueno]
+    principio: "La respuesta activa y constructiva a las buenas noticias predice satisfacción y estabilidad mejor que el apoyo en la adversidad."
+    fuente: "Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien."
+    reflexion: >-
+      Todos sabemos que hay que estar en las malas. Lo que casi nadie mira es
+      el momento en que el otro llega con una buena noticia y recibe un «qué
+      bien» sin levantar la vista. Entusiasmarse de verdad, preguntar, pedir
+      que lo cuente otra vez: eso, medido en varios estudios, predice mejor que
+      una pareja dure que el apoyo que se da en una crisis.
+
+  - id: com-04
+    texto: "Un vínculo no se sostiene en las conversaciones importantes. Se sostiene en las veces al día que alguien pide atención sin pedirla."
+    destacar: [sin pedirla]
+    principio: "Las parejas estables responden a los intentos cotidianos de conexión (bids) mucho más que las que se separan."
+    fuente: "Gottman & Driver (2002): quienes seguían juntos respondían al 86% de esos pedidos; los que se separaron, al 33%."
+    reflexion: >-
+      «Mira qué pájaro», «¿viste la hora?», una mano en el hombro. Son pedidos
+      de atención disfrazados de comentarios sin importancia, y pasan decenas
+      de veces por día. En el laboratorio de Gottman, las parejas que seguían
+      juntas respondían al 86% de ellos y las que se separaron, al 33%. Una
+      relación se construye ahí, no en la charla del domingo.
+
+  - id: com-05
+    texto: "Antes de contestar, repite con tus palabras lo que entendiste. Muchas peleas terminan ahí, cuando se ve que nadie dijo lo que el otro escuchó."
+    destacar: [repite]
+    principio: "Verificar la comprensión antes de responder corta las escaladas que nacen de un malentendido, no de un desacuerdo."
+    fuente: "Rogers (1951), escucha reflexiva; Markman, Stanley & Blumberg (1994), programa PREP."
+    reflexion: >-
+      Cuesta creer cuántas discusiones son sobre dos frases distintas: la que
+      uno dijo y la que el otro oyó. Repetir lo entendido antes de contestar se
+      siente artificial las primeras veces y después deja de notarse. Lo que
+      hace no es ceder: es asegurarse de que, si van a pelear, al menos peleen
+      por lo mismo.
+
+  - id: com-06
+    texto: "Decir lo que no quieres no le dice a nadie qué hacer. Pide lo que sí quieres, y pídelo en concreto."
+    destacar: [en concreto]
+    principio: "Una petición observable y específica se puede cumplir; una queja general solo se puede discutir."
+    fuente: "Gottman (1999), arranque suave; Christensen & Jacobson (2000), terapia conductual integrativa de pareja."
+    reflexion: >-
+      «Nunca me ayudas» no tiene traducción en ninguna acción. «¿Puedes bañar a
+      los chicos los martes?» sí. La queja general obliga al otro a defender
+      quién es; la petición concreta le da algo que hacer esta semana. Es el
+      mismo reclamo, y uno de los dos tiene arreglo.
+
+  - id: com-07
+    texto: "Hablar claro de un problema serio incomoda hoy y mejora la relación después. Esquivarlo es al revés."
+    destacar: [Esquivarlo]
+    principio: "La comunicación directa sobre problemas importantes baja la satisfacción a corto plazo y la mejora a largo; la indirecta hace lo contrario."
+    fuente: "Overall & McNulty (2017), Current Opinion in Psychology; Overall et al. (2009)."
+    reflexion: >-
+      La investigación de Overall encontró algo incómodo: las conversaciones
+      que se sienten peor en el momento son las que más mejoran la relación un
+      año después, siempre que el problema sea real y se pueda cambiar. Y al
+      revés, suavizarlo todo deja a la pareja tranquila hoy y con el mismo
+      problema intacto en un año.
+
+  - id: com-08
+    texto: "Si el corazón se te acelera, ya no estás discutiendo: estás defendiéndote. Ahí se para veinte minutos."
+    destacar: [para]
+    principio: "Con activación fisiológica alta se pierde el acceso al razonamiento complejo y a la escucha; la pausa permite recuperarlo."
+    fuente: "Gottman & Levenson (1986), desbordamiento fisiológico; Gottman (1999), la pausa de veinte minutos."
+    reflexion: >-
+      Cuando el pulso sube, el cuerpo entra en modo defensa: se achica la
+      escucha, se agranda la memoria de agravios y sale lo peor del repertorio.
+      Nada que se diga ahí va a servir. Veinte minutos haciendo otra cosa, de
+      verdad otra cosa y no repasando la pelea, alcanzan para volver a ser dos
+      personas hablando.
