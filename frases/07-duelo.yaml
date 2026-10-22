@@ -1,0 +1,98 @@
+# Capítulo 7 · Lo que se pierde y lo que se queda
+tema: duelo
+capitulo: 7
+titulo: Lo que se pierde y lo que se queda
+hashtags: [duelo, perdida, memoria]
+sensible: true
+tesis: >-
+  El duelo no tiene etapas que se cumplan en orden ni una fecha de
+  vencimiento. Se oscila entre el dolor y la vida, y el vínculo con lo que se
+  perdió no se corta: se transforma. También hay pérdidas sin funeral, y
+  duelen igual.
+
+frases:
+  - id: due-01
+    texto: "El duelo no tiene etapas que se cumplen en orden. Tiene días. Y los días no vienen con instrucciones."
+    destacar: [días]
+    principio: "Las «cinco etapas» no describen el duelo real; la evidencia muestra un proceso oscilante e individual."
+    fuente: "Stroebe & Schut (1999), modelo de proceso dual; Bonanno (2009)."
+    reflexion: >-
+      Las etapas famosas se escribieron para personas que enfrentaban su
+      propia muerte, no para quienes se quedan. Los estudios con dolientes
+      no encuentran ese orden: encuentran días buenos y días malos mezclados
+      sin lógica. No vas mal por no «avanzar». Así es.
+
+  - id: due-02
+    texto: "No se supera una pérdida. Se aprende a cargarla de una forma que te deje seguir caminando."
+    destacar: [cargarla]
+    principio: "El duelo no termina en «cierre» sino en integración: la pérdida se incorpora a la vida sin dominarla."
+    fuente: "Worden (2009), tareas del duelo; Tonkin (1996), Bereavement Care: crecer alrededor del duelo."
+    reflexion: >-
+      La idea de «superar» sugiere que un día el dolor se va. Lo que ocurre
+      es otra cosa: la vida crece alrededor de la pérdida. El hueco sigue del
+      mismo tamaño; lo que se hace más grande es todo lo demás.
+
+  - id: due-03
+    texto: "Reírte en medio del duelo no es traición. Es la vida recordándote que sigues en ella."
+    destacar: [traición]
+    principio: "Las emociones positivas durante el duelo predicen mejor adaptación; oscilar entre el dolor y la vida es sano."
+    fuente: "Bonanno & Keltner (1997), J. Abnormal Psychology; Keltner & Bonanno (1997), JPSP."
+    reflexion: >-
+      Muchos dolientes sienten culpa el primer día que se ríen. Pero la
+      investigación es clara: quienes pueden alternar entre la pena y
+      momentos de alivio se recuperan mejor. La risa no niega la pérdida.
+      Es el descanso que el duelo necesita para seguir.
+
+  - id: due-04
+    texto: "Extrañar no es estar atascado. Es que el vínculo sigue, aunque la persona ya no esté."
+    destacar: [vínculo]
+    principio: "Los lazos continuos (hablarle, recordarle, honrarle) son parte normal y saludable del duelo, no un síntoma."
+    fuente: "Klass, Silverman & Nickman (1996), continuing bonds; Field et al. (2005)."
+    reflexion: >-
+      Durante décadas se creyó que el duelo sano terminaba en «soltar». Hoy
+      se sabe que la mayoría de las personas mantiene un lazo con quien
+      perdió: le habla, guarda algo suyo, cocina su receta. Eso no es no
+      aceptar. Es amar en otra forma.
+
+  - id: due-05
+    texto: "Hay pérdidas que no llevan funeral: una amistad, una casa, una versión de ti. Duelen igual y nadie te pregunta cómo estás."
+    destacar: [funeral]
+    principio: "El duelo no reconocido socialmente (desautorizado) carece de rituales y apoyo, y por eso se complica."
+    fuente: "Doka (1989, 2002), disenfranchised grief."
+    reflexion: >-
+      Un divorcio, una mascota, un trabajo, un cuerpo que ya no responde como
+      antes, un hijo que se fue a vivir lejos. Nadie manda flores por eso, y
+      sin embargo el cuerpo lo vive como lo que es: una pérdida. Darle nombre
+      es el primer permiso.
+
+  - id: due-06
+    texto: "La gente que te dice «ya deberías estar mejor» no habla de tu duelo. Habla de su incomodidad con él."
+    destacar: [incomodidad]
+    principio: "La presión social por «cerrar» el duelo responde a la ansiedad del entorno, no al proceso del doliente."
+    fuente: "Doka (2002); Harris (2010), reglas sociales del duelo."
+    reflexion: >-
+      El dolor ajeno incomoda, y la forma más rápida de aliviarse es pedirle
+      al otro que lo guarde. No lo hacen por maldad. Pero no tienes que
+      ajustar tu duelo al calendario de quien no lo lleva.
+
+  - id: due-07
+    texto: "A veces el dolor se cuela en días comunes, sin aviso. No es retroceso: así funciona la memoria cuando quiere a alguien."
+    destacar: [retroceso]
+    principio: "Los repuntes súbitos de duelo (STUG) son oleadas breves disparadas por recuerdos, normales incluso años después."
+    fuente: "Rando (1993), sudden temporary upsurges of grief."
+    reflexion: >-
+      Una canción en el supermercado, un olor, una fecha. De pronto el dolor
+      vuelve con la fuerza del primer día y te asusta pensar que no has
+      avanzado nada. Dura minutos, pasa, y no deshace lo caminado. Es un
+      recuerdo que llegó sin golpear.
+
+  - id: due-08
+    texto: "Nombrar a quien perdiste no reabre la herida. La herida está. Nombrarla la acompaña."
+    destacar: [Nombrarla]
+    principio: "Los dolientes valoran que se mencione a la persona fallecida; el silencio del entorno aumenta el aislamiento."
+    fuente: "Worden (2009); Neimeyer (2001), reconstrucción de significado."
+    reflexion: >-
+      Los amigos evitan decir el nombre por miedo a hacer daño. Quien perdió
+      a alguien suele sentir lo contrario: que el nombre desaparezca de las
+      conversaciones es una segunda pérdida. Decirlo no lastima. Lo que
+      lastima es el silencio.

@@ -1,0 +1,107 @@
+# Capítulo 1 · Sentir no es un error
+#
+# Cada archivo de esta carpeta es un tema de la página Y un capítulo del libro.
+# El formato es el mismo en todos: una cabecera con la tesis del capítulo y una
+# lista de frases. Cada frase lleva el principio psicológico que la sostiene y
+# la fuente, para que el libro no tenga que reconstruirlos después.
+tema: emociones
+capitulo: 1
+titulo: Sentir no es un error
+hashtags: [emociones, inteligenciaemocional, sentir]
+tesis: >-
+  Las emociones no son fallas del sistema: son información y preparación para
+  actuar. El problema casi nunca es sentir demasiado, sino lo que hacemos para
+  no sentir. Regular una emoción no es suprimirla; es escucharla, nombrarla y
+  decidir qué hacer con ella.
+
+frases:
+  - id: emo-01
+    texto: "Una emoción no es una orden. Es un aviso. Puedes escucharla sin obedecerla."
+    destacar: [aviso]
+    principio: "Las emociones son tendencias a la acción, no mandatos; sentir y actuar son dos pasos separados."
+    fuente: "Frijda (1986), tendencias de acción; terapia de aceptación y compromiso (Hayes)."
+    reflexion: >-
+      El enojo prepara el cuerpo para defender; el miedo, para huir. Pero entre
+      lo que la emoción propone y lo que haces hay un espacio, y en ese espacio
+      vives tú. Escuchar una emoción es tomar la información; obedecerla es
+      dejar que decida por ti.
+
+  - id: emo-02
+    texto: "Ponerle nombre a lo que sientes no lo agranda. Lo vuelve manejable."
+    destacar: [nombre]
+    principio: "Etiquetar una emoción (affect labeling) reduce la activación de la amígdala y la intensidad subjetiva."
+    fuente: "Lieberman et al. (2007), Psychological Science; Torre & Lieberman (2018)."
+    reflexion: >-
+      Mucha gente evita nombrar lo que siente por miedo a que crezca. Ocurre lo
+      contrario: decir «esto es frustración» o «esto es miedo» le da forma a
+      algo que, sin nombre, lo ocupa todo. Lo que tiene nombre tiene bordes.
+
+  - id: emo-03
+    texto: "Lo que no te permites sentir no desaparece. Cambia de forma y vuelve cuando menos lo esperas."
+    destacar: [desaparece]
+    principio: "La supresión emocional no reduce la emoción; aumenta la activación fisiológica y el rebote del pensamiento."
+    fuente: "Gross & Levenson (1997); Wegner (1994), procesos irónicos."
+    reflexion: >-
+      Apretar los dientes funciona unos minutos. Después, la emoción que no
+      tuvo salida aparece como irritación con quien no tiene la culpa, como
+      cansancio sin motivo o como un nudo en el estómago. No se fue; se mudó.
+
+  - id: emo-04
+    texto: "La tristeza no es debilidad. Es la forma en que la mente procesa una pérdida."
+    destacar: [tristeza]
+    principio: "La tristeza tiene función adaptativa: baja el ritmo, orienta hacia dentro y pide apoyo."
+    fuente: "Nesse (1990); Barrett (2017), emociones construidas."
+    reflexion: >-
+      Cuando algo se pierde, la tristeza te frena para que puedas asimilarlo y
+      le avisa a los demás que necesitas compañía. Una cultura que la trata
+      como falla te obliga a esconder justo lo que te ayudaría a recuperarte.
+
+  - id: emo-05
+    texto: "Incómoda no es lo mismo que mala. Hasta la emoción que más te pesa está intentando hacer un trabajo."
+    destacar: [trabajo]
+    principio: "Todas las emociones son funcionales; la valencia (agradable o desagradable) no dice si son útiles."
+    fuente: "Barrett (2017); Ekman (1992), funciones de las emociones básicas."
+    reflexion: >-
+      La culpa señala que te alejaste de tus valores. La envidia señala algo
+      que deseas y no te has permitido querer. Antes de pelear con una
+      emoción, pregúntale qué está intentando hacer por ti.
+
+  - id: emo-06
+    texto: "El enojo señala un límite que alguien cruzó. Lo que haces después es lo que define quién eres."
+    destacar: [límite]
+    principio: "El enojo responde a la percepción de injusticia o de un límite violado; la regulación separa la señal de la conducta."
+    fuente: "Averill (1982); Gross (1998), modelo de regulación emocional."
+    reflexion: >-
+      El enojo no es el problema. Es una alarma útil: alguien pasó por encima
+      de algo tuyo. El problema empieza cuando confundes la alarma con la
+      respuesta y descargas en vez de decir.
+
+  - id: emo-07
+    texto: "Respirar lento no borra la emoción. Le baja el volumen para que puedas pensar."
+    destacar: [volumen]
+    principio: "La respiración lenta activa el sistema parasimpático y reduce la activación, sin eliminar la emoción."
+    fuente: "Zaccaro et al. (2018), revisión; Balban et al. (2023), Cell Reports Medicine: el suspiro fisiológico."
+    reflexion: >-
+      Nadie piensa bien con el corazón a ciento veinte. Exhalar más largo de
+      lo que inhalas no soluciona lo que te pasa, pero devuelve el mando a la
+      parte de tu cerebro que puede decidir.
+
+  - id: emo-08
+    texto: "Que una emoción sea intensa no significa que sea verdad."
+    destacar: [verdad]
+    principio: "El razonamiento emocional es una distorsión cognitiva: tomar lo que se siente como prueba de lo que ocurre."
+    fuente: "Beck (1976); Burns (1980), distorsiones cognitivas."
+    reflexion: >-
+      «Siento que no le importo, entonces no le importo.» La intensidad de una
+      emoción habla de ti, de tu historia y de tu cansancio. No es un
+      instrumento de medición del mundo.
+
+  - id: emo-09
+    texto: "Las emociones vienen en olas. Lo que las convierte en marea es quedarte contándote la misma historia."
+    destacar: [olas]
+    principio: "La rumiación mantiene y amplifica el afecto negativo mucho más allá de la emoción inicial."
+    fuente: "Nolen-Hoeksema (1991, 2008), rumiación."
+    reflexion: >-
+      Una emoción, dejada en paz, sube y baja. Lo que la retiene son las
+      vueltas: repasar la escena, ensayar lo que debiste decir, buscar culpables.
+      No es la emoción la que dura horas; es la historia.

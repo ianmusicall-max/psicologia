@@ -1,0 +1,16 @@
+# Credenciales. Nunca.
+.env
+.env.*
+
+# Entorno de Python: se reconstruye con requirements.txt.
+.venv/
+__pycache__/
+*.pyc
+
+# Estado y flyers generados. Viven donde corre el sistema, no en el repo.
+# Dice `data/*` y no `data/` para que la excepción de abajo valga: git no
+# entra en un directorio excluido (lección del repo de salud, 2026-10-15).
+data/*
+!data/.gitkeep
+
+.DS_Store

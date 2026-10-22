@@ -1,0 +1,97 @@
+# Capítulo 8 · No todo lo que piensas es cierto
+tema: pensamientos
+capitulo: 8
+titulo: No todo lo que piensas es cierto
+hashtags: [pensamientos, mente, claridad]
+tesis: >-
+  Un pensamiento es un evento mental, no un hecho. La mente completa lo que no
+  sabe con lo que más teme, generaliza con «siempre» y «nunca», y confunde dar
+  vueltas con pensar. No se puede elegir el primer pensamiento; sí lo que se
+  hace con él.
+
+frases:
+  - id: pen-01
+    texto: "Un pensamiento es un evento mental, no un hecho. Puedes mirarlo sin firmarlo."
+    destacar: [firmarlo]
+    principio: "La defusión cognitiva consiste en observar los pensamientos como productos de la mente en vez de como verdades."
+    fuente: "Hayes et al. (2012), ACT; Teasdale et al. (2002), descentramiento."
+    reflexion: >-
+      «Voy a fracasar» es una frase que tu mente produjo, igual que produce
+      canciones pegajosas o recuerdos absurdos. Puedes notarla, incluso
+      decir «ahí está otra vez», sin tratarla como un diagnóstico. Mirar un
+      pensamiento no es creerlo.
+
+  - id: pen-02
+    texto: "La mente completa lo que no sabe con lo que más teme. Por eso el silencio de alguien se siente como rechazo."
+    destacar: [teme]
+    principio: "La «lectura de mente» y el sesgo de negatividad rellenan la ambigüedad con interpretaciones amenazantes."
+    fuente: "Beck (1976); Rozin & Royzman (2001), sesgo de negatividad."
+    reflexion: >-
+      Un mensaje sin responder tiene cien explicaciones: estaba ocupado, no
+      lo vio, se quedó sin batería. La mente ansiosa elige una sola, la peor,
+      y la trata como noticia confirmada. La ambigüedad no es rechazo; es
+      ambigüedad.
+
+  - id: pen-03
+    texto: "«Siempre» y «nunca» casi nunca son ciertos. Son palabras que usa el dolor cuando quiere tener razón."
+    destacar: [razón]
+    principio: "La sobregeneralización convierte un hecho en una regla y una excepción en una identidad."
+    fuente: "Burns (1980); Beck et al. (1979), terapia cognitiva."
+    reflexion: >-
+      «Siempre me pasa lo mismo», «nunca me sale nada». Si lo revisas, hubo
+      veces que no. Las palabras absolutas no describen la realidad; la
+      cierran. Cambiar «siempre» por «esta vez» no es optimismo: es precisión.
+
+  - id: pen-04
+    texto: "Darle vueltas a un problema no es pensar. Pensar llega a algún lado. Dar vueltas vuelve al mismo."
+    destacar: [vueltas]
+    principio: "La rumiación es pensamiento repetitivo, abstracto y pasivo; la reflexión es concreta y orientada a la acción."
+    fuente: "Nolen-Hoeksema et al. (2008); Watkins (2008)."
+    reflexion: >-
+      Se parecen desde fuera: la persona está en silencio, concentrada en su
+      problema. Pero una termina con una decisión y la otra con la misma
+      pregunta y más cansancio. Si después de una hora no hay nada nuevo, no
+      estabas pensando.
+
+  - id: pen-05
+    texto: "El primer pensamiento no lo eliges. Aparece. Lo que haces con él, sí."
+    destacar: [eliges]
+    principio: "Los pensamientos automáticos son involuntarios; la respuesta a ellos es el punto de intervención."
+    fuente: "Beck (1976), pensamientos automáticos; Hayes et al. (2012)."
+    reflexion: >-
+      Nadie decide pensar «soy un desastre». Llega solo, como un reflejo.
+      Culparte por el pensamiento es castigarte por un estornudo. Lo que sí
+      está en tu mano es el segundo paso: discutirlo, soltarlo, o actuar como
+      si no fuera cierto.
+
+  - id: pen-06
+    texto: "Pensar en el futuro para prevenirlo y en el pasado para corregirlo son dos formas de no estar en el único lugar donde puedes hacer algo."
+    destacar: [único lugar]
+    principio: "La mente divagante se asocia a menor bienestar; la atención al presente es donde ocurre la acción."
+    fuente: "Killingsworth & Gilbert (2010), Science; Kabat-Zinn (1990)."
+    reflexion: >-
+      El pasado ya no acepta cambios y el futuro todavía no existe. Pensar en
+      ellos tiene su utilidad, un rato. Vivir en ellos es gastar el único
+      tiempo en el que puedes mover algo: este.
+
+  - id: pen-07
+    texto: "Lo que sientes sobre un hecho depende menos del hecho que de lo que te dices sobre él."
+    destacar: [te dices]
+    principio: "El modelo cognitivo: entre el evento y la emoción media la interpretación."
+    fuente: "Ellis (1962), modelo ABC; Beck (1976). Idea con linaje estoico (Epicteto)."
+    reflexion: >-
+      Dos personas pierden el mismo trabajo. Una piensa «era de esperarse,
+      no sirvo» y otra «era una mala empresa, mejor ahora». El hecho es el
+      mismo; las semanas siguientes, no. La interpretación no cambia lo que
+      pasó, pero decide lo que te pasa a ti.
+
+  - id: pen-08
+    texto: "Una pregunta mejor cambia más que una respuesta mejor. «¿Por qué me pasa esto?» hunde. «¿Qué puedo hacer ahora?» mueve."
+    destacar: [pregunta]
+    principio: "Las preguntas «por qué» abstractas alimentan la rumiación; las preguntas «qué» concretas orientan a la acción."
+    fuente: "Watkins (2008), procesamiento abstracto vs. concreto; Kross & Ayduk (2017)."
+    reflexion: >-
+      «¿Por qué soy así?» no tiene respuesta que te saque del lugar donde
+      estás. «¿Qué puedo hacer en los próximos diez minutos?» sí. La mente
+      responde a la pregunta que le haces; elige una que la ponga a trabajar
+      a tu favor.

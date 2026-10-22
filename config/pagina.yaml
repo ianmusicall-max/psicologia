@@ -1,0 +1,32 @@
+# La página de frases. Una sola por ahora; si algún día hay réplicas, cada una
+# es otra entrada con su propio nombre, paleta y credenciales.
+pagina:
+  # Cómo se firma el flyer arriba a la izquierda y en el pie. Cambiar cuando
+  # la página tenga nombre definitivo: el dibujo lo lee de aquí.
+  nombre: FRASES DE PSICOLOGÍA
+  # Pie del flyer. Vacío usa el nombre.
+  firma: ""
+
+  # Paleta propia. Es una página de psicología, no de salud: papel cálido,
+  # tinta azul noche y un solo acento terracota para la palabra destacada.
+  paleta:
+    fondo: "#F3EFE6"
+    tinta: "#1F2933"
+    acento: "#B5654A"
+    suave: "#8C8F93"
+
+  # Cinco hashtags por post: estos dos fijos y los tres del tema. Mismo
+  # criterio que las páginas de salud.
+  hashtags_fijos: [psicología, saludmental]
+
+  # Va al final del caption en los temas marcados `sensible: true` (duelo) o
+  # en una frase marcada así. Nunca en el flyer: un flyer con aviso legal se
+  # lee como un prospecto.
+  pie_sensible: >-
+    Si lo que sientes te pesa más de lo que puedes cargar, habla con un
+    profesional de salud mental. Esta página acompaña; no reemplaza una
+    terapia.
+
+  facebook:
+    page_id_env: PSI_FB_PAGE_ID
+    token_env: PSI_FB_PAGE_TOKEN

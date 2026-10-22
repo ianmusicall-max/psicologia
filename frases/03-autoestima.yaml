@@ -1,0 +1,96 @@
+# Capítulo 3 · Tratarte como a alguien que importa
+tema: autoestima
+capitulo: 3
+titulo: Tratarte como a alguien que importa
+hashtags: [autoestima, autocompasion, amorpropio]
+tesis: >-
+  La autoestima que depende de los resultados sube y baja con ellos. La
+  autocompasión, tratarse con la misma decencia con la que se trata a alguien
+  querido, es más estable y motiva más que la autocrítica. El valor de una
+  persona no se gana ni se pierde: se reconoce.
+
+frases:
+  - id: aut-01
+    texto: "Hablarte mal no te hace mejor. Solo te hace más difícil de habitar."
+    destacar: [habitar]
+    principio: "La autocrítica severa no mejora el rendimiento; aumenta la evitación y el malestar."
+    fuente: "Gilbert (2009), terapia centrada en la compasión; Breines & Chen (2012)."
+    reflexion: >-
+      Mucha gente cree que si deja de exigirse con dureza se vuelve
+      conformista. Los datos dicen lo contrario: quien se trata con respeto
+      después de fallar vuelve a intentarlo antes. La dureza no corrige; aleja.
+
+  - id: aut-02
+    texto: "La autocompasión no es dejarte pasar todo. Es corregirte sin destruirte."
+    destacar: [corregirte]
+    principio: "La autocompasión tiene tres componentes: amabilidad, humanidad compartida y atención plena; no es autoindulgencia."
+    fuente: "Neff (2003, 2011); Breines & Chen (2012), motivación de mejora."
+    reflexion: >-
+      Un buen entrenador señala el error y te hace repetir el ejercicio. No te
+      grita que eres un fracaso. Puedes ser ese entrenador para ti: exigente
+      con la conducta, respetuoso con la persona.
+
+  - id: aut-03
+    texto: "Tu valor no sube cuando aciertas ni baja cuando fallas. Lo que sube y baja es tu ánimo, y eso no es lo mismo."
+    destacar: [valor]
+    principio: "La valía contingente (ligada a logros, aprobación o apariencia) produce autoestima inestable y frágil."
+    fuente: "Crocker & Wolfe (2001), Psychological Review; Rogers (1959), consideración positiva incondicional."
+    reflexion: >-
+      Si tu valor dependiera de los resultados, valdrías más los martes buenos
+      que los jueves malos. Lo que cambia con los resultados es cómo te
+      sientes. Confundir las dos cosas te condena a ganarte cada día el derecho
+      a existir.
+
+  - id: aut-04
+    texto: "Lo que te dices cuando fallas, casi siempre alguien te lo dijo primero. Ya no tienes que repetirlo."
+    destacar: [repetirlo]
+    principio: "La voz autocrítica suele ser una voz interiorizada de figuras tempranas o del entorno."
+    fuente: "Gilbert & Irons (2005); Young et al. (2003), esquemas tempranos."
+    reflexion: >-
+      Escucha el tono con el que te hablas cuando te equivocas. Muchas veces
+      no es tu voz: es la de quien te corregía de niño, la de un maestro, la
+      de alguien que ya no está. Reconocerla no la borra, pero te deja elegir
+      si la sigues prestando.
+
+  - id: aut-05
+    texto: "El perfeccionismo no es exigencia. Es miedo con buena presentación."
+    destacar: [miedo]
+    principio: "El perfeccionismo desadaptativo se asocia a miedo al fracaso, vergüenza y evitación, no a mayor logro."
+    fuente: "Hewitt & Flett (1991); Curran & Hill (2019), Psychological Bulletin: 41.641 estudiantes entre 1989 y 2016."
+    reflexion: >-
+      La exigencia sana quiere hacerlo bien. El perfeccionismo quiere que no
+      haya nada que criticar, porque la crítica se siente como una amenaza a
+      la persona entera. Por eso posterga, por eso agota, por eso nunca
+      termina de estar conforme.
+
+  - id: aut-06
+    texto: "Te mereces el mismo trato que le darías a alguien que quieres y que está pasando por lo que tú pasas."
+    destacar: [mismo trato]
+    principio: "La práctica de «cómo tratarías a un amigo» es la intervención básica de autocompasión y reduce la autocrítica."
+    fuente: "Neff & Germer (2013), programa Mindful Self-Compassion."
+    reflexion: >-
+      A un amigo que falló no le dirías lo que te dices a ti. Le dirías que es
+      normal, que duele, que se puede arreglar. No es que a él le mientas: es
+      que contigo usas otra vara, y esa vara no la elegiste.
+
+  - id: aut-07
+    texto: "Cuando te comparas, siempre eliges a alguien que te gana en lo que a ti te duele. Eso no es medir: es castigarte."
+    destacar: [castigarte]
+    principio: "La comparación social ascendente selectiva daña el bienestar, sobre todo en redes sociales."
+    fuente: "Festinger (1954); Vogel et al. (2014), Psychology of Popular Media Culture 3(4)."
+    reflexion: >-
+      Nadie se compara con alguien que le va peor en lo que le importa. La
+      comparación elige su blanco con precisión: el que tiene el cuerpo, la
+      pareja o el sueldo que a ti te falta. No estás midiéndote. Estás
+      buscando pruebas de un veredicto que ya tenías.
+
+  - id: aut-08
+    texto: "No eres tus peores días. Eres también quien los atravesó."
+    destacar: [atravesó]
+    principio: "La identidad narrativa integra los episodios difíciles como parte de una historia con agencia, no como definición."
+    fuente: "McAdams (2001), identidad narrativa; Bonanno (2004), resiliencia."
+    reflexion: >-
+      La memoria tiene un sesgo: los días malos pesan más que los normales.
+      Pero si cuentas tu historia completa, en cada día malo hay alguien que
+      se levantó al siguiente. Esa persona también eres tú, y suele ser la
+      que olvidas incluir.

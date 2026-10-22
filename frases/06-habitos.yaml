@@ -1,0 +1,98 @@
+# Capítulo 6 · Lo que haces cuando nadie te ve
+tema: habitos
+capitulo: 6
+titulo: Lo que haces cuando nadie te ve
+hashtags: [habitos, cambio, constancia]
+tesis: >-
+  Cambiar no es cuestión de voluntad sino de diseño: señales, contexto y pasos
+  tan pequeños que no se puedan fallar. Las ganas suelen llegar después de
+  empezar. Y recaer no borra el camino: es parte de él.
+
+frases:
+  - id: hab-01
+    texto: "No esperes tener ganas. Las ganas suelen llegar después de empezar, no antes."
+    destacar: [después]
+    principio: "La motivación sigue a la acción con más frecuencia que la precede; la activación conductual se basa en eso."
+    fuente: "Jacobson et al. (1996); Martell et al. (2001), activación conductual."
+    reflexion: >-
+      Esperar motivación para empezar es esperar el resultado antes de la
+      causa. El cuerpo en movimiento genera las ganas que el cuerpo quieto
+      espera. Por eso la regla no es «cuando tenga ganas» sino «cinco minutos
+      y vemos».
+
+  - id: hab-02
+    texto: "Un hábito no se construye con fuerza de voluntad. Se construye con un lugar, una hora y una señal."
+    destacar: [señal]
+    principio: "Los hábitos se forman por asociación entre un contexto estable y una respuesta; la intención sola predice poco."
+    fuente: "Wood & Neal (2007); Gollwitzer (1999), intenciones de implementación."
+    reflexion: >-
+      «Voy a leer más» no es un plan. «Después del café, diez páginas en la
+      silla de la ventana» sí lo es, porque le da al cerebro una señal que
+      disparará la conducta sin tener que decidirla cada vez. La voluntad se
+      agota; la señal, no.
+
+  - id: hab-03
+    texto: "Hazlo tan pequeño que no puedas fallar. Lo pequeño que se repite le gana a lo grande que se abandona."
+    destacar: [pequeño]
+    principio: "Reducir la conducta al mínimo viable aumenta la repetición, y la repetición es lo que automatiza."
+    fuente: "Fogg (2019), Tiny Habits; Lally et al. (2010), formación de hábitos."
+    reflexion: >-
+      Una flexión al día parece ridícula. Pero una flexión al día durante tres
+      meses deja instalado algo que «una hora de gimnasio» rara vez logra:
+      que el cuerpo lo haga sin negociar. Primero se instala la rutina;
+      después se agranda.
+
+  - id: hab-04
+    texto: "Fallar un día no borra el hábito. Lo que lo borra es decidir que ya no vale la pena seguir."
+    destacar: [seguir]
+    principio: "Saltarse una ocasión no afecta la formación del hábito; el «efecto de violación de la abstinencia» sí."
+    fuente: "Lally et al. (2010): saltarse una ocasión no afectó la formación del hábito; Marlatt & Gordon (1985)."
+    reflexion: >-
+      El daño no lo hace el día que faltaste. Lo hace la frase que viene
+      después: «ya lo arruiné, para qué». Esa frase convierte un tropiezo en
+      un abandono. Un día perdido es un dato; dos seguidos, una tendencia que
+      aún puedes cortar.
+
+  - id: hab-05
+    texto: "No te preguntes por qué no cambias. Pregúntate qué te está dando lo que haces ahora. Toda conducta que se repite, algo resuelve."
+    destacar: [resuelve]
+    principio: "Las conductas se mantienen por sus consecuencias; el análisis funcional busca qué obtiene o evita la conducta."
+    fuente: "Skinner (1953); Haynes & O'Brien (1990), análisis funcional."
+    reflexion: >-
+      Procrastinar alivia la ansiedad de empezar. Comer de noche calma algo
+      que no es hambre. Mirar el teléfono evita una conversación. Nadie
+      repite algo que no le da nada. Cuando encuentras qué te da, puedes
+      buscarlo de otra manera.
+
+  - id: hab-06
+    texto: "Cambiar no es un salto. Es una secuencia de días parecidos con una diferencia pequeña."
+    destacar: [pequeña]
+    principio: "El cambio ocurre por etapas y por acumulación, no por decisiones únicas."
+    fuente: "Prochaska & DiClemente (1983), modelo transteórico."
+    reflexion: >-
+      Las historias de transformación se cuentan como un antes y un después.
+      Vistas de cerca son otra cosa: semanas casi iguales entre sí, donde una
+      variable se movió un poco. Nadie nota el cambio mientras pasa. Solo se
+      ve mirando atrás.
+
+  - id: hab-07
+    texto: "El entorno gana. Si quieres cambiar, no discutas con tu voluntad: cambia lo que tienes a la mano."
+    destacar: [entorno]
+    principio: "Las señales del contexto disparan la conducta habitual; modificar el entorno es más eficaz que resistirlo."
+    fuente: "Wood et al. (2005); Thaler & Sunstein (2008), arquitectura de decisiones."
+    reflexion: >-
+      La fruta a la vista se come; la galleta en el cajón alto, menos. El
+      teléfono en otra habitación se revisa la mitad. No es falta de
+      carácter: es que el entorno decide antes que tú. Diseñarlo es la forma
+      más barata de cambiar.
+
+  - id: hab-08
+    texto: "Recaer no te devuelve al punto de partida. Te devuelve al camino, con un mapa que antes no tenías."
+    destacar: [mapa]
+    principio: "La recaída es una etapa esperable del cambio y contiene información sobre los disparadores."
+    fuente: "Prochaska & DiClemente (1983); Marlatt & Donovan (2005)."
+    reflexion: >-
+      La mayoría de la gente que cambia algo importante recae varias veces
+      antes de que se sostenga. Cada vuelta enseña qué lo disparó: una hora,
+      un lugar, una emoción. Quien vuelve a empezar no empieza de cero; empieza
+      sabiendo.

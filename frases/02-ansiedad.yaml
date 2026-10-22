@@ -1,0 +1,93 @@
+# Capítulo 2 · La mente que quiere adelantarse
+tema: ansiedad
+capitulo: 2
+titulo: La mente que quiere adelantarse
+hashtags: [ansiedad, calma, incertidumbre]
+tesis: >-
+  La ansiedad es anticipación: la mente intentando controlar un futuro que no
+  controla. Preocuparse se siente como prepararse, pero no lo es. Lo que
+  mantiene la ansiedad no es el peligro sino la evitación, y lo que la reduce no
+  es la certeza sino aprender a actuar sin ella.
+
+frases:
+  - id: ans-01
+    texto: "La ansiedad no predice el futuro. Lo ensaya, una y otra vez, con el peor libreto."
+    destacar: [ensaya]
+    principio: "La preocupación es simulación verbal de escenarios negativos, no predicción; su sesgo es catastrófico."
+    fuente: "Borkovec et al. (1998); Beck & Clark (1997)."
+    reflexion: >-
+      La mente ansiosa no adivina: repite. Y como siempre elige la versión más
+      grave, terminas viviendo diez veces una catástrofe que, casi siempre, no
+      ocurre ni una.
+
+  - id: ans-02
+    texto: "Preocuparte no es prepararte. Prepararte tiene pasos; preocuparte tiene vueltas."
+    destacar: [pasos, vueltas]
+    principio: "La preocupación se confunde con resolver problemas, pero no genera planes ni acciones; es repetitiva y abstracta."
+    fuente: "Borkovec (1994); Watkins (2008), pensamiento repetitivo constructivo y no constructivo."
+    reflexion: >-
+      Una forma de distinguirlos: prepararte termina en algo que puedes hacer
+      hoy. Preocuparte termina donde empezó, pero más cansado. Si llevas una
+      hora y no hay un paso concreto, no estás resolviendo nada.
+
+  - id: ans-03
+    texto: "Evitar lo que te da miedo alivia hoy y cobra mañana: cada vez que escapas, el miedo aprende que tenía razón."
+    destacar: [escapas]
+    principio: "La evitación refuerza negativamente la ansiedad; la exposición gradual es el tratamiento con más evidencia."
+    fuente: "Mowrer (1947), teoría de los dos factores; Craske et al. (2014), aprendizaje inhibitorio."
+    reflexion: >-
+      El alivio de evitar es real y por eso engancha. Pero el cerebro anota:
+      «me salvé porque escapé». La próxima vez el miedo llega más seguro de sí
+      mismo. Lo que lo desarma es quedarse y descubrir que podías.
+
+  - id: ans-04
+    texto: "La incertidumbre no es el problema. El problema es exigirle a la vida una garantía que no existe."
+    destacar: [garantía]
+    principio: "La intolerancia a la incertidumbre es el núcleo de la preocupación crónica."
+    fuente: "Dugas & Robichaud (2007); Carleton (2016)."
+    reflexion: >-
+      Nadie vive con certeza; algunos viven en paz con no tenerla. La
+      diferencia no está en cuánto saben del futuro, sino en cuánto necesitan
+      saberlo para poder moverse hoy.
+
+  - id: ans-05
+    texto: "No tienes que calmarte para actuar. Muchas veces es al revés: actuar es lo que te calma."
+    destacar: [actuar]
+    principio: "La acción orientada a valores con ansiedad presente reduce la ansiedad más que esperar a que baje."
+    fuente: "Hayes et al. (2012), ACT; activación conductual (Jacobson et al., 1996)."
+    reflexion: >-
+      Esperar a sentirte listo es una trampa, porque la ansiedad no avisa
+      cuándo termina. Dar el paso con el miedo encima es lo que le enseña al
+      cuerpo que el miedo no era el límite.
+
+  - id: ans-06
+    texto: "Tu cuerpo no distingue entre un peligro real y uno imaginado. Por eso un pensamiento puede acelerarte el corazón."
+    destacar: [imaginado]
+    principio: "La respuesta de estrés se dispara ante amenazas percibidas, incluidas las puramente mentales."
+    fuente: "Sapolsky (2004), Why Zebras Don't Get Ulcers; LeDoux (1996)."
+    reflexion: >-
+      El sistema de alarma es antiguo y rápido: no verifica si la amenaza está
+      delante o dentro de tu cabeza. Por eso las técnicas que pasan por el
+      cuerpo, respirar, caminar, soltar los hombros, funcionan aunque el
+      problema sea un pensamiento.
+
+  - id: ans-07
+    texto: "La preocupación te hace pagar dos veces: una antes, por si pasa, y otra si pasa. Casi siempre solo pagas la primera."
+    destacar: [dos veces]
+    principio: "La gran mayoría de las preocupaciones no se cumplen; el sufrimiento anticipatorio es el único costo seguro."
+    fuente: "LaFreniere & Newman (2020), Behavior Therapy 51(3): el 91,4% de las preocupaciones no se cumplió."
+    reflexion: >-
+      En un estudio, veintinueve personas con ansiedad generalizada anotaron
+      sus preocupaciones durante diez días y después comprobaron, una por una,
+      qué había pasado. El 91% no ocurrió. Lo único que sí pasó, en todos los
+      casos, fue la preocupación.
+
+  - id: ans-08
+    texto: "Un pensamiento que empieza con «¿y si...?» no es una pregunta. No busca respuesta: busca que le sigas el juego."
+    destacar: [juego]
+    principio: "Las cadenas de «¿y si?» son el motor verbal de la preocupación; responderlas las alimenta."
+    fuente: "Borkovec et al. (1983); Wells (1995), modelo metacognitivo."
+    reflexion: >-
+      Si respondes un «¿y si me va mal?», aparece otro: «¿y si después...?».
+      No hay respuesta que los cierre porque no son preguntas, son invitaciones.
+      Se puede declinar una invitación sin discutirla.

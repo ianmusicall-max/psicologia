@@ -1,0 +1,98 @@
+# Capítulo 10 · Para qué, no solo por qué
+tema: sentido
+capitulo: 10
+titulo: Para qué, no solo por qué
+hashtags: [sentido, valores, proposito]
+tesis: >-
+  La felicidad buscada de frente se escapa; llega de lado, mientras uno hace
+  algo que le importa. Las metas se cumplen y se acaban; los valores se viven
+  y no terminan. No hace falta un gran propósito: basta con cosas que importen
+  y gente a la que le importes.
+
+frases:
+  - id: sen-01
+    texto: "Buscar la felicidad directamente suele espantarla. Llega de lado, mientras haces algo que vale la pena."
+    destacar: [de lado]
+    principio: "Valorar la felicidad como meta explícita se asocia paradójicamente a menor bienestar; el sentido la produce como efecto."
+    fuente: "Mauss et al. (2011), Emotion 11(4); Frankl (1946), la felicidad como consecuencia."
+    reflexion: >-
+      Quien se pregunta a cada rato «¿soy feliz?» suele contestarse que no:
+      la pregunta misma mide y, al medir, decepciona. Las personas que
+      reportan más bienestar rara vez lo persiguen. Están ocupadas en algo
+      que les importa.
+
+  - id: sen-02
+    texto: "Una meta se cumple y se acaba. Un valor se vive, y nunca termina de cumplirse. Por eso las metas dejan vacío y los valores no."
+    destacar: [valor]
+    principio: "Los valores son direcciones, no destinos; orientan la conducta de forma sostenida, a diferencia de las metas."
+    fuente: "Hayes et al. (2012), ACT; Wilson & Murrell (2004)."
+    reflexion: >-
+      Terminar la carrera, comprar la casa, bajar de peso: llegan y a los
+      pocos días la vida vuelve a sentirse igual. Ser alguien que aprende,
+      que cuida, que crea, no se alcanza nunca y por eso nunca se vacía.
+      Las metas son escalones; los valores, la dirección.
+
+  - id: sen-03
+    texto: "No hace falta que tu vida tenga un gran propósito. Basta con que tenga cosas que te importen y gente a la que le importes."
+    destacar: [importes]
+    principio: "El sentido vital se compone de coherencia, propósito y significación; la conexión con otros es su fuente más robusta."
+    fuente: "Steger (2012); Martela & Steger (2016); Ryan & Deci (2000), necesidad de relación."
+    reflexion: >-
+      La presión por «encontrar tu propósito» deja a mucha gente sintiendo
+      que su vida común es un fracaso. Los estudios sobre sentido dicen otra
+      cosa: lo que más predice una vida con sentido es sentirse parte de
+      algo y necesario para alguien. Eso cabe en una vida cualquiera.
+
+  - id: sen-04
+    texto: "Lo que compras te alegra una semana. Lo que haces con otros te alegra más tiempo, y encima se recuerda."
+    destacar: [con otros]
+    principio: "Las experiencias compartidas producen más bienestar y más duradero que las compras materiales, por la adaptación hedónica."
+    fuente: "Van Boven & Gilovich (2003); Dunn, Aknin & Norton (2008)."
+    reflexion: >-
+      El cerebro se acostumbra rápido a lo que tiene: el teléfono nuevo es
+      viejo en un mes. Una cena con amigos, un viaje, una tarde haciendo algo
+      juntos, se vuelve recuerdo, y los recuerdos no se desgastan con el
+      uso. Mejoran.
+
+  - id: sen-05
+    texto: "Elegir siempre lo cómodo no es cuidarte. Es dejar que el miedo decida tu vida con tu firma."
+    destacar: [miedo]
+    principio: "La evitación experiencial reduce el malestar a corto plazo y estrecha la vida a largo plazo."
+    fuente: "Hayes et al. (1996), evitación experiencial; Kashdan et al. (2006)."
+    reflexion: >-
+      Cuidarse a veces es descansar y a veces es hacer lo que da miedo. Si
+      cada decisión la toma la comodidad, la vida se va haciendo pequeña sin
+      que ningún día parezca una mala decisión. El miedo no grita; sugiere.
+
+  - id: sen-06
+    texto: "Nadie puede decirte qué le da sentido a tu vida. Pero sí puedes notar qué te duele perder: ahí suele estar la respuesta."
+    destacar: [duele]
+    principio: "El dolor señala valores: duele perder lo que importa; la clarificación de valores parte de ahí."
+    fuente: "Hayes et al. (2012), «en tu dolor están tus valores»; Wilson & DuFrene (2009)."
+    reflexion: >-
+      Si no sabes qué te importa, mira qué te hizo llorar, qué te indigna,
+      qué pérdida no te perdonarías. El dolor es un mapa de lo que vale para
+      ti. No hay que buscar el sentido muy lejos: suele estar donde más
+      duele.
+
+  - id: sen-07
+    texto: "No eres lo que logras. Eres lo que decides cuidar aunque nadie te lo pida."
+    destacar: [cuidar]
+    principio: "La motivación intrínseca y el cuidado elegido sostienen el bienestar más que el logro reconocido."
+    fuente: "Ryan & Deci (2000), teoría de la autodeterminación; Erikson (1950), generatividad."
+    reflexion: >-
+      Los logros se miden desde fuera y se olvidan rápido. Lo que cuidas
+      cuando nadie mira, una planta, un amigo enfermo, un oficio hecho bien,
+      es lo que te define cuando se apaga el aplauso. Y es lo único que
+      nadie te puede quitar.
+
+  - id: sen-08
+    texto: "Ayudar a alguien no te quita tiempo. Te lo devuelve con sentido."
+    destacar: [sentido]
+    principio: "Dar tiempo a otros aumenta la sensación subjetiva de tener tiempo y el bienestar."
+    fuente: "Mogilner, Chance & Norton (2012), Psychological Science; Dunn et al. (2008), gasto prosocial."
+    reflexion: >-
+      Parece lógico que ayudar reste horas. En los estudios pasa lo
+      contrario: quien dedica un rato a otro siente que tiene más tiempo, no
+      menos, porque siente que lo usó en algo que valía. El tiempo no se
+      mide solo en minutos.

@@ -1,0 +1,98 @@
+# Capítulo 9 · El cuerpo también piensa
+tema: descanso
+capitulo: 9
+titulo: El cuerpo también piensa
+hashtags: [descanso, estres, atencion]
+tesis: >-
+  La mente no vive sola: duerme, se mueve, se cansa. Dormir poco vuelve a
+  cualquiera más irritable y peor juez de sí mismo; moverse cambia el ánimo
+  más que pensar en cambiarlo. El descanso no es el premio por terminar, y la
+  atención es el recurso más escaso que tenemos.
+
+frases:
+  - id: des-01
+    texto: "Dormir poco no te hace más productivo. Te hace más irritable, más impulsivo y peor juez de ti mismo."
+    destacar: [Dormir]
+    principio: "La privación de sueño aumenta la reactividad de la amígdala y reduce el control prefrontal sobre las emociones."
+    fuente: "Yoo et al. (2007), Current Biology: +60% de reactividad de la amígdala; Ben Simon et al. (2020)."
+    reflexion: >-
+      Después de una mala noche todo se siente peor: el comentario inocente
+      suena a ataque, el error pequeño parece definitivo. No es que tu vida
+      haya empeorado en ocho horas. Es que el freno del cerebro está
+      cansado y el acelerador no.
+
+  - id: des-02
+    texto: "El descanso no es el premio por haber terminado. Es parte del trabajo de poder seguir."
+    destacar: [descanso]
+    principio: "La recuperación es una necesidad fisiológica y cognitiva, no una recompensa condicional al rendimiento."
+    fuente: "Sonnentag & Fritz (2007), recuperación del trabajo; Meijman & Mulder (1998)."
+    reflexion: >-
+      Si solo descansas cuando acabaste todo, nunca descansas, porque nunca
+      se acaba todo. La recuperación no se gana: se programa, como se
+      programa cargar un teléfono antes de que se apague.
+
+  - id: des-03
+    texto: "Lo que no se dice, el cuerpo lo guarda: en la espalda tensa, en el estómago cerrado, en el sueño que no llega."
+    destacar: [cuerpo]
+    principio: "El estrés sostenido se expresa en síntomas somáticos: tensión muscular, molestias digestivas, insomnio."
+    fuente: "Sapolsky (2004); McEwen (1998), carga alostática."
+    reflexion: >-
+      El cuerpo no sabe de buenas razones para callar. Cuando algo queda
+      sin decir durante mucho tiempo, aparece en otro idioma: contracturas,
+      dolores sin causa, noches en vela. A veces el primer síntoma de un
+      problema emocional no se siente en la cabeza.
+
+  - id: des-04
+    texto: "Moverte no es solo para el cuerpo. Treinta minutos caminando cambian más tu ánimo que una hora pensando en cómo cambiarlo."
+    destacar: [caminando]
+    principio: "El ejercicio físico tiene efecto antidepresivo y ansiolítico comparable al de otros tratamientos en casos leves y moderados."
+    fuente: "Noetel et al. (2024), BMJ: 218 estudios y 14.170 personas; Schuch et al. (2016)."
+    reflexion: >-
+      No hace falta correr una maratón. En la revisión más grande que hay,
+      caminar rápido, el yoga y la fuerza fueron lo que más bajó los
+      síntomas, y cuanto más intenso, mejor. Es de las pocas cosas que
+      sirven incluso cuando no tienes ganas de que sirvan.
+
+  - id: des-05
+    texto: "El estrés no es tener muchas cosas que hacer. Es sentir que ninguna depende de ti."
+    destacar: [depende]
+    principio: "La percepción de control predice el daño del estrés más que la carga en sí."
+    fuente: "Karasek (1979), modelo demanda-control; Sapolsky (2004)."
+    reflexion: >-
+      Hay gente con agendas llenas y en paz, y gente con poco que hacer y
+      agotada. La diferencia suele ser el control: poder decidir el orden,
+      el ritmo, el cómo. El estrés que más daña al cuerpo es el de lo que
+      te pasa sin que puedas tocarlo.
+
+  - id: des-06
+    texto: "Hacer muchas cosas a la vez no es hacer más. Es hacer varias peor y cansarte el doble."
+    destacar: [doble]
+    principio: "El cambio de tarea tiene un costo cognitivo medible; la multitarea reduce rendimiento y aumenta errores."
+    fuente: "Rubinstein et al. (2001); Mark et al. (2008), interrupciones."
+    reflexion: >-
+      El cerebro no hace dos cosas a la vez: alterna rápido entre ellas, y
+      cada alternancia cobra. Al final del día hiciste lo mismo que haciendo
+      una por una, con el doble de cansancio y la sensación de no haber
+      terminado nada.
+
+  - id: des-07
+    texto: "La atención es lo más valioso que tienes, y la regalas a quien más grita. Elige a quién se la das."
+    destacar: [atención]
+    principio: "La atención es un recurso limitado y disputado; su captura por estímulos salientes no es una elección consciente."
+    fuente: "Kahneman (1973); Simon (1971), economía de la atención."
+    reflexion: >-
+      Cada notificación, cada titular, cada discusión ajena, compite por lo
+      mismo: tu atención. Y lo que miras durante horas termina pareciéndose
+      a tu vida. No es poco lo que está en juego cuando decides a qué
+      mirar.
+
+  - id: des-08
+    texto: "Estar presente no es vaciar la mente. Es notar a dónde se fue y traerla de vuelta, las veces que haga falta."
+    destacar: [presente]
+    principio: "La atención plena es la práctica de notar la distracción y redirigir, no la ausencia de pensamientos."
+    fuente: "Kabat-Zinn (1990); Bishop et al. (2004), definición operacional de mindfulness."
+    reflexion: >-
+      La gente abandona la meditación porque «no puede dejar de pensar».
+      Pero el ejercicio no es ese. El ejercicio es darse cuenta de que la
+      mente se fue y volver, y cada vuelta cuenta como una repetición. La
+      distracción no es el fracaso de la práctica: es la práctica.
