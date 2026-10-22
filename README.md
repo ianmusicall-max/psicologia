@@ -41,6 +41,8 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/frase_del_dia.py` | la que toca, con su caption. `--dibujar` deja el flyer, `--publicar` la sube |
 | `scripts/dibujar_todas.py` | el banco entero en `data/flyers`, para mirarlo antes de que salga |
 | `scripts/armar_libro.py` | vuelve a escribir `libro/borrador.md` desde el banco |
+| `scripts/revisar_token.py` | si el token es de página o de usuario, de cuál, qué permisos y cuándo vence. Solo lee |
+| `scripts/token_permanente.py` | convierte el token en uno de página que no vence y lo deja en el `.env` |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
@@ -108,10 +110,31 @@ el 91% de LaFreniere y Newman, que es lo que el estudio midió, y no añade el
 comprobar; la de moverse nombra caminar, yoga y fuerza, que es lo que la
 revisión de Noetel sostiene, y no bailar, que no está entre sus resultados.
 
+## El token
+
+Un token de página **no vence** cuando se deriva de un token de usuario largo,
+y ese es el único camino:
+
+```
+token corto de usuario
+  -> /oauth/access_token (fb_exchange_token)   = token largo de usuario
+  -> /me/accounts                              = un token por página, sin vencimiento
+```
+
+`scripts/token_permanente.py` hace los dos pasos y con `--guardar` escribe el
+resultado en el `.env`. Necesita `FB_APP_ID` y `FB_APP_SECRET`, porque el
+intercambio lo firma la app. Si lo que tienes es el token de la página y no el
+del usuario, el script lo dice y no inventa nada: hay que volver al Explorador
+de Meta y pedir el del usuario.
+
+Un id de app y un id de página son dos números de dieciséis dígitos y se ven
+iguales. Usar uno por el otro hace que publicar falle con un error que no dice
+cuál de los dos está mal, así que `revisar_token.py` los separa antes.
+
 ## Lo que falta
 
-- La página no existe todavía: hay que crearla, sacar el token y llenar el
-  `.env`. El `page_id` y el token son de PÁGINA, con `pages_manage_posts`.
+- Poner el `.env` en la máquina desde la que se publica. El `page_id` y el
+  token son de PÁGINA, con `pages_manage_posts` y `pages_read_engagement`.
 - El nombre en `config/pagina.yaml` es provisional. El flyer lo lee de ahí, así
   que cambiarlo es una línea y no tocar el dibujo.
 - Las historias, los comentarios y la medición no están. En el proyecto de
