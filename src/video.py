@@ -799,6 +799,32 @@ def voces_de_eleven(clave: Optional[str] = None) -> List[dict]:
     return r.json().get("voices", [])
 
 
+# Errores de ElevenLabs que no se explican solos. El texto crudo de la API
+# dice QUE pasó pero no QUÉ hacer, y éste en particular manda a buscar el
+# problema donde no está: la clave funciona, el plan también permite usar la
+# API, y aun así esa voz no se puede.
+PISTAS_ELEVEN = {
+    "paid_plan_required":
+        "El plan gratuito permite la API pero NO con las voces de la "
+        "biblioteca, que es de donde salió ésta. Son dos cosas distintas y "
+        "se parecen: la clave está bien. Hay que pasar a Starter, o usar una "
+        "de las voces que vienen de fábrica en la cuenta.",
+    "quota_exceeded":
+        "Se acabaron los créditos del mes. Lo que ya está en data/voz_cache "
+        "se sigue usando sin gastar.",
+    "voice_not_found":
+        "Esa voz no está en tu cuenta. Las de la biblioteca hay que "
+        "agregarlas primero con «Add» para que la API las vea.",
+}
+
+
+def _pista_de_eleven(texto: str) -> str:
+    for clave, pista in PISTAS_ELEVEN.items():
+        if clave in texto:
+            return "\n%s" % pista
+    return ""
+
+
 def _pedir_voz_eleven(clave: str, voz: str, cuerpo: dict) -> bytes:
     import requests
     try:
@@ -810,7 +836,9 @@ def _pedir_voz_eleven(clave: str, voz: str, cuerpo: dict) -> bytes:
     except requests.RequestException as e:
         raise VideoError("no se pudo llegar a ElevenLabs: %s" % e)
     if r.status_code != 200:
-        raise VideoError("ElevenLabs contestó %d: %s" % (r.status_code, r.text[:200]))
+        raise VideoError("ElevenLabs contestó %d: %s%s"
+                         % (r.status_code, r.text[:300],
+                            _pista_de_eleven(r.text)))
     return r.content
 
 

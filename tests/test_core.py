@@ -2279,6 +2279,20 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
         self.assertEqual(pedidos[0]["text"], texto)
         self.assertEqual(pedidos[0]["model_id"], video.MODELO_ELEVEN)
 
+    def test_un_402_de_eleven_dice_que_hacer(self):
+        # El texto crudo de la API manda a buscar el problema donde no esta:
+        # la clave funciona y el plan permite la API, y aun asi esa voz no se
+        # puede. Paso de verdad el 2026-10-23 y costo una corrida.
+        crudo = ('{"detail":{"type":"payment_required","code":'
+                 '"paid_plan_required","message":"Free users cannot use '
+                 'library voices via the API."}}')
+        pista = video._pista_de_eleven(crudo)
+        self.assertIn("biblioteca", pista)
+        self.assertIn("Starter", pista)
+
+    def test_un_error_cualquiera_no_recibe_una_explicacion_inventada(self):
+        self.assertEqual(video._pista_de_eleven('{"detail":"algo raro"}'), "")
+
     def test_eleven_sin_voz_elegida_avisa_y_no_pide_nada(self):
         # Hoy hay una por defecto; esto cubre el dia que alguien la borre.
         # Sin la guarda, la peticion saldria con la voz vacia y el error de
