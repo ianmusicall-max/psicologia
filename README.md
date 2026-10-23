@@ -181,12 +181,33 @@ dice. Sale de la frase **y de su reflexión**: una frase sola son seis segundos.
 
 ```
 scripts/fondos.py                     baja clips de naturaleza (una sola vez)
-scripts/reel.py --fondo data/fondos --voz-mac    el reel como el de la referencia
+scripts/reel.py --tema autoestima --fondo data/fondos --voz-mac --musica cama.mp3
 scripts/reel.py --ver                 qué haría, sin armar nada
-scripts/reel.py --id aut-01           esa frase
+scripts/reel.py --id aut-01           una frase sola: unos 30 s
 scripts/reel.py --voz mi-voz.m4a      tu voz leyendo el texto
 scripts/reel.py                       sin fondo ni voz: sobre el papel, mudo
 ```
+
+**Un reel de un minuto es un CAPÍTULO, no una frase larga.** Una frase con su
+reflexión son 344 caracteres, unos 30 segundos hablados, y no hay nada que
+estirar: el texto es el que es. `--tema` arma el reel con la tesis del
+capítulo y las frases que entren —texto ya escrito, ya validado y ya ordenado,
+que es lo mismo que hace el libro con ese material—. Da entre 71 y 79 segundos
+según el capítulo. Nunca corta una frase por la mitad: entra entera o no entra.
+
+**La música va 17 dB bajo la voz**, que es `volume=0.14`. No es un gusto: está
+medido sobre la referencia que mandó el usuario, donde la cama está exactamente
+a esa distancia. Sin voz sube al frente. `amix` lleva `normalize=0` porque si
+no divide por la cantidad de entradas, la voz sale a la mitad y hay que
+compensarla subiéndola, que es como se llega a un reel que satura en el
+teléfono. Al final todo pasa por `loudnorm` al volumen de las plataformas, así
+que un reel grabado con tu voz y otro hecho con `say` suenan parejo.
+
+**La voz que elige `--voz-mac`** sale de `VOCES`, que arranca por las
+masculinas: el audio de la referencia mide 122 Hz de mediana, que es voz de
+hombre. Entre dos variantes del mismo nombre gana la mejorada. Si ninguna de la
+lista está instalada toma la que haya, porque perder la voz sería peor que no
+tener la que se quería.
 
 Deja el mp4 en `data/reels`. **No publica**: subirlo es una decisión.
 

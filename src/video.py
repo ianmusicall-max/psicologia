@@ -165,22 +165,60 @@ def _pedazos(texto: str, tope: int) -> List[str]:
     return unidades
 
 
+def unidades_de(texto: str, tope: int = UNIDAD_MAXIMA) -> List[str]:
+    """Un texto cualquiera partido en lo que se muestra de a una vez."""
+    salida: List[str] = []
+    for oracion in CORTE_FUERTE.split(" ".join((texto or "").split())):
+        if not oracion.strip():
+            continue
+        if len(oracion) <= tope:
+            salida.append(oracion.strip())
+        else:
+            salida += _pedazos(oracion, tope)
+    return salida
+
+
 def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
     """Lo que se dice y se muestra: la frase y después su reflexión.
 
     Las dos cosas y no solo la frase: una frase sola son seis segundos de
-    video, y lo que sostiene un reel de un minuto es la explicación, que el
-    banco ya tiene escrita y validada.
+    video, y lo que sostiene un reel es la explicación, que el banco ya tiene
+    escrita y validada. Aun así son unos 30 segundos hablados: para un minuto
+    hace falta un capítulo entero, que es `guion_de_tema`.
     """
-    unidades: List[str] = []
-    for texto in (frase.texto, frase.reflexion):
-        for oracion in CORTE_FUERTE.split(" ".join((texto or "").split())):
-            if not oracion.strip():
-                continue
-            if len(oracion) <= tope:
-                unidades.append(oracion.strip())
-            else:
-                unidades += _pedazos(oracion, tope)
+    return unidades_de(frase.texto, tope) + unidades_de(frase.reflexion, tope)
+
+
+# El largo que se busca cuando el reel es un capítulo. Está en segundos LEÍDOS
+# y no hablados, que es lo único que se puede saber antes de sintetizar la voz.
+# Una voz tarda cerca de un 20% más que la lectura, así que 60 acá son unos 73
+# hablados: lejos del tope de 90 y cómodamente arriba del minuto.
+OBJETIVO = 60.0
+
+
+def guion_de_tema(tema, segundos: float = OBJETIVO, desde: int = 0,
+                  tope: int = UNIDAD_MAXIMA) -> List[str]:
+    """Un capítulo en un reel: su tesis y las frases que entren.
+
+    Para llegar al minuto no hacen falta frases más largas sino MÁS frases.
+    Una frase con su reflexión son unos 30 segundos hablados; la tesis del
+    capítulo más dos o tres frases llegan al minuto con texto que ya está
+    escrito, validado por la línea editorial y ordenado -la tesis presenta el
+    asunto y cada frase lo desarrolla-, que es exactamente lo que el libro
+    hace con ese mismo material.
+
+    Nunca se corta una frase por la mitad: entra entera o no entra. Media
+    reflexión termina en el aire y el reel se lee como un error.
+    """
+    unidades = unidades_de(tema.tesis, tope)
+    for frase in list(tema.frases)[desde:]:
+        candidatas = unidades + unidades_de(frase.texto, tope) + \
+            unidades_de(frase.reflexion, tope)
+        if duracion_del_guion(candidatas) > segundos * 1.25:
+            break
+        unidades = candidatas
+        if duracion_del_guion(unidades) >= segundos:
+            break
     return unidades
 
 
@@ -375,7 +413,18 @@ def marca(pagina: Pagina, titulo: str, ruta: Path, tema: str = "papel") -> Path:
 # sincronismo.
 # ---------------------------------------------------------------------------
 
-VOZ_MAC = "Paulina"        # la voz en español latino que trae macOS
+# La referencia que mandó el usuario tiene una voz MASCULINA: medida sobre su
+# audio, la mediana del tono es 122 Hz, que está de lleno en el rango de hombre
+# (85-180) y lejos del de mujer (165-255). Por eso la preferencia arranca por
+# las masculinas y no por Paulina, que era el valor anterior.
+#
+# El orden va de más neutro-latino a menos: un lector peruano oye «Jorge» como
+# claramente español. Las variantes mejoradas de macOS se llaman igual con un
+# agregado -«Juan (Mejorada)», «Juan (Premium)»- y suenan bastante mejor, así
+# que se eligen antes si están instaladas.
+VOCES = ("Juan", "Carlos", "Diego", "Enrique", "Jorge",
+         "Paulina", "Monica", "Mónica", "Francisca", "Soledad")
+VOZ_MAC = "Juan"
 PAUSA = 0.28               # el aire entre un renglón y el siguiente
 
 
@@ -404,6 +453,21 @@ def decir(texto: str, ruta: Path, voz: str = VOZ_MAC) -> Path:
     return ruta
 
 
+def voz_preferida(instaladas: Optional[List[str]] = None) -> str:
+    """La mejor voz en español que esté instalada, según `VOCES`.
+
+    Se elige y no se clava porque una voz que no está da «Voice not found», que
+    se lee como si `say` estuviera roto. Entre dos variantes del mismo nombre
+    gana la más larga: «Juan (Mejorada)» antes que «Juan».
+    """
+    hay = instaladas if instaladas is not None else voces_en_espanol()
+    for quien in VOCES:
+        parecidas = [v for v in hay if v == quien or v.startswith(quien + " ")]
+        if parecidas:
+            return sorted(parecidas, key=len)[-1]
+    return hay[0] if hay else VOZ_MAC
+
+
 def voces_en_espanol() -> List[str]:
     """Las voces en español instaladas. Para decir cuáles hay cuando falta una.
 
@@ -415,8 +479,18 @@ def voces_en_espanol() -> List[str]:
         r = subprocess.run(["say", "-v", "?"], capture_output=True, text=True, timeout=60)
     except (OSError, subprocess.SubprocessError):
         return []
-    return [linea.split()[0] for linea in (r.stdout or "").splitlines()
-            if "es_" in linea or "es-" in linea]
+    salida = []
+    for linea in (r.stdout or "").splitlines():
+        if "es_" not in linea and "es-" not in linea:
+            continue
+        # El formato es «Nombre   es_MX   # ejemplo». El nombre puede tener
+        # paréntesis y espacios -«Juan (Mejorada)»- así que se corta por el
+        # código de idioma y no por el primer espacio.
+        corte = min((linea.find(x) for x in ("es_", "es-") if linea.find(x) > 0),
+                    default=-1)
+        if corte > 0:
+            salida.append(linea[:corte].strip())
+    return salida
 
 
 def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
@@ -502,6 +576,21 @@ def _deriva(total: float) -> str:
 # corte compite con el texto; mucho más largas y vuelve a ser un fondo fijo.
 ESCENA = 7.0
 
+# La música va MUY abajo cuando hay voz: es una cama, no un tema. 0,14 es la
+# proporción que se usa para locución encima de música; más que eso y hay que
+# subir la voz, que es como se llega a un reel que satura en el teléfono. Sin
+# voz puede ir al frente, porque es lo único que suena.
+MUSICA_CON_VOZ = 0.14
+MUSICA_SOLA = 0.50
+ENTRADA = 1.5              # el fundido de entrada
+SALIDA = 2.5               # y el de salida, que evita el corte seco
+
+# El volumen al que Facebook e Instagram dejan todo lo que se sube: si el reel
+# viene más bajo lo suben igual, y si viene más alto lo bajan. Dejarlo acá hace
+# que un reel grabado con tu voz y otro hecho con `say` suenen parejo, que si
+# no dependen de cuánto levante el micrófono.
+SONORIDAD = "I=-14:TP=-1.5:LRA=11"
+
 
 def escenas(clips: Sequence[Path], total: float, escena: float = ESCENA) -> List[Path]:
     """Qué clip va en cada tramo, turnándolos hasta cubrir el guion."""
@@ -511,7 +600,7 @@ def escenas(clips: Sequence[Path], total: float, escena: float = ESCENA) -> List
 
 def comando(subtitulos: Path, salida: Path, total: float, fondo,
             rotulos: Optional[Path] = None, voz: Optional[Path] = None,
-            escena: float = ESCENA) -> List[str]:
+            musica: Optional[Path] = None, escena: float = ESCENA) -> List[str]:
     """El ffmpeg que arma el reel. Devuelve la lista, para poder mirarla sin correrla.
 
     Las capas, en orden: el fondo -una imagen que deriva, o varios clips que se
@@ -551,18 +640,48 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
         ultima = "marcado"
     else:
         ultima = "bg"
-    audio = cuantas
-    if voz:
-        entradas += ["-i", str(voz)]
-    else:
-        entradas += ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000"]
     # `fontsdir` es lo que hace que libass encuentre la Lora del repo sin
     # instalarla en el sistema: sin eso, en otra computadora el reel sale con
     # otra tipografía y nadie se entera hasta verlo.
     cadena += ";[%s]ass='%s':fontsdir='%s'[v]" % (ultima, subtitulos.as_posix(),
                                                   FUENTES.as_posix())
+
+    pista_voz = cuantas
+    if voz:
+        entradas += ["-i", str(voz)]
+    else:
+        entradas += ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000"]
+    cuantas += 1
+    if musica:
+        # Se repite si es más corta que el reel: una cama que se corta a la
+        # mitad se nota más que no tenerla.
+        entradas += ["-stream_loop", "-1", "-i", str(musica)]
+        cadena += (";[%d:a]aformat=sample_fmts=fltp:sample_rates=48000:"
+                   "channel_layouts=stereo,volume=%.2f,afade=t=in:d=%.1f,"
+                   "afade=t=out:st=%.2f:d=%.1f[mus]"
+                   % (cuantas, MUSICA_CON_VOZ if voz else MUSICA_SOLA,
+                      ENTRADA, max(0.0, total - SALIDA), SALIDA))
+        # `normalize=0` no es un detalle: por defecto `amix` divide por la
+        # cantidad de entradas, o sea que la voz saldría a la mitad y habría
+        # que compensarla subiéndola, que es como se llega a un reel que
+        # satura en el teléfono.
+        cadena += (";[%d:a]aformat=sample_fmts=fltp:sample_rates=48000:"
+                   "channel_layouts=stereo[vz];[vz][mus]amix=inputs=2:"
+                   "duration=first:normalize=0[a]" % pista_voz)
+        cuantas += 1
+        salida_audio = "[a]"
+    elif voz:
+        cadena += ";[%d:a]aformat=sample_fmts=fltp:sample_rates=48000:" \
+                  "channel_layouts=stereo[a]" % pista_voz
+        salida_audio = "[a]"
+    else:
+        # Sin voz y sin música no hay nada que nivelar, y `loudnorm` sobre
+        # silencio es trabajo para nada.
+        salida_audio = "%d:a" % pista_voz
+    if salida_audio == "[a]":
+        cadena = cadena[:-len("[a]")] + ",loudnorm=%s[a]" % SONORIDAD
     return (["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"] + entradas +
-            ["-filter_complex", cadena, "-map", "[v]", "-map", "%d:a" % audio,
+            ["-filter_complex", cadena, "-map", "[v]", "-map", salida_audio,
              "-t", "%.2f" % total,
              "-c:v", "libx264", "-preset", "medium", "-crf", "20",
              "-pix_fmt", "yuv420p", "-r", str(FPS),
@@ -573,7 +692,8 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
 def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path] = None,
           fondo=None, voz: Optional[Path] = None, carpeta: Optional[Path] = None,
           marcas: Optional[List[Tuple[float, float]]] = None,
-          rotular: Optional[bool] = None) -> Path:
+          rotular: Optional[bool] = None, musica: Optional[Path] = None,
+          unidades: Optional[Sequence[str]] = None) -> Path:
     """El reel entero. Devuelve el archivo.
 
     Sin `fondo` dibuja el papel de la marca; `fondo` puede ser un clip o una
@@ -587,7 +707,7 @@ def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path]
     carpeta = Path(carpeta or REELS)
     carpeta.mkdir(parents=True, exist_ok=True)
     salida = Path(salida or carpeta / ("%s.mp4" % frase.id))
-    unidades = guion(frase)
+    unidades = list(unidades) if unidades else guion(frase)
     if not unidades:
         raise VideoError("la frase %s no tiene nada que decir" % frase.id)
     if marcas is None:
@@ -606,7 +726,7 @@ def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path]
     sub = carpeta / ("%s.ass" % frase.id)
     sub.write_text(ass(unidades, marcas, pagina, tema), encoding="utf-8")
     try:
-        r = subprocess.run(comando(sub, salida, total, fondo, rotulos, voz),
+        r = subprocess.run(comando(sub, salida, total, fondo, rotulos, voz, musica),
                            capture_output=True, text=True, timeout=900)
     except (OSError, subprocess.SubprocessError) as e:
         raise VideoError("no pude llamar a ffmpeg: %s" % e)

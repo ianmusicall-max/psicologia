@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""El reel de una frase: vertical, el texto renglon a renglon sobre un fondo.
+"""El reel: vertical, el texto renglon a renglon sobre un fondo.
 
     reel.py                      la frase que toca, sin voz, sobre el papel
     reel.py --id aut-01          esa frase
+    reel.py --tema autoestima    el CAPITULO entero: un reel de un minuto
     reel.py --fondo data/fondos  un clip de naturaleza (o una carpeta con varios)
     reel.py --voz mi-voz.m4a     tu voz grabada leyendo el texto
     reel.py --voz-mac            la voz de la Mac (`say`), renglon por renglon
+    reel.py --musica cama.mp3    musica de fondo, bien abajo si hay voz
     reel.py --ver                dice que haria, sin armar nada
+
+UNA FRASE SON UNOS 30 SEGUNDOS HABLADOS y no llega al minuto por mas que se
+alargue. Para un minuto va `--tema`: la tesis del capitulo y las frases que
+entren, que es texto ya escrito y ya validado, y ademas ordenado -la tesis
+presenta el asunto y cada frase lo desarrolla-.
 
 NO PUBLICA NADA. Deja el mp4 en data/reels y lo subis vos, o lo mandas por
 Telegram para mirarlo en el telefono.
@@ -55,14 +62,29 @@ def elegir_fondo(donde: str, semilla: str) -> list:
     return clips
 
 
+def buscar_tema(temas, cual: str):
+    """Por nombre («autoestima») o por numero de capitulo («3»)."""
+    cual = (cual or "").strip().lower()
+    for t in temas:
+        if t.tema.lower() == cual or str(t.capitulo) == cual:
+            return t
+    return None
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--id", help="que frase")
+    ap.add_argument("--tema", help="el capitulo entero, por nombre o por numero")
+    ap.add_argument("--objetivo", type=float, default=video.OBJETIVO,
+                    metavar="SEG", help="cuanto durar con --tema (leido, no hablado)")
+    ap.add_argument("--desde", type=int, default=0,
+                    help="con --tema, desde que frase del capitulo empezar")
+    ap.add_argument("--musica", help="un audio de fondo")
     ap.add_argument("--fondo", help="un clip o una carpeta con clips")
     ap.add_argument("--voz", help="un audio tuyo leyendo el texto")
-    ap.add_argument("--voz-mac", nargs="?", const=video.VOZ_MAC, default=None,
-                    metavar="VOZ", help="usar `say` (Paulina, Jorge, Monica...)")
+    ap.add_argument("--voz-mac", nargs="?", const="", default=None, metavar="VOZ",
+                    help="usar `say`; sin nombre elige la mejor en espanol que tengas")
     ap.add_argument("--ver", action="store_true", help="decir que haria, sin armar")
     ap.add_argument("--carpeta", default=str(video.REELS))
     args = ap.parse_args(argv)
@@ -70,42 +92,58 @@ def main(argv=None) -> int:
     pagina = config.cargar()
     temas = frases.leer()
     ya = frases.publicadas()
-    frase = frases.por_id(temas, args.id) if args.id else frases.siguiente(temas, ya)
-    if frase is None:
-        print("No encuentro esa frase." if args.id else "Ya salieron todas.")
-        return 2
-    tema = frases.tema_de(temas, frase)
     carpeta = Path(args.carpeta)
 
-    unidades = video.guion(frase)
+    if args.tema:
+        tema = buscar_tema(temas, args.tema)
+        if tema is None:
+            print("No encuentro el tema %r. Hay: %s"
+                  % (args.tema, ", ".join(t.tema for t in temas)))
+            return 2
+        if args.desde >= len(tema.frases):
+            print("%s tiene %d frases." % (tema.tema, len(tema.frases)))
+            return 2
+        frase = tema.frases[args.desde]
+        unidades = video.guion_de_tema(tema, args.objetivo, args.desde)
+    else:
+        frase = frases.por_id(temas, args.id) if args.id else frases.siguiente(temas, ya)
+        if frase is None:
+            print("No encuentro esa frase." if args.id else "Ya salieron todas.")
+            return 2
+        tema = frases.tema_de(temas, frase)
+        unidades = video.guion(frase)
     fondo = elegir_fondo(args.fondo, frase.id) if args.fondo else None
     cuerpo, _ = video.reparto(unidades)
 
-    print("%s · capitulo %d, %s" % (frase.id, tema.capitulo, tema.titulo))
+    print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
+                                      "  (el capitulo entero)" if args.tema else ""))
     print("%d renglones, cuerpo %d, fondo %s"
           % (len(unidades), cuerpo,
              ", ".join(x.name for x in fondo[:3]) if fondo else "papel de la marca"))
     for u in unidades:
         print("   %s" % u)
 
-    if args.voz and args.voz_mac:
+    if args.voz and args.voz_mac is not None:
         print()
         print("Elegi una voz sola: --voz es tu grabacion y --voz-mac es la de la Mac.")
         return 2
 
     if args.ver:
+        leido = video.duracion_del_guion(unidades)
         print()
-        print("Duraria %.0f s." % video.duracion_del_guion(unidades))
+        print("Duraria %.0f s leido, o sea unos %.0f hablados (tope %d)."
+              % (leido, leido * 1.22, video.TOPE_SEGUNDOS))
         return 0
 
     marcas = None
     voz = Path(args.voz) if args.voz else None
-    if args.voz_mac:
+    if args.voz_mac is not None:
+        quien = args.voz_mac or video.voz_preferida()
         print()
-        print("Leyendo renglon por renglon con la voz %s..." % args.voz_mac)
+        print("Leyendo renglon por renglon con la voz %s..." % quien)
         try:
             voz, duraciones = video.voz_por_unidades(
-                unidades, carpeta / ("%s-voz" % frase.id), args.voz_mac)
+                unidades, carpeta / ("%s-voz" % frase.id), quien)
         except video.VideoError as e:
             print(e)
             hay = video.voces_en_espanol()
@@ -120,7 +158,8 @@ def main(argv=None) -> int:
 
     try:
         ruta = video.armar(frase, pagina, titulo=tema.titulo, fondo=fondo, voz=voz,
-                           carpeta=carpeta, marcas=marcas)
+                           carpeta=carpeta, marcas=marcas, unidades=unidades,
+                           musica=Path(args.musica) if args.musica else None)
     except video.VideoError as e:
         print(e)
         return 1

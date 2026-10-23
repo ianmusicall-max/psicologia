@@ -2008,5 +2008,111 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
                                   {"publicar", "publicar_las_dos", "anotar_publicada"}))
 
 
+class TestElReelDeUnCapitulo(unittest.TestCase):
+    """Para llegar al minuto no hacen falta frases más largas sino más frases:
+    una frase con su reflexión son unos 30 segundos hablados."""
+
+    def test_una_frase_sola_no_llega_al_minuto_por_mas_que_se_estire(self):
+        # Es el dato que decide que el reel largo sea un capítulo y no una
+        # frase: no hay nada que estirar, el texto es el que es.
+        largos = [video.duracion_del_guion(video.guion(f)) * 1.22
+                  for f in frases.todas(TEMAS)]
+        self.assertLess(max(largos), 60)
+
+    def test_un_capitulo_pasa_el_minuto_y_no_llega_al_tope(self):
+        for t in TEMAS:
+            hablado = video.duracion_del_guion(video.guion_de_tema(t)) * 1.22
+            self.assertGreater(hablado, 60, t.tema)
+            self.assertLess(hablado, video.TOPE_SEGUNDOS, t.tema)
+
+    def test_el_capitulo_abre_con_su_tesis(self):
+        t = TEMAS[2]
+        self.assertTrue(" ".join(video.guion_de_tema(t)).startswith(
+            " ".join(t.tesis.split())[:40]))
+
+    def test_nunca_corta_una_frase_por_la_mitad(self):
+        # Media reflexión termina en el aire y el reel se lee como un error.
+        t = TEMAS[2]
+        junto = " ".join(video.guion_de_tema(t))
+        enteras = [f for f in t.frases if " ".join(f.texto.split()) in junto]
+        self.assertGreaterEqual(len(enteras), 1)
+        for f in enteras:
+            self.assertIn(" ".join(f.reflexion.split())[:60], junto)
+
+    def test_desde_cambia_las_frases_pero_deja_la_tesis(self):
+        t = TEMAS[2]
+        uno, otro = video.guion_de_tema(t), video.guion_de_tema(t, desde=2)
+        self.assertEqual(uno[0], otro[0])
+        self.assertNotEqual(uno, otro)
+
+
+class TestLaMusicaDelReel(unittest.TestCase):
+
+    def _cadena(self, **kw):
+        orden = video.comando(Path("/g.ass"), Path("/s.mp4"), 30.0, [Path("a.mp4")], **kw)
+        return " ".join(orden)
+
+    def test_va_muy_abajo_con_voz_y_al_frente_sin_voz(self):
+        # Medido sobre la referencia que mandó el usuario: su cama está 17 dB
+        # bajo la voz, que es exactamente 0.14.
+        self.assertIn("volume=%.2f" % video.MUSICA_CON_VOZ,
+                      self._cadena(voz=Path("v.m4a"), musica=Path("m.mp3")))
+        self.assertIn("volume=%.2f" % video.MUSICA_SOLA,
+                      self._cadena(musica=Path("m.mp3")))
+        self.assertAlmostEqual(video.MUSICA_CON_VOZ, 0.14)
+
+    def test_amix_no_normaliza(self):
+        # Por defecto divide por la cantidad de entradas: la voz saldría a la
+        # mitad y habría que compensarla subiéndola, que es como se llega a un
+        # reel que satura en el teléfono.
+        self.assertIn("normalize=0", self._cadena(voz=Path("v.m4a"), musica=Path("m.mp3")))
+
+    def test_se_repite_si_es_mas_corta_que_el_reel(self):
+        orden = video.comando(Path("/g.ass"), Path("/s.mp4"), 30.0, [Path("a.png")],
+                              musica=Path("m.mp3"))
+        self.assertEqual(orden.count("-stream_loop"), 1)
+
+    def test_entra_y_sale_con_fundido(self):
+        cadena = self._cadena(musica=Path("m.mp3"))
+        self.assertIn("afade=t=in", cadena)
+        self.assertIn("afade=t=out:st=%.2f" % (30.0 - video.SALIDA), cadena)
+
+    def test_el_audio_sale_al_volumen_de_las_plataformas(self):
+        # Para que un reel con tu voz y otro con `say` suenen parejo.
+        for kw in ({"voz": Path("v.m4a")},
+                   {"voz": Path("v.m4a"), "musica": Path("m.mp3")},
+                   {"musica": Path("m.mp3")}):
+            self.assertIn("loudnorm=%s" % video.SONORIDAD, self._cadena(**kw))
+        # Sin voz ni música no hay nada que nivelar.
+        self.assertNotIn("loudnorm", self._cadena())
+
+
+class TestQueVozElige(unittest.TestCase):
+
+    def test_prefiere_una_masculina_como_la_de_la_referencia(self):
+        # El audio del video que mandó el usuario mide 122 Hz de mediana, que
+        # es voz de hombre (85-180) y no de mujer (165-255).
+        self.assertEqual(video.voz_preferida(["Alex", "Paulina", "Juan"]), "Juan")
+        self.assertEqual(video.VOCES[0], "Juan")
+
+    def test_entre_dos_variantes_gana_la_mejorada(self):
+        self.assertEqual(video.voz_preferida(["Juan", "Juan (Mejorada)"]),
+                         "Juan (Mejorada)")
+
+    def test_si_no_hay_ninguna_masculina_toma_la_que_haya(self):
+        # Perder la voz sería peor que no tener la que se quería.
+        self.assertEqual(video.voz_preferida(["Paulina"]), "Paulina")
+        self.assertEqual(video.voz_preferida(["Rocko"]), "Rocko")
+
+    def test_lee_un_nombre_con_parentesis_y_espacios(self):
+        # «Juan (Mejorada)   es_MX   # Hola.» no se puede cortar por el primer
+        # espacio: quedaría «Juan» y se perdería la variante buena.
+        salida = ("Juan (Mejorada)    es_MX    # Hola.\n"
+                  "Alex               en_US    # Hi.\n")
+        with mock.patch.object(video.subprocess, "run",
+                               return_value=mock.Mock(stdout=salida)):
+            self.assertEqual(video.voces_en_espanol(), ["Juan (Mejorada)"])
+
+
 if __name__ == "__main__":
     unittest.main()
