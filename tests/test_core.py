@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import unicodedata
 import unittest
 from datetime import date, datetime
 from pathlib import Path
@@ -510,6 +511,60 @@ class TestElLibro(unittest.TestCase):
         self.assertEqual(posiciones, sorted(posiciones))
 
 
+class TestLosCapitulosEscritos(unittest.TestCase):
+    """Los capítulos de verdad, los de `libro/capitulos/`. El borrador se
+    regenera solo; estos se escriben a mano, así que lo que hay que cuidar es
+    que no se separen del banco."""
+
+    CARPETA = ROOT / "libro" / "capitulos"
+
+    @staticmethod
+    def _plano(s):
+        """El texto comparable: sin tildes, sin el prefijo de las citas y con
+        los espacios juntos. Un epígrafe largo se parte en varias líneas, cada
+        una con su `>`, así que comparar el texto crudo no encuentra nada."""
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+        s = re.sub(r"(?m)^\s*>\s?", " ", s).replace("*", "").replace("\u2014", "-")
+        return re.sub(r"\s+", " ", s).strip().lower()
+
+    def _escritos(self):
+        temas = {t.capitulo: t for t in TEMAS}
+        for ruta in sorted(self.CARPETA.glob("[0-9]*.md")):
+            yield ruta, temas[int(ruta.name.split("-")[0])]
+
+    def test_hay_capitulos_escritos(self):
+        # Si la carpeta queda vacía, las dos pruebas de abajo pasarían solas.
+        self.assertGreaterEqual(len(list(self._escritos())), 4)
+
+    def test_cada_capitulo_cita_todas_las_frases_de_su_tema(self):
+        # Es lo que mantiene el libro y la página diciendo lo mismo: un lector
+        # que llegó por un post tiene que encontrar esa frase adentro. Y es
+        # una promesa que se rompe sin que nada falle, porque el capítulo se
+        # escribe una vez y las frases se siguen tocando.
+        for ruta, tema in self._escritos():
+            texto = self._plano(ruta.read_text(encoding="utf-8"))
+            faltan = [f.id for f in tema.frases
+                      if self._plano(f.texto) not in texto]
+            self.assertEqual(faltan, [], "%s: %s" % (ruta.name, faltan))
+
+    def test_cada_capitulo_tiene_el_largo_de_un_capitulo(self):
+        # Unas 1.500 palabras, que es lo que dice el PLAN. La cota de abajo es
+        # la que importa: un capítulo de 400 palabras es una nota, y se nota
+        # al leer el libro entero y no al escribirlo.
+        for ruta, _ in self._escritos():
+            palabras = len(ruta.read_text(encoding="utf-8").split())
+            self.assertGreater(palabras, 1100, ruta.name)
+            self.assertLess(palabras, 2600, ruta.name)
+
+    def test_el_titulo_del_archivo_es_el_del_tema(self):
+        for ruta, tema in self._escritos():
+            primera = ruta.read_text(encoding="utf-8").splitlines()[0]
+            self.assertEqual(
+                primera, "# Capítulo %d · %s" % (tema.capitulo, tema.titulo),
+                ruta.name)
+
+
 # ---------------------------------------------------------------------------
 # Publicar.
 # ---------------------------------------------------------------------------
@@ -598,6 +653,17 @@ class TestPublicar(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # Los scripts.
 # ---------------------------------------------------------------------------
+
+def _cargar_script(nombre):
+    """Importa un script de `scripts/` como módulo, para poder llamar a su
+    `main` con argumentos en vez de arrancar un proceso."""
+    import importlib.util
+    ruta = ROOT / "scripts" / ("%s.py" % nombre)
+    spec = importlib.util.spec_from_file_location("_script_%s" % nombre, ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
 
 def _llama_a(ruta: Path, nombres) -> bool:
     arbol = ast.parse(ruta.read_text(encoding="utf-8"))
@@ -2073,6 +2139,52 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
         self.assertFalse(_llama_a(ROOT / "scripts" / "fondos.py",
                                   {"publicar", "publicar_las_dos", "anotar_publicada"}))
 
+    def test_probar_voces_no_publica_ni_toca_el_banco(self):
+        # Manda audio al chat, que es lo que tiene que hacer, y nada más.
+        self.assertFalse(_llama_a(ROOT / "scripts" / "probar_voces.py",
+                                  {"publicar", "publicar_las_dos", "anotar_publicada"}))
+
+    def test_probar_voces_lee_la_misma_frase_con_todas(self):
+        # Si cada voz leyera algo distinto, lo que se compara es el texto.
+        probar = _cargar_script("probar_voces")
+        pedidos = []
+
+        def decir(texto, ruta, voz, *a, **k):
+            pedidos.append((texto, voz))
+            Path(ruta).write_bytes(b"audio")
+            return Path(ruta)
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(video, "decir_con_ia", side_effect=decir), \
+                mock.patch.object(telegram, "configurado", return_value=False):
+            probar.main(["--carpeta", d, "--voces", "onyx,ash,ballad"])
+        self.assertEqual([v for _, v in pedidos], ["onyx", "ash", "ballad"])
+        self.assertEqual(len({t for t, _ in pedidos}), 1)
+
+    def test_una_voz_que_falla_no_se_lleva_las_demas(self):
+        probar = _cargar_script("probar_voces")
+        pedidos = []
+
+        def decir(texto, ruta, voz, *a, **k):
+            if voz == "ash":
+                raise video.VideoError("esa voz no existe")
+            pedidos.append(voz)
+            Path(ruta).write_bytes(b"audio")
+            return Path(ruta)
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(video, "decir_con_ia", side_effect=decir), \
+                mock.patch.object(telegram, "configurado", return_value=False):
+            salida = probar.main(["--carpeta", d, "--voces", "onyx,ash,ballad"])
+        self.assertEqual(salida, 0)
+        self.assertEqual(pedidos, ["onyx", "ballad"])
+
+    def test_probar_voces_con_ver_no_pide_nada(self):
+        probar = _cargar_script("probar_voces")
+        with mock.patch.object(video, "decir_con_ia",
+                               side_effect=AssertionError("pidió voz")):
+            self.assertEqual(probar.main(["--ver"]), 0)
+
 
 class TestElReelDeUnCapitulo(unittest.TestCase):
     """Para llegar al minuto no hacen falta frases más largas sino más frases:
@@ -2552,7 +2664,39 @@ class TestElReelDesdeGithub(unittest.TestCase):
         disparos = self._flujo().get("on") or self._flujo().get(True)
         self.assertEqual(list(disparos), ["workflow_dispatch"])
         self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
-                         ["musica", "tema", "voz"])
+                         ["musica", "probar_voces", "tema", "voz"])
+
+    def test_probar_voces_no_arma_ningun_reel(self):
+        # Es el modo para elegir voz por oído. Si además armara el reel,
+        # pagaría el capítulo entero cada vez que se quiere oír una muestra.
+        pasos = {s.get("name"): s for s in self._flujo()["jobs"]["reel"]["steps"]}
+        self.assertIn("!inputs.probar_voces", pasos["Armar el reel"]["if"])
+        self.assertIn("inputs.probar_voces", pasos["Probar voces"]["if"])
+        # Y tampoco baja metraje: el fondo no se oye.
+        self.assertIn("!inputs.probar_voces", pasos["Bajar el metraje que falte"]["if"])
+
+    def test_el_metraje_se_baja_aca_y_se_guarda_entre_corridas(self):
+        # Desde donde se escribe el código Pexels no se alcanza, así que si no
+        # se bajara acá el reel saldría siempre con el papel de la marca, que
+        # es justamente lo que pasó la primera vez.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("scripts/fondos.py", texto)
+        self.assertIn("--fondo data/fondos", texto)
+        llaves = [s["with"]["key"] for s in self._flujo()["jobs"]["reel"]["steps"]
+                  if s.get("uses", "").startswith("actions/cache")
+                  and s["with"]["path"] == "data/fondos"]
+        # La misma llave para guardar y recuperar, y SIN el número de corrida:
+        # lo que se quiere es el mismo metraje en todos los reels.
+        self.assertEqual(len(llaves), 2)
+        self.assertEqual(len(set(llaves)), 1)
+        self.assertNotIn("run_id", llaves[0])
+
+    def test_sin_la_clave_de_pexels_el_reel_sale_igual(self):
+        # Sin metraje el fondo es el papel de la marca. Un reel con el fondo
+        # de siempre es mucho mejor que ningún reel.
+        paso = [s for s in self._flujo()["jobs"]["reel"]["steps"]
+                if s.get("name") == "Bajar el metraje que falte"][0]
+        self.assertIn('if [ -z "$PEXELS_API_KEY" ]', paso["run"])
 
     def test_instala_el_requirements_de_video_y_no_el_otro(self):
         # El de publicar no trae ffmpeg, así que sin esto el reel falla con

@@ -145,6 +145,23 @@ def enviar_video(ruta: Path, pie: str = "", destino: Optional[str] = None) -> di
                    supports_streaming=True)
 
 
+def enviar_audio(ruta: Path, pie: str = "", destino: Optional[str] = None) -> dict:
+    """Manda un audio al chat. Es como se comparan dos voces sin bajar nada.
+
+    Va como `sendAudio` y no como `sendVoice`: una nota de voz de Telegram se
+    reproduce a velocidad variable y se ve como un mensaje hablado, y lo que
+    se quiere acá es escuchar un audio tal cual, con su nombre a la vista.
+    """
+    ruta = Path(ruta)
+    pesa = ruta.stat().st_size
+    if pesa > TOPE_ARCHIVO:
+        raise TelegramError(
+            "el audio pesa %.0f MB y un bot no puede mandar mas de %d"
+            % (pesa / 1e6, TOPE_ARCHIVO // (1024 * 1024)))
+    return _llamar("sendAudio", archivo=ruta, campo="audio",
+                   chat_id=destino or chat(), caption=pie[:1024])
+
+
 def responder_boton(callback_id: str, texto: str = "") -> None:
     """Le saca el relojito al botón. Sin esto, el teléfono se queda esperando."""
     _llamar("answerCallbackQuery", callback_query_id=callback_id, text=texto[:200])

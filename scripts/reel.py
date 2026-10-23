@@ -94,6 +94,34 @@ def buscar_tema(temas, cual: str):
     return None
 
 
+def contar_lo_que_tardo(unidades, duraciones) -> float:
+    """Cuanto tardo la voz de verdad contra lo que se habia calculado.
+
+    Es la unica forma de corregir `video.VOZ_MAS_LENTA` con datos en vez de
+    con una corazonada: ese numero sale de UNA medicion, y de el depende que
+    un capitulo entre o no en el tope de Facebook. Sin esto, el unico aviso
+    de que se quedo corto es un reel que no se puede publicar DESPUES de
+    haber pagado la voz.
+    """
+    leido = video.duracion_del_guion(unidades)
+    real = sum(duraciones) + video.COLA
+    # El factor se despeja de la MISMA cuenta que hace el codigo
+    # -`duracion_del_guion` por el factor-, asi que el numero que sale es el
+    # que habria acertado. Dividir solo por el cuerpo y dejar la cola arriba
+    # lo infla.
+    factor = real / leido if leido else 0.0
+    print()
+    print("Calculado %.0f s, la voz tardo %.0f. El factor real es %.2f "
+          "(en el codigo, %.2f)." % (leido * video.VOZ_MAS_LENTA, real,
+                                     factor, video.VOZ_MAS_LENTA))
+    if factor > video.VOZ_MAS_LENTA:
+        # No es un detalle: con el factor corto, el calculo dice que entra y
+        # la voz se pasa. Hay que subir la constante, no el margen.
+        print("OJO: la voz tardo MAS de lo calculado. Subi "
+              "video.VOZ_MAS_LENTA a %.2f o mas." % (factor + 0.03))
+    return factor
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -200,6 +228,7 @@ def main(argv=None) -> int:
         marcas = video.tiempos_exactos(duraciones)
         print("Listo. Lo pedido queda anotado en data/voz.jsonl; el costo se")
         print("mira en el panel de OpenAI, que es donde esta el precio de verdad.")
+        contar_lo_que_tardo(unidades, duraciones)
     if args.voz_mac is not None:
         quien = args.voz_mac or video.voz_preferida()
         print()
@@ -218,6 +247,7 @@ def main(argv=None) -> int:
                 print("`say` solo existe en Mac. Sin voz el reel sale igual, mudo.")
             return 1
         marcas = video.tiempos_exactos(duraciones)
+        contar_lo_que_tardo(unidades, duraciones)
 
     try:
         ruta = video.armar(frase, pagina, titulo=tema.titulo, fondo=fondo, voz=voz,

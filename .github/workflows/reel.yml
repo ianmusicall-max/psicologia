@@ -12,7 +12,14 @@
 #   OPENAI_API_KEY    para la voz. Sin el, el reel sale mudo igual.
 #   TELEGRAM_TOKEN    para mandarlo al chat
 #   TELEGRAM_CHAT_ID  a que chat
+#   PEXELS_API_KEY    para bajar el metraje de fondo. Es gratuita y se saca en
+#                     https://www.pexels.com/api/ con un correo. SIN ELLA el
+#                     reel sale con el papel de la marca de fondo, que es
+#                     exactamente lo que pasaba antes.
 # Sin los de Telegram el reel queda igual, para bajar desde la corrida.
+#
+# Los clips se bajan ACA y no donde se escribe el codigo porque desde alla
+# Pexels no se alcanza. Es la misma razon por la que la voz se pide aca.
 name: Reel
 
 on:
@@ -30,6 +37,10 @@ on:
         description: "Musica de fondo"
         type: boolean
         default: true
+      probar_voces:
+        description: "Solo mandar muestras de voz al chat para elegir (no arma reel)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -42,6 +53,7 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -72,7 +84,40 @@ jobs:
           key: voz-${{ github.run_id }}
           restore-keys: voz-
 
+      # El metraje pesa y no cambia, asi que se baja una vez y se reusa. La
+      # llave no lleva el numero de corrida: lo que se quiere es el MISMO
+      # metraje en todos los reels, no uno nuevo cada vez.
+      - name: Recuperar el metraje de fondo
+        uses: actions/cache/restore@v4
+        with:
+          path: data/fondos
+          key: fondos-v1
+
+      - name: Bajar el metraje que falte
+        if: ${{ !inputs.probar_voces }}
+        run: |
+          if [ -z "$PEXELS_API_KEY" ]; then
+            echo "Sin PEXELS_API_KEY: el reel va a salir con el papel de la"
+            echo "marca de fondo. Se saca gratis en pexels.com/api y se carga"
+            echo "como secreto del repositorio."
+          else
+            python scripts/fondos.py
+          fi
+
+      - name: Guardar el metraje
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/fondos
+          key: fondos-v1
+        continue-on-error: true
+
+      - name: Probar voces
+        if: ${{ inputs.probar_voces }}
+        run: python scripts/probar_voces.py
+
       - name: Armar el reel
+        if: ${{ !inputs.probar_voces }}
         run: |
           ARGS="--carpeta data/reels"
           if [ -n "${{ inputs.tema }}" ]; then
