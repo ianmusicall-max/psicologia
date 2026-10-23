@@ -1,4 +1,16 @@
-# El libro
+# Lo que nadie te explicó del amor
+
+### Ideas para quererte, elegir mejor y entenderte con quien querés
+
+El título lo eligió el usuario el 2026-10-23 sobre tres opciones. Cubre las dos
+mitades del libro, quererte y vincularte, que es lo que la página promete, y
+promete algo concreto, que es lo que un título de tapa tiene que hacer. Las
+otras dos eran «Nadie te completa», más filoso y con el riesgo de sonar a
+reproche justo a quien busca pareja, y «Hablarte bien», el más propio y el que
+menos dice de qué trata.
+
+Vive en `libro.TITULO`, no acá: de ahí lo toma el borrador cada vez que se
+regenera.
 
 ## De qué va
 
@@ -16,7 +28,7 @@ la gente.
 `scripts/armar_libro.py` escribe `borrador.md` entero desde `frases/`: cada
 tema es un capítulo, su tesis abre, cada frase entra como epígrafe seguida de
 su reflexión, y el principio y la fuente quedan a la vista para escribir
-encima. Hoy son 14 capítulos, 113 frases y unas 12.900 palabras: el esqueleto,
+encima. Hoy son 29 capítulos, 243 frases y unas 27.200 palabras: el esqueleto,
 no el libro.
 
 **El borrador se regenera.** Lo que se escriba a mano va en otros archivos de

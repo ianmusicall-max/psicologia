@@ -1,6 +1,8 @@
 <!-- Generado por scripts/armar_libro.py a partir de frases/. No editar a mano: se vuelve a escribir entero. -->
 
-# Frases para pensar
+# Lo que nadie te explicó del amor
+
+### Ideas para quererte, elegir mejor y entenderte con quien querés
 
 *Borrador armado del banco de frases: 29 capítulos, 243 frases.*
 

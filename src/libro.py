@@ -21,10 +21,21 @@ AVISO = ("<!-- Generado por scripts/armar_libro.py a partir de frases/. No edita
          "se vuelve a escribir entero. -->")
 
 
-def borrador(temas: Iterable[Tema], titulo: str = "Frases para pensar") -> str:
+# El título lo eligió el usuario el 2026-10-23, sobre tres opciones. Cubre las
+# dos mitades del libro -quererte y vincularte-, que es lo que la página
+# promete, y promete algo concreto, que es lo que un título de tapa tiene que
+# hacer. Las otras dos eran «Nadie te completa», más filoso y con el riesgo de
+# sonar a reproche a quien busca pareja, y «Hablarte bien», el más propio y el
+# que menos dice de qué trata.
+TITULO = "Lo que nadie te explicó del amor"
+SUBTITULO = "Ideas para quererte, elegir mejor y entenderte con quien querés"
+
+
+def borrador(temas: Iterable[Tema], titulo: str = TITULO,
+             subtitulo: str = SUBTITULO) -> str:
     temas = sorted(temas, key=lambda t: t.capitulo)
     n = len(todas(temas))
-    out: List[str] = [AVISO, "", "# %s" % titulo, "",
+    out: List[str] = [AVISO, "", "# %s" % titulo, "", "### %s" % subtitulo, "",
                       "*Borrador armado del banco de frases: %d capítulos, %d frases.*" % (len(temas), n),
                       "", "## Índice", ""]
     for t in temas:
