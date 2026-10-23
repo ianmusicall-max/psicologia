@@ -2362,5 +2362,61 @@ class TestElAvisoDeBancoCorto(unittest.TestCase):
         self.assertIn("es hora de escribir", texto)
 
 
+class TestElTurnoDeGithub(unittest.TestCase):
+    """El turno automático corre en los servidores de GitHub, en una máquina
+    nueva cada hora. Lo que se rompe ahí no avisa: publica mal o no publica."""
+
+    FLUJO = ROOT / ".github" / "workflows" / "publicar.yml"
+
+    def _flujo(self):
+        import yaml
+        return yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+
+    def test_corre_cada_hora_y_se_puede_lanzar_a_mano(self):
+        d = self._flujo()
+        # La clave `on` la lee PyYAML como el booleano True.
+        disparos = d.get("on") or d.get(True)
+        self.assertEqual(disparos["schedule"], [{"cron": "0 * * * *"}])
+        self.assertIn("workflow_dispatch", disparos)
+
+    def test_fija_la_hora_de_lima(self):
+        # El runner viene en UTC. Sin esto, la parrilla saldría corrida cinco
+        # horas y los posts de la noche caerían de madrugada.
+        self.assertEqual(self._flujo()["jobs"]["publicar"]["env"]["TZ"], "America/Lima")
+
+    def test_guarda_lo_publicado_y_el_gitignore_lo_permite(self):
+        # Es lo único que impide que cada corrida vuelva a publicar la primera
+        # frase: la máquina es nueva cada vez y no recuerda nada.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("data/publicadas.json", texto)
+        self.assertIn("git push", texto)
+        self.assertEqual(self._flujo()["permissions"]["contents"], "write")
+        self.assertIn("!data/publicadas.json",
+                      (ROOT / ".gitignore").read_text(encoding="utf-8"))
+
+    def test_no_arranca_dos_corridas_a_la_vez(self):
+        # Dos a la vez se pisarían al subir el estado, y cancelar la que está
+        # andando podría cortarla justo mientras publica.
+        d = self._flujo()
+        self.assertEqual(d["concurrency"]["group"], "publicar")
+        self.assertFalse(d["concurrency"]["cancel-in-progress"])
+
+    def test_el_token_viaja_por_secretos_y_no_escrito(self):
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("secrets.PSI_FB_PAGE_TOKEN", texto)
+        self.assertNotIn("EAA", texto)
+
+    def test_el_turno_por_hora_no_instala_el_paquete_de_video(self):
+        # Son 25 MB en cada una de las 24 corridas diarias, y publicar no arma
+        # ningún video. Por eso los reels tienen su propio requirements.
+        base = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+        self.assertNotIn("imageio-ffmpeg", base)
+        video = (ROOT / "requirements-video.txt").read_text(encoding="utf-8")
+        self.assertIn("imageio-ffmpeg", video)
+        self.assertIn("-r requirements.txt", video)
+        self.assertIn("pip install -r requirements.txt",
+                      self.FLUJO.read_text(encoding="utf-8"))
+
+
 if __name__ == "__main__":
     unittest.main()

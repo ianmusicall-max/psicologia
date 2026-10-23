@@ -1,0 +1,7 @@
+# Solo para los reels (scripts/reel.py), que se arman a mano en la Mac.
+# `imageio-ffmpeg` trae su propio binario de ffmpeg, asi que el reel anda sin
+# Homebrew y sin permisos de administrador. Baja unos 25 MB al instalarse, y
+# por eso no esta en requirements.txt: el turno de GitHub publica cada hora y
+# no arma videos.
+-r requirements.txt
+imageio-ffmpeg==0.6.0

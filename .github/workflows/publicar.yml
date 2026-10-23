@@ -1,0 +1,74 @@
+# Publica la frase que toca, cada hora, desde los servidores de GitHub.
+#
+# Esto reemplaza al cron de la Mac: no depende de que la laptop este
+# encendida. PUBLICA SIN APROBACION, que es lo que se pidio.
+#
+# Hacen falta dos secretos en el repositorio
+# (Settings -> Secrets and variables -> Actions):
+#   PSI_FB_PAGE_ID     el id de la pagina
+#   PSI_FB_PAGE_TOKEN  el token permanente de pagina
+name: Publicar
+
+on:
+  schedule:
+    # Cada hora en punto. GitHub a veces demora el arranque unos minutos: no
+    # importa, porque el script mira en que HORA esta y publica la de esa hora.
+    - cron: "0 * * * *"
+  # Para probarlo a mano desde la pestania Actions sin esperar a la hora.
+  workflow_dispatch:
+
+permissions:
+  # Para poder volver a subir data/publicadas.json. Sin esto, cada corrida
+  # empezaria de cero y republicaria la primera frase.
+  contents: write
+
+concurrency:
+  # Dos corridas a la vez se pisarian al subir el estado. Y no se cancela la
+  # que ya esta andando: podria estar justo publicando.
+  group: publicar
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      # Las horas de la parrilla son horas de Lima. El runner viene en UTC, y
+      # sin esto publicaria con cinco horas de corrimiento.
+      TZ: America/Lima
+      PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
+      PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Publicar si a esta hora le toca
+        run: python scripts/publicar_turno.py
+
+      - name: Guardar lo que salio
+        run: |
+          git config user.name "Turno automatico"
+          git config user.email "noreply@users.noreply.github.com"
+          # Puede no existir todavia: fuera de hora el script no publica nada,
+          # y `git add` de un archivo que no esta corta el paso con error.
+          if [ ! -f data/publicadas.json ]; then
+            echo "Todavia no salio ningun post."
+            exit 0
+          fi
+          git add -f data/publicadas.json
+          # Si no salio nada -fuera de hora, o ya habia salido- no hay que
+          # commitear: un commit vacio por hora ensuciaria la historia.
+          if git diff --staged --quiet; then
+            echo "Nada que guardar."
+            exit 0
+          fi
+          git commit -m "Publicado: $(date +'%Y-%m-%d %H:00')"
+          # El turno de la hora siguiente puede haber subido algo mientras
+          # tanto; se rebasea antes de empujar en vez de fallar.
+          git pull --rebase --autostash
+          git push

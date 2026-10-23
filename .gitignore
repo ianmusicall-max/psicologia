@@ -12,6 +12,11 @@ __pycache__/
 # entra en un directorio excluido (lección del repo de salud, 2026-10-15).
 data/*
 !data/.gitkeep
+# Lo publicado SI se versiona, y no es un descuido: el turno automatico corre
+# en una maquina nueva cada hora, asi que si este archivo no viaja con el
+# repo, cada corrida creeria que no salio nada y volveria a publicar la
+# primera frase. El propio turno lo vuelve a subir despues de publicar.
+!data/publicadas.json
 
 .DS_Store
 
