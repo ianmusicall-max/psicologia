@@ -53,10 +53,17 @@ CUERPOS = (112, 104, 96, 88, 80, 72, 64)
 # como para no mirarlo.
 TOPE_SEGUNDOS = 90
 
-# Leído en voz alta, en español, unos 17 caracteres por segundo. Es lo que se
-# usa cuando NO hay voz: sin audio no hay nada que medir y el renglón tiene que
-# durar lo que tardaría en leerse.
-SEGUNDOS_POR_CARACTER = 0.058
+# Cuánto dura un renglón cuando NO hay voz: sin audio no hay nada que medir y
+# tiene que durar lo que tardaría en leerse.
+#
+# El número está medido, no estimado. La primera versión usaba 17 caracteres
+# por segundo, que es el TOPE que se usa en subtitulado -lo máximo que un
+# adulto alcanza a leer, no lo cómodo-. Leyendo el mismo texto en voz alta a
+# 150 palabras por minuto salen 10,6 c/s, y `say` a su velocidad de fábrica
+# ronda los 12,4. Con el tope, el reel mudo pasa el texto bastante más rápido
+# que la versión con voz y el mismo post se lee distinto según cómo se armó.
+# 14 c/s queda cómodo de leer y cerca de lo que tarda una voz.
+SEGUNDOS_POR_CARACTER = 0.072
 MINIMO_POR_UNIDAD = 1.5
 COLA = 0.8                             # aire al final, para que no corte seco
 

@@ -1774,6 +1774,15 @@ class TestLosTiemposDelReel(unittest.TestCase):
         self.assertAlmostEqual(marcas[1][1] - marcas[1][0],
                                2 * (marcas[0][1] - marcas[0][0]))
 
+    def test_el_reel_mudo_no_corre_el_texto_mas_rapido_que_una_voz(self):
+        # Probado con espeak a 150 palabras por minuto: 437 caracteres tardan
+        # 41 s, o sea 10,6 c/s, y `say` de fábrica ronda 12,4. Con el tope de
+        # subtitulado -17 c/s- el reel mudo pasaba el texto mucho más rápido
+        # que el mismo reel con voz, y el post se leía distinto según cómo se
+        # hubiera armado.
+        self.assertLessEqual(1 / video.SEGUNDOS_POR_CARACTER, 15.0)
+        self.assertGreaterEqual(1 / video.SEGUNDOS_POR_CARACTER, 11.0)
+
     def test_con_la_voz_por_renglones_no_se_reparte_nada(self):
         # Es la diferencia que importa entre los dos caminos de voz: acá cada
         # marca es la duración medida de ESE renglón, así que el subtítulo cae
