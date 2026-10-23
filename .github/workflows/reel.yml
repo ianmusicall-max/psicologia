@@ -1,0 +1,87 @@
+# Arma un reel y te lo manda al chat de Telegram.
+#
+# No tiene horario: se lanza a mano desde la pestania Actions. Un reel es una
+# decision -elegis el capitulo, lo mirás, y lo subis vos-, no algo que tenga
+# que salir solo como los posts.
+#
+# Esto existe porque la voz de IA se pide a OpenAI, y OpenAI no se alcanza
+# desde donde se escribe el codigo. Aca si, asi que el reel se arma en los
+# servidores de GitHub y llega al telefono sin pasar por la Mac.
+#
+# Secretos que usa (Settings -> Secrets and variables -> Actions):
+#   OPENAI_API_KEY    para la voz. Sin el, el reel sale mudo igual.
+#   TELEGRAM_TOKEN    para mandarlo al chat
+#   TELEGRAM_CHAT_ID  a que chat
+# Sin los de Telegram el reel queda igual, para bajar desde la corrida.
+name: Reel
+
+on:
+  workflow_dispatch:
+    inputs:
+      tema:
+        description: "Capitulo (nombre o numero). Vacio: la frase que toca, unos 30 s"
+        required: false
+        default: "autoestima"
+      voz:
+        description: "Voz de OpenAI: onyx, ash, sage, ballad. Vacio: sin voz"
+        required: false
+        default: "onyx"
+      musica:
+        description: "Musica de fondo"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Lima
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # El de video, que trae su propio ffmpeg. Es el unico lugar donde hace
+      # falta: el turno que publica cada hora no arma videos.
+      - run: pip install -r requirements-video.txt
+
+      - name: Armar el reel
+        run: |
+          ARGS="--carpeta data/reels"
+          if [ -n "${{ inputs.tema }}" ]; then
+            ARGS="$ARGS --tema ${{ inputs.tema }}"
+          fi
+          if [ -n "${{ inputs.voz }}" ]; then
+            ARGS="$ARGS --voz-ia ${{ inputs.voz }}"
+          fi
+          if [ "${{ inputs.musica }}" = "true" ]; then
+            ARGS="$ARGS --musica"
+          fi
+          # Los clips de naturaleza solo se usan si estan en el repo: sin
+          # ellos el fondo es el papel de la marca, que no depende de nada.
+          if [ -d data/fondos ] && [ -n "$(ls -A data/fondos 2>/dev/null)" ]; then
+            ARGS="$ARGS --fondo data/fondos"
+          fi
+          echo "scripts/reel.py $ARGS"
+          python scripts/reel.py $ARGS --telegram
+
+      # Queda para bajar aunque Telegram falle o el video pase de 50 MB, que
+      # es el tope de un bot. Sin esto, un reel que no se pudo mandar se
+      # perderia con la maquina.
+      - name: Dejarlo para bajar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel
+          path: data/reels/*.mp4
+          if-no-files-found: ignore
+          retention-days: 7

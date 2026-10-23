@@ -33,7 +33,8 @@ def configurado() -> bool:
     return bool(token() and chat())
 
 
-def _llamar(metodo: str, archivo: Optional[Path] = None, **datos) -> dict:
+def _llamar(metodo: str, archivo: Optional[Path] = None, campo: str = "photo",
+            **datos) -> dict:
     t = token()
     if not t:
         raise TelegramError("Falta TELEGRAM_TOKEN en el .env")
@@ -42,12 +43,14 @@ def _llamar(metodo: str, archivo: Optional[Path] = None, **datos) -> dict:
             datos[k] = json.dumps(v)
     archivos = None
     if archivo is not None:
-        archivos = {"photo": open(archivo, "rb")}
+        archivos = {campo: open(archivo, "rb")}
     try:
-        r = requests.post(API % (t, metodo), data=datos, files=archivos, timeout=60)
+        # Un video de decenas de megas tarda bastante mas que una foto.
+        r = requests.post(API % (t, metodo), data=datos, files=archivos,
+                          timeout=600 if campo == "video" else 60)
     finally:
         if archivos:
-            archivos["photo"].close()
+            archivos[campo].close()
     try:
         cuerpo = r.json()
     except ValueError:
@@ -121,6 +124,25 @@ def enviar_foto(ruta: Path, pie: str = "", botones=None, destino: Optional[str] 
         extra["reply_markup"] = teclado
     return _llamar("sendPhoto", archivo=Path(ruta), chat_id=destino or chat(),
                    caption=pie[:1024], **extra)
+
+
+# Un bot no puede mandar archivos de mas de 50 MB. Telegram contesta con un
+# error que no nombra el tamano, asi que conviene decirlo antes de subir medio
+# video por una conexion lenta.
+TOPE_ARCHIVO = 50 * 1024 * 1024
+
+
+def enviar_video(ruta: Path, pie: str = "", destino: Optional[str] = None) -> dict:
+    """Manda un mp4 al chat. Es como se mira un reel sin bajar nada."""
+    ruta = Path(ruta)
+    pesa = ruta.stat().st_size
+    if pesa > TOPE_ARCHIVO:
+        raise TelegramError(
+            "el video pesa %.0f MB y un bot no puede mandar mas de %d"
+            % (pesa / 1e6, TOPE_ARCHIVO // (1024 * 1024)))
+    return _llamar("sendVideo", archivo=ruta, campo="video",
+                   chat_id=destino or chat(), caption=pie[:1024],
+                   supports_streaming=True)
 
 
 def responder_boton(callback_id: str, texto: str = "") -> None:

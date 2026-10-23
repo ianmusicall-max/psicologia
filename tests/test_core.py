@@ -2418,5 +2418,84 @@ class TestElTurnoDeGithub(unittest.TestCase):
                       self.FLUJO.read_text(encoding="utf-8"))
 
 
+class TestElReelDesdeGithub(unittest.TestCase):
+    """La voz de IA se le pide a OpenAI, que no se alcanza desde donde se
+    escribe el código. Este flujo existe para armar el reel donde sí se puede."""
+
+    FLUJO = ROOT / ".github" / "workflows" / "reel.yml"
+
+    def _flujo(self):
+        import yaml
+        return yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+
+    def test_se_lanza_a_mano_y_nunca_solo(self):
+        # Un reel es una decisión: elegís el capítulo, lo mirás y lo subís vos.
+        # No es como los posts, que salen a su hora.
+        disparos = self._flujo().get("on") or self._flujo().get(True)
+        self.assertEqual(list(disparos), ["workflow_dispatch"])
+        self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
+                         ["musica", "tema", "voz"])
+
+    def test_instala_el_requirements_de_video_y_no_el_otro(self):
+        # El de publicar no trae ffmpeg, así que sin esto el reel falla con
+        # «no encuentro ffmpeg» en una máquina donde no hay nada que instalar.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("pip install -r requirements-video.txt", texto)
+
+    def test_guarda_el_mp4_aunque_telegram_falle(self):
+        # Un bot no puede mandar más de 50 MB. Sin esto, un reel que no se
+        # pudo mandar se perdería con la máquina.
+        paso = [s for s in self._flujo()["jobs"]["reel"]["steps"]
+                if s.get("uses", "").startswith("actions/upload-artifact")][0]
+        self.assertEqual(paso["if"], "always()")
+        self.assertIn("data/reels/*.mp4", paso["with"]["path"])
+
+    def test_las_claves_viajan_por_secretos(self):
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        for clave in ("OPENAI_API_KEY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID"):
+            self.assertIn("secrets.%s" % clave, texto)
+        self.assertNotIn("sk-", texto)
+
+    def test_el_gitignore_deja_versionar_los_clips(self):
+        # Son lo único que hace que el reel de GitHub salga sobre paisajes y
+        # no sobre el papel: allá la máquina es nueva y no tiene nada.
+        self.assertIn("!data/fondos/", (ROOT / ".gitignore").read_text(encoding="utf-8"))
+
+
+class TestMandarUnVideoAlChat(unittest.TestCase):
+
+    def test_avisa_el_tamano_antes_de_subir_medio_video(self):
+        # Telegram contesta con un error que no nombra el tamaño, y para
+        # enterarse habría que esperar a que suba 50 MB por una conexión lenta.
+        with tempfile.TemporaryDirectory() as d:
+            gordo = Path(d) / "grande.mp4"
+            gordo.write_bytes(b"x" * (telegram.TOPE_ARCHIVO + 1))
+            with mock.patch.object(telegram, "_llamar",
+                                   side_effect=AssertionError("intentó subirlo")):
+                with self.assertRaises(telegram.TelegramError) as e:
+                    telegram.enviar_video(gordo)
+        self.assertIn("50", str(e.exception))
+
+    def test_lo_manda_como_video_y_no_como_foto(self):
+        # `_llamar` mandaba todo en el campo «photo»: un mp4 ahí lo rechaza
+        # Telegram, o peor, lo muestra como archivo adjunto sin reproducir.
+        with tempfile.TemporaryDirectory() as d:
+            chico = Path(d) / "r.mp4"
+            chico.write_bytes(b"x" * 100)
+            with mock.patch.object(telegram, "_llamar", return_value={}) as llamar, \
+                    mock.patch.object(telegram, "chat", return_value="55"):
+                telegram.enviar_video(chico, "un pie")
+        self.assertEqual(llamar.call_args[0][0], "sendVideo")
+        self.assertEqual(llamar.call_args[1]["campo"], "video")
+        self.assertEqual(llamar.call_args[1]["caption"], "un pie")
+
+    def test_una_foto_sigue_yendo_por_el_campo_de_siempre(self):
+        with mock.patch.object(telegram, "_llamar", return_value={}) as llamar, \
+                mock.patch.object(telegram, "chat", return_value="55"):
+            telegram.enviar_foto(Path(__file__), "pie")
+        self.assertEqual(llamar.call_args[0][0], "sendPhoto")
+        self.assertNotIn("campo", llamar.call_args[1])
+
+
 if __name__ == "__main__":
     unittest.main()

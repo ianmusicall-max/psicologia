@@ -17,6 +17,12 @@ data/*
 # repo, cada corrida creeria que no salio nada y volveria a publicar la
 # primera frase. El propio turno lo vuelve a subir despues de publicar.
 !data/publicadas.json
+# Los clips de fondo de los reels, si se quieren usar desde GitHub: alla la
+# maquina es nueva y no tiene nada. Son unos megas cada uno y no cambian, asi
+# que versionarlos cuesta poco y es lo unico que hace que el reel de GitHub
+# salga sobre paisajes y no sobre el papel.
+!data/fondos/
+!data/fondos/*
 
 .DS_Store
 

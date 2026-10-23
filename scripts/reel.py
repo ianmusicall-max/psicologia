@@ -10,6 +10,7 @@
     reel.py --voz-ia             la voz de IA de OpenAI: es la UNICA llamada paga
     reel.py --musica             la cama que trae el repo, bien abajo si hay voz
     reel.py --musica otra.mp3    la tuya
+    reel.py --telegram           ademas te lo manda al chat
     reel.py --ver                dice que haria, sin armar nada
 
 UNA FRASE SON UNOS 30 SEGUNDOS HABLADOS y no llega al minuto por mas que se
@@ -113,6 +114,8 @@ def main(argv=None) -> int:
                     help="usar `say`; sin nombre elige la mejor en espanol que tengas")
     ap.add_argument("--ver", action="store_true", help="decir que haria, sin armar")
     ap.add_argument("--carpeta", default=str(video.REELS))
+    ap.add_argument("--telegram", action="store_true",
+                    help="mandar el reel al chat cuando este listo")
     args = ap.parse_args(argv)
 
     # Sin esto, OPENAI_API_KEY del .env no se lee nunca y `--voz-ia` dice que
@@ -218,6 +221,16 @@ def main(argv=None) -> int:
         return 1
     print()
     print(ruta)
+    if args.telegram:
+        from src import telegram
+        pie = "%s · %s%s" % (frase.id, tema.titulo,
+                             "  (capitulo entero)" if args.tema else "")
+        try:
+            telegram.enviar_video(ruta, pie)
+            print("Mandado al chat.")
+        except telegram.TelegramError as e:
+            # El reel ya esta armado: que no se pueda mandar no lo pierde.
+            print("No pude mandarlo al chat: %s" % e)
     return 0
 
 
