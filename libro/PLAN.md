@@ -23,6 +23,23 @@ Es el mismo tema que la página, y a propósito: los lectores del libro van a
 salir de ahí, y lo que la página mide día a día dice qué capítulo le importa a
 la gente.
 
+## Los capítulos escritos
+
+`libro/borrador.md` se regenera entero y no se edita a mano. Los capítulos de
+verdad viven aparte, en `libro/capitulos/`, uno por archivo con el número del
+capítulo adelante. El borrador es la materia prima ordenada -tesis, frases,
+reflexiones y fuentes a la vista-; el capítulo es el texto que las une.
+
+Cada capítulo usa TODAS las frases de su tema, en el orden que convenga, y las
+cita como epígrafe antes de desarrollarlas. Eso no es decoración: es lo que
+mantiene el libro y la página diciendo lo mismo, y lo que permite que un
+lector que llegó por un post encuentre esa frase adentro.
+
+Unas 1.500 palabras por capítulo. Veintinueve capítulos son unas 43.000
+palabras de texto nuevo, que llevan el manuscrito de 27.000 a cerca de 70.000.
+
+Escritos hasta ahora: el 3.
+
 ## Cómo sale del banco
 
 `scripts/armar_libro.py` escribe `borrador.md` entero desde `frases/`: cada
