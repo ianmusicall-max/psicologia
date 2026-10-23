@@ -22,6 +22,16 @@ pagina:
   # `scripts/revisar_instagram.py` dice si esta todo.
   instagram: true
 
+  # Las horas a las que publica `scripts/publicar_turno.py`, que corre cada
+  # hora y sale sin hacer nada si no le toca. Ocho al dia gastan el banco de
+  # 113 frases en catorce dias: es una prueba, no un ritmo sostenible.
+  horas: [8, 10, 12, 14, 16, 18, 20, 22]
+
+  # Mientras dure la prueba, cada post sale con un estilo distinto, rotando
+  # en orden. Es lo que hace comparable la medicion: el estilo cambia solo,
+  # sin arrastrar el tema ni la hora. Apagarlo vuelve a usar `estilo`.
+  rotar_estilos: true
+
   # Paleta propia. Es una página de psicología, no de salud: papel cálido,
   # tinta azul noche y un solo acento terracota para la palabra destacada.
   paleta:

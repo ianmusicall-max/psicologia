@@ -309,12 +309,18 @@ def publicadas(ruta: Optional[Path] = None) -> Dict[str, dict]:
 
 
 def anotar_publicada(frase_id: str, dia: date, post_id: str, pagina: str,
-                     ruta: Optional[Path] = None) -> None:
-    """Relee antes de escribir: si dos procesos anotan seguido, ninguno pisa al otro."""
+                     ruta: Optional[Path] = None, extra: Optional[Dict] = None) -> None:
+    """Relee antes de escribir: si dos procesos anotan seguido, ninguno pisa al otro.
+
+    `extra` guarda con QUÉ salió el post: el tema, el eje, el estilo, la hora
+    y el id de Instagram. Sin eso no se puede comparar nada después: el post
+    ya salió y Facebook no sabe con qué diseño se dibujó.
+    """
     ruta = Path(ruta or PUBLICADAS)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     actual = publicadas(ruta)
-    actual[frase_id] = {"dia": dia.isoformat(), "post_id": post_id, "pagina": pagina}
+    actual[frase_id] = dict({"dia": dia.isoformat(), "post_id": post_id, "pagina": pagina},
+                            **(extra or {}))
     tmp = ruta.with_suffix(".parcial")
     tmp.write_text(json.dumps(actual, ensure_ascii=False, indent=2), encoding="utf-8")
     tmp.replace(ruta)

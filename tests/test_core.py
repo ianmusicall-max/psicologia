@@ -8,13 +8,13 @@ import ast
 import json
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, telegram
+from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, medir, telegram
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -1143,17 +1143,123 @@ class TestInstagram(unittest.TestCase):
                                   {"publicar", "post"}))
 
 
+def _turno():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("pt", ROOT / "scripts" / "publicar_turno.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestLaPrueba(unittest.TestCase):
+    """Ocho por día durante una semana, rotando el estilo, para poder
+    comparar después."""
+
+    def test_el_estilo_rota_en_orden_y_no_depende_del_tema(self):
+        # Si el estilo cambiara junto con el tema no habría forma de saber
+        # cuál de los dos movió el número.
+        rotacion = [diseno.estilo_del_turno(i) for i in range(12)]
+        self.assertEqual(rotacion[:4], list(diseno.ESTILOS))
+        self.assertEqual(rotacion[:4], rotacion[4:8])
+        for estilo in diseno.ESTILOS:
+            self.assertEqual(rotacion.count(estilo), 3)
+
+    def test_en_una_semana_cada_estilo_sale_la_misma_cantidad(self):
+        ocho_por_dia = [diseno.estilo_del_turno(i) for i in range(56)]
+        cuantos = {e: ocho_por_dia.count(e) for e in diseno.ESTILOS}
+        self.assertEqual(set(cuantos.values()), {14})
+
+    def test_el_registro_guarda_con_que_salio_el_post(self):
+        # Sin esto no se puede comparar nada: el post ya salió y Facebook no
+        # sabe con qué diseño se dibujó.
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "publicadas.json"
+            frases.anotar_publicada("aut-01", date(2026, 11, 1), "105_1", "X", ruta,
+                                    extra={"hora": 8, "tema": "autoestima", "eje": "nucleo",
+                                           "estilo": "ficha", "instagram": "ig1"})
+            guardado = frases.publicadas(ruta)["aut-01"]
+        self.assertEqual(guardado["estilo"], "ficha")
+        self.assertEqual(guardado["hora"], 8)
+        self.assertEqual(guardado["post_id"], "105_1")
+
+    def test_fuera_de_hora_no_publica(self):
+        mod = _turno()
+        with mock.patch.object(facebook, "publicar", side_effect=AssertionError("publicó")), \
+                mock.patch("builtins.print"):
+            self.assertEqual(mod.main(["--ahora", "2026-10-23T09"]), 0)
+
+    def test_en_la_misma_hora_no_publica_dos_veces(self):
+        # Un reintento, el reloj que se atrasa o dos programadores encendidos
+        # publicarían dos frases.
+        mod = _turno()
+        ya = {"aut-01": {"dia": "2026-10-23", "hora": 8, "post_id": "1"}}
+        self.assertTrue(mod.ya_salio_en_esta_hora(ya, datetime(2026, 10, 23, 8)))
+        self.assertFalse(mod.ya_salio_en_esta_hora(ya, datetime(2026, 10, 23, 10)))
+        self.assertFalse(mod.ya_salio_en_esta_hora(ya, datetime(2026, 10, 24, 8)))
+
+    def test_ocho_horas_y_ninguna_pegada(self):
+        p = config.cargar()
+        self.assertEqual(len(p.horas), 8)
+        self.assertEqual(sorted(p.horas), p.horas)
+        for a, b in zip(p.horas, p.horas[1:]):
+            self.assertGreaterEqual(b - a, 2, (a, b))
+
+
+class TestLaMedicion(unittest.TestCase):
+
+    FILAS = [{"estilo": "regla", "tema": "apego", "reacciones": 10},
+             {"estilo": "regla", "tema": "apego", "reacciones": 12},
+             {"estilo": "regla", "tema": "duelo", "reacciones": 200},
+             {"estilo": "ficha", "tema": "apego", "reacciones": 20},
+             {"estilo": "ficha", "tema": "duelo", "reacciones": 22}]
+
+    def test_usa_la_mediana_y_no_el_promedio(self):
+        # El 200 es un post que se compartió de más. Con promedio, «regla»
+        # ganaría 74 a 21 por un solo caso.
+        por_estilo = dict((e, m) for e, _, m in medir.por(self.FILAS, "estilo"))
+        self.assertEqual(por_estilo["regla"], 12)
+        self.assertEqual(por_estilo["ficha"], 21)
+
+    def test_dice_cuantos_posts_tiene_cada_grupo(self):
+        self.assertEqual(dict((e, n) for e, n, _ in medir.por(self.FILAS, "estilo")),
+                         {"regla": 3, "ficha": 2})
+
+    def test_avisa_cuando_el_grupo_es_chico(self):
+        self.assertFalse(medir.alcanza(2))
+        self.assertTrue(medir.alcanza(medir.MINIMO))
+
+    def test_una_frase_salteada_no_se_mide(self):
+        # No salió, así que no tiene números: contarla como cero hundiría la
+        # mediana de su grupo.
+        publicadas = {"aut-01": {"dia": "2026-11-01", "post_id": "", "estilo": "regla"},
+                      "lim-01": {"dia": "2026-11-02", "post_id": "1", "estilo": "regla"}}
+        filas = medir.juntar(PAGINA, publicadas, pedir_fb=lambda p, i: {"reacciones": 5})
+        self.assertEqual([f["id"] for f in filas], ["lim-01"])
+
+    def test_solo_pide_instagram_cuando_el_post_salio_ahi(self):
+        publicadas = {"aut-01": {"dia": "2026-11-01", "post_id": "1", "instagram": ""},
+                      "lim-01": {"dia": "2026-11-02", "post_id": "2", "instagram": "ig9"}}
+        pedidos = []
+        medir.juntar(PAGINA, publicadas, pedir_fb=lambda p, i: {"reacciones": 1},
+                     pedir_ig=lambda p, i: pedidos.append(i) or {"me_gusta": 3})
+        self.assertEqual(pedidos, ["ig9"])
+
+
 class TestLosScripts(unittest.TestCase):
 
-    def test_ningun_script_publica_por_su_cuenta(self):
-        # Los dos caminos hacia Facebook son explícitos: `frase_del_dia.py
-        # --publicar`, que lo corre una persona, y el botón Publicar del bot,
-        # que vive en src/bot.py y tiene sus propias pruebas. Cualquier otro
-        # script que llame a `publicar` sería un post saliendo sin que nadie
-        # lo haya pedido. Se mira el AST y no el texto: los docstrings nombran
+    def test_los_tres_caminos_que_publican_son_estos_y_no_mas(self):
+        # Son tres, y conviene tenerlos contados porque uno cambió la postura
+        # del proyecto:
+        #   frase_del_dia.py --publicar   lo corre una persona
+        #   el botón Publicar del bot     vive en src/bot.py, con sus pruebas
+        #   publicar_turno.py             SIN APROBACIÓN, a la hora que toca
+        # El tercero entró para la prueba de ocho por día: ocho aprobaciones
+        # diarias en el teléfono no son un sistema que alguien use. Cualquier
+        # script nuevo que publique tiene que venir a cambiar esta lista y a
+        # leer por qué. Se mira el AST y no el texto: varios docstrings nombran
         # la palabra para explicar que NO lo hacen.
         publican = sorted(p.name for p in (ROOT / "scripts").glob("*.py") if _llama_a(p, {"publicar"}))
-        self.assertEqual(publican, ["frase_del_dia.py"])
+        self.assertEqual(publican, ["frase_del_dia.py", "publicar_turno.py"])
 
     def test_frase_del_dia_sin_banderas_no_dibuja_ni_publica(self):
         import importlib.util

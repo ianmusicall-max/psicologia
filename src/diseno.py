@@ -283,6 +283,18 @@ ESTILOS = {"regla": _estilo_regla, "marco": _estilo_marco,
 POR_DEFECTO = "regla"
 
 
+def estilo_del_turno(cuantos_ya: int) -> str:
+    """El estilo que le toca al post numero `cuantos_ya + 1`.
+
+    Rota en orden fijo, independiente del tema y de la hora. Esa
+    independencia es lo que hace comparable la medicion: si el estilo
+    cambiara junto con el tema, no habria forma de saber cual de los dos
+    movio el numero.
+    """
+    nombres = list(ESTILOS)
+    return nombres[cuantos_ya % len(nombres)]
+
+
 def _colores(pagina: Pagina, estilo: str) -> dict:
     """La paleta, que es la misma para los cuatro: el crema de la marca.
 

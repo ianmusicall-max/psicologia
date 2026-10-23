@@ -47,6 +47,8 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/token_permanente.py` | convierte el token en uno de página que no vence y lo deja en el `.env` |
 | `scripts/bot.py` | el bot de Telegram: muestra la frase que toca y la publica si aprietas el botón |
 | `scripts/revisar_instagram.py` | si la página está en condiciones de publicar en Instagram. Solo lee |
+| `scripts/publicar_turno.py` | publica si a esta hora le toca. Pensado para correr cada hora |
+| `scripts/medir.py` | qué rindió cada estilo, tema, eje y hora. Solo lee |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
@@ -160,6 +162,45 @@ nadie lo note y después nadie sabe si se puede tocar.
 
 Ninguno lleva fondo oscuro, y eso es una prueba y no una intención: dibuja
 cada estilo y mira el fondo de verdad.
+
+## La prueba de ocho por día
+
+Ocho posts diarios durante una semana, rotando los cuatro estilos, para poder
+comparar. Se enciende con `horas` y `rotar_estilos` en `config/pagina.yaml`.
+
+**El estilo rota en orden fijo y no depende del tema ni de la hora.** Esa
+independencia es todo el experimento: si el estilo cambiara junto con el tema,
+no habría forma de saber cuál de los dos movió el número. En una semana cada
+estilo sale 14 veces.
+
+`scripts/publicar_turno.py` corre **cada hora** y sale sin hacer nada si no le
+toca, así que se programa una sola vez. Es idempotente: si en esa hora ya
+salió un post, no publica otro.
+
+**Es el único camino que publica sin aprobación**, y entró para esto: ocho
+aprobaciones diarias en el teléfono no son un sistema que alguien use. El
+botón del bot sigue existiendo para publicar a mano.
+
+En la Mac, para que corra cada hora:
+
+```
+crontab -e
+# y agregar esta línea:
+0 * * * * cd ~/psicologia && .venv/bin/python scripts/publicar_turno.py >> data/turnos.log 2>&1
+```
+
+### Qué se puede concluir y qué no
+
+A ocho por día el banco de 113 frases dura **14 días**. No es un ritmo
+sostenible: es una prueba con fecha de vencimiento.
+
+En una semana son 56 posts. Alcanza para comparar **estilos**, con 14 cada
+uno. **No alcanza para comparar temas**: son 14 temas y les tocan 4 posts a
+cada uno. `scripts/medir.py` marca con «pocos, no concluir» todo grupo con
+menos de 7.
+
+Y se usa la **mediana y no el promedio**: un post que se comparte de más tira
+el promedio de todo un grupo y hace parecer que gana algo que no ganó.
 
 ## El token
 
