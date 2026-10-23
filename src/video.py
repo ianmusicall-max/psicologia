@@ -507,9 +507,14 @@ VOZ_MAC = "Juan"
 PAUSA = 0.28               # el aire entre un renglón y el siguiente
 
 
-def _correr(orden: List[str], que: str) -> None:
+def _correr(orden: List[str], que: str, espera: int = 300) -> None:
     try:
-        r = subprocess.run(orden, capture_output=True, text=True, timeout=300)
+        r = subprocess.run(orden, capture_output=True, text=True, timeout=espera)
+    except subprocess.TimeoutExpired:
+        # Aparte del resto: el mensaje de `TimeoutExpired` es el comando
+        # entero y no dice que lo que paso fue que tardo. Le paso a un clip
+        # de 4K largo en la Mac del usuario.
+        raise VideoError("%s tardo mas de %d segundos y lo corte" % (que, espera))
     except (OSError, subprocess.SubprocessError) as e:
         raise VideoError("no pude %s: %s" % (que, e))
     if r.returncode != 0:

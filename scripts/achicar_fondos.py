@@ -67,29 +67,65 @@ def medida(ruta: Path):
     return (int(m.group(1)), int(m.group(2))) if m else None
 
 
+# Cuanto se guarda de cada clip. El reel cambia de clip cada `video.ESCENA`
+# segundos -hoy 4- asi que de un clip de un minuto se ven cuatro. Guardar el
+# resto es peso puro, y es de donde salen los archivos de 44 MB.
+#
+# Ocho y no cuatro para que un mismo clip pueda salir dos veces sin que se
+# vea el mismo tramo.
+SEGUNDOS = 8
+
+# `slow` comprime un poco mejor y tarda MUCHO mas: en la Mac del usuario un
+# clip 4K largo paso de los cinco minutos y se corto por tiempo. Con el
+# recorte de arriba, lo que se gana comprimiendo mejor ya no compensa.
+PRESET = "veryfast"
+
+
 def achicar(ruta: Path) -> Path:
-    """Lo deja en la medida del reel y sin audio. Reemplaza el archivo.
+    """Lo deja en la medida del reel, corto y sin audio. Reemplaza el archivo.
 
     Escribe aparte y renombra: si se corta a la mitad, lo que queda es un
-    `.parcial` y no un clip roto que despues se lea como bueno.
+    archivo a medio hacer y no un clip roto que despues se lea como bueno.
+
+    El temporal NO termina en `.mp4` a proposito: con `.parcial.mp4` el
+    archivo a medio hacer seguia contando como clip -lo encuentra el mismo
+    filtro de extensiones- y el reel lo habria usado de fondo. Paso de verdad.
     """
-    tmp = ruta.with_suffix(".parcial.mp4")
-    video._correr([
-        video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
-        "-i", str(ruta),
-        # Igual que al armar el reel: se agranda hasta cubrir y se recorta el
-        # sobrante, asi no quedan franjas negras ni se deforma.
-        "-vf", ("scale=%d:%d:force_original_aspect_ratio=increase,"
-                "crop=%d:%d" % (ANCHO, ALTO, ANCHO, ALTO)),
-        "-c:v", "libx264", "-preset", "slow", "-crf", "24",
-        "-pix_fmt", "yuv420p",
-        "-an",                      # el reel nunca usa el audio del clip
-        str(tmp)], "achicar el clip")
+    tmp = ruta.with_suffix(".amedias")
+    try:
+        video._correr([
+            video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
+            "-t", str(SEGUNDOS),
+            "-i", str(ruta),
+            # Igual que al armar el reel: se agranda hasta cubrir y se recorta
+            # el sobrante, asi no quedan franjas negras ni se deforma.
+            "-vf", ("scale=%d:%d:force_original_aspect_ratio=increase,"
+                    "crop=%d:%d" % (ANCHO, ALTO, ANCHO, ALTO)),
+            "-c:v", "libx264", "-preset", PRESET, "-crf", "24",
+            "-pix_fmt", "yuv420p",
+            "-an",                  # el reel nunca usa el audio del clip
+            str(tmp)], "achicar el clip", espera=600)
+    except video.VideoError:
+        # Un intento fallido no puede dejar basura: ese archivo a medio hacer
+        # ocupa lugar y confunde la cuenta de la proxima corrida.
+        if tmp.exists():
+            tmp.unlink()
+        raise
     destino = ruta.with_suffix(".mp4")
     tmp.replace(destino)
     if ruta != destino and ruta.exists():
         ruta.unlink()
     return destino
+
+
+def limpiar(carpeta: Path) -> int:
+    """Borra lo que quedo de intentos anteriores, incluido el `.parcial.mp4`
+    que dejaba la primera version y que contaba como clip."""
+    cuantos = 0
+    for x in list(carpeta.glob("*.amedias")) + list(carpeta.glob("*.parcial.mp4")):
+        x.unlink()
+        cuantos += 1
+    return cuantos
 
 
 def main(argv=None) -> int:
@@ -100,6 +136,9 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     carpeta = Path(args.carpeta)
+    sobras = limpiar(carpeta) if not args.ver else 0
+    if sobras:
+        print("Borre %d archivo(s) a medio hacer de una corrida anterior." % sobras)
     clips = clips_de(carpeta)
     if not clips:
         print("No hay ningun video en %s" % carpeta)
@@ -117,7 +156,10 @@ def main(argv=None) -> int:
                  "  <- mas grande que el reel" if grande else ""))
     if args.ver:
         print()
-        print("El reel es de %dx%d y no usa el audio de los clips." % (ANCHO, ALTO))
+        print("El reel es de %dx%d, cambia de clip cada %.0f s y no usa el "
+              "audio." % (ANCHO, ALTO, video.ESCENA))
+        print("Se guardan %d s de cada uno; el resto es peso que no se ve."
+              % SEGUNDOS)
         print("Con --ver no toque nada.")
         return 0
 
