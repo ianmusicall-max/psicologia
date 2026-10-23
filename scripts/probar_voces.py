@@ -41,11 +41,83 @@ TEXTO = ("El valor de una persona no se gana ni se pierde: se reconoce. "
          "primero.")
 
 
+def probar_colores(args, voz: str) -> int:
+    """La MISMA voz con varios procesados, para elegir el timbre.
+
+    Separado de probar voces porque es otra pregunta: alla se compara QUIEN
+    lee, aca COMO suena. Y porque el audio se pide UNA sola vez y se procesa
+    cuatro: las versiones no cuestan nada, solo la primera.
+
+    Se nivelan todas con `loudnorm`. Sin eso gana la mas fuerte y no la que
+    mejor suena, que es el error clasico al comparar procesados de audio.
+    """
+    colores = [c.strip() for c in args.colores.split(",") if c.strip()]
+    # Se comprueban TODOS antes de pedir nada: un nombre mal escrito al final
+    # de la lista no puede descubrirse despues de haber pagado la voz.
+    for c in colores:
+        try:
+            video.filtro_de_color(c)
+        except video.VideoError as e:
+            print(e)
+            return 2
+    carpeta = Path(args.carpeta)
+    carpeta.mkdir(parents=True, exist_ok=True)
+    print("La voz %s con %d procesados: %s" % (voz, len(colores), ", ".join(colores)))
+    print("La frase: %s" % args.texto)
+    print("Se pide UNA vez; los procesados no cuestan nada.")
+    if args.ver:
+        print()
+        print("Con --ver no pedi ni mande nada.")
+        return 0
+
+    try:
+        crudo = video.decir_con_ia(args.texto, carpeta / ("color-%s.mp3" % voz), voz)
+    except video.VideoError as e:
+        print("No pude pedir la voz: %s" % e)
+        return 1
+
+    from src import telegram
+    mandadas = 0
+    for c in colores:
+        salida = carpeta / ("color-%s-%s.m4a" % (voz, c))
+        filtro = video.filtro_de_color(c)
+        # `loudnorm` SIEMPRE, incluso en «nada»: si solo lo llevaran los
+        # procesados, la comparacion mediria el nivelado y no el color.
+        cadena = "%s,loudnorm=%s" % (filtro, video.SONORIDAD) if filtro \
+            else "loudnorm=%s" % video.SONORIDAD
+        try:
+            video._correr([video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
+                           "-i", str(crudo), "-af", cadena, str(salida)],
+                          "colorear la voz")
+        except video.VideoError as e:
+            print("  %-8s no pude: %s" % (c, e))
+            continue
+        print("  %-8s %s" % (c, salida))
+        if not telegram.configurado():
+            continue
+        try:
+            telegram.enviar_audio(salida, "voz %s · procesado: %s" % (voz, c))
+            mandadas += 1
+        except telegram.TelegramError as e:
+            print("  no pude mandarla al chat: %s" % e)
+    if telegram.configurado() and mandadas:
+        print()
+        print("Mande %d al chat." % mandadas)
+        telegram.enviar(
+            "Es la MISMA voz (%s) con cuatro procesados distintos, todas al "
+            "mismo volumen para que compares el timbre y no el nivel. "
+            "Decime cual se acerca mas a la del reel de referencia." % voz)
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--voces", default=",".join(CANDIDATAS),
                     help="cuales probar, separadas por coma")
+    ap.add_argument("--colores", default=None, metavar="LISTA",
+                    help="en vez de varias voces, UNA voz con varios procesados "
+                         "(ej: nada,calida,cine,honda)")
     ap.add_argument("--texto", default=TEXTO, help="que lean")
     ap.add_argument("--ver", action="store_true", help="no pide nada ni gasta")
     ap.add_argument("--carpeta", default="data/voces_prueba")
@@ -56,6 +128,9 @@ def main(argv=None) -> int:
     if not voces:
         print("No me dijiste ninguna voz.")
         return 2
+
+    if args.colores:
+        return probar_colores(args, voces[0])
 
     carpeta = Path(args.carpeta)
     print("%d voces x %d caracteres = %d caracteres en total."

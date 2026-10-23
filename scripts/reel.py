@@ -133,6 +133,8 @@ def main(argv=None) -> int:
                          "el maximo lo pone el tope de Facebook")
     ap.add_argument("--desde", type=int, default=0,
                     help="con --tema, desde que frase del capitulo empezar")
+    ap.add_argument("--color", default=None, metavar="CUAL",
+                    help="como suena la voz: nada, calida, cine, honda")
     ap.add_argument("--musica", nargs="?", const="calma", default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
@@ -151,6 +153,12 @@ def main(argv=None) -> int:
     # Sin esto, OPENAI_API_KEY del .env no se lee nunca y `--voz-ia` dice que
     # falta la clave aunque esté puesta.
     load_dotenv(ROOT / ".env")
+    if args.color is not None:
+        try:
+            video.filtro_de_color(args.color)
+        except video.VideoError as e:
+            print(e)
+            return 2
     pagina = config.cargar()
     temas = frases.leer()
     ya = frases.publicadas()
@@ -221,7 +229,7 @@ def main(argv=None) -> int:
         try:
             voz, duraciones = video.voz_por_unidades(
                 unidades, carpeta / ("%s-voz" % frase.id), args.voz_ia,
-                decir_fn=video.decir_con_ia)
+                decir_fn=video.decir_con_ia, color=args.color)
         except video.VideoError as e:
             print(e)
             return 1
@@ -235,7 +243,7 @@ def main(argv=None) -> int:
         print("Leyendo renglon por renglon con la voz %s..." % quien)
         try:
             voz, duraciones = video.voz_por_unidades(
-                unidades, carpeta / ("%s-voz" % frase.id), quien)
+                unidades, carpeta / ("%s-voz" % frase.id), quien, color=args.color)
         except video.VideoError as e:
             print(e)
             hay = video.voces_en_espanol()

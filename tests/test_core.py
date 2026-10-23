@@ -2179,6 +2179,55 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
         self.assertEqual(salida, 0)
         self.assertEqual(pedidos, ["onyx", "ballad"])
 
+    def test_los_colores_oscurecen_de_a_poco(self):
+        # Lo que se busca es un abanico para elegir de oido, asi que cada uno
+        # tiene que oscurecer MAS que el anterior. Si dos sonaran igual, la
+        # eleccion seria entre cosas indistinguibles.
+        import re as _re
+        orden = ["calida", "cine", "honda"]
+        self.assertEqual(video.COLORES["nada"], "")
+        for c in orden:
+            self.assertIn("acompressor", video.COLORES[c])
+
+        def numero(patron, c):
+            return int(_re.search(patron, video.COLORES[c]).group(1))
+
+        # Los agudos se bajan cada vez mas y los graves se suben cada vez mas.
+        agudos = [abs(numero(r"treble=g=(-\d+)", c)) for c in orden]
+        graves = [numero(r"equalizer=f=1\d\d:t=q:w=[\d.]+:g=(\d+)", c) for c in orden]
+        for cual, vals in (("agudos", agudos), ("graves", graves)):
+            self.assertEqual(vals, sorted(vals), cual)
+            self.assertEqual(len(set(vals)), len(vals), cual)
+
+    def test_un_color_que_no_existe_no_pasa_en_silencio(self):
+        # Es el peor final posible para algo que se elige de oido: la voz
+        # saldria sin procesar y el reel sonaria igual que antes, sin aviso.
+        with self.assertRaises(video.VideoError):
+            video.filtro_de_color("cinematografico")
+
+    def test_el_color_por_defecto_no_toca_la_voz(self):
+        # Hasta que el usuario elija uno, el reel suena como el que ya vio.
+        self.assertEqual(video.COLOR, "nada")
+        self.assertEqual(video.filtro_de_color(None), "")
+
+    def test_el_color_se_aplica_a_la_voz_entera_y_no_renglon_por_renglon(self):
+        # El compresor tiene memoria: por renglon arrancaria de cero en cada
+        # uno y la misma frase sonaria mas cerca o mas lejos segun donde cayo
+        # el corte.
+        ordenes = []
+
+        def correr(orden, que):
+            ordenes.append((que, list(orden)))
+            Path(orden[-1]).write_bytes(b"x")
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(video, "_correr", side_effect=correr), \
+                mock.patch.object(video, "decir", side_effect=lambda t, r, v=None: Path(r)), \
+                mock.patch.object(video, "duracion", return_value=1.0):
+            video.voz_por_unidades(["uno", "dos"], Path(d), color="cine")
+        conel = [q for q, o in ordenes if "-af" in o and video.COLORES["cine"] in o]
+        self.assertEqual(conel, ["pegar la voz"])
+
     def test_probar_voces_con_ver_no_pide_nada(self):
         probar = _cargar_script("probar_voces")
         with mock.patch.object(video, "decir_con_ia",
@@ -2664,7 +2713,7 @@ class TestElReelDesdeGithub(unittest.TestCase):
         disparos = self._flujo().get("on") or self._flujo().get(True)
         self.assertEqual(list(disparos), ["workflow_dispatch"])
         self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
-                         ["musica", "probar_voces", "tema", "voz"])
+                         ["color", "colores", "musica", "probar_voces", "tema", "voz"])
 
     def test_probar_voces_no_arma_ningun_reel(self):
         # Es el modo para elegir voz por oído. Si además armara el reel,

@@ -587,6 +587,61 @@ INSTRUCCIONES = (
     "las pausas de los puntos. No suenes a locutor de noticias ni a publicidad: "
     "sin entusiasmo, sin subir al final de las frases."
 )
+# ---------------------------------------------------------------------------
+# El color de la voz.
+#
+# «Que suene cinematográfica» no es la voz que se elige: es cómo se procesa
+# después. Medido sobre la referencia que mandó el usuario, separando la voz
+# de la música: su voz tiene 35 dB de caída entre los graves (120-250 Hz) y
+# los agudos (2-4 kHz). Es una voz oscura, de micrófono cercano, con los
+# agudos bajados. Las cinco voces de OpenAI salen de fábrica mucho más
+# brillantes que eso, y por eso ninguna «se parecía».
+#
+# Cada cadena está medida sobre ruido rosa, descontando la ganancia general
+# -si no, la más fuerte gana por volumen y no por timbre-. Lo que agrega cada
+# una de inclinación graves-agudos:
+#
+#     calida  +3 dB      cine  +6 dB      honda  +9 dB
+#
+# No se busca clavar los 35 dB de la referencia: ese número incluye el timbre
+# propio de esa persona, que no se puede copiar con un ecualizador. Lo que se
+# ofrece es un abanico para elegir de oído, que es la única forma de decidir
+# esto.
+#
+# La compresión no es decorativa: una voz cercana e íntima es una voz con poco
+# rango dinámico. Sin ella el ecualizador solo la oscurece.
+COLORES = {
+    # Como sale de OpenAI.
+    "nada": "",
+    "calida": ("highpass=f=70,equalizer=f=150:t=q:w=1.0:g=3,treble=g=-3:f=4000,"
+               "acompressor=threshold=-18dB:ratio=2:attack=15:release=250"),
+    "cine": ("highpass=f=70,equalizer=f=130:t=q:w=0.9:g=6,"
+             "equalizer=f=450:t=q:w=1.2:g=-2,treble=g=-6:f=3500,"
+             "acompressor=threshold=-20dB:ratio=3:attack=10:release=200"),
+    "honda": ("highpass=f=65,equalizer=f=120:t=q:w=0.8:g=8,"
+              "equalizer=f=450:t=q:w=1.2:g=-3,treble=g=-9:f=3000,"
+              "acompressor=threshold=-22dB:ratio=4:attack=8:release=180"),
+}
+# El que se usa si no se pide otro. Arranca en «nada» a propósito: hasta que
+# el usuario elija uno de oído, el reel suena como el que ya vio.
+COLOR = "nada"
+
+
+def filtro_de_color(color: Optional[str]) -> str:
+    """La cadena de ffmpeg de ese color. Un nombre que no existe es un error.
+
+    Se valida acá y no al armar el video: un color mal escrito dejaría la voz
+    sin procesar y el reel saldría igual que antes, sin que nada avise. Es el
+    peor final posible para algo que se está eligiendo de oído.
+    """
+    if color is None:
+        color = COLOR
+    if color not in COLORES:
+        raise VideoError("no conozco el color de voz %r. Hay: %s"
+                         % (color, ", ".join(sorted(COLORES))))
+    return COLORES[color]
+
+
 # Un reel son unos 1.000 caracteres. El tope existe para que un argumento mal
 # escrito no se lleve la cuenta por delante, que ya pasó con las imágenes.
 TOPE_CARACTERES = 6000
@@ -684,7 +739,7 @@ def _pedir_voz(clave: str, cuerpo: dict) -> bytes:
 
 
 def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
-                     decir_fn=None) -> Tuple[Path, List[float]]:
+                     decir_fn=None, color: Optional[str] = None) -> Tuple[Path, List[float]]:
     """Lee cada unidad por separado y las pega con un silencio en el medio.
 
     Por separado y no de un tirón, que es lo que de verdad importa acá: así se
@@ -726,9 +781,20 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
         "".join("file '%s'\n" % x.resolve().as_posix() for x in lista),
         encoding="utf-8")
     entera = carpeta / "voz.m4a"
-    _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "concat",
-             "-safe", "0", "-i", str(guion_concat), "-c:a", "aac", "-b:a", "128k",
-             str(entera)], "pegar la voz")
+    # El color se aplica a la voz ENTERA y no renglón por renglón, que es lo
+    # que de verdad importa acá: el compresor tiene memoria -ataque y
+    # relajación- y por renglón arrancaría de cero en cada uno, así que la
+    # misma frase sonaría más cerca o más lejos según dónde cayó el corte.
+    #
+    # Y después de pegar, no antes: así los silencios de en medio también
+    # pasan por el compresor y no se oye un salto al entrar cada renglón.
+    filtro = filtro_de_color(color)
+    orden = [ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "concat",
+             "-safe", "0", "-i", str(guion_concat)]
+    if filtro:
+        orden += ["-af", filtro]
+    orden += ["-c:a", "aac", "-b:a", "128k", str(entera)]
+    _correr(orden, "pegar la voz")
     return entera, duraciones
 
 

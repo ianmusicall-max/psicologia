@@ -41,6 +41,14 @@ on:
         description: "Solo mandar muestras de voz al chat para elegir (no arma reel)"
         type: boolean
         default: false
+      colores:
+        description: "Con probar_voces: procesados de UNA voz (ej: nada,calida,cine,honda)"
+        required: false
+        default: ""
+      color:
+        description: "Como suena la voz del reel: nada, calida, cine, honda"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -114,7 +122,15 @@ jobs:
 
       - name: Probar voces
         if: ${{ inputs.probar_voces }}
-        run: python scripts/probar_voces.py
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.colores }}" ]; then
+            ARGS="--colores ${{ inputs.colores }}"
+          fi
+          if [ -n "${{ inputs.voz }}" ]; then
+            ARGS="$ARGS --voces ${{ inputs.voz }}"
+          fi
+          python scripts/probar_voces.py $ARGS
 
       - name: Armar el reel
         if: ${{ !inputs.probar_voces }}
@@ -128,6 +144,9 @@ jobs:
           fi
           if [ "${{ inputs.musica }}" = "true" ]; then
             ARGS="$ARGS --musica"
+          fi
+          if [ -n "${{ inputs.color }}" ]; then
+            ARGS="$ARGS --color ${{ inputs.color }}"
           fi
           # Los clips solo se usan si de verdad hay VIDEOS: sin ellos el
           # fondo es el papel de la marca, que no depende de nada.
