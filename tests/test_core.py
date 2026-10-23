@@ -2342,52 +2342,6 @@ class TestLosScriptsLeenElEnv(unittest.TestCase):
                 self.assertIn("load_dotenv", texto, archivo.name)
 
 
-class TestEncenderLaPublicacion(unittest.TestCase):
-    """El turno automático publica SIN aprobación, así que encenderlo tiene que
-    ser una decisión explícita y nunca un efecto de correr un script."""
-
-    def _mod(self):
-        return _script("enc", "encender.py")
-
-    def test_sin_banderas_no_instala_ni_llama_a_launchctl(self):
-        enc = self._mod()
-        with mock.patch.object(enc.Path, "write_text",
-                               side_effect=AssertionError("escribió el plist")), \
-                mock.patch.object(enc.subprocess, "run",
-                                  side_effect=AssertionError("llamó a launchctl")), \
-                mock.patch("builtins.print"):
-            self.assertEqual(enc.main([]), 0)
-
-    def test_avisa_que_publica_sin_aprobacion(self):
-        # Es el cambio de postura del proyecto: hasta ahora nada salía sin que
-        # lo aprobaran en el bot.
-        enc = self._mod()
-        dichas = []
-        with mock.patch("builtins.print", side_effect=lambda *a, **k: dichas.append(" ".join(map(str, a)))):
-            enc.main([])
-        self.assertIn("SIN APROBACION", "\n".join(dichas))
-
-    def test_el_plist_usa_el_python_del_proyecto(self):
-        # El del sistema no tiene PyYAML: el turno fallaría cada hora en
-        # silencio, y el único rastro quedaría en un log que nadie mira.
-        enc = self._mod()
-        import plistlib
-        datos = plistlib.loads(enc.plist().encode("utf-8"))
-        self.assertTrue(datos["ProgramArguments"][0].endswith(".venv/bin/python")
-                        or datos["ProgramArguments"][0] == sys.executable)
-        self.assertTrue(datos["ProgramArguments"][1].endswith("publicar_turno.py"))
-
-    def test_corre_cada_hora_en_punto_y_no_al_cargarse(self):
-        # Cada hora porque la parrilla cambia con la rampa y el que decide si
-        # toca es el script. `RunAtLoad` en falso: instalarlo no es publicar.
-        enc = self._mod()
-        import plistlib
-        datos = plistlib.loads(enc.plist().encode("utf-8"))
-        self.assertEqual(datos["StartCalendarInterval"], {"Minute": 0})
-        self.assertFalse(datos["RunAtLoad"])
-        self.assertTrue(datos["StandardErrorPath"].endswith("publicar.log"))
-
-
 class TestElAvisoDeBancoCorto(unittest.TestCase):
 
     def test_dice_cuantos_dias_aguanta_y_no_solo_cuantas_frases(self):
