@@ -142,40 +142,23 @@ separadas serían dos cosas que consultar y `siguiente` miraría una sola.
 
 ## Los estilos del flyer
 
-Once repartos del mismo flyer. Se eligen con `estilo:` en
-`config/pagina.yaml` y `scripts/probar_estilos.py` los dibuja todos con la
-misma frase para comparar mirando.
+Cuatro repartos del mismo flyer, todos sobre el crema de la marca. Se eligen
+con `estilo:` en `config/pagina.yaml` y `scripts/probar_estilos.py` los dibuja
+todos con la misma frase para comparar mirando.
 
 | | |
 |---|---|
-| `regla` | el de siempre: una raya de acento y el texto a la izquierda |
-| `tinta` | fondo oscuro y texto claro; en un feed claro es el que más corta |
-| `comillas` | una comilla enorme detrás, apenas visible, y el texto centrado |
-| `marco` | como la página de un libro: un filete alrededor |
-| `banda` | una franja de color abajo con el tema |
-| `palabra` | la palabra destacada gigante partiendo la frase, sobre el crema |
-| `foto` | el mismo reparto sobre una foto de `assets/fotos` |
-| `marcador` | la palabra marcada con resaltador en vez de en color |
+| `regla` | una raya de acento y el texto a la izquierda |
+| `marco` | como la página de un libro: un filete alrededor, centrado |
 | `ficha` | papel rayado limpio, con el margen del cuaderno |
-| `bloque` | la frase sobre un bloque de color y el pie sobre el crema |
-| `etiqueta` | una pastilla con el tema arriba, antes de la frase |
+| `marcador` | la palabra marcada con resaltador en vez de en color |
 
-Solo dos quedan oscuros, `tinta` y `foto`; los otros nueve van sobre el crema
-de la marca. `palabra` y `foto` usan `destacar` para partir la frase en tres: lo que viene
-antes, la palabra en grande y lo que sigue. Es el recurso que se ve en las
-cuentas grandes, y sale de un campo que el banco ya tenía.
+Llegaron a ser once. El usuario eligió estos cuatro y los otros siete se
+borraron en vez de dejarlos apagados: un renderer sin camino envejece sin que
+nadie lo note y después nadie sabe si se puede tocar.
 
-### Fotos
-
-`foto` toma las imágenes de `assets/fotos` (jpg o png). **No hay que generar
-ninguna**: se pone ahí lo que se quiera y el flyer las usa. Sin fotos en esa
-carpeta, cae al degradado en vez de fallar.
-
-La foto se elige **por el id de la frase y no al azar**, porque el flyer que
-se aprueba tiene que ser el que sale. Y se oscurece lo justo para que el
-blanco se lea encima: cuánto, se mide sobre la franja donde cae el texto, en
-el percentil 85 y no en el promedio, porque una foto oscura con un cielo claro
-arriba tiene buen promedio y se come el texto igual.
+Ninguno lleva fondo oscuro, y eso es una prueba y no una intención: dibuja
+cada estilo y mira el fondo de verdad.
 
 ## El token
 

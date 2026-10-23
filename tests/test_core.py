@@ -378,13 +378,12 @@ def _contraste(uno, otro):
 
 
 class TestLosEstilos(unittest.TestCase):
-    """Cinco repartos del mismo flyer. Lo que cambia es la forma, nunca lo
-    que dice."""
+    """Cuatro repartos del mismo flyer. Lo que cambia es la forma, nunca lo
+    que dice. Fueron once; el usuario eligió estos y los otros siete se
+    borraron, porque un renderer sin camino envejece sin que nadie lo note."""
 
-    def test_son_los_cinco_y_el_de_siempre_es_el_de_fabrica(self):
-        self.assertEqual(sorted(diseno.ESTILOS),
-                         ["banda", "bloque", "comillas", "etiqueta", "ficha", "foto",
-                          "marcador", "marco", "palabra", "regla", "tinta"])
+    def test_son_los_cuatro_que_eligio_el_usuario(self):
+        self.assertEqual(sorted(diseno.ESTILOS), ["ficha", "marcador", "marco", "regla"])
         self.assertEqual(diseno.POR_DEFECTO, "regla")
 
     def test_todos_dibujan_el_peor_caso_del_validador(self):
@@ -412,109 +411,20 @@ class TestLosEstilos(unittest.TestCase):
             diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo="neon")
         self.assertIn("marco", str(ctx.exception))
 
-    def test_sobre_el_fondo_oscuro_el_acento_se_aclara(self):
-        # Medido: el terracota de la marca sobre tinta da 3,46 de contraste,
-        # que es el mínimo justo para texto grande. La palabra destacada no
-        # tiene que ser legible a duras penas: tiene que SALTAR, porque es lo
-        # único que ese color hace. Aclarado da 6,3.
-        c = diseno._colores(PAGINA, "tinta")
-        crudo = PAGINA.color("acento", "#B5654A")
-        self.assertLess(_contraste(crudo, c["fondo"]), 4.0)
-        self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 5.5)
-
-    def test_el_degradado_no_aclara_tanto_como_para_comerse_el_blanco(self):
-        # El texto de los estilos con imagen va blanco. El punto más claro del
-        # fondo es el que manda: con el primer claro que se probó (#7C94A1) el
-        # blanco quedaba en 3,2 y se leía flojo.
-        self.assertGreaterEqual(_contraste("#FFFFFF", diseno.DEGRADADO[1]), 4.5)
-
-    def test_sobre_cualquier_foto_el_texto_blanco_se_lee(self):
-        for nombre, foto in (("blanca", Image.new("RGB", (200, 250), "#FFFFFF")),
-                             ("clara", Image.new("RGB", (200, 250), "#E8E2D8")),
-                             ("media", Image.new("RGB", (200, 250), "#8A8F7A"))):
-            velada = diseno._velo(foto, diseno.DEGRADADO[0])
-            for y in (int(250 * 0.08), int(250 * 0.25), int(250 * 0.42)):
-                color = "#%02x%02x%02x" % velada.getpixel((100, y))
-                self.assertGreaterEqual(_contraste("#FFFFFF", color), 4.5, (nombre, y))
-
-    def test_una_foto_oscura_no_se_apaga_de_mas(self):
-        # Un velo fijo tiene que servir para el peor caso y apaga todas las
-        # demás; medir cada foto es lo que evita que las oscuras salgan como
-        # manchas.
-        oscura = Image.new("RGB", (200, 250), "#2A2420")
-        self.assertEqual(diseno._cuanto_velo(oscura, diseno.DEGRADADO[0]), diseno.VELO_MINIMO)
-        self.assertGreater(diseno._cuanto_velo(Image.new("RGB", (200, 250), "#FFFFFF"),
-                                               diseno.DEGRADADO[0]), 0.5)
-
-    def test_mira_los_claros_y_no_el_promedio(self):
-        # Una foto oscura con el cielo claro arriba tiene buen promedio y el
-        # texto desaparece igual sobre el cielo.
-        img = Image.new("RGB", (200, 250), "#201C18")
-        img.paste(Image.new("RGB", (200, 60), "#F2F0EC"), (0, 0))
-        self.assertGreater(diseno._cuanto_velo(img, diseno.DEGRADADO[0]), 0.4)
-
-    def test_la_misma_frase_siempre_toma_la_misma_foto(self):
-        # Si la eligiera al azar, el flyer que aprobaste no sería el que sale.
-        with tempfile.TemporaryDirectory() as d:
-            carpeta = Path(d)
-            for i in range(4):
-                Image.new("RGB", (400, 500), (i * 40, 0, 0)).save(carpeta / ("f%d.jpg" % i))
-            with mock.patch.object(diseno, "FOTOS", carpeta):
-                uno = diseno._foto_de("aut-01", 100, 125)
-                otro = diseno._foto_de("aut-01", 100, 125)
-                distinta = diseno._foto_de("rup-03", 100, 125)
-        self.assertEqual(list(uno.getdata()), list(otro.getdata()))
-        self.assertNotEqual(list(uno.getdata()), list(distinta.getdata()))
-
-    def test_sin_fotos_el_estilo_con_foto_no_falla(self):
-        # Cae al degradado: un turno perdido sería peor que un fondo simple.
-        with mock.patch.object(diseno, "FOTOS", Path("/no/hay/fotos/aca")):
-            img = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo="foto")
-        self.assertEqual(img.size, (1080, 1350))
-
-    def test_la_palabra_gigante_parte_la_frase_en_tres(self):
-        f = una(texto="No lo es: es seguridad, y todavía no la reconoces.", destacar=["seguridad"])
-        antes, palabra, despues = diseno._tres_partes(f)
-        self.assertEqual(antes, "No lo es: es")
-        self.assertEqual(palabra, "seguridad,")
-        self.assertEqual(despues, "y todavía no la reconoces.")
-
-    def test_la_palabra_gigante_nunca_se_sale_del_ancho(self):
-        # Una palabra larguísima baja de cuerpo en vez de salirse: partida
-        # dejaría de ser el golpe de vista que es todo el recurso.
-        draw = ImageDraw.Draw(Image.new("RGB", (10, 10)))
-        ancho = (diseno.W - 2 * diseno.TIT_MARGEN)
-        for palabra in ("paz.", "seguridad,", "electroencefalografista", "a" * 24):
-            tam = diseno._grande_que_entra(draw, palabra, ancho, 1)
-            f = diseno._fuente("ArchivoBlack-Regular.ttf", tam)
-            self.assertLessEqual(diseno._ancho(draw, palabra, f), ancho, palabra)
-
     def test_en_todos_el_texto_se_lee(self):
         for estilo in diseno.ESTILOS:
             c = diseno._colores(PAGINA, estilo)
             self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
+            self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 3.5, estilo)
 
-    def test_solo_dos_estilos_quedan_oscuros(self):
-        # El usuario pidió que no hubiera fondos negros. Lo que se mide es
-        # oscuro Y NEUTRO: el terracota de la banda también es oscuro de
-        # luminancia, pero es el color de la marca y no es lo que molestaba.
-        # Se mira el píxel de abajo del flyer ya dibujado y no la tabla de
-        # colores, porque lo que se juzga es cómo se ve la pieza.
+    def test_ninguno_lleva_fondo_oscuro(self):
+        # Lo pidió el usuario y por eso es una prueba y no un comentario: se
+        # dibuja cada estilo y se mira el fondo de verdad, no la tabla.
         for estilo in diseno.ESTILOS:
             img = diseno.render(TEMAS[4].frases[2], TEMAS[4], PAGINA, escala=1, estilo=estilo)
-            px = img.getpixel((diseno.W // 2, diseno.H - 20))
-            abajo = "#%02x%02x%02x" % px
-            apagado = max(px) - min(px) < 40 and _luminancia(abajo) < 0.3
-            self.assertEqual(apagado, estilo in diseno.OSCUROS, (estilo, abajo))
-
-    def test_el_bloque_es_calido_y_no_casi_negro(self):
-        # Terracota puro da 3,7 de contraste con el crema y una frase entera
-        # encima se lee a duras penas; oscurecido a la mitad da 7,1.
-        c = diseno._colores(PAGINA, "bloque")
-        bloque = diseno._mezclar(c["acento"], c["tinta"], diseno.BLOQUE_OSCURO)
-        self.assertGreaterEqual(_contraste(c["fondo"], bloque), 7.0)
-        r, g, b = diseno._rgb(bloque)
-        self.assertGreater(r, b + 20, "el bloque tiene que ser cálido, no azul ni neutro")
+            for punto in ((20, 20), (diseno.W - 20, diseno.H - 20), (diseno.W // 2, 20)):
+                color = "#%02x%02x%02x" % img.getpixel(punto)
+                self.assertGreater(_luminancia(color), 0.5, (estilo, punto, color))
 
     def test_el_resaltador_deja_el_texto_legible(self):
         # La palabra marcada no cambia de color: queda tinta sobre la mancha,

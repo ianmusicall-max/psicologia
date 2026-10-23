@@ -7,20 +7,11 @@ pagina:
   # Pie del flyer. Vacío usa el nombre.
   firma: ""
 
-  # El reparto del flyer. Hay cinco y se cambian con esta línea sola:
-  #   regla     el de siempre: una raya de acento y el texto a la izquierda
-  #   tinta     fondo oscuro y texto claro; en el feed es el que más corta
-  #   comillas  una comilla enorme detrás, apenas visible, y el texto centrado
-  #   marco     como la página de un libro: un filete alrededor
-  #   banda     una banda de color abajo con el tema
-  #   palabra   la palabra destacada gigante partiendo la frase, sobre el
-  #             crema con grano de papel. No lleva foto y no cuesta nada
-  #   foto      el mismo reparto sobre una foto de assets/fotos; sin fotos
-  #             ahi adentro, cae al degradado
-  #   marcador  la palabra marcada con resaltador en vez de en color
+  # El reparto del flyer. Hay cuatro y se cambian con esta línea sola:
+  #   regla     una raya de acento y el texto a la izquierda
+  #   marco     como la página de un libro: un filete alrededor, centrado
   #   ficha     papel rayado limpio, con el margen del cuaderno
-  #   bloque    la frase sobre un bloque de color y el pie sobre el crema
-  #   etiqueta  una pastilla con el tema arriba, antes de la frase
+  #   marcador  la palabra marcada con resaltador en vez de en color
   # `scripts/probar_estilos.py` los dibuja todos con la misma frase.
   estilo: regla
 
