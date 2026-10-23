@@ -38,7 +38,12 @@ lector que llegó por un post encuentre esa frase adentro.
 Unas 1.500 palabras por capítulo. Veintinueve capítulos son unas 43.000
 palabras de texto nuevo, que llevan el manuscrito de 27.000 a cerca de 70.000.
 
-Escritos hasta ahora: 1, 2 y 3.
+Escritos hasta ahora: 1, 2, 3, 4, 5, 6 y 7.
+
+Una prueba (`TestLosCapitulosEscritos`) exige que cada capítulo escrito
+cite TODAS las frases de su tema, que tenga el largo de un capítulo y que
+su título sea el del tema. Es una promesa que se rompe sin que nada falle:
+el capítulo se escribe una vez y las frases se siguen tocando.
 
 ## Cómo sale del banco
 
@@ -64,9 +69,9 @@ donde el lector suele llegar:
 5. **Perder** · ruptura (13), duelo (7)
 6. **Después** · hábitos (6), descanso (9), sentido (10)
 
-Los siete capítulos del eje `nucleo` son el libro propiamente dicho. Los siete
-de `apoyo` son la primera y la última parte: lo que hay que entender de uno
-mismo antes de hablar de vínculos, y lo que queda después.
+Los capítulos del eje `nucleo` son el libro propiamente dicho. Los de `apoyo`
+son la primera y la última parte: lo que hay que entender de uno mismo antes
+de hablar de vínculos, y lo que queda después.
 
 ## Qué falta para que sea un libro
 
@@ -91,8 +96,8 @@ antes de empezar a escribir:
 
 - **La bibliografía se arma sola**, porque cada frase trajo su fuente desde el
   día uno. Es el trabajo que más duele dejar para el final.
-- **La voz es la misma** en los catorce capítulos, porque las 113 frases pasan
-  por la misma línea editorial.
+- **La voz es la misma** en los veintinueve capítulos, porque las 243 frases
+  pasan por la misma línea editorial.
 - **No hay que pedirle permiso a nadie**: no se cita a autores famosos, se
   escribe. Por eso el libro puede publicarse sin derechos de terceros.
 - **El capítulo más difícil ya está decidido.** La ruptura no promete que el
