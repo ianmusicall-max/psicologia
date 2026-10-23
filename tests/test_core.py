@@ -7,6 +7,7 @@ from __future__ import annotations
 import ast
 import dataclasses
 import json
+import os
 import sys
 import re
 import shutil
@@ -2249,10 +2250,38 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
             video._llave(texto, "v1", video.MODELO_ELEVEN,
                          video._ajustes_como_texto(otros)))
 
+    def test_la_voz_elegida_esta_puesta_y_el_modelo_es_multilingue(self):
+        # El texto viaja en español tal cual: no hay traduccion ni paso por el
+        # ingles en ningun lado. Con un modelo solo-ingles, los acentos y las
+        # eñes se leerian mal, asi que el modelo es parte de la decision.
+        self.assertEqual(video.VOZ_ELEVEN, "GUDYcgRAONiI1nXDcNQQ")
+        self.assertIn("multilingual", video.MODELO_ELEVEN)
+
+    def test_lo_que_se_le_manda_a_eleven_es_el_texto_en_espanol(self):
+        # La guarda de verdad: que el texto llegue SIN tocar, con sus tildes.
+        pedidos = []
+
+        def pedir(clave, voz, cuerpo):
+            pedidos.append(cuerpo)
+            return b"audio"
+
+        texto = "La soledad no cuenta cabezas, mide distancia. ¿Y vos cómo estás?"
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(os.environ, {"ELEVENLABS_API_KEY": "x"}), \
+                mock.patch.object(video, "duracion", return_value=1.0):
+            video.decir_con_eleven(texto, Path(d) / "a.mp3", "vid1",
+                                   cache=Path(d) / "c", pedir=pedir)
+        self.assertEqual(pedidos[0]["text"], texto)
+        self.assertEqual(pedidos[0]["model_id"], video.MODELO_ELEVEN)
+
     def test_eleven_sin_voz_elegida_avisa_y_no_pide_nada(self):
-        with self.assertRaises(video.VideoError) as c:
-            video.decir_con_eleven("hola", Path("/tmp/no-deberia-escribirse.mp3"),
-                                   voz="", pedir=lambda *a: b"x")
+        # Hoy hay una por defecto; esto cubre el dia que alguien la borre.
+        # Sin la guarda, la peticion saldria con la voz vacia y el error de
+        # ElevenLabs no diria que falta elegir una.
+        with mock.patch.object(video, "VOZ_ELEVEN", ""):
+            with self.assertRaises(video.VideoError) as c:
+                video.decir_con_eleven("hola", Path("/tmp/no-deberia-escribirse.mp3"),
+                                       voz="", pedir=lambda *a: b"x")
         self.assertIn("ElevenLabs", str(c.exception))
 
     def test_eleven_usa_la_cache_antes_de_pedir_la_clave(self):

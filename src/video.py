@@ -739,12 +739,19 @@ def decir_con_ia(texto: str, ruta: Path, voz: str = VOZ_IA,
 # ---------------------------------------------------------------------------
 
 API_ELEVEN = "https://api.elevenlabs.io/v1"
+# Multilingüe, y por eso el texto viaja EN ESPAÑOL tal cual: este modelo lee
+# el español nativo, no hay ninguna traducción ni ningún paso por el inglés en
+# todo el camino. Si algún día alguien lo cambia por un modelo solo-inglés,
+# los acentos y las eñes se leerían mal.
 MODELO_ELEVEN = "eleven_multilingual_v2"
 
 # La voz se guarda por ID y NO por nombre. Los nombres se repiten entre
 # cuentas y los de la biblioteca compartida se pueden renombrar; el id no
-# cambia nunca. Vacío hasta que el usuario elija una escuchándolas.
-VOZ_ELEVEN = ""
+# cambia nunca.
+#
+# La eligió el usuario el 2026-10-23, escuchándolas, después de descartar las
+# cinco de OpenAI y los cuatro procesados.
+VOZ_ELEVEN = "GUDYcgRAONiI1nXDcNQQ"
 
 # Para narrar, no para conversar. `stability` alta deja un tono parejo -una
 # baja hace que cada frase suene de otro ánimo, que en un reel de una idea
