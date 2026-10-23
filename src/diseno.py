@@ -283,19 +283,22 @@ ESTILOS = {"regla": _estilo_regla, "marco": _estilo_marco,
 POR_DEFECTO = "regla"
 
 
-def estilo_del_dia(dia) -> str:
-    """El estilo de TODOS los posts de ese dia. Cambia al dia siguiente.
+def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
+    """El estilo de ESE post. Dentro de un dia, cada post lleva uno distinto.
 
-    Se rota por dia y no por post porque el feed de un dia se ve de una sola
-    pieza: ocho posts con cuatro diseños distintos se leen como cuatro
-    paginas, no como una.
+    Sale de la fecha y de la hora, no de cuantos se publicaron. Asi volver a
+    dibujar el mismo post da el mismo estilo -el flyer aprobado es el que
+    sale- y un dia salteado no corre la rueda.
 
-    Sale de la FECHA y no de la cuenta de publicados: asi un dia que se
-    saltea no corre la rueda, y volver a dibujar el mismo post da el mismo
-    estilo, que es lo que hace que el flyer aprobado sea el que sale.
+    El dia entra en la cuenta ADEMAS de la hora, y no es decoracion: sin eso,
+    las 8 llevarian siempre el mismo estilo y no habria forma de separar el
+    estilo de la hora. Con el corrimiento, cada estilo pasa por todas las
+    horas a lo largo de la semana.
     """
     nombres = list(ESTILOS)
-    return nombres[dia.toordinal() % len(nombres)]
+    orden = list(horas or [])
+    lugar = orden.index(hora) if hora in orden else int(hora)
+    return nombres[(lugar + dia.toordinal()) % len(nombres)]
 
 
 def _colores(pagina: Pagina, estilo: str) -> dict:

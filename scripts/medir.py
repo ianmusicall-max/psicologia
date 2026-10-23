@@ -75,10 +75,9 @@ def main(argv=None) -> int:
     dias = medir.dias_por(medidos, "estilo")
     if dias and min(dias.values()) < 3:
         print()
-        print("OJO CON LA COLUMNA DE DIAS: el estilo rota por dia, asi que los ocho")
-        print("posts de una jornada comparten todo lo que paso ese dia. Un estilo con")
-        print("dos dias tiene dos observaciones, no dieciseis. Para leer el estilo")
-        print("hacen falta tres o cuatro dias de cada uno, o sea catorce dias.")
+        print("La columna de dias dice si un estilo vio dias buenos y malos o se")
+        print("concentro en pocos. Con menos de tres dias, lo que se esta midiendo")
+        print("es todavia el dia y no el estilo.")
     return 0
 
 

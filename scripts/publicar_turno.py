@@ -65,7 +65,8 @@ def main(argv=None) -> int:
               % len(frases.todas(temas)))
         return 1
     tema = frases.tema_de(temas, frase)
-    estilo = diseno.estilo_del_dia(ahora.date()) if pagina.rotar_estilos else None
+    estilo = (diseno.estilo_del_turno(ahora.date(), ahora.hour, pagina.horas)
+              if pagina.rotar_estilos else None)
     texto = frases.caption(frase, tema, pagina)
 
     print("%s · %s · estilo %s · %02d h" % (frase.id, tema.tema, estilo or pagina.estilo, ahora.hour))

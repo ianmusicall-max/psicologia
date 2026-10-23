@@ -27,9 +27,9 @@ pagina:
   # 113 frases en catorce dias: es una prueba, no un ritmo sostenible.
   horas: [8, 10, 12, 14, 16, 18, 20, 22]
 
-  # Mientras dure la prueba, el estilo cambia POR DIA: los ocho posts de un
-  # dia salen iguales y al dia siguiente cambia. Apagarlo vuelve a usar
-  # `estilo` siempre.
+  # Mientras dure la prueba, cada post del dia sale con un estilo distinto, y
+  # el reparto se corre un lugar cada dia para que cada estilo pase por todas
+  # las horas. Apagarlo vuelve a usar `estilo` siempre.
   rotar_estilos: true
 
   # Paleta propia. Es una página de psicología, no de salud: papel cálido,

@@ -1155,32 +1155,41 @@ class TestLaPrueba(unittest.TestCase):
     """Ocho por día durante una semana, rotando el estilo, para poder
     comparar después."""
 
-    def test_todos_los_posts_de_un_dia_llevan_el_mismo_estilo(self):
-        # El feed de un día se ve de una sola pieza: ocho posts con cuatro
-        # diseños distintos se leen como cuatro páginas.
-        dia = date(2026, 10, 24)
-        self.assertEqual(len({diseno.estilo_del_dia(dia) for _ in range(8)}), 1)
+    HORAS = [8, 10, 12, 14, 16, 18, 20, 22]
 
-    def test_cambia_al_dia_siguiente_y_cierra_la_vuelta(self):
-        dias = [date.fromordinal(date(2026, 10, 24).toordinal() + i) for i in range(8)]
-        rotacion = [diseno.estilo_del_dia(d) for d in dias]
-        self.assertEqual(len(set(rotacion[:4])), 4)
-        self.assertEqual(rotacion[:4], rotacion[4:])
+    def _dia(self, i=0):
+        return date.fromordinal(date(2026, 10, 24).toordinal() + i)
 
-    def test_sale_de_la_fecha_y_no_de_cuantos_se_publicaron(self):
-        # Así un día salteado no corre la rueda, y volver a dibujar el mismo
-        # post da el mismo estilo: el flyer aprobado es el que sale.
-        import inspect
-        firma = inspect.signature(diseno.estilo_del_dia)
-        self.assertEqual(list(firma.parameters), ["dia"])
+    def test_los_posts_de_un_dia_llevan_estilos_distintos(self):
+        # Lo pidió el usuario: variar dentro del día.
+        dia = self._dia()
+        del_dia = [diseno.estilo_del_turno(dia, h, self.HORAS) for h in self.HORAS]
+        self.assertEqual(len(set(del_dia)), len(diseno.ESTILOS))
+        self.assertEqual(del_dia[:4], del_dia[4:])
 
-    def test_en_catorce_dias_cada_estilo_lleva_la_misma_cantidad_de_dias(self):
-        # Es la ventana que dura el banco a ocho por día, y la que hace
-        # comparable la medición: a una semana cada estilo tiene dos días.
-        inicio = date(2026, 10, 24)
-        dias = [diseno.estilo_del_dia(date.fromordinal(inicio.toordinal() + i))
-                for i in range(12)]
-        self.assertEqual(set(dias.count(e) for e in diseno.ESTILOS), {3})
+    def test_sale_de_la_fecha_y_la_hora_y_no_de_cuantos_se_publicaron(self):
+        # Volver a dibujar el mismo post da el mismo estilo -el flyer aprobado
+        # es el que sale- y un día salteado no corre la rueda.
+        dia = self._dia()
+        uno = diseno.estilo_del_turno(dia, 12, self.HORAS)
+        self.assertEqual(uno, diseno.estilo_del_turno(dia, 12, self.HORAS))
+
+    def test_el_reparto_se_corre_cada_dia(self):
+        # Sin esto, las 8 llevarían siempre el mismo estilo y no habría forma
+        # de separar el estilo de la hora.
+        a_las_ocho = [diseno.estilo_del_turno(self._dia(i), 8, self.HORAS) for i in range(4)]
+        self.assertEqual(len(set(a_las_ocho)), len(diseno.ESTILOS))
+
+    def test_en_una_semana_cada_estilo_sale_igual_y_en_todas_las_horas(self):
+        cuantos, horas_de = {}, {}
+        for i in range(7):
+            for h in self.HORAS:
+                e = diseno.estilo_del_turno(self._dia(i), h, self.HORAS)
+                cuantos[e] = cuantos.get(e, 0) + 1
+                horas_de.setdefault(e, set()).add(h)
+        self.assertEqual(set(cuantos.values()), {14})
+        for e, hs in horas_de.items():
+            self.assertEqual(len(hs), len(self.HORAS), e)
 
     def test_el_registro_guarda_con_que_salio_el_post(self):
         # Sin esto no se puede comparar nada: el post ya salió y Facebook no
@@ -1242,8 +1251,8 @@ class TestLaMedicion(unittest.TestCase):
         self.assertTrue(medir.alcanza(medir.MINIMO))
 
     def test_cuenta_los_dias_y_no_solo_los_posts(self):
-        # Con el estilo rotando por día, ocho posts de dos días no son
-        # dieciséis observaciones independientes: son dos.
+        # El número de días sigue sirviendo: dice si un grupo vio días buenos
+        # y malos o se concentró en pocos.
         filas = [{"estilo": "regla", "dia": "2026-10-24", "reacciones": 5},
                  {"estilo": "regla", "dia": "2026-10-24", "reacciones": 7},
                  {"estilo": "regla", "dia": "2026-10-28", "reacciones": 6},
