@@ -36,6 +36,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv  # noqa: E402
+
 from src import config, frases, video  # noqa: E402
 
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
@@ -92,6 +94,9 @@ def main(argv=None) -> int:
     ap.add_argument("--carpeta", default=str(video.REELS))
     args = ap.parse_args(argv)
 
+    # Sin esto, OPENAI_API_KEY del .env no se lee nunca y `--voz-ia` dice que
+    # falta la clave aunque esté puesta.
+    load_dotenv(ROOT / ".env")
     pagina = config.cargar()
     temas = frases.leer()
     ya = frases.publicadas()

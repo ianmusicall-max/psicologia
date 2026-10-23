@@ -259,6 +259,20 @@ atribución. Necesita una clave gratuita (https://www.pexels.com/api/, un
 correo) en `PEXELS_API_KEY`. El camino a mano da lo mismo: buscar en inglés en
 https://www.pexels.com/videos/, filtrar Vertical y dejarlos en `data/fondos`.
 
+**ffmpeg no se asume.** Se busca en `FFMPEG`, después en el PATH y al final
+en el paquete `imageio-ffmpeg`, que trae su propio binario y se instala con
+pip, sin Homebrew y sin contraseña:
+
+```
+.venv/bin/pip install imageio-ffmpeg
+```
+
+Por lo mismo **no se usa ffprobe** para medir duraciones sino el propio
+ffmpeg: el binario que trae ese paquete no incluye ffprobe, y pedirlo dejaría
+sin reels a cualquier Mac donde nunca se instaló nada. Hay una prueba que lo
+cuida, y mira las llamadas y no el texto, porque la función que mide nombra
+ffprobe en su docstring justamente para explicar por qué no lo usa.
+
 **Qué cuesta cada parte**, que es lo que decide cómo está hecho:
 
 - El armado es gratis: ffmpeg. No hay ninguna API.

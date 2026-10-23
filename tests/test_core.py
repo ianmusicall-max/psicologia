@@ -2237,5 +2237,74 @@ class TestLaVozDeIA(unittest.TestCase):
         self.assertEqual(pagas, ["video.py"])
 
 
+class TestDondeEstaFfmpeg(unittest.TestCase):
+    """En la Mac del usuario no estaba, y el error era «[Errno 2] No such file
+    or directory: 'ffmpeg'», que no dice qué hacer."""
+
+    def setUp(self):
+        q = mock.patch.object(video, "_FFMPEG", None)
+        q.start()
+        self.addCleanup(q.stop)
+
+    def test_la_variable_del_entorno_manda_sobre_el_path(self):
+        with mock.patch.dict("os.environ", {"FFMPEG": "/otro/ffmpeg"}):
+            self.assertEqual(video.ffmpeg(), "/otro/ffmpeg")
+
+    def test_si_no_hay_ninguno_dice_como_instalarlo_sin_homebrew(self):
+        # Decir que falta no alcanza: esta Mac no tiene Homebrew, así que el
+        # consejo obvio no sirve.
+        with mock.patch.dict("os.environ", {}, clear=True), \
+                mock.patch.object(video.shutil if hasattr(video, "shutil") else shutil,
+                                  "which", return_value=None), \
+                mock.patch.dict("sys.modules", {"imageio_ffmpeg": None}):
+            with self.assertRaises(video.VideoError) as e:
+                video.ffmpeg()
+        self.assertIn("imageio-ffmpeg", str(e.exception))
+        self.assertIn("pip install", str(e.exception))
+
+    def test_a_nadie_se_le_pide_ffprobe(self):
+        # El ffmpeg que trae `imageio-ffmpeg` -el camino sin Homebrew- no
+        # incluye ffprobe: pedirlo dejaría a media Mac sin poder armar un reel.
+        #
+        # Se miran las LLAMADAS y no el texto: `video.duracion` nombra ffprobe
+        # en su docstring justamente para explicar por qué no lo usa, y un
+        # buscador de palabras acusaría a esa explicación.
+        culpables = []
+        for archivo in (list((ROOT / "src").glob("*.py"))
+                        + list((ROOT / "scripts").glob("*.py"))):
+            arbol = ast.parse(archivo.read_text(encoding="utf-8"))
+            for nodo in ast.walk(arbol):
+                if not isinstance(nodo, ast.Call):
+                    continue
+                for hijo in ast.walk(nodo):
+                    if isinstance(hijo, ast.Constant) and \
+                            isinstance(hijo.value, str) and "ffprobe" in hijo.value:
+                        culpables.append(archivo.name)
+        self.assertEqual(culpables, [])
+
+    def test_mide_la_duracion_de_un_archivo_de_verdad(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "x.wav"
+            subprocess.run([video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
+                            "-f", "lavfi", "-i", "anullsrc=r=22050:cl=mono",
+                            "-t", "2.5", str(ruta)], check=True)
+            self.assertAlmostEqual(video.duracion(ruta), 2.5, delta=0.2)
+
+
+class TestLosScriptsLeenElEnv(unittest.TestCase):
+
+    def test_todo_el_que_usa_una_clave_carga_el_env(self):
+        # `reel.py --voz-ia` decía que faltaba OPENAI_API_KEY aunque estuviera
+        # en el .env, porque nadie lo había cargado. El síntoma culpa al
+        # usuario de no haber puesto algo que sí puso.
+        claves = ("OPENAI_API_KEY", "PEXELS_API_KEY", "PSI_FB_PAGE_TOKEN",
+                  "TELEGRAM_TOKEN")
+        for archivo in sorted((ROOT / "scripts").glob("*.py")):
+            texto = archivo.read_text(encoding="utf-8")
+            necesita = any(c in texto for c in claves) or "--voz-ia" in texto
+            if necesita:
+                self.assertIn("load_dotenv", texto, archivo.name)
+
+
 if __name__ == "__main__":
     unittest.main()

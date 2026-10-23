@@ -628,7 +628,7 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
     carpeta = Path(carpeta)
     carpeta.mkdir(parents=True, exist_ok=True)
     silencio = carpeta / "silencio.wav"
-    _correr(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
+    _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
              "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
              "-t", "%.2f" % PAUSA, str(silencio)], "armar el silencio")
     lista, duraciones = [], []
@@ -639,7 +639,7 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
         crudo = carpeta / ("voz-%02d-crudo.wav" % i)
         decir_fn(unidad, crudo, voz)
         parejo = carpeta / ("voz-%02d.wav" % i)
-        _correr(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(crudo),
+        _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-i", str(crudo),
                  "-ar", "48000", "-ac", "2", str(parejo)], "emparejar la voz")
         duraciones.append(duracion(parejo) + PAUSA)
         lista += [parejo, silencio]
@@ -649,7 +649,7 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
     guion_concat.write_text("".join("file '%s'\n" % x.as_posix() for x in lista),
                             encoding="utf-8")
     entera = carpeta / "voz.m4a"
-    _correr(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "concat",
+    _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "concat",
              "-safe", "0", "-i", str(guion_concat), "-c:a", "aac", "-b:a", "128k",
              str(entera)], "pegar la voz")
     return entera, duraciones
@@ -668,18 +668,67 @@ def tiempos_exactos(duraciones: Sequence[float]) -> List[Tuple[float, float]]:
 # El armado.
 # ---------------------------------------------------------------------------
 
+_FFMPEG = None
+DURACION = re.compile(r"Duration:\s*(\d+):(\d\d):(\d\d(?:\.\d+)?)")
+TIEMPO = re.compile(r"time=\s*(\d+):(\d\d):(\d\d(?:\.\d+)?)")
+
+
+def ffmpeg() -> str:
+    """Dónde está ffmpeg. Se busca, no se asume.
+
+    En orden: la variable FFMPEG del entorno, el PATH, y por último el binario
+    que trae el paquete `imageio-ffmpeg`, que se instala con pip y no necesita
+    Homebrew ni permiso de administrador. Esa última es la que hace que esto
+    funcione en una Mac donde nunca se instaló nada: pasó, y el error era
+    «[Errno 2] No such file or directory: 'ffmpeg'», que no dice qué hacer.
+    """
+    global _FFMPEG
+    if _FFMPEG:
+        return _FFMPEG
+    import os
+    import shutil
+    _FFMPEG = os.environ.get("FFMPEG") or shutil.which("ffmpeg")
+    if not _FFMPEG:
+        try:
+            import imageio_ffmpeg
+            _FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:                        # noqa: BLE001
+            raise VideoError(
+                "no encuentro ffmpeg, que es lo que arma el video.\n"
+                "Se instala sin Homebrew y sin contraseña:\n"
+                "    .venv/bin/pip install imageio-ffmpeg\n"
+                "O, si ya lo tenés en otro lado, pasale la ruta en FFMPEG.")
+    return _FFMPEG
+
+
 def duracion(ruta: Path) -> float:
-    """Cuánto dura un archivo, preguntándole a ffprobe."""
+    """Cuánto dura un archivo.
+
+    Se le pregunta a ffmpeg y no a ffprobe: el ffmpeg que trae
+    `imageio-ffmpeg` -el camino sin Homebrew- no incluye ffprobe, así que
+    pedirlo dejaría a media Mac sin poder armar un reel.
+    """
+    ruta = Path(ruta)
     try:
-        r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                            "-of", "default=nw=1:nk=1", str(ruta)],
-                           capture_output=True, text=True, timeout=60)
+        r = subprocess.run([ffmpeg(), "-hide_banner", "-i", str(ruta)],
+                           capture_output=True, text=True, timeout=120)
     except (OSError, subprocess.SubprocessError) as e:
-        raise VideoError("no pude medir %s: %s" % (Path(ruta).name, e))
+        raise VideoError("no pude medir %s: %s" % (ruta.name, e))
+    m = DURACION.search(r.stderr or "")
+    if m and not (r.stderr or "").count("Duration: N/A"):
+        return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+    # Algunos archivos no declaran la duración en la cabecera. Decodificarlos
+    # entero y mirar el último `time=` es lento pero siempre contesta.
     try:
-        return float((r.stdout or "").strip())
-    except ValueError:
-        raise VideoError("ffprobe no supo decir cuánto dura %s" % Path(ruta).name)
+        r = subprocess.run([ffmpeg(), "-hide_banner", "-i", str(ruta), "-f", "null", "-"],
+                           capture_output=True, text=True, timeout=600)
+    except (OSError, subprocess.SubprocessError) as e:
+        raise VideoError("no pude medir %s: %s" % (ruta.name, e))
+    marcas = TIEMPO.findall(r.stderr or "")
+    if not marcas:
+        raise VideoError("ffmpeg no supo decir cuánto dura %s" % ruta.name)
+    h, m2, seg = marcas[-1]
+    return int(h) * 3600 + int(m2) * 60 + float(seg)
 
 
 def _deriva(total: float) -> str:
@@ -802,7 +851,7 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
         salida_audio = "%d:a" % pista_voz
     if salida_audio == "[a]":
         cadena = cadena[:-len("[a]")] + ",loudnorm=%s[a]" % SONORIDAD
-    return (["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"] + entradas +
+    return ([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error"] + entradas +
             ["-filter_complex", cadena, "-map", "[v]", "-map", salida_audio,
              "-t", "%.2f" % total,
              "-c:v", "libx264", "-preset", "medium", "-crf", "20",
