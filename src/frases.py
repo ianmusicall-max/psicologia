@@ -408,8 +408,15 @@ def hashtags(tema: Tema, pagina: Pagina) -> List[str]:
 
 
 def caption(frase: Frase, tema: Tema, pagina: Pagina) -> str:
-    """La frase, la reflexión, el pie si el tema es sensible y los hashtags."""
-    partes = [frase.texto, frase.reflexion]
+    """La reflexión, el pie si el tema es sensible y los hashtags.
+
+    **La frase NO va en el caption**, y es a propósito: ya está en el flyer,
+    grande, que es lo primero que se ve. Repetida, se come los dos renglones
+    que Facebook muestra antes del «Ver más», o sea el único lugar donde se
+    puede decir algo que la imagen todavía no dijo. Quien lee el caption ya
+    leyó la frase.
+    """
+    partes = [frase.reflexion]
     if tema.es_sensible(frase) and pagina.pie_sensible:
         partes.append(pagina.pie_sensible)
     partes.append(" ".join(hashtags(tema, pagina)))

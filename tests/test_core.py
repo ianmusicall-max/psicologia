@@ -297,10 +297,19 @@ class TestElCaption(unittest.TestCase):
         t = tema(sensible=True)
         self.assertNotIn(PAGINA.pie_sensible, frases.caption(una(sensible=False), t, PAGINA))
 
-    def test_el_caption_empieza_con_la_frase_y_termina_con_los_hashtags(self):
+    def test_el_caption_no_repite_la_frase_del_flyer(self):
+        # La frase ya está en la imagen, grande. Repetida se come los dos
+        # renglones que Facebook muestra antes del «Ver más», que son el único
+        # lugar donde se puede decir algo que la imagen todavía no dijo.
+        for t in TEMAS:
+            for f in t.frases:
+                c = frases.caption(f, t, PAGINA)
+                self.assertNotIn(f.texto, c, f.id)
+
+    def test_el_caption_empieza_con_la_reflexion_y_termina_con_los_hashtags(self):
         f = TEMAS[0].frases[0]
         c = frases.caption(f, TEMAS[0], PAGINA)
-        self.assertTrue(c.startswith(f.texto))
+        self.assertTrue(c.startswith(f.reflexion.split("\n")[0][:40]))
         self.assertTrue(c.rstrip().endswith("#sentir"))
 
 
@@ -669,7 +678,10 @@ class TestElBot(unittest.TestCase):
         ruta, pie = b.fotos[0]
         self.assertTrue(ruta.exists())
         self.assertIn("aut-01", pie)
-        self.assertIn("Hablarte mal", b.todo)      # el caption que saldría
+        # El caption que saldría: la reflexión, sin repetir la frase, que ya
+        # está en el flyer que acaba de mandar.
+        self.assertIn("Mucha gente cree", b.todo)
+        self.assertNotIn("Hablarte mal", b.todo)
         # El dato del botón lleva la frase Y el modelo: lo que se publica es el
         # flyer que viste, no el que le toque a la hora en que aprietes.
         publicar = [d for d in b.datos_de_botones() if d.startswith("publicar:")]

@@ -102,9 +102,14 @@ del capítulo. Después vienen las frases:
     destacar: [aviso]           # la palabra que va en color. Siempre al menos una
     principio: "..."            # qué sostiene la frase, en una línea
     fuente: "..."               # autor, año y dónde. Sin esto no se publica
-    reflexion: >-               # el caption, y la semilla del capítulo
+    reflexion: >-               # el caption entero, y la semilla del capítulo
       ...
 ```
+
+**El caption es la reflexión sola: la frase no se repite ahí.** Ya está en el
+flyer, grande, que es lo primero que se ve; repetida se come los dos renglones
+que Facebook muestra antes del «Ver más», que son el único lugar donde se puede
+decir algo que la imagen todavía no dijo.
 
 El `principio` y la `fuente` no se publican en el flyer. Están porque el libro
 los necesita y porque obligan a saber de dónde sale cada frase antes de
