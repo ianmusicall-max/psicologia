@@ -7,6 +7,15 @@ pagina:
   # Pie del flyer. Vacío usa el nombre.
   firma: ""
 
+  # El reparto del flyer. Hay cinco y se cambian con esta línea sola:
+  #   regla     el de siempre: una raya de acento y el texto a la izquierda
+  #   tinta     fondo oscuro y texto claro; en el feed es el que más corta
+  #   comillas  una comilla enorme detrás, apenas visible, y el texto centrado
+  #   marco     como la página de un libro: un filete alrededor
+  #   banda     una banda de color abajo con el tema
+  # `scripts/probar_estilos.py` los dibuja todos con la misma frase.
+  estilo: regla
+
   # Paleta propia. Es una página de psicología, no de salud: papel cálido,
   # tinta azul noche y un solo acento terracota para la palabra destacada.
   paleta:

@@ -17,6 +17,7 @@ class Pagina:
     nombre: str
     firma: str = ""
     paleta: Dict[str, str] = field(default_factory=dict)
+    estilo: str = "regla"
     hashtags_fijos: List[str] = field(default_factory=list)
     pie_sensible: str = ""
     page_id_env: str = "PSI_FB_PAGE_ID"
@@ -41,6 +42,7 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         nombre=datos["nombre"],
         firma=datos.get("firma") or "",
         paleta=dict(datos.get("paleta") or {}),
+        estilo=str(datos.get("estilo") or "regla"),
         hashtags_fijos=list(datos.get("hashtags_fijos") or []),
         pie_sensible=(datos.get("pie_sensible") or "").strip(),
         page_id_env=fb.get("page_id_env", "PSI_FB_PAGE_ID"),

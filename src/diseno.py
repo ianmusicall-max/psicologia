@@ -46,6 +46,16 @@ def cuerpo_maximo(texto: str) -> int:
     return 72
 
 
+def _rgb(color: str):
+    return tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def _mezclar(uno: str, otro: str, cuanto: float) -> str:
+    """`cuanto` de 0 a 1: 0 devuelve el primero, 1 el segundo."""
+    a, b = _rgb(uno), _rgb(otro)
+    return "#%02x%02x%02x" % tuple(int(round(a[i] + (b[i] - a[i]) * cuanto)) for i in range(3))
+
+
 def _fuente(nombre: str, tam: int) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(str(FUENTES / nombre), tam)
 
@@ -111,48 +121,31 @@ def _espaciado(draw, xy, texto: str, f, color, escala: int, derecha: bool = Fals
         x += _ancho(draw, c, f) + sep
 
 
-def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2) -> Image.Image:
-    """El flyer. `escala` 2 es el que se publica (2160x2700); 1 sirve para mirar."""
-    e = escala
-    fondo = pagina.color("fondo", "#F3EFE6")
-    tinta = pagina.color("tinta", "#1F2933")
-    acento = pagina.color("acento", "#B5654A")
-    suave = pagina.color("suave", "#8C8F93")
+def _escribir(draw, tokens, lineas, flags, f, x0, y, ancho, paso, tinta, acento,
+              centrado: bool = False) -> int:
+    """Dibuja los renglones y devuelve dónde terminó."""
+    espacio = _ancho(draw, " ", f)
+    for linea in lineas:
+        largo = sum(_ancho(draw, tokens[i], f) for i in linea) + espacio * (len(linea) - 1)
+        x = x0 + (ancho - largo) // 2 if centrado else x0
+        for i in linea:
+            draw.text((x, y), tokens[i], font=f, fill=acento if flags[i] else tinta)
+            x += _ancho(draw, tokens[i], f) + espacio
+        y += paso
+    return y
 
-    img = Image.new("RGB", (W * e, H * e), fondo)
-    draw = ImageDraw.Draw(img)
 
-    # Encabezado: la página a la izquierda, el capítulo a la derecha.
+def _cabecera(draw, pagina, tema, e, tinta, acento):
     f_enc = _fuente("Montserrat-Bold.ttf", ENCABEZADO * e)
     _espaciado(draw, (MARGEN * e, ARRIBA * e), pagina.nombre.upper(), f_enc, tinta, e)
     f_cap = _fuente("Montserrat-Regular.ttf", ENCABEZADO * e)
     _espaciado(draw, ((W - MARGEN) * e, ARRIBA * e), "CAPÍTULO %d" % tema.capitulo,
                f_cap, acento, e, derecha=True)
 
-    # La frase, medida antes de dibujar.
-    tokens = frase.texto.split()
-    ancho = (W - 2 * MARGEN) * e
-    alto = ZONA_ALTO * e - (RAYA[1] + RAYA_AIRE) * e
-    tam, lineas = reparto(draw, tokens, ancho, alto, cuerpo_maximo(frase.texto), e)
-    f = _fuente("Lora-SemiBold.ttf", tam * e)
-    paso = int(tam * e * INTERLINEA)
-    bloque = (RAYA[1] + RAYA_AIRE) * e + paso * len(lineas)
-    y = ZONA_Y * e + (ZONA_ALTO * e - bloque) // 2
-    draw.rectangle([MARGEN * e, y, MARGEN * e + RAYA[0] * e, y + RAYA[1] * e], fill=acento)
-    y += (RAYA[1] + RAYA_AIRE) * e
 
-    flags = _banderas(frase, tokens)
-    espacio = _ancho(draw, " ", f)
-    for linea in lineas:
-        x = MARGEN * e
-        for i in linea:
-            draw.text((x, y), tokens[i], font=f, fill=acento if flags[i] else tinta)
-            x += _ancho(draw, tokens[i], f) + espacio
-        y += paso
-
-    # Pie: una regla fina, la firma a la izquierda y el título del capítulo a
-    # la derecha. Si los dos no entran, el título cede: la firma es la página.
-    draw.rectangle([MARGEN * e, PIE_Y * e, (W - MARGEN) * e, PIE_Y * e + 2 * e], fill=suave)
+def _pie(draw, pagina, tema, e, suave, con_regla: bool = True):
+    if con_regla:
+        draw.rectangle([MARGEN * e, PIE_Y * e, (W - MARGEN) * e, PIE_Y * e + 2 * e], fill=suave)
     f_pie = _fuente("Montserrat-Regular.ttf", PIE * e)
     firma = pagina.firma or pagina.nombre
     draw.text((MARGEN * e, (PIE_Y + 22) * e), firma, font=f_pie, fill=suave)
@@ -160,6 +153,157 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2) -> Image.I
     w_tit = _ancho(draw, tema.titulo, f_tit)
     if MARGEN * e + _ancho(draw, firma, f_pie) + 40 * e + w_tit <= (W - MARGEN) * e:
         draw.text(((W - MARGEN) * e - w_tit, (PIE_Y + 19) * e), tema.titulo, font=f_tit, fill=suave)
+
+
+def _texto_medido(draw, frase, ancho, alto, e):
+    tokens = frase.texto.split()
+    tam, lineas = reparto(draw, tokens, ancho, alto, cuerpo_maximo(frase.texto), e)
+    return tokens, tam, lineas, _banderas(frase, tokens)
+
+
+# ---------------------------------------------------------------------------
+# Los estilos. Cada uno recibe el lienzo ya pintado y pone lo suyo; lo que
+# comparten -medir antes de dibujar, la palabra en el acento, el encabezado-
+# vive arriba, para que agregar un estilo no sea copiar un renderer entero.
+# ---------------------------------------------------------------------------
+
+def _estilo_regla(draw, frase, tema, pagina, e, c):
+    """El de siempre: una regla de acento y el texto alineado a la izquierda."""
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    ancho = (W - 2 * MARGEN) * e
+    alto = ZONA_ALTO * e - (RAYA[1] + RAYA_AIRE) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, alto, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    bloque = (RAYA[1] + RAYA_AIRE) * e + paso * len(lineas)
+    y = ZONA_Y * e + (ZONA_ALTO * e - bloque) // 2
+    draw.rectangle([MARGEN * e, y, MARGEN * e + RAYA[0] * e, y + RAYA[1] * e], fill=c["acento"])
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y + (RAYA[1] + RAYA_AIRE) * e,
+              ancho, paso, c["tinta"], c["acento"])
+    _pie(draw, pagina, tema, e, c["suave"])
+
+
+def _estilo_tinta(draw, frase, tema, pagina, e, c):
+    """Fondo oscuro. En el feed es lo que más corta, porque casi todo es claro."""
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    ancho = (W - 2 * MARGEN) * e
+    alto = ZONA_ALTO * e - (RAYA[1] + RAYA_AIRE) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, alto, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    bloque = (RAYA[1] + RAYA_AIRE) * e + paso * len(lineas)
+    y = ZONA_Y * e + (ZONA_ALTO * e - bloque) // 2
+    draw.rectangle([MARGEN * e, y, MARGEN * e + RAYA[0] * e, y + RAYA[1] * e], fill=c["acento"])
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y + (RAYA[1] + RAYA_AIRE) * e,
+              ancho, paso, c["tinta"], c["acento"])
+    _pie(draw, pagina, tema, e, c["suave"])
+
+
+def _estilo_comillas(draw, frase, tema, pagina, e, c):
+    """Una comilla enorme detrás, apenas visible, y el texto centrado."""
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    marca = _mezclar(c["fondo"], c["acento"], 0.22)
+    f_marca = _fuente("Lora-SemiBold.ttf", 520 * e)
+    draw.text((MARGEN * e - 30 * e, ZONA_Y * e - 150 * e), "\u201c", font=f_marca, fill=marca)
+    ancho = (W - 2 * (MARGEN + 40)) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, ZONA_ALTO * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = ZONA_Y * e + (ZONA_ALTO * e - paso * len(lineas)) // 2
+    y = _escribir(draw, tokens, lineas, flags, f, (MARGEN + 40) * e, y, ancho, paso,
+                  c["tinta"], c["acento"], centrado=True)
+    draw.rectangle([(W // 2 - 60) * e, y + 40 * e, (W // 2 + 60) * e, y + 40 * e + 4 * e],
+                   fill=c["acento"])
+    _pie(draw, pagina, tema, e, c["suave"])
+
+
+def _estilo_marco(draw, frase, tema, pagina, e, c):
+    """Como la página de un libro: un filete alrededor y el texto centrado."""
+    borde, grueso = 56, 2
+    draw.rectangle([borde * e, borde * e, (W - borde) * e, (H - borde) * e],
+                   outline=c["suave"], width=grueso * e)
+    draw.rectangle([(borde + 10) * e, (borde + 10) * e, (W - borde - 10) * e, (H - borde - 10) * e],
+                   outline=_mezclar(c["fondo"], c["suave"], 0.45), width=1 * e)
+    f_enc = _fuente("Montserrat-Bold.ttf", ENCABEZADO * e)
+    rotulo = "CAPÍTULO %d" % tema.capitulo
+    sep = ESPACIADO * e
+    total = sum(_ancho(draw, x, f_enc) for x in rotulo) + sep * (len(rotulo) - 1)
+    _espaciado(draw, ((W - total) // 2 * e, (borde + 54) * e), rotulo, f_enc, c["acento"], e)
+    ancho = (W - 2 * (borde + 64)) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (ZONA_ALTO - 60) * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = (ZONA_Y + 10) * e + ((ZONA_ALTO - 60) * e - paso * len(lineas)) // 2
+    _escribir(draw, tokens, lineas, flags, f, (borde + 64) * e, y, ancho, paso,
+              c["tinta"], c["acento"], centrado=True)
+    f_tit = _fuente("Lora-Italic.ttf", (PIE + 4) * e)
+    w_tit = _ancho(draw, tema.titulo, f_tit)
+    draw.text(((W * e - w_tit) // 2, (H - borde - 96) * e), tema.titulo, font=f_tit, fill=c["suave"])
+    f_pie = _fuente("Montserrat-Regular.ttf", PIE * e)
+    firma = (pagina.firma or pagina.nombre).upper()
+    _espaciado(draw, ((W - total) // 2 * e, (H - borde - 54) * e), firma, f_pie, c["suave"], e)
+
+
+def _estilo_banda(draw, frase, tema, pagina, e, c):
+    """Una banda de color abajo con el tema. El texto respira arriba."""
+    alto_banda = 300
+    draw.rectangle([0, (H - alto_banda) * e, W * e, H * e], fill=c["acento"])
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    ancho = (W - 2 * MARGEN) * e
+    alto = (H - alto_banda - ZONA_Y - 60) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, alto, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = ZONA_Y * e + (alto - paso * len(lineas)) // 2
+    draw.rectangle([MARGEN * e, (ZONA_Y - 60) * e, MARGEN * e + RAYA[0] * e,
+                    (ZONA_Y - 60) * e + RAYA[1] * e], fill=c["acento"])
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
+              c["tinta"], c["acento"])
+    f_tit = _fuente("Lora-Italic.ttf", 40 * e)
+    draw.text((MARGEN * e, (H - alto_banda + 86) * e), tema.titulo, font=f_tit, fill=c["fondo"])
+    f_pie = _fuente("Montserrat-Bold.ttf", PIE * e)
+    _espaciado(draw, (MARGEN * e, (H - alto_banda + 170) * e),
+               (pagina.firma or pagina.nombre).upper(), f_pie,
+               _mezclar(c["acento"], c["fondo"], 0.75), e)
+
+
+ESTILOS = {"regla": _estilo_regla, "tinta": _estilo_tinta, "comillas": _estilo_comillas,
+           "marco": _estilo_marco, "banda": _estilo_banda}
+POR_DEFECTO = "regla"
+
+
+def _colores(pagina: Pagina, estilo: str) -> dict:
+    """La paleta del estilo. `tinta` la da vuelta: fondo oscuro y texto claro.
+
+    El acento se aclara sobre el fondo oscuro. Medido: el terracota de la
+    marca sobre tinta da 3,46 de contraste, que es el mínimo justo para texto
+    grande; aclarado da 6,3. La palabra destacada no tiene que ser legible a
+    duras penas, tiene que SALTAR, porque es lo único que ese color hace.
+    """
+    fondo = pagina.color("fondo", "#F3EFE6")
+    tinta = pagina.color("tinta", "#1F2933")
+    acento = pagina.color("acento", "#B5654A")
+    suave = pagina.color("suave", "#8C8F93")
+    if estilo == "tinta":
+        return {"fondo": tinta, "tinta": fondo, "acento": _mezclar(acento, fondo, 0.42),
+                "suave": _mezclar(tinta, fondo, 0.45)}
+    return {"fondo": fondo, "tinta": tinta, "acento": acento, "suave": suave}
+
+
+def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
+           estilo: Optional[str] = None) -> Image.Image:
+    """El flyer. `escala` 2 es el que se publica (2160x2700); 1 sirve para mirar.
+
+    `estilo` elige el reparto: lo que cambia es la forma, nunca lo que dice.
+    """
+    e = escala
+    estilo = estilo or getattr(pagina, "estilo", None) or POR_DEFECTO
+    if estilo not in ESTILOS:
+        raise ValueError("no existe el estilo %r; hay %s" % (estilo, ", ".join(sorted(ESTILOS))))
+    c = _colores(pagina, estilo)
+    img = Image.new("RGB", (W * e, H * e), c["fondo"])
+    draw = ImageDraw.Draw(img)
+    ESTILOS[estilo](draw, frase, tema, pagina, e, c)
     return img
 
 
@@ -175,8 +319,8 @@ def guardar(img: Image.Image, ruta: Path) -> Path:
 
 
 def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta=None,
-            escala: int = 2) -> Path:
+            escala: int = 2, estilo: Optional[str] = None) -> Path:
     """El valor por defecto se resuelve acá y no en la firma: en la firma se
     evalúa al importar y `diseno.FLYERS` dejaría de mandar."""
-    return guardar(render(frase, tema, pagina, escala),
+    return guardar(render(frase, tema, pagina, escala, estilo),
                    Path(carpeta or FLYERS) / ("%s.jpg" % frase.id))

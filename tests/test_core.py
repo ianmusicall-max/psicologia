@@ -364,6 +364,69 @@ class TestElFlyer(unittest.TestCase):
 # El libro.
 # ---------------------------------------------------------------------------
 
+def _luminancia(hex_color):
+    def canal(v):
+        v = v / 255
+        return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+    r, g, b = diseno._rgb(hex_color)
+    return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b)
+
+
+def _contraste(uno, otro):
+    a, b = sorted((_luminancia(uno), _luminancia(otro)), reverse=True)
+    return (a + 0.05) / (b + 0.05)
+
+
+class TestLosEstilos(unittest.TestCase):
+    """Cinco repartos del mismo flyer. Lo que cambia es la forma, nunca lo
+    que dice."""
+
+    def test_son_los_cinco_y_el_de_siempre_es_el_de_fabrica(self):
+        self.assertEqual(sorted(diseno.ESTILOS),
+                         ["banda", "comillas", "marco", "regla", "tinta"])
+        self.assertEqual(diseno.POR_DEFECTO, "regla")
+
+    def test_todos_dibujan_el_peor_caso_del_validador(self):
+        # 180 caracteres de palabras largas: el máximo que deja pasar el
+        # validador, y el que más apretado deja cualquier reparto.
+        palabra = "electroencefalografista"
+        texto = (" ".join([palabra] * 8))[:frases.MAXIMO - 1] + "."
+        for estilo in diseno.ESTILOS:
+            diseno.render(una(texto=texto), tema(), PAGINA, escala=1, estilo=estilo)
+
+    def test_todos_dibujan_una_frase_de_cada_tema(self):
+        for estilo in diseno.ESTILOS:
+            for t in TEMAS:
+                diseno.render(t.frases[0], t, PAGINA, escala=1, estilo=estilo)
+
+    def test_el_estilo_lo_manda_la_config(self):
+        pagina = config.cargar()
+        pagina.estilo = "marco"
+        con_config = diseno.render(TEMAS[0].frases[0], TEMAS[0], pagina, escala=1)
+        aparte = diseno.render(TEMAS[0].frases[0], TEMAS[0], pagina, escala=1, estilo="marco")
+        self.assertEqual(list(con_config.getdata()), list(aparte.getdata()))
+
+    def test_un_estilo_que_no_existe_falla_y_dice_cuales_hay(self):
+        with self.assertRaises(ValueError) as ctx:
+            diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo="neon")
+        self.assertIn("marco", str(ctx.exception))
+
+    def test_sobre_el_fondo_oscuro_el_acento_se_aclara(self):
+        # Medido: el terracota de la marca sobre tinta da 3,46 de contraste,
+        # que es el mínimo justo para texto grande. La palabra destacada no
+        # tiene que ser legible a duras penas: tiene que SALTAR, porque es lo
+        # único que ese color hace. Aclarado da 6,3.
+        c = diseno._colores(PAGINA, "tinta")
+        crudo = PAGINA.color("acento", "#B5654A")
+        self.assertLess(_contraste(crudo, c["fondo"]), 4.0)
+        self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 5.5)
+
+    def test_en_todos_el_texto_se_lee(self):
+        for estilo in diseno.ESTILOS:
+            c = diseno._colores(PAGINA, estilo)
+            self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
+
+
 class TestElLibro(unittest.TestCase):
 
     def test_el_borrador_versionado_esta_al_dia(self):
