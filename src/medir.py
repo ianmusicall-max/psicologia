@@ -109,3 +109,73 @@ def dias_por(filas: List[dict], campo: str) -> Dict[str, int]:
             continue
         dias.setdefault(str(f[campo]), set()).add(f.get("dia"))
     return {k: len(v) for k, v in dias.items()}
+
+
+# ---------------------------------------------------------------------------
+# El informe, como texto.
+#
+# Vive acá y no en `scripts/medir.py` porque el botón del bot necesita el
+# MISMO texto: el usuario no tiene terminal a mano -corre las cosas desde el
+# teléfono- y el informe era la respuesta a «veamos cuál funciona mejor».
+# Armarlo dos veces es como se descubre tarde que una de las dos copias quedó
+# vieja; pasó en el repo de salud con los permisos y con la carpeta de turnos.
+# ---------------------------------------------------------------------------
+
+METRICAS = ("reacciones", "comentarios", "compartidos", "me_gusta", "comentarios_ig")
+
+
+def _tabla(titulo: str, filas: List[dict], campo: str, metrica: str,
+           con_dias: bool = False) -> List[str]:
+    out = ["", titulo]
+    datos = por(filas, campo, metrica)
+    if not datos:
+        return out + ["  (todavía no hay posts con ese dato)"]
+    dias = dias_por(filas, campo) if con_dias else {}
+    for valor, cuantos, med in datos:
+        extra = "  %2d días" % dias.get(valor, 0) if con_dias else ""
+        aviso = "" if alcanza(cuantos) else "   (pocos, no concluir)"
+        out.append("  %-14s %3d posts%s   mediana %6.1f%s"
+                   % (valor, cuantos, extra, med, aviso))
+    return out
+
+
+def informe(pagina: Pagina, salidos: Dict[str, dict], metrica: str = "reacciones",
+            pedir_fb=None, pedir_ig=None) -> str:
+    """Qué rindió cada modelo, eje, tema y hora. SOLO LEE.
+
+    `salidos` son las publicadas que de verdad tienen post_id: una frase
+    salteada no se mide porque no salió.
+    """
+    if not salidos:
+        return ("Todavía no salió ningún post, así que no hay nada que medir.\n\n"
+                "El informe compara por modelo, por eje, por tema y por hora, y "
+                "con menos de %d posts por grupo avisa que no se puede concluir."
+                % MINIMO)
+    filas = juntar(pagina, salidos, pedir_fb=pedir_fb, pedir_ig=pedir_ig)
+    medidos = [f for f in filas if metrica in f]
+    if not medidos:
+        return ("Hay %d posts publicados pero no pude leer los números de "
+                "ninguno.\n\nCasi siempre es el token: tocame «¿Puedo "
+                "publicar?» y mirá qué dice." % len(salidos))
+
+    out = ["%d posts publicados. Medidos por %s." % (len(medidos), metrica)]
+    out += _tabla("POR MODELO", medidos, "estilo", metrica, con_dias=True)
+    out += _tabla("POR EJE (núcleo = los temas de la página)", medidos, "eje", metrica)
+    out += _tabla("POR TEMA", medidos, "tema", metrica)
+    out += _tabla("POR HORA", medidos, "hora", metrica)
+    out += ["", "Mediana y no promedio: un post que se comparte de más tira el "
+            "promedio de todo un grupo y hace parecer que ganó algo que no ganó."]
+    if any(not alcanza(c) for _, c, _ in por(medidos, "estilo", metrica)):
+        out.append("Con menos de %d posts por grupo todavía no hay nada que "
+                   "concluir." % MINIMO)
+    dias = dias_por(medidos, "estilo")
+    if dias and min(dias.values()) < 3:
+        out += ["", "La columna de días dice si un modelo vio días buenos y malos "
+                "o se concentró en pocos. Con menos de tres días, lo que se está "
+                "midiendo es todavía el día y no el modelo."]
+    sin_datos = len(filas) - len(medidos)
+    if sin_datos:
+        out.append("")
+        out.append("De %d posts no pude leer los números y quedaron afuera."
+                   % sin_datos)
+    return "\n".join(out)

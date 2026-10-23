@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 from src import frases, libro  # noqa: E402
 
-BORRADOR = ROOT / "libro" / "borrador.md"
+BORRADOR = libro.BORRADOR
 
 
 def main() -> int:

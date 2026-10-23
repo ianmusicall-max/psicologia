@@ -7,9 +7,15 @@ archivo, no en este, porque este se regenera.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Iterable, List
 
 from .frases import Tema, todas
+
+ROOT = Path(__file__).resolve().parent.parent
+# El archivo versionado. Está acá y no en el script porque ahora lo miran dos:
+# el que lo reescribe y el botón del bot que dice si quedó viejo.
+BORRADOR = ROOT / "libro" / "borrador.md"
 
 AVISO = ("<!-- Generado por scripts/armar_libro.py a partir de frases/. No editar a mano: "
          "se vuelve a escribir entero. -->")

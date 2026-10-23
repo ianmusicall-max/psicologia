@@ -14,12 +14,12 @@ repartidos en dos ejes.
 ## Cómo está armado
 
 ```
-frases/        un archivo por tema = un capítulo del libro (14 temas, 113 frases)
+frases/        un archivo por tema = un capítulo del libro (19 temas, 153 frases)
 src/frases.py  lee el banco, lo valida contra la línea editorial y dice cuál toca
 src/diseno.py  el flyer: 1080x1350, papel cálido, la frase grande, una palabra en color
 src/libro.py   arma libro/borrador.md con todas las frases y sus reflexiones
 src/facebook.py  publica una foto con su caption. Es el único que habla con Meta
-src/bot.py     el bot de Telegram: qué botones hay y qué hace cada uno
+src/bot.py     el bot de Telegram: la tabla de botones y qué contesta cada uno
 src/telegram.py  mandar y recoger de Telegram. Transporte y nada más
 config/pagina.yaml  el nombre, la paleta, los hashtags fijos y el pie sensible
 LINEA_EDITORIAL.md  qué se puede decir y qué no, y por qué
@@ -31,7 +31,7 @@ libro/PLAN.md       cómo pasa el banco a ser un libro
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cp .env.example .env     # y poner el id y el token de la página
-.venv/bin/python scripts/revisar_banco.py     # 81 frases, 0 problemas
+.venv/bin/python scripts/revisar_banco.py     # 153 frases, 0 problemas
 .venv/bin/python scripts/frase_del_dia.py --dibujar
 ```
 
@@ -49,7 +49,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/revisar_instagram.py` | si la página está en condiciones de publicar en Instagram. Solo lee |
 | `scripts/publicar_turno.py` | publica si a esta hora le toca. Pensado para correr cada hora |
 | `scripts/parrilla.py` | el calendario de la rampa y hasta cuándo alcanza el banco. Solo lee |
-| `scripts/medir.py` | qué rindió cada estilo, tema, eje y hora. Solo lee |
+| `scripts/medir.py` | qué rindió cada modelo, tema, eje y hora. Solo lee. El mismo texto que contesta el bot |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
@@ -119,12 +119,39 @@ revisión de Noetel sostiene, y no bailar, que no está entre sus resultados.
 
 ## El bot de Telegram
 
-Para no abrir la Terminal. Le escribes cualquier cosa y aparece el menú:
+Para no abrir la Terminal. Le escribes cualquier cosa y aparece el menú, con
+un botón por tarea:
 
-- **Ver la que toca**, que manda el flyer y el texto que saldría, con dos
-  botones: Publicar y Saltar.
-- **Qué queda**, cuántas faltan por tema.
-- **Ya salieron**, las últimas diez, marcando las que se saltearon.
+| | |
+|---|---|
+| **Ver la que toca** | manda el flyer y el texto que saldría, con Publicar y Saltar |
+| **Qué sale hoy** | la parrilla del día: cada hora, con qué modelo y si ya salió |
+| **Qué queda** | cuántas faltan por tema |
+| **Ya salieron** | las últimas diez, con su modelo, marcando las que se saltearon |
+| **Cómo venimos** | el informe: qué rindió cada modelo, eje, tema y hora |
+| **Revisar el banco** | si todo pasa la línea editorial, sin esperar a querer publicar |
+| **¿Puedo publicar?** | si el token sirve y si Instagram está vinculado y con permisos |
+| **Ver los 4 modelos** | la misma frase dibujada en los cuatro, para mirarlos |
+| **Cómo va el libro** | capítulos, frases, palabras y si el borrador quedó viejo |
+
+Los botones salen de **una sola tabla**, `TAREAS` en `src/bot.py`: la etiqueta,
+cómo se nombra la tarea en una frase y qué contesta, todo en el mismo renglón.
+Escritos aparte, un botón puede quedar sin tarea o una tarea sin botón, y las
+dos cosas se descubren apretando; hay una prueba que exige que coincidan.
+Escribir el nombre de una tarea en el chat (`hoy`, `/informe`) también la corre.
+
+Cada tarea corre DENTRO del bot y no en su propia unidad de systemd, que es
+como lo hace el bot de salud. Allá hace falta: vive en un servidor y lanza
+tandas que tardan media hora y cuestan plata, así que tienen que sobrevivir a
+que el lector se reinicie. Acá no hay ninguna API paga y la más lenta le
+pregunta los números a Facebook post por post, que son segundos, con el bot
+corriendo en la misma computadora de quien espera la respuesta. Las tres que
+tardan avisan antes de empezar, que es lo que esa separación compraba.
+
+**Ninguna tarea del menú publica.** Lo único que llega a Facebook es la frase
+que apruebas con Publicar, y hay dos pruebas que lo exigen: una corre las nueve
+tareas con la red tapada y otra lee el AST de `src/bot.py` y comprueba que el
+único que nombra a `facebook.publicar` sea el camino del botón.
 
 ```
 .venv/bin/python scripts/bot.py            # escucha hasta que lo cortes

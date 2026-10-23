@@ -39,8 +39,7 @@ def main(argv=None) -> int:
     filas = parrilla.calendario(pagina, desde, quedan)
     for f in filas:
         detalle = "  ".join(
-            "%02dh %s" % (h, diseno.estilo_del_turno(f["dia"], h, f["horas"])
-                          if pagina.rotar_estilos else pagina.estilo)
+            "%02dh %s" % (h, diseno.estilo_de(pagina, f["dia"], h, f["horas"]))
             for h in f["horas"])
         print("dia %-3d %s  %d posts   %s" % (f["numero"], f["dia"].isoformat(),
                                               f["posts"], detalle))

@@ -69,12 +69,13 @@ def main(argv=None) -> int:
         return 1
     tema = frases.tema_de(temas, frase)
     # Las horas de HOY, no la parrilla entera: es lo que hace que en un dia
-    # de cuatro posts salgan cuatro estilos y no dos.
-    estilo = (diseno.estilo_del_turno(ahora.date(), ahora.hour, horas_hoy)
-              if pagina.rotar_estilos else None)
+    # de cuatro posts salgan cuatro estilos y no dos. La cuenta vive en
+    # `diseno.estilo_de`, que es la misma que usa el boton del bot: copiada,
+    # el bot mostraria un flyer y este publicaria otro.
+    estilo = diseno.estilo_de(pagina, ahora.date(), ahora.hour, horas_hoy)
     texto = frases.caption(frase, tema, pagina)
 
-    print("%s · %s · estilo %s · %02d h" % (frase.id, tema.tema, estilo or pagina.estilo, ahora.hour))
+    print("%s · %s · estilo %s · %02d h" % (frase.id, tema.tema, estilo, ahora.hour))
     if args.ver:
         return 0
 
@@ -89,7 +90,7 @@ def main(argv=None) -> int:
 
     frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre, extra={
         "hora": ahora.hour, "tema": tema.tema, "eje": tema.eje,
-        "estilo": estilo or pagina.estilo, "instagram": salida.get("instagram") or "",
+        "estilo": estilo, "instagram": salida.get("instagram") or "",
     })
     print("publicada: %s" % salida["post_id"])
     if salida.get("error_instagram"):

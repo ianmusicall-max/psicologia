@@ -666,7 +666,13 @@ class TestElBot(unittest.TestCase):
         self.assertTrue(ruta.exists())
         self.assertIn("aut-01", pie)
         self.assertIn("Hablarte mal", b.todo)      # el caption que saldría
-        self.assertIn("publicar:aut-01", b.datos_de_botones())
+        # El dato del botón lleva la frase Y el modelo: lo que se publica es el
+        # flyer que viste, no el que le toque a la hora en que aprietes.
+        publicar = [d for d in b.datos_de_botones() if d.startswith("publicar:")]
+        self.assertEqual(len(publicar), 1)
+        frase_id, _, estilo = publicar[0][len("publicar:"):].partition(":")
+        self.assertEqual(frase_id, "aut-01")
+        self.assertIn(estilo, diseno.ESTILOS)
 
     def test_con_instagram_prendido_el_bot_publica_en_las_dos(self):
         pagina = config.cargar()
@@ -1371,6 +1377,311 @@ class TestLosScripts(unittest.TestCase):
                 mock.patch("builtins.print"):
             self.assertEqual(mod.main([]), 0)
             self.assertEqual(mod.main(["--id", "due-03"]), 0)
+
+
+# ---------------------------------------------------------------------------
+# El menú del bot. Los botones son la única forma de pedirle algo al sistema
+# desde el teléfono: no hay terminal del otro lado.
+# ---------------------------------------------------------------------------
+
+class TestElMenuDelBot(unittest.TestCase):
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        d = Path(self.tmp.name)
+        for modulo, campo, valor in ((frases, "PUBLICADAS", d / "publicadas.json"),
+                                     (diseno, "FLYERS", d / "flyers"),
+                                     (diseno, "MUESTRAS", d / "estilos")):
+            q = mock.patch.object(modulo, campo, valor)
+            q.start()
+            self.addCleanup(q.stop)
+        self.assertEqual(frases.publicadas(), {})
+        self.flyers, self.muestras = d / "flyers", d / "estilos"
+
+    def test_cada_tarea_tiene_su_boton_y_cada_boton_su_tarea(self):
+        # El menú se arma de la tabla. Si alguna vez se escribiera a mano al
+        # lado, un botón podría quedar sin tarea o una tarea sin botón, y las
+        # dos cosas se descubren apretando.
+        with _Bot() as b:
+            bot.menu()
+        filas = b.botones[-1]
+        self.assertEqual([d for fila in filas for _, d in fila], list(bot.TAREAS))
+        self.assertEqual([t for fila in filas for t, _ in fila],
+                         [etiqueta for etiqueta, _, _, _ in bot.TAREAS.values()])
+
+    def test_ninguna_tarea_del_menu_publica(self):
+        # La regla del proyecto, mirada desde el código y no desde el texto:
+        # los únicos que hablan de publicar en src/bot.py son `publicar` y
+        # `_como_publica`, que son el botón Publicar. Si una tarea nueva del
+        # menú llamara a Facebook, esta prueba la nombra.
+        arbol = ast.parse((ROOT / "src" / "bot.py").read_text(encoding="utf-8"))
+        salen = {"publicar", "publicar_las_dos", "subir_foto"}
+        nombran, llaman = set(), set()
+        for nodo in arbol.body:
+            if not isinstance(nodo, ast.FunctionDef):
+                continue
+            for hijo in ast.walk(nodo):
+                # Se buscan las REFERENCIAS y no las llamadas: `_como_publica`
+                # devuelve la función sin llamarla, y `publicar` después llama
+                # a lo que le dieron. Un buscador de llamadas no vería ninguna
+                # de las dos y la guarda pasaría sola.
+                if isinstance(hijo, ast.Attribute) and hijo.attr in salen:
+                    nombran.add(nodo.name)
+                if isinstance(hijo, ast.Call) and getattr(hijo.func, "id", "") == "publicar_fn":
+                    llaman.add(nodo.name)
+        self.assertEqual(nombran, {"_como_publica"})
+        self.assertEqual(llaman, {"publicar"})
+
+    def test_correrlas_todas_no_toca_facebook(self):
+        # La misma regla por el otro lado: se corren de verdad, con la red
+        # tapada. Lo que haga falta preguntar (los números, los permisos) se
+        # finge; cualquier intento de PUBLICAR revienta.
+        with _Bot() as b, \
+                mock.patch.object(facebook, "publicar", side_effect=AssertionError("publicó")), \
+                mock.patch.object(facebook, "subir_foto", side_effect=AssertionError("subió")), \
+                mock.patch.object(instagram, "publicar_las_dos",
+                                  side_effect=AssertionError("publicó en IG")), \
+                mock.patch.object(facebook, "identificar",
+                                  return_value={"tipo": "pagina", "id": "1", "nombre": "P"}), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"pagina": "P", "id": "9", "usuario": "jos"}), \
+                mock.patch.object(instagram, "scopes_del_token",
+                                  return_value=list(instagram.PERMISOS)):
+            for clave in bot.TAREAS:
+                bot.correr(clave, PAGINA)
+        self.assertEqual(frases.publicadas(), {})
+        # Y cada una contestó algo: una tarea muda se ve igual que un bot caído.
+        self.assertGreaterEqual(len(b.textos) + len(b.fotos), len(bot.TAREAS))
+
+    def test_el_modelo_del_boton_es_el_que_se_publica_y_el_que_se_anota(self):
+        # Sin esto, apretar Publicar un rato después subía el flyer de otro
+        # modelo que el que se aprobó, y anotaba un tercero.
+        with _Bot() as b:
+            bot.mostrar_siguiente(PAGINA, ahora=datetime(2026, 10, 24, 8))
+        dato = [d for d in b.datos_de_botones() if d.startswith("publicar:")][0]
+        _, _, estilo = dato[len("publicar:"):].partition(":")
+        pagina = config.cargar()
+        pagina.instagram = False
+        with _Bot(), mock.patch.object(facebook, "publicar", return_value="105_1") as fb:
+            bot.atender(_update(data=dato), pagina)
+        self.assertEqual(frases.publicadas()["aut-01"]["estilo"], estilo)
+        # Y el archivo que se subió es el de ESE modelo: se redibuja con él.
+        # Se comparan los bytes del JPG y no los píxeles uno por uno: el flyer
+        # de publicar son 2160x2700, o sea casi seis millones de píxeles, y
+        # pasarlos a lista de Python cuelga la prueba (pasó).
+        frase = frases.por_id(TEMAS, "aut-01")
+        aparte = diseno.dibujar(frase, frases.tema_de(TEMAS, frase), pagina,
+                                carpeta=Path(self.tmp.name) / "aparte", estilo=estilo)
+        self.assertEqual(Path(fb.call_args[0][2]).read_bytes(), aparte.read_bytes())
+
+    def test_lo_publicado_desde_el_telefono_entra_en_el_informe(self):
+        # El agujero que esto tapa: el botón anotaba la frase sin hora, tema,
+        # eje ni modelo, y `medir.por` saltea el renglón al que le falta el
+        # campo. O sea que el informe de la prueba habría salido vacío, y
+        # mientras el programador horario no esté puesto el teléfono es el
+        # ÚNICO camino.
+        pagina = config.cargar()
+        pagina.instagram = False
+        with _Bot(), mock.patch.object(facebook, "publicar", return_value="105_1"):
+            bot.publicar(pagina, "aut-01", ahora=datetime(2026, 10, 24, 8))
+        anotada = frases.publicadas()["aut-01"]
+        self.assertEqual(anotada["hora"], 8)
+        self.assertEqual(anotada["tema"], "autoestima")
+        self.assertEqual(anotada["eje"], "nucleo")
+        self.assertIn(anotada["estilo"], diseno.ESTILOS)
+        texto = medir.informe(pagina, {k: v for k, v in frases.publicadas().items()
+                                       if v.get("post_id")},
+                              pedir_fb=lambda p, i: {"reacciones": 12, "comentarios": 1,
+                                                     "compartidos": 0})
+        for tabla in ("POR MODELO", "POR EJE", "POR TEMA", "POR HORA"):
+            self.assertIn(tabla, texto)
+        self.assertNotIn("todavía no hay posts con ese dato", texto)
+        self.assertIn("autoestima", texto)
+
+    def test_que_sale_hoy_lista_una_hora_por_post_con_su_modelo(self):
+        # La pregunta que la rampa volvió imposible de contestar de memoria:
+        # la cantidad cambia por etapa y el modelo se corre un lugar cada día.
+        texto = bot.hoy(PAGINA, ahora=datetime(2026, 10, 24, 7))
+        horas = parrilla.horas_del_dia(PAGINA, date(2026, 10, 24), date(2026, 10, 24))
+        self.assertIn("día 1 de la rampa: %d posts" % len(horas), texto)
+        for h in horas:
+            self.assertIn("%02d:00" % h, texto)
+        # Y los modelos del día son distintos entre sí, que es lo que se pidió.
+        nombrados = [e for e in diseno.ESTILOS if e in texto]
+        self.assertEqual(len(nombrados), len(horas))
+
+    def test_que_sale_hoy_marca_lo_que_salio_y_avisa_de_lo_que_no(self):
+        frases.anotar_publicada("aut-01", date(2026, 10, 24), "105_1", "P",
+                                extra={"hora": 8, "estilo": "regla"})
+        texto = bot.hoy(PAGINA, ahora=datetime(2026, 10, 24, 15))
+        self.assertIn("salió · aut-01", texto)
+        # Las horas que ya pasaron sin publicar se nombran, con la causa más
+        # probable: el programador horario todavía no está puesto.
+        self.assertIn("no salió", texto)
+        self.assertIn("Ya pasaron las", texto)
+        self.assertIn("programador horario", texto)
+
+    def test_escribir_el_nombre_de_una_tarea_la_corre_y_cualquier_cosa_abre_el_menu(self):
+        with _Bot() as b:
+            bot.atender(_update(texto="/hoy"), PAGINA)
+        self.assertIn("día 1 de la rampa", b.todo)
+        with _Bot() as b:
+            bot.atender(_update(texto="cualquier cosa"), PAGINA)
+        self.assertIn("Publicar", b.todo)          # es el menú, que lo explica
+        self.assertEqual([d for fila in b.botones[-1] for _, d in fila], list(bot.TAREAS))
+
+    def test_una_tarea_que_revienta_contesta_en_vez_de_quedarse_muda(self):
+        with _Bot() as b, mock.patch.object(frases, "leer",
+                                            side_effect=RuntimeError("yaml roto")):
+            bot.correr("estado", PAGINA)
+        self.assertIn("No pude con lo que queda", b.todo)
+        self.assertIn("yaml roto", b.todo)
+
+    def test_la_tarea_que_tarda_avisa_antes_de_empezar(self):
+        # Sin el aviso, el teléfono queda callado mientras se le pregunta a
+        # Facebook post por post, y eso se ve igual que un botón que no hizo nada.
+        with _Bot() as b:
+            bot.correr("informe", PAGINA)
+        self.assertIn("Dame un minuto", b.textos[0])
+        lentas = [c for c, (_, _, _, tarda) in bot.TAREAS.items() if tarda]
+        self.assertEqual(sorted(lentas), ["informe", "modelos", "permisos"])
+
+    def test_revisar_el_banco_dice_que_esta_bien_o_cuales_son_los_problemas(self):
+        self.assertIn("El banco está bien", bot.banco(PAGINA))
+        roto = [tema(frases=[una(texto="Esto cura la ansiedad para siempre.")])]
+        with mock.patch.object(frases, "leer", return_value=roto):
+            self.assertIn("problemas", bot.banco(PAGINA))
+
+    def test_puedo_publicar_no_escribe_el_token_en_el_chat(self):
+        # El chat no es un lugar seguro para un token permanente: queda en el
+        # historial del teléfono y en los servidores de Telegram.
+        pagina = config.cargar()
+        pagina.paleta = dict(pagina.paleta)
+        with mock.patch.dict("os.environ", {pagina.page_id_env: "105", pagina.token_env: "EAAsecreto"}), \
+                mock.patch.object(facebook, "identificar",
+                                  return_value={"tipo": "pagina", "id": "105", "nombre": "Josdelcarpio"}), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"pagina": "P", "id": "9", "usuario": "jos.delcarpio"}), \
+                mock.patch.object(instagram, "scopes_del_token", return_value=list(instagram.PERMISOS)):
+            texto = bot.permisos(pagina)
+        self.assertNotIn("EAAsecreto", texto)
+        self.assertIn("Josdelcarpio", texto)
+        self.assertIn("jos.delcarpio", texto)
+
+    def test_puedo_publicar_distingue_no_tiene_de_no_pude_averiguarlo(self):
+        pagina = config.cargar()
+        with mock.patch.dict("os.environ", {pagina.page_id_env: "105", pagina.token_env: "tok"}), \
+                mock.patch.object(facebook, "identificar",
+                                  return_value={"tipo": "pagina", "id": "105", "nombre": "P"}), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"pagina": "P", "id": "9", "usuario": "jos"}), \
+                mock.patch.object(instagram, "scopes_del_token", return_value=None):
+            texto = bot.permisos(pagina)
+        # None es «no pude preguntar» y [] es «no tiene ninguno». Confundirlos
+        # manda a regenerar un token que estaba bien.
+        self.assertIn("no pude mirarlos", texto)
+        self.assertNotIn("FALTAN", texto)
+
+    def test_los_cuatro_modelos_llegan_como_fotos_y_no_tocan_la_carpeta_de_flyers(self):
+        with _Bot() as b:
+            resumen = bot.modelos(PAGINA)
+        self.assertEqual(len(b.fotos), len(diseno.ESTILOS))
+        self.assertEqual(sorted(pie for _, pie in b.fotos), sorted(diseno.ESTILOS))
+        for ruta, _ in b.fotos:
+            self.assertTrue(ruta.exists())
+            self.assertEqual(ruta.parent, self.muestras)
+        # La carpeta de flyers es la que publica: una muestra no entra ahí.
+        self.assertFalse(self.flyers.exists())
+        self.assertIn("Qué sale hoy", resumen)
+
+    def test_como_va_el_libro_dice_si_el_borrador_quedo_viejo(self):
+        texto = bot.como_va_el_libro(PAGINA)
+        self.assertIn("%d capítulos" % len(TEMAS), texto)
+        self.assertIn("%d frases" % len(frases.todas(TEMAS)), texto)
+        self.assertIn("está al día", texto)
+        with mock.patch.object(libro, "BORRADOR", Path(self.tmp.name) / "no-existe.md"):
+            self.assertIn("quedó viejo", bot.como_va_el_libro(PAGINA))
+
+
+class TestElInformeSeArmaEnUnSoloLugar(unittest.TestCase):
+
+    def test_el_script_no_arma_su_propia_tabla(self):
+        # El bot y el script contestan lo mismo. Dos copias de la misma cuenta
+        # es como se descubre tarde que una de las dos quedó vieja.
+        arbol = ast.parse((ROOT / "scripts" / "medir.py").read_text(encoding="utf-8"))
+        self.assertEqual([n.name for n in arbol.body if isinstance(n, ast.FunctionDef)],
+                         ["main"])
+        self.assertTrue(_llama_a(ROOT / "scripts" / "medir.py", {"informe"}))
+
+    def test_sin_posts_lo_dice_en_vez_de_mostrar_tablas_vacias(self):
+        texto = medir.informe(PAGINA, {})
+        self.assertIn("Todavía no salió ningún post", texto)
+        self.assertNotIn("POR MODELO", texto)
+
+    def test_si_no_pudo_leer_los_numeros_manda_a_mirar_el_token(self):
+        salidos = {"aut-01": {"dia": "2026-10-24", "post_id": "105_1", "estilo": "regla"}}
+        texto = medir.informe(PAGINA, salidos, pedir_fb=lambda p, i: {})
+        self.assertIn("no pude leer los números", texto)
+        self.assertIn("¿Puedo publicar?", texto)
+
+    def test_un_post_sin_modelo_anotado_no_aparece_en_la_tabla(self):
+        # Es lo que hacía invisible a lo publicado desde el teléfono.
+        salidos = {"aut-01": {"dia": "2026-10-24", "post_id": "105_1"}}
+        texto = medir.informe(PAGINA, salidos,
+                              pedir_fb=lambda p, i: {"reacciones": 9})
+        self.assertIn("POR MODELO", texto)
+        self.assertIn("todavía no hay posts con ese dato", texto)
+
+
+class TestLosMensajesLargos(unittest.TestCase):
+
+    def test_un_informe_largo_se_parte_en_vez_de_perderse(self):
+        # Telegram RECHAZA el mensaje entero si pasa de 4096: no lo recorta.
+        texto = "\n".join("renglón número %d con algo escrito" % i for i in range(500))
+        trozos = telegram._trozos(texto)
+        self.assertGreater(len(trozos), 1)
+        for t in trozos:
+            self.assertLessEqual(len(t), telegram.TOPE)
+        self.assertEqual("\n".join(trozos), texto)
+
+    def test_un_renglon_mas_largo_que_el_tope_se_corta_igual(self):
+        trozos = telegram._trozos("x" * (telegram.TOPE * 2 + 5))
+        self.assertEqual("".join(trozos), "x" * (telegram.TOPE * 2 + 5))
+
+    def test_los_botones_van_en_el_ultimo_trozo(self):
+        texto = "\n".join("renglón %d" % i for i in range(2000))
+        with mock.patch.object(telegram, "_llamar", return_value={}) as llamar, \
+                mock.patch.object(telegram, "chat", return_value="55"):
+            telegram.enviar(texto, [[("Publicar", "publicar:aut-01")]])
+        self.assertGreater(len(llamar.call_args_list), 1)
+        con_teclado = [i for i, c in enumerate(llamar.call_args_list)
+                       if "reply_markup" in c[1]]
+        self.assertEqual(con_teclado, [len(llamar.call_args_list) - 1])
+
+
+class TestElModeloDelTurnoSeCalculaEnUnLugar(unittest.TestCase):
+
+    def test_el_bot_y_el_publicador_horario_usan_la_misma_cuenta(self):
+        # Copiada, el día que la rotación cambie el bot mostraría un flyer y el
+        # turno publicaría otro.
+        for ruta in (ROOT / "scripts" / "publicar_turno.py",
+                     ROOT / "scripts" / "parrilla.py"):
+            self.assertTrue(_llama_a(ruta, {"estilo_de"}), ruta.name)
+            self.assertFalse(_llama_a(ruta, {"estilo_del_turno"}), ruta.name)
+
+    def test_sin_rotacion_devuelve_el_fijo_de_la_config(self):
+        pagina = config.cargar()
+        pagina.rotar_estilos = False
+        pagina.estilo = "ficha"
+        self.assertEqual(diseno.estilo_de(pagina, date(2026, 10, 24), 8, [8, 14]), "ficha")
+
+    def test_con_rotacion_cada_hora_del_dia_saca_uno_distinto(self):
+        pagina = config.cargar()
+        pagina.rotar_estilos = True
+        horas = [8, 12, 16, 20]
+        salen = {diseno.estilo_de(pagina, date(2026, 10, 24), h, horas) for h in horas}
+        self.assertEqual(len(salen), len(diseno.ESTILOS))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dibuja la misma frase en los cinco estilos, para elegir mirando.
+"""Dibuja la misma frase en los cuatro estilos, para elegir mirando.
 
     probar_estilos.py                 usa la frase que toca
     probar_estilos.py --id rup-03     usa esa
@@ -24,7 +24,7 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--id", help="qué frase dibujar")
     ap.add_argument("--todas", action="store_true", help="una frase distinta por estilo")
-    ap.add_argument("--carpeta", default=str(ROOT / "data" / "estilos"))
+    ap.add_argument("--carpeta", default=str(diseno.MUESTRAS))
     args = ap.parse_args(argv)
 
     pagina = config.cargar()

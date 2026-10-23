@@ -65,13 +65,51 @@ def _teclado(botones: Optional[List[List[Tuple[str, str]]]]):
                                 for fila in botones]}
 
 
+# sendMessage no acepta más de 4096 caracteres y un mensaje más largo se
+# RECHAZA entero: no se recorta. O sea que el informe de una semana, o la
+# cuenta tema por tema con diecinueve temas, no llegarían nunca y el bot se
+# vería mudo. Se parte acá, que es la capa que conoce el límite.
+TOPE = 4000
+
+
+def _trozos(texto: str, tope: int = TOPE) -> List[str]:
+    """Parte por renglón, que es donde el corte no rompe una palabra ni una tabla."""
+    if len(texto) <= tope:
+        return [texto]
+    trozos: List[str] = []
+    actual = ""
+    for linea in texto.split("\n"):
+        # Un renglón más largo que el tope no debería existir, pero cortarlo a
+        # lo bruto es mejor que perder el mensaje entero.
+        while len(linea) > tope:
+            if actual:
+                trozos.append(actual)
+                actual = ""
+            trozos.append(linea[:tope])
+            linea = linea[tope:]
+        if actual and len(actual) + 1 + len(linea) > tope:
+            trozos.append(actual)
+            actual = linea
+        else:
+            actual = "%s\n%s" % (actual, linea) if actual else linea
+    if actual:
+        trozos.append(actual)
+    return trozos
+
+
 def enviar(texto: str, botones=None, destino: Optional[str] = None) -> dict:
-    extra = {}
-    teclado = _teclado(botones)
-    if teclado:
-        extra["reply_markup"] = teclado
-    return _llamar("sendMessage", chat_id=destino or chat(), text=texto,
-                   disable_web_page_preview=True, **extra)
+    """El texto, partido si hace falta. Los botones van en el ÚLTIMO trozo: un
+    teclado en el medio quedaría arriba de texto que todavía no se leyó."""
+    partes = _trozos(texto or "")
+    salida: dict = {}
+    for i, parte in enumerate(partes):
+        extra = {}
+        teclado = _teclado(botones) if i == len(partes) - 1 else None
+        if teclado:
+            extra["reply_markup"] = teclado
+        salida = _llamar("sendMessage", chat_id=destino or chat(), text=parte,
+                         disable_web_page_preview=True, **extra)
+    return salida
 
 
 def enviar_foto(ruta: Path, pie: str = "", botones=None, destino: Optional[str] = None) -> dict:

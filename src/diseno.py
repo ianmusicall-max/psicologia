@@ -20,6 +20,10 @@ from .frases import Frase, Tema, PALABRA, destacadas
 ROOT = Path(__file__).resolve().parent.parent
 FUENTES = ROOT / "assets" / "fonts"
 FLYERS = ROOT / "data" / "flyers"
+# Donde van los dibujos que son para MIRAR y no para publicar: los cuatro
+# modelos de la misma frase. Aparte de FLYERS a propósito, que es la carpeta
+# de la que sale lo que se sube.
+MUESTRAS = ROOT / "data" / "estilos"
 
 W, H = 1080, 1350
 MARGEN = 96
@@ -304,6 +308,19 @@ def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
     orden = list(horas or [])
     lugar = orden.index(hora) if hora in orden else int(hora)
     return nombres[(lugar + dia.toordinal()) % len(nombres)]
+
+
+def estilo_de(pagina: Pagina, dia, hora: int, horas_del_dia: Optional[List[int]] = None) -> str:
+    """El modelo de ESE turno, mirando si la página rota o usa uno fijo.
+
+    Es una línea, y por eso mismo estaba copiada en tres lugares: el publicador
+    de cada hora, el calendario y ahora el botón del bot. Copiada, el día que
+    la rotación cambie se arregla una y las otras siguen con la cuenta vieja:
+    el bot mostraría un flyer y el turno publicaría otro.
+    """
+    if not getattr(pagina, "rotar_estilos", False):
+        return getattr(pagina, "estilo", None) or POR_DEFECTO
+    return estilo_del_turno(dia, hora, horas_del_dia)
 
 
 def _colores(pagina: Pagina, estilo: str) -> dict:
