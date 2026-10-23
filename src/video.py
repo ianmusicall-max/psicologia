@@ -493,6 +493,128 @@ def voces_en_espanol() -> List[str]:
     return salida
 
 
+# ---------------------------------------------------------------------------
+# La voz de IA. Es la ÚNICA llamada paga de todo el repo.
+#
+# Se eligió OpenAI y no otra porque la cuenta y la clave ya existen -son las
+# mismas de las fotos y de los Reels de la página de salud-, así que no hay
+# que dar de alta nada. Lo que la hace «cinematográfica» no es el modelo sino
+# `INSTRUCCIONES`: sin eso lee como un locutor de noticias.
+#
+# **El precio no se escribe acá.** Las fuentes de terceros no coinciden y
+# OpenAI no publica una tarifa por carácter para este modelo. Se anotan los
+# caracteres y los segundos en `data/voz.jsonl` y el costo se mira en el panel
+# de OpenAI, que es la misma decisión que ya se tomó en la página de salud:
+# inventar un número haría que el informe dijera que gastaste lo que no.
+# ---------------------------------------------------------------------------
+
+API_VOZ = "https://api.openai.com/v1/audio/speech"
+MODELO_VOZ = "gpt-4o-mini-tts"
+# Grave y de hombre, que es lo que mide la referencia (122 Hz de mediana).
+VOZ_IA = "onyx"
+INSTRUCCIONES = (
+    "Habla en español neutro latinoamericano, con voz grave y cálida. "
+    "Tono reflexivo y sereno, como quien le cuenta algo importante a un amigo "
+    "en voz baja. Ritmo pausado, sin prisa. Deja respirar las frases y marca "
+    "las pausas de los puntos. No suenes a locutor de noticias ni a publicidad: "
+    "sin entusiasmo, sin subir al final de las frases."
+)
+# Un reel son unos 1.000 caracteres. El tope existe para que un argumento mal
+# escrito no se lleve la cuenta por delante, que ya pasó con las imágenes.
+TOPE_CARACTERES = 6000
+REGISTRO = ROOT / "data" / "voz.jsonl"
+CACHE_VOZ = ROOT / "data" / "voz_cache"
+
+
+def _llave(texto: str, voz: str, modelo: str, instrucciones: str) -> str:
+    """La pedida ENTERA como llave: si cambia una coma, es otro audio.
+
+    Lo único grave sería devolver el audio de otro texto, así que entra todo
+    lo que cambia lo que se oye. Es la misma cache que la de las fotos en la
+    página de salud, y por el mismo motivo: lo que ya se pagó no se vuelve a
+    pagar.
+    """
+    import hashlib
+    crudo = "\n".join((modelo, voz, instrucciones, texto))
+    return hashlib.sha256(crudo.encode("utf-8")).hexdigest()[:32]
+
+
+def _anotar(caracteres: int, segundos: float, voz: str, modelo: str) -> None:
+    """Lo gastado, sin precio. El precio lo pone el panel de OpenAI."""
+    import json
+    from datetime import datetime
+    try:
+        REGISTRO.parent.mkdir(parents=True, exist_ok=True)
+        with open(REGISTRO, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"cuando": datetime.now().isoformat(timespec="seconds"),
+                                "modelo": modelo, "voz": voz,
+                                "caracteres": caracteres,
+                                "segundos": round(segundos, 2)}) + "\n")
+    except OSError:
+        # Que no se pueda anotar no puede tumbar un reel que ya está hecho.
+        pass
+
+
+def decir_con_ia(texto: str, ruta: Path, voz: str = VOZ_IA,
+                 modelo: str = MODELO_VOZ, instrucciones: str = INSTRUCCIONES,
+                 cache: Optional[Path] = None, pedir=None) -> Path:
+    """Una unidad leída por la IA. Devuelve el archivo.
+
+    Mira la cache ANTES de pedir la clave: un audio que ya está en disco no
+    necesita cuenta, y el día que la clave falte o esté vencida es justo
+    cuando más conviene poder seguir.
+    """
+    import os
+    import shutil
+    ruta = Path(ruta)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    guardado = Path(cache or CACHE_VOZ) / ("%s.wav" % _llave(texto, voz, modelo, instrucciones))
+    if guardado.exists() and guardado.stat().st_size > 0:
+        shutil.copyfile(guardado, ruta)
+        return ruta
+    if len(texto) > TOPE_CARACTERES:
+        raise VideoError("son %d caracteres y el tope es %d" % (len(texto), TOPE_CARACTERES))
+    clave = os.environ.get("OPENAI_API_KEY")
+    if not clave:
+        raise VideoError("falta OPENAI_API_KEY en el .env")
+    pedir = pedir or _pedir_voz
+    audio = pedir(clave, {"model": modelo, "voice": voz, "input": texto,
+                          "instructions": instrucciones, "response_format": "wav"})
+    if not audio:
+        raise VideoError("OpenAI devolvió un audio vacío")
+    # Aparte y renombrar: si se corta a la mitad, lo que queda es un
+    # `.parcial` y no una entrada de la cache que después se lea como buena.
+    tmp = ruta.with_suffix(".parcial")
+    tmp.write_bytes(audio)
+    tmp.replace(ruta)
+    guardado.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.copyfile(ruta, guardado)
+    except OSError:
+        pass
+    _anotar(len(texto), duracion(ruta), voz, modelo)
+    return ruta
+
+
+def en_cache(texto: str, voz: str = VOZ_IA, modelo: str = MODELO_VOZ,
+             instrucciones: str = INSTRUCCIONES, cache: Optional[Path] = None) -> bool:
+    """Si ese renglón ya está pagado. Sirve para decir qué costaría antes de pedirlo."""
+    guardado = Path(cache or CACHE_VOZ) / ("%s.wav" % _llave(texto, voz, modelo, instrucciones))
+    return guardado.exists() and guardado.stat().st_size > 0
+
+
+def _pedir_voz(clave: str, cuerpo: dict) -> bytes:
+    import requests
+    try:
+        r = requests.post(API_VOZ, json=cuerpo, timeout=180,
+                          headers={"Authorization": "Bearer %s" % clave})
+    except requests.RequestException as e:
+        raise VideoError("no se pudo llegar a OpenAI: %s" % e)
+    if r.status_code != 200:
+        raise VideoError("OpenAI contestó %d: %s" % (r.status_code, r.text[:200]))
+    return r.content
+
+
 def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
                      decir_fn=None) -> Tuple[Path, List[float]]:
     """Lee cada unidad por separado y las pega con un silencio en el medio.

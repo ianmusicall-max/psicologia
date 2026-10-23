@@ -186,7 +186,7 @@ dice. Sale de la frase **y de su reflexión**: una frase sola son seis segundos.
 
 ```
 scripts/fondos.py                     baja clips de naturaleza (una sola vez)
-scripts/reel.py --tema autoestima --fondo data/fondos --voz-mac --musica cama.mp3
+scripts/reel.py --tema autoestima --fondo data/fondos --voz-ia --musica cama.mp3
 scripts/reel.py --ver                 qué haría, sin armar nada
 scripts/reel.py --id aut-01           una frase sola: unos 30 s
 scripts/reel.py --voz mi-voz.m4a      tu voz leyendo el texto
@@ -213,6 +213,34 @@ masculinas: el audio de la referencia mide 122 Hz de mediana, que es voz de
 hombre. Entre dos variantes del mismo nombre gana la mejorada. Si ninguna de la
 lista está instalada toma la que haya, porque perder la voz sería peor que no
 tener la que se quería.
+
+### La voz de IA
+
+`--voz-ia` usa `gpt-4o-mini-tts` de OpenAI. **Es la única llamada paga de todo
+el repo**, y hay una prueba que lo verifica leyendo los archivos: si algún día
+aparece otra, tiene que venir a cambiar esa lista y a explicar por qué.
+
+Lo que la hace sonar reflexiva y no a locutor de noticias no es el modelo sino
+`INSTRUCCIONES`, que le describe el tono. La voz por defecto es `onyx`, grave y
+de hombre, que es lo que mide la referencia.
+
+**No hay un precio escrito en el código, a propósito.** Las fuentes de terceros
+no coinciden entre sí y OpenAI no publica una tarifa por carácter para este
+modelo. Se anotan los caracteres y los segundos en `data/voz.jsonl` y el costo
+se mira en el panel de OpenAI. Es la misma decisión que se tomó en la página de
+salud con este mismo modelo: un precio inventado haría que el registro dijera
+que gastaste lo que no gastaste.
+
+**Lo que ya se pagó no se vuelve a pagar.** Cada renglón se guarda en
+`data/voz_cache` con la pedida entera como llave —modelo, voz, instrucciones y
+texto—, así que rehacer un reel, cambiarle el fondo o cambiarle la música no
+cuesta nada. Un cambio de una coma sí es otro audio, porque lo único grave
+sería devolver el audio de otro texto. La cache se mira ANTES de pedir la
+clave: el día que la clave falte o esté vencida es justo cuando más conviene
+poder seguir.
+
+`--ver` dice cuántos renglones habría que pedir y cuántos ya están pagados,
+antes de gastar nada.
 
 Deja el mp4 en `data/reels`. **No publica**: subirlo es una decisión.
 

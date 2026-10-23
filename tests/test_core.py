@@ -2126,5 +2126,116 @@ class TestQueVozElige(unittest.TestCase):
             self.assertEqual(video.voces_en_espanol(), ["Juan (Mejorada)"])
 
 
+class TestLaVozDeIA(unittest.TestCase):
+    """La única llamada paga de todo el repo. Lo que se cuida es que no se
+    pague dos veces lo mismo y que no se invente un precio."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.d = Path(self.tmp.name)
+        self.cache = self.d / "cache"
+        q = mock.patch.object(video, "REGISTRO", self.d / "voz.jsonl")
+        q.start()
+        self.addCleanup(q.stop)
+        self.pedidas = []
+        wav = self.d / "semilla.wav"
+        subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
+                        "-i", "anullsrc=r=22050:cl=mono", "-t", "1.0", str(wav)], check=True)
+        self.audio = wav.read_bytes()
+
+    def _pedir(self, clave, cuerpo):
+        self.pedidas.append(cuerpo)
+        return self.audio
+
+    def _decir(self, texto="hola", **kw):
+        with mock.patch.dict("os.environ", {"OPENAI_API_KEY": "sk-prueba"}):
+            return video.decir_con_ia(texto, self.d / "x.wav", cache=self.cache,
+                                      pedir=self._pedir, **kw)
+
+    def test_la_cache_evita_pagar_dos_veces_el_mismo_renglon(self):
+        # Es la lección de la cache de fotos de la página de salud: lo que ya
+        # se pagó no se vuelve a pagar. Rehacer un reel no cuesta nada.
+        self._decir("una línea")
+        self._decir("una línea")
+        self.assertEqual(len(self.pedidas), 1)
+        self.assertTrue(video.en_cache("una línea", cache=self.cache))
+
+    def test_un_cambio_de_una_coma_es_otro_audio(self):
+        # Lo único grave sería devolver el audio de otro texto.
+        self._decir("una línea")
+        self._decir("una línea,")
+        self.assertEqual(len(self.pedidas), 2)
+
+    def test_la_voz_y_las_instrucciones_tambien_entran_en_la_llave(self):
+        self._decir("igual")
+        self._decir("igual", voz="ash")
+        self._decir("igual", instrucciones="otra cosa")
+        self.assertEqual(len(self.pedidas), 3)
+
+    def test_mira_la_cache_antes_de_pedir_la_clave(self):
+        # Un audio que ya está en disco no necesita cuenta, y el día que la
+        # clave falte o esté vencida es justo cuando más conviene poder seguir.
+        self._decir("guardada")
+        with mock.patch.dict("os.environ", {}, clear=True):
+            ruta = video.decir_con_ia("guardada", self.d / "y.wav", cache=self.cache,
+                                      pedir=self._pedir)
+        self.assertTrue(ruta.exists())
+        self.assertEqual(len(self.pedidas), 1)
+
+    def test_sin_clave_y_sin_cache_dice_cual_falta(self):
+        with mock.patch.dict("os.environ", {}, clear=True):
+            with self.assertRaises(video.VideoError) as e:
+                video.decir_con_ia("nueva", self.d / "z.wav", cache=self.cache,
+                                   pedir=self._pedir)
+        self.assertIn("OPENAI_API_KEY", str(e.exception))
+
+    def test_manda_el_modelo_la_voz_y_las_instrucciones(self):
+        # Las instrucciones son lo que la hace sonar reflexiva en vez de a
+        # locutor de noticias: sin ellas el formato no es el que se pidió.
+        self._decir("algo")
+        cuerpo = self.pedidas[0]
+        self.assertEqual(cuerpo["model"], video.MODELO_VOZ)
+        self.assertEqual(cuerpo["voice"], video.VOZ_IA)
+        self.assertIn("pausado", cuerpo["instructions"])
+        self.assertEqual(cuerpo["input"], "algo")
+
+    def test_anota_lo_pedido_y_no_inventa_un_precio(self):
+        # Las fuentes de terceros no coinciden y OpenAI no publica una tarifa
+        # por carácter para este modelo. Un precio inventado haría que el
+        # registro dijera que gastaste lo que no gastaste.
+        self._decir("doce letras")
+        renglones = [json.loads(x) for x in
+                     video.REGISTRO.read_text(encoding="utf-8").splitlines() if x]
+        self.assertEqual(len(renglones), 1)
+        self.assertEqual(renglones[0]["caracteres"], len("doce letras"))
+        self.assertGreater(renglones[0]["segundos"], 0)
+        for inventado in ("costo", "precio", "dolares", "usd"):
+            self.assertNotIn(inventado, renglones[0])
+
+    def test_un_acierto_de_cache_no_se_anota_como_gasto(self):
+        self._decir("repetida")
+        self._decir("repetida")
+        renglones = [x for x in video.REGISTRO.read_text(encoding="utf-8").splitlines() if x]
+        self.assertEqual(len(renglones), 1)
+
+    def test_un_texto_enorme_no_se_pide(self):
+        # Un argumento mal escrito no puede llevarse la cuenta por delante.
+        with self.assertRaises(video.VideoError):
+            self._decir("x" * (video.TOPE_CARACTERES + 1))
+        self.assertEqual(self.pedidas, [])
+
+    def test_es_la_unica_llamada_paga_del_repo(self):
+        # Si algún día aparece otra, tiene que venir a cambiar esta lista y a
+        # leer por qué: hasta hoy este proyecto no gastaba un centavo.
+        pagas = []
+        for archivo in sorted(list((ROOT / "src").glob("*.py"))
+                              + list((ROOT / "scripts").glob("*.py"))):
+            texto = archivo.read_text(encoding="utf-8")
+            if "api.openai.com" in texto or "api.elevenlabs.io" in texto:
+                pagas.append(archivo.name)
+        self.assertEqual(pagas, ["video.py"])
+
+
 if __name__ == "__main__":
     unittest.main()

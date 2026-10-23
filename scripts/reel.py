@@ -7,6 +7,7 @@
     reel.py --fondo data/fondos  un clip de naturaleza (o una carpeta con varios)
     reel.py --voz mi-voz.m4a     tu voz grabada leyendo el texto
     reel.py --voz-mac            la voz de la Mac (`say`), renglon por renglon
+    reel.py --voz-ia             la voz de IA de OpenAI: es la UNICA llamada paga
     reel.py --musica cama.mp3    musica de fondo, bien abajo si hay voz
     reel.py --ver                dice que haria, sin armar nada
 
@@ -81,6 +82,8 @@ def main(argv=None) -> int:
     ap.add_argument("--desde", type=int, default=0,
                     help="con --tema, desde que frase del capitulo empezar")
     ap.add_argument("--musica", help="un audio de fondo")
+    ap.add_argument("--voz-ia", nargs="?", const=video.VOZ_IA, default=None,
+                    metavar="VOZ", help="voz de OpenAI (onyx, ash, sage...). CUESTA")
     ap.add_argument("--fondo", help="un clip o una carpeta con clips")
     ap.add_argument("--voz", help="un audio tuyo leyendo el texto")
     ap.add_argument("--voz-mac", nargs="?", const="", default=None, metavar="VOZ",
@@ -123,9 +126,11 @@ def main(argv=None) -> int:
     for u in unidades:
         print("   %s" % u)
 
-    if args.voz and args.voz_mac is not None:
+    cuantas = sum(1 for x in (args.voz, args.voz_mac is not None, args.voz_ia) if x)
+    if cuantas > 1:
         print()
-        print("Elegi una voz sola: --voz es tu grabacion y --voz-mac es la de la Mac.")
+        print("Elegi una voz sola: --voz es tu grabacion, --voz-mac la del Mac")
+        print("y --voz-ia la de OpenAI.")
         return 2
 
     if args.ver:
@@ -133,10 +138,30 @@ def main(argv=None) -> int:
         print()
         print("Duraria %.0f s leido, o sea unos %.0f hablados (tope %d)."
               % (leido, leido * 1.22, video.TOPE_SEGUNDOS))
+        letras = sum(len(u) for u in unidades)
+        nuevas = [u for u in unidades if not video.en_cache(u, args.voz_ia or video.VOZ_IA)]
+        print("Con --voz-ia serian %d caracteres, %d renglones, y %d habria que "
+              "pedirlos (el resto ya esta en la cache)."
+              % (letras, len(unidades), len(nuevas)))
         return 0
 
     marcas = None
     voz = Path(args.voz) if args.voz else None
+    if args.voz_ia:
+        letras = sum(len(u) for u in unidades)
+        print()
+        print("Leyendo %d renglones (%d caracteres) con la voz %s de OpenAI..."
+              % (len(unidades), letras, args.voz_ia))
+        try:
+            voz, duraciones = video.voz_por_unidades(
+                unidades, carpeta / ("%s-voz" % frase.id), args.voz_ia,
+                decir_fn=video.decir_con_ia)
+        except video.VideoError as e:
+            print(e)
+            return 1
+        marcas = video.tiempos_exactos(duraciones)
+        print("Listo. Lo pedido queda anotado en data/voz.jsonl; el costo se")
+        print("mira en el panel de OpenAI, que es donde esta el precio de verdad.")
     if args.voz_mac is not None:
         quien = args.voz_mac or video.voz_preferida()
         print()
