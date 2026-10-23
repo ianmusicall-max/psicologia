@@ -11,9 +11,22 @@ name: Publicar
 
 on:
   schedule:
-    # Cada hora en punto. GitHub a veces demora el arranque unos minutos: no
-    # importa, porque el script mira en que HORA esta y publica la de esa hora.
-    - cron: "0 * * * *"
+    # CUATRO veces por hora y NINGUNA en punto, y las dos cosas son por lo
+    # mismo: el 2026-10-23 el turno de las 16 de Lima no salio solo y hubo que
+    # dispararlo a mano. GitHub no garantiza los horarios -los demora o los
+    # saltea cuando hay carga- y la carga es maxima en el minuto 0, que es
+    # cuando todo el mundo programa sus tareas.
+    #
+    # Cuatro intentos hacen falta porque la ventana de un turno es UNA hora:
+    # el script publica la hora en la que esta corriendo, asi que una corrida
+    # de las 16 que llegue a las 17 ya no sirve. Con cuatro, que se caigan
+    # todas es mucho mas raro que se caiga una.
+    #
+    # Correrlo de mas no cuesta nada: fuera de las horas de la parrilla sale
+    # sin tocar nada, y dentro, `ya_salio_en_esta_hora` hace que el segundo
+    # intento no publique un segundo post. `concurrency` los pone en fila para
+    # que no se pisen al subir el estado.
+    - cron: "7,22,37,52 * * * *"
   # Para probarlo a mano desde la pestania Actions sin esperar a la hora.
   workflow_dispatch:
 

@@ -2836,12 +2836,40 @@ class TestElTurnoDeGithub(unittest.TestCase):
         import yaml
         return yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
 
-    def test_corre_cada_hora_y_se_puede_lanzar_a_mano(self):
+    def test_lo_intenta_varias_veces_por_hora_y_nunca_en_punto(self):
+        # El 2026-10-23 el turno de las 16 de Lima no salio solo y hubo que
+        # dispararlo a mano: GitHub demora o saltea los horarios cuando hay
+        # carga, y la carga es maxima en el minuto 0.
         d = self._flujo()
         # La clave `on` la lee PyYAML como el booleano True.
         disparos = d.get("on") or d.get(True)
-        self.assertEqual(disparos["schedule"], [{"cron": "0 * * * *"}])
         self.assertIn("workflow_dispatch", disparos)
+        minutos = []
+        for entrada in disparos["schedule"]:
+            campos = entrada["cron"].split()
+            self.assertEqual(campos[1:], ["*", "*", "*", "*"], entrada["cron"])
+            minutos += [int(x) for x in campos[0].split(",")]
+        # La ventana de un turno es UNA hora -el script publica la hora en la
+        # que corre- asi que todos los intentos tienen que caer dentro de ella.
+        self.assertGreaterEqual(len(minutos), 3)
+        self.assertNotIn(0, minutos)
+        self.assertTrue(all(0 < m < 60 for m in minutos), minutos)
+        # Repartidos, no amontonados: tres intentos seguidos en el mismo
+        # minuto caerian todos en la misma congestion.
+        separados = sorted(minutos)
+        huecos = [b - a for a, b in zip(separados, separados[1:])]
+        self.assertTrue(all(h >= 10 for h in huecos), separados)
+
+    def test_publicar_de_mas_no_publica_dos_veces(self):
+        # Es lo que hace que intentarlo cuatro veces por hora sea gratis: el
+        # segundo intento ve que esa hora ya salio y no hace nada.
+        publicar = _cargar_script("publicar_turno")
+        from datetime import datetime as _dt
+        ya = {"x": {"dia": _dt.now().date().isoformat(), "hora": 16}}
+        self.assertTrue(publicar.ya_salio_en_esta_hora(
+            ya, _dt.now().replace(hour=16)))
+        self.assertFalse(publicar.ya_salio_en_esta_hora(
+            ya, _dt.now().replace(hour=17)))
 
     def test_fija_la_hora_de_lima(self):
         # El runner viene en UTC. Sin esto, la parrilla saldría corrida cinco
