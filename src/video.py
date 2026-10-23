@@ -407,8 +407,19 @@ def ass(unidades: Sequence[str], marcas: Sequence[Tuple[float, float]],
     ]
     cuerpo = []
     for lineas, (desde, hasta) in zip(partido, marcas):
-        cuerpo.append("Dialogue: 0,%s,%s,Frase,,0,0,0,,%s"
-                      % (_ass_tiempo(desde), _ass_tiempo(hasta), "\\N".join(lineas)))
+        # `\fad` desvanece la entrada y la salida. Medido en la referencia:
+        # el texto tarda unos cinco cuadros a 25 fps en aparecer del todo, o
+        # sea unos 200 ms. Sin esto el renglon salta de golpe y se nota como
+        # un cartel, no como algo que acompana a la voz.
+        #
+        # El fundido se acota a una parte del renglon: en uno corto, 250 ms
+        # de entrada y 250 de salida se comerian casi todo el tiempo en que
+        # se tendria que leer.
+        dura = max(hasta - desde, 0.01)
+        fundido = int(min(FUNDIDO_TEXTO, dura * 1000 * 0.25))
+        cuerpo.append("Dialogue: 0,%s,%s,Frase,,0,0,0,,{\\fad(%d,%d)}%s"
+                      % (_ass_tiempo(desde), _ass_tiempo(hasta),
+                         fundido, fundido, "\\N".join(lineas)))
     return "\n".join(cabeza + cuerpo) + "\n"
 
 
@@ -1144,7 +1155,19 @@ def _deriva(total: float) -> str:
 # referencia: no es UN video de fondo sino varios que se van turnando, y es
 # buena parte de por qué no se hace largo. Con escenas mucho más cortas el
 # corte compite con el texto; mucho más largas y vuelve a ser un fondo fijo.
-ESCENA = 7.0
+# Cada cuanto se cambia de clip. MEDIDO en la referencia que mando el
+# usuario: tiene 14 cortes en 83 segundos y la mediana entre uno y otro es de
+# 4,1 s -el reparto va de 2,7 a 5,5-. Antes estaba en 7, que se veia bastante
+# mas lento que el ejemplo.
+#
+# Los cortes son SECOS, sin fundido entre clips: se comprobo cuadro a cuadro
+# alrededor de un corte y no hay ni una imagen mezclada. Lo que si se
+# desvanece es el texto (`FUNDIDO_TEXTO`).
+ESCENA = 4.0
+
+# Cuanto tarda un renglon en aparecer y en irse, en milisegundos. Tambien
+# medido en la referencia: unos cinco cuadros a 25 fps.
+FUNDIDO_TEXTO = 250
 
 # La música va MUY abajo cuando hay voz: es una cama, no un tema.
 #

@@ -2060,11 +2060,48 @@ class TestElFondoDelReel(unittest.TestCase):
     def test_cada_tramo_es_una_entrada_y_la_voz_queda_despues_de_todas(self):
         # Es el índice que ya rompió una vez: deducirlo del largo de la lista
         # de argumentos da «matches no streams», que no dice cuál es el problema.
-        orden = video.comando(Path("/g.ass"), Path("/s.mp4"), 20.0,
+        # Los tramos se cuentan del largo y de `ESCENA`, no a mano: el dia
+        # que cambie el ritmo de los cortes -paso el 2026-10-23, de 7 a 4
+        # segundos- esta prueba tiene que seguir midiendo lo que dice que
+        # mide y no el numero viejo.
+        total, cuantos = 20.0, len(video.escenas(
+            [Path("a.mp4"), Path("b.mp4")], 20.0))
+        orden = video.comando(Path("/g.ass"), Path("/s.mp4"), total,
                               [Path("a.mp4"), Path("b.mp4")])
-        self.assertEqual(orden.count("-stream_loop"), 3)
-        self.assertIn("3:a", orden)
-        self.assertIn("concat=n=3:v=1:a=0[bg]", " ".join(orden))
+        self.assertEqual(orden.count("-stream_loop"), cuantos)
+        self.assertIn("%d:a" % cuantos, orden)
+        self.assertIn("concat=n=%d:v=1:a=0[bg]" % cuantos, " ".join(orden))
+
+    def test_el_ritmo_de_los_cortes_es_el_de_la_referencia(self):
+        # Medido sobre el reel que mando el usuario: 14 cortes en 83 s, con
+        # una mediana de 4,1 s entre uno y otro. Antes estaba en 7, que se
+        # veia bastante mas lento que el ejemplo.
+        self.assertAlmostEqual(video.ESCENA, 4.0)
+        self.assertEqual(len(video.escenas([Path("a.mp4")], 83.0)), 21)
+
+    def test_los_cortes_entre_clips_son_secos(self):
+        # Comprobado cuadro a cuadro en la referencia: no hay ni una imagen
+        # mezclada entre dos clips. Lo que se desvanece es el TEXTO.
+        orden = " ".join(video.comando(Path("/g.ass"), Path("/s.mp4"), 20.0,
+                                       [Path("a.mp4"), Path("b.mp4")]))
+        self.assertNotIn("xfade", orden)
+        self.assertNotIn("fade=t=", orden.replace("afade=t=", ""))
+
+    def test_el_texto_entra_y_sale_desvanecido(self):
+        # Sin esto el renglon salta de golpe y se ve como un cartel, no como
+        # algo que acompana a la voz.
+        texto = video.ass(["Una frase corta."], [(0.0, 3.0)], PAGINA)
+        self.assertIn("{\\fad(%d,%d)}" % (video.FUNDIDO_TEXTO,
+                                          video.FUNDIDO_TEXTO), texto)
+
+    def test_en_un_renglon_corto_el_fundido_no_se_lo_come(self):
+        # Con 250 ms de entrada y 250 de salida, un renglon de medio segundo
+        # no llegaria a leerse nunca.
+        texto = video.ass(["Ya."], [(0.0, 0.4)], PAGINA)
+        import re as _re
+        ms = int(_re.search(r"fad\((\d+),", texto).group(1))
+        self.assertLess(ms, video.FUNDIDO_TEXTO)
+        self.assertLessEqual(ms * 2, 0.4 * 1000 * 0.5)
 
     def test_un_clip_mas_corto_que_su_tramo_no_deja_el_cuadro_en_negro(self):
         orden = " ".join(video.comando(Path("/g.ass"), Path("/s.mp4"), 10.0,
