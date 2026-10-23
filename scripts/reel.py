@@ -67,21 +67,32 @@ def elegir_fondo(donde: str, semilla: str) -> list:
     return clips
 
 
-def buscar_musica(cual: str) -> Path:
-    """Un archivo, o el nombre de una de las que trae el repo.
+# Lo que puede ser una pista. Varias y no solo `.m4a` porque la musica que
+# el usuario genere va a bajarse en el formato que le de la herramienta, casi
+# siempre mp3, y pedirle que la convierta antes de usarla es un paso de mas
+# para nada: ffmpeg las abre todas.
+MUSICAS = (".m4a", ".mp3", ".wav", ".aac", ".ogg", ".flac")
 
-    Las del repo estan generadas con ffmpeg y son originales. Una pista con
-    derechos le hace perder alcance a TODA la cuenta, no solo a ese post, asi
-    que lo que viene incluido no puede ser de nadie mas.
+
+def buscar_musica(cual: str) -> Path:
+    """Un archivo, o el nombre de una de las que hay en assets/musica.
+
+    Lo que venga incluido en el repo no puede ser de nadie mas: una pista con
+    derechos le hace perder alcance a TODA la cuenta, no solo a ese post. Las
+    que trae estan generadas con ffmpeg y son originales; una generada con
+    IA en un plan de pago tambien sirve, porque viene con licencia comercial.
     """
     ruta = Path(cual)
     if ruta.is_file():
         return ruta
-    propia = Path(video.MUSICA).parent / ("%s.m4a" % cual)
-    if propia.is_file():
-        return propia
-    hay = sorted(x.stem for x in Path(video.MUSICA).parent.glob("*.m4a"))
-    raise SystemExit("No encuentro la musica %r. Las que trae el repo: %s"
+    carpeta = Path(video.MUSICA).parent
+    for ext in MUSICAS:
+        propia = carpeta / ("%s%s" % (cual, ext))
+        if propia.is_file():
+            return propia
+    hay = sorted({x.stem for x in carpeta.iterdir()
+                  if x.suffix.lower() in MUSICAS})
+    raise SystemExit("No encuentro la musica %r. Las que hay: %s"
                      % (cual, ", ".join(hay) or "ninguna"))
 
 
