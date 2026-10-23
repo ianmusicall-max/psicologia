@@ -198,7 +198,9 @@ Hacen falta dos cosas que no dependen del código:
 2. El token con `instagram_basic` e `instagram_content_publish`, que no hacen
    falta para Facebook.
 
-`scripts/revisar_instagram.py` dice si están y, si no, qué hacer.
+`scripts/revisar_instagram.py` dice si están y, si no, qué hacer. En esta
+página las dos estaban: la cuenta es `@jos.delcarpio` y el token trae los dos
+permisos, comprobado contra Meta el 2026-10-23. Por eso `instagram: true`.
 
 **Si Instagram falla, el post de Facebook ya salió.** Por eso la frase se
 anota como publicada igual y el fallo se avisa aparte. Si se tratara como

@@ -7,7 +7,10 @@ Comprueba las tres cosas, en orden, y dice cual falta:
 
   1. que haya una cuenta de Instagram PROFESIONAL vinculada a la pagina,
   2. que el token traiga instagram_basic e instagram_content_publish,
-  3. que exista una direccion publica de donde Instagram pueda bajar el flyer.
+La direccion publica de la imagen NO es un requisito: es la de la foto que
+Facebook acaba de publicar. Este script pedia un PUBLIC_BASE_URL cuando
+todavia no existia ese camino, y seguia pidiendolo despues: decia que faltaba
+algo que ya estaba resuelto.
 
 SOLO LEE. No publica ni cambia nada, ni en Facebook ni en Instagram.
 """
@@ -63,17 +66,14 @@ def main(argv=None) -> int:
             else:
                 print("Permisos: estan los dos (%s)" % ", ".join(instagram.PERMISOS))
 
-    if not os.environ.get("PUBLIC_BASE_URL"):
-        print("Direccion publica para los flyers: NO HAY (PUBLIC_BASE_URL vacio)")
-        print("  %s" % instagram.PORQUE_HACE_FALTA_UNA_URL)
-        falta.append("servir los flyers desde una direccion publica, o subir el "
-                     "proyecto a tu servidor")
-    else:
-        print("Direccion publica para los flyers: %s" % os.environ["PUBLIC_BASE_URL"])
+    print("Imagen: %s" % instagram.DE_DONDE_SALE_LA_IMAGEN)
 
     print()
     if not falta:
-        print("Esta todo. Falta escribir el publicador de Instagram, que hoy no existe.")
+        if pagina.instagram:
+            print("Esta todo y ya esta prendido: cada publicacion sale en las dos.")
+        else:
+            print("Esta todo. Para prenderlo: instagram: true en config/pagina.yaml")
         return 0
     print("Para publicar en Instagram falta:")
     for i, x in enumerate(falta, 1):

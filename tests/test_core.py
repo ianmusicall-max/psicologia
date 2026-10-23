@@ -628,6 +628,11 @@ class TestElBot(unittest.TestCase):
         # reales; pasó, y el síntoma fue otra prueba fallando por un archivo
         # que no era suyo.
         self.assertEqual(frases.publicadas(), {})
+        # Para las pruebas del camino de Facebook, una página SIN Instagram:
+        # si tomaran el valor de la config, cambiarlo las rompería aunque el
+        # camino que prueban siga igual.
+        self.solo_fb = config.cargar()
+        self.solo_fb.instagram = False
 
     def test_un_mensaje_de_texto_no_publica_nunca(self):
         with _Bot() as b, mock.patch.object(facebook, "publicar",
@@ -678,7 +683,7 @@ class TestElBot(unittest.TestCase):
 
     def test_el_boton_publicar_es_el_unico_que_publica(self):
         with _Bot() as b, mock.patch.object(facebook, "publicar", return_value="105_1") as fb:
-            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+            bot.atender(_update(data="publicar:aut-01"), self.solo_fb)
         fb.assert_called_once()
         self.assertEqual(fb.call_args[0][1], frases.caption(
             frases.por_id(TEMAS, "aut-01"), TEMAS[2], PAGINA))
@@ -687,17 +692,17 @@ class TestElBot(unittest.TestCase):
 
     def test_no_publica_dos_veces_la_misma(self):
         with _Bot(), mock.patch.object(facebook, "publicar", return_value="105_1"):
-            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+            bot.atender(_update(data="publicar:aut-01"), self.solo_fb)
         with _Bot() as b, mock.patch.object(facebook, "publicar",
                                             side_effect=AssertionError("publicó de nuevo")):
-            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+            bot.atender(_update(data="publicar:aut-01"), self.solo_fb)
         self.assertIn("ya había salido", b.todo)
 
     def test_si_facebook_falla_no_la_anota_como_publicada(self):
         # Anotarla igual la perdería: no salió y no volvería a tocar.
         with _Bot() as b, mock.patch.object(facebook, "publicar",
                                             side_effect=facebook.FacebookError("(#200) permiso")):
-            bot.atender(_update(data="publicar:aut-01"), PAGINA)
+            bot.atender(_update(data="publicar:aut-01"), self.solo_fb)
         self.assertEqual(frases.publicadas(), {})
         self.assertIn("(#200)", b.todo)
 
@@ -1118,6 +1123,18 @@ class TestInstagram(unittest.TestCase):
         proporcion = diseno.W / diseno.H
         self.assertGreaterEqual(round(proporcion, 4), instagram.PROPORCION_MINIMA)
         self.assertLessEqual(proporcion, instagram.PROPORCION_MAXIMA)
+
+    def test_el_comprobador_no_pide_un_servidor(self):
+        # Pedía PUBLIC_BASE_URL de cuando no existía el camino de la foto de
+        # Facebook, y lo siguió pidiendo después: decía que faltaba algo que
+        # ya estaba resuelto, con la cuenta vinculada y los permisos puestos.
+        texto = (ROOT / "scripts" / "revisar_instagram.py").read_text(encoding="utf-8")
+        self.assertNotIn('environ.get("PUBLIC_BASE_URL")', texto)
+
+    def test_la_pagina_publica_en_las_dos(self):
+        # Comprobado contra Meta el 2026-10-23: @jos.delcarpio vinculada y los
+        # dos permisos presentes.
+        self.assertTrue(config.cargar().instagram)
 
     def test_el_comprobador_no_publica(self):
         # Mismo criterio que con Facebook: se lee el AST y se exige que no

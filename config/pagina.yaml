@@ -20,7 +20,7 @@ pagina:
   # ningun servidor. Necesita una cuenta profesional vinculada a la pagina y
   # el token con instagram_basic e instagram_content_publish:
   # `scripts/revisar_instagram.py` dice si esta todo.
-  instagram: false
+  instagram: true
 
   # Paleta propia. Es una página de psicología, no de salud: papel cálido,
   # tinta azul noche y un solo acento terracota para la palabra destacada.

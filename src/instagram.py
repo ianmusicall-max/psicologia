@@ -43,10 +43,10 @@ PROPORCION_MAXIMA = 1.91
 # Los dos que la página no necesita para Facebook y sí para Instagram.
 PERMISOS = ("instagram_basic", "instagram_content_publish")
 
-PORQUE_HACE_FALTA_UNA_URL = (
+DE_DONDE_SALE_LA_IMAGEN = (
     "Instagram no acepta que le subas el archivo: baja la imagen de una "
-    "dirección pública de internet. Los flyers viven en el disco de tu Mac, "
-    "así que hoy no hay de dónde bajarlos."
+    "dirección pública. Esa dirección es la de la foto que Facebook acaba de "
+    "publicar, así que no hace falta ningún servidor ni hospedaje."
 )
 
 
