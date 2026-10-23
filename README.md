@@ -140,6 +140,38 @@ publicaría en la página.
 en el mismo archivo que las publicadas, con el post vacío, porque dos listas
 separadas serían dos cosas que consultar y `siguiente` miraría una sola.
 
+## Los estilos del flyer
+
+Siete repartos del mismo flyer. Se eligen con `estilo:` en
+`config/pagina.yaml` y `scripts/probar_estilos.py` los dibuja todos con la
+misma frase para comparar mirando.
+
+| | |
+|---|---|
+| `regla` | el de siempre: una raya de acento y el texto a la izquierda |
+| `tinta` | fondo oscuro y texto claro; en un feed claro es el que más corta |
+| `comillas` | una comilla enorme detrás, apenas visible, y el texto centrado |
+| `marco` | como la página de un libro: un filete alrededor |
+| `banda` | una franja de color abajo con el tema |
+| `palabra` | la palabra destacada gigante partiendo la frase, sobre un degradado |
+| `foto` | el mismo reparto sobre una foto de `assets/fotos` |
+
+Los dos últimos usan `destacar` para partir la frase en tres: lo que viene
+antes, la palabra en grande y lo que sigue. Es el recurso que se ve en las
+cuentas grandes, y sale de un campo que el banco ya tenía.
+
+### Fotos
+
+`foto` toma las imágenes de `assets/fotos` (jpg o png). **No hay que generar
+ninguna**: se pone ahí lo que se quiera y el flyer las usa. Sin fotos en esa
+carpeta, cae al degradado en vez de fallar.
+
+La foto se elige **por el id de la frase y no al azar**, porque el flyer que
+se aprueba tiene que ser el que sale. Y se oscurece lo justo para que el
+blanco se lea encima: cuánto, se mide sobre la franja donde cae el texto, en
+el percentil 85 y no en el promedio, porque una foto oscura con un cielo claro
+arriba tiene buen promedio y se come el texto igual.
+
 ## El token
 
 Un token de página **no vence** cuando se deriva de un token de usuario largo,

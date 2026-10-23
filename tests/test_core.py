@@ -383,7 +383,7 @@ class TestLosEstilos(unittest.TestCase):
 
     def test_son_los_cinco_y_el_de_siempre_es_el_de_fabrica(self):
         self.assertEqual(sorted(diseno.ESTILOS),
-                         ["banda", "comillas", "marco", "regla", "tinta"])
+                         ["banda", "comillas", "foto", "marco", "palabra", "regla", "tinta"])
         self.assertEqual(diseno.POR_DEFECTO, "regla")
 
     def test_todos_dibujan_el_peor_caso_del_validador(self):
@@ -420,6 +420,73 @@ class TestLosEstilos(unittest.TestCase):
         crudo = PAGINA.color("acento", "#B5654A")
         self.assertLess(_contraste(crudo, c["fondo"]), 4.0)
         self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 5.5)
+
+    def test_el_degradado_no_aclara_tanto_como_para_comerse_el_blanco(self):
+        # El texto de los estilos con imagen va blanco. El punto más claro del
+        # fondo es el que manda: con el primer claro que se probó (#7C94A1) el
+        # blanco quedaba en 3,2 y se leía flojo.
+        self.assertGreaterEqual(_contraste("#FFFFFF", diseno.DEGRADADO[1]), 4.5)
+
+    def test_sobre_cualquier_foto_el_texto_blanco_se_lee(self):
+        for nombre, foto in (("blanca", Image.new("RGB", (200, 250), "#FFFFFF")),
+                             ("clara", Image.new("RGB", (200, 250), "#E8E2D8")),
+                             ("media", Image.new("RGB", (200, 250), "#8A8F7A"))):
+            velada = diseno._velo(foto, diseno.DEGRADADO[0])
+            for y in (int(250 * 0.08), int(250 * 0.25), int(250 * 0.42)):
+                color = "#%02x%02x%02x" % velada.getpixel((100, y))
+                self.assertGreaterEqual(_contraste("#FFFFFF", color), 4.5, (nombre, y))
+
+    def test_una_foto_oscura_no_se_apaga_de_mas(self):
+        # Un velo fijo tiene que servir para el peor caso y apaga todas las
+        # demás; medir cada foto es lo que evita que las oscuras salgan como
+        # manchas.
+        oscura = Image.new("RGB", (200, 250), "#2A2420")
+        self.assertEqual(diseno._cuanto_velo(oscura, diseno.DEGRADADO[0]), diseno.VELO_MINIMO)
+        self.assertGreater(diseno._cuanto_velo(Image.new("RGB", (200, 250), "#FFFFFF"),
+                                               diseno.DEGRADADO[0]), 0.5)
+
+    def test_mira_los_claros_y_no_el_promedio(self):
+        # Una foto oscura con el cielo claro arriba tiene buen promedio y el
+        # texto desaparece igual sobre el cielo.
+        img = Image.new("RGB", (200, 250), "#201C18")
+        img.paste(Image.new("RGB", (200, 60), "#F2F0EC"), (0, 0))
+        self.assertGreater(diseno._cuanto_velo(img, diseno.DEGRADADO[0]), 0.4)
+
+    def test_la_misma_frase_siempre_toma_la_misma_foto(self):
+        # Si la eligiera al azar, el flyer que aprobaste no sería el que sale.
+        with tempfile.TemporaryDirectory() as d:
+            carpeta = Path(d)
+            for i in range(4):
+                Image.new("RGB", (400, 500), (i * 40, 0, 0)).save(carpeta / ("f%d.jpg" % i))
+            with mock.patch.object(diseno, "FOTOS", carpeta):
+                uno = diseno._foto_de("aut-01", 100, 125)
+                otro = diseno._foto_de("aut-01", 100, 125)
+                distinta = diseno._foto_de("rup-03", 100, 125)
+        self.assertEqual(list(uno.getdata()), list(otro.getdata()))
+        self.assertNotEqual(list(uno.getdata()), list(distinta.getdata()))
+
+    def test_sin_fotos_el_estilo_con_foto_no_falla(self):
+        # Cae al degradado: un turno perdido sería peor que un fondo simple.
+        with mock.patch.object(diseno, "FOTOS", Path("/no/hay/fotos/aca")):
+            img = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo="foto")
+        self.assertEqual(img.size, (1080, 1350))
+
+    def test_la_palabra_gigante_parte_la_frase_en_tres(self):
+        f = una(texto="No lo es: es seguridad, y todavía no la reconoces.", destacar=["seguridad"])
+        antes, palabra, despues = diseno._tres_partes(f)
+        self.assertEqual(antes, "No lo es: es")
+        self.assertEqual(palabra, "seguridad,")
+        self.assertEqual(despues, "y todavía no la reconoces.")
+
+    def test_la_palabra_gigante_nunca_se_sale_del_ancho(self):
+        # Una palabra larguísima baja de cuerpo en vez de salirse: partida
+        # dejaría de ser el golpe de vista que es todo el recurso.
+        draw = ImageDraw.Draw(Image.new("RGB", (10, 10)))
+        ancho = (diseno.W - 2 * diseno.TIT_MARGEN)
+        for palabra in ("paz.", "seguridad,", "electroencefalografista", "a" * 24):
+            tam = diseno._grande_que_entra(draw, palabra, ancho, 1)
+            f = diseno._fuente("ArchivoBlack-Regular.ttf", tam)
+            self.assertLessEqual(diseno._ancho(draw, palabra, f), ancho, palabra)
 
     def test_en_todos_el_texto_se_lee(self):
         for estilo in diseno.ESTILOS:
