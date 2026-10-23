@@ -943,6 +943,57 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
     return entera, duraciones
 
 
+def agrupar_en_oraciones(unidades: Sequence[str]) -> List[List[str]]:
+    """Los renglones del subtítulo, juntados otra vez por oración.
+
+    Hace falta cuando la voz habla OTRO idioma que el subtítulo: de cada
+    oración sale un audio, así que la oración es la unidad más chica donde
+    los dos se pueden hacer coincidir. Dentro, los renglones se reparten.
+
+    Se agrupa mirando el punto final porque `unidades_de` parte primero por
+    oración (`CORTE_FUERTE`) y recién después subdivide las largas: el último
+    renglón de cada oración conserva su signo y los del medio no.
+    """
+    grupos: List[List[str]] = []
+    actual: List[str] = []
+    for u in unidades:
+        actual.append(u)
+        if u.rstrip().endswith((".", "!", "?", "…", '."', '".')):
+            grupos.append(actual)
+            actual = []
+    if actual:
+        grupos.append(actual)
+    return grupos
+
+
+def marcas_por_oracion(grupos: Sequence[Sequence[str]],
+                       duraciones: Sequence[float]) -> List[Tuple[float, float]]:
+    """Cuándo entra y sale cada renglón, cuando el audio va por oración.
+
+    Cada oración ocupa lo que dura su audio, y adentro los renglones se
+    reparten proporcional a lo que miden. Es lo más cerca que se puede estar
+    sin tener los tiempos palabra por palabra, y el error queda ACOTADO a la
+    oración: un renglón que se adelanta no arrastra a los de las oraciones
+    siguientes, que es lo que pasaría repartiendo sobre el total.
+    """
+    if len(grupos) != len(duraciones):
+        raise VideoError(
+            "son %d oraciones y %d audios: no se pueden hacer coincidir"
+            % (len(grupos), len(duraciones)))
+    marcas: List[Tuple[float, float]] = []
+    t = 0.0
+    for renglones, dura in zip(grupos, duraciones):
+        largos = [max(len(r), 1) for r in renglones]
+        suma = sum(largos)
+        dentro = t
+        for n in largos:
+            trozo = dura * n / suma
+            marcas.append((dentro, dentro + trozo))
+            dentro += trozo
+        t += dura
+    return marcas
+
+
 def tiempos_exactos(duraciones: Sequence[float]) -> List[Tuple[float, float]]:
     """Las marcas cuando se sabe cuánto dura cada renglón, sin repartir nada."""
     salida, t = [], 0.0

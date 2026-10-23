@@ -22,7 +22,7 @@ from unittest import mock
 from PIL import Image, ImageDraw
 
 from src import (bot, config, diseno, entorno, facebook, frases, instagram, libro,
-                 medir, parrilla, telegram, video)
+                 medir, parrilla, telegram, traducir, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -2632,16 +2632,109 @@ class TestLaVozDeIA(unittest.TestCase):
             self._decir("x" * (video.TOPE_CARACTERES + 1))
         self.assertEqual(self.pedidas, [])
 
-    def test_es_la_unica_llamada_paga_del_repo(self):
+    def test_son_las_unicas_llamadas_pagas_del_repo(self):
         # Si algún día aparece otra, tiene que venir a cambiar esta lista y a
-        # leer por qué: hasta hoy este proyecto no gastaba un centavo.
+        # leer por qué. Las dos de hoy:
+        #
+        #   video.py     las voces (OpenAI y ElevenLabs)
+        #   traducir.py  el español del banco pasado a inglés, porque el reel
+        #                sale con la voz en inglés y el subtítulo en español
+        #
+        # La traducción es la más barata de las dos por lejos -un capítulo son
+        # unos 200 tokens de un modelo chico, y queda en disco- pero es un
+        # gasto igual, y lo que se publica sale de ahí.
         pagas = []
         for archivo in sorted(list((ROOT / "src").glob("*.py"))
                               + list((ROOT / "scripts").glob("*.py"))):
             texto = archivo.read_text(encoding="utf-8")
             if "api.openai.com" in texto or "api.elevenlabs.io" in texto:
                 pagas.append(archivo.name)
-        self.assertEqual(pagas, ["video.py"])
+        self.assertEqual(pagas, ["traducir.py", "video.py"])
+
+
+class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
+    """El reel sale con la VOZ en ingles y los SUBTITULOS en espanol. Lo que
+    puede romperse sin que nada falle es la sincronia: que el renglon que se
+    lee no sea el que se oye."""
+
+    def test_cada_oracion_queda_entera_en_su_grupo(self):
+        # La oracion es la unidad mas chica donde el espanol y el ingles se
+        # pueden hacer coincidir: de cada una sale un audio.
+        for tema in TEMAS:
+            unidades = video.guion_de_tema(tema)
+            grupos = video.agrupar_en_oraciones(unidades)
+            self.assertEqual([u for g in grupos for u in g], list(unidades),
+                             tema.tema)
+            self.assertTrue(all(g for g in grupos), tema.tema)
+
+    def test_los_renglones_se_reparten_dentro_de_su_oracion(self):
+        grupos = [["Hola,", "que tal."], ["Adios."]]
+        marcas = video.marcas_por_oracion(grupos, [4.0, 2.0])
+        self.assertEqual(len(marcas), 3)
+        # La primera oracion ocupa sus 4 s y la segunda arranca justo ahi: el
+        # error de reparto queda ACOTADO a la oracion y no se arrastra.
+        self.assertAlmostEqual(marcas[0][0], 0.0)
+        self.assertAlmostEqual(marcas[1][1], 4.0)
+        self.assertAlmostEqual(marcas[2][0], 4.0)
+        self.assertAlmostEqual(marcas[2][1], 6.0)
+        # Y dentro, el renglon mas largo dura mas.
+        self.assertGreater(marcas[1][1] - marcas[1][0], marcas[0][1] - marcas[0][0])
+
+    def test_si_no_coinciden_las_cuentas_avisa_en_vez_de_desincronizar(self):
+        # Un audio de mas o de menos correria todos los subtitulos siguientes,
+        # y eso en el reel se ve como texto que no corresponde a lo que se oye.
+        with self.assertRaises(video.VideoError):
+            video.marcas_por_oracion([["a."], ["b."]], [1.0])
+
+    def test_la_traduccion_vuelve_con_la_misma_cantidad_de_renglones(self):
+        # Es la condicion de la que depende todo lo demas.
+        pedidos = []
+
+        def pedir(clave, cuerpo):
+            pedidos.append(cuerpo)
+            n = len(cuerpo["messages"][1]["content"].splitlines())
+            return "\n".join("%d. Line %d." % (i, i) for i in range(1, n + 1))
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(os.environ, {"OPENAI_API_KEY": "x"}):
+            salida = traducir.a_ingles(["Uno dos.", "Tres.", "Cuatro cinco."],
+                                       cache=Path(d), pedir=pedir)
+        self.assertEqual(len(salida), 3)
+
+    def test_una_traduccion_incompleta_se_rechaza(self):
+        # Un modelo que se saltea un renglon dejaria todo lo de abajo corrido
+        # un lugar. Se leen POR SU NUMERO, no por el orden en que vienen.
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(os.environ, {"OPENAI_API_KEY": "x"}), \
+                self.assertRaises(traducir.TraducirError):
+            traducir.a_ingles(["Uno.", "Dos.", "Tres."], cache=Path(d),
+                              pedir=lambda c, b: "1. One.\n3. Three.")
+
+    def test_las_lineas_se_ordenan_por_su_numero_y_no_por_como_vienen(self):
+        self.assertEqual(traducir._leer_numeradas("3. C.\n1. A.\n2. B.", 3),
+                         ["A.", "B.", "C."])
+
+    def test_lo_traducido_queda_en_disco_y_no_se_vuelve_a_pagar(self):
+        veces = []
+
+        def pedir(clave, cuerpo):
+            veces.append(1)
+            return "1. One."
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(os.environ, {"OPENAI_API_KEY": "x"}):
+            for _ in range(3):
+                traducir.a_ingles(["Uno."], cache=Path(d), pedir=pedir)
+        self.assertEqual(len(veces), 1)
+
+    def test_una_traduccion_guardada_con_otra_cantidad_se_descarta(self):
+        # No sirve ni aunque este guardada: desincroniza el subtitulo.
+        import json as _json
+        with tempfile.TemporaryDirectory() as d:
+            cache = Path(d)
+            llave = traducir._llave(["Uno.", "Dos."], traducir.MODELO)
+            (cache / ("%s.json" % llave)).write_text(_json.dumps(["One."]))
+            self.assertIsNone(traducir.guardada(["Uno.", "Dos."], cache=cache))
 
 
 class TestDondeEstaFfmpeg(unittest.TestCase):
@@ -2805,8 +2898,8 @@ class TestElReelDesdeGithub(unittest.TestCase):
         disparos = self._flujo().get("on") or self._flujo().get(True)
         self.assertEqual(list(disparos), ["workflow_dispatch"])
         self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
-                         ["color", "colores", "listar_eleven", "musica",
-                          "probar_voces", "tema", "voz", "voz_eleven"])
+                         ["color", "colores", "ingles", "listar_eleven",
+                          "musica", "probar_voces", "tema", "voz", "voz_eleven"])
 
     def test_probar_voces_no_arma_ningun_reel(self):
         # Es el modo para elegir voz por oído. Si además armara el reel,

@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, frases, video  # noqa: E402
+from src import config, frases, traducir, video  # noqa: E402
 
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
@@ -135,6 +135,8 @@ def main(argv=None) -> int:
                     help="con --tema, desde que frase del capitulo empezar")
     ap.add_argument("--color", default=None, metavar="CUAL",
                     help="como suena la voz: nada, calida, cine, honda")
+    ap.add_argument("--ingles", action="store_true",
+                    help="la VOZ en ingles y los SUBTITULOS en espanol")
     ap.add_argument("--musica", nargs="?", const="calma", default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
@@ -227,38 +229,77 @@ def main(argv=None) -> int:
 
     marcas = None
     voz = Path(args.voz) if args.voz else None
-    if args.voz_ia:
-        letras = sum(len(u) for u in unidades)
+
+    # Con --ingles lo que se LEE no es lo que se MUESTRA. El subtitulo sigue
+    # siendo el espanol del banco y la voz dice su traduccion, oracion por
+    # oracion, que es la unidad mas chica donde los dos coinciden.
+    grupos, a_leer = None, unidades
+    if args.ingles:
+        grupos = video.agrupar_en_oraciones(unidades)
+        en_espanol = [" ".join(g) for g in grupos]
         print()
-        print("Leyendo %d renglones (%d caracteres) con la voz %s de OpenAI..."
-              % (len(unidades), letras, args.voz_ia))
+        print("Traduciendo %d oraciones al ingles..." % len(en_espanol))
+        try:
+            a_leer = traducir.a_ingles(en_espanol)
+        except traducir.TraducirError as e:
+            print(e)
+            return 1
+        for es, en in zip(en_espanol, a_leer):
+            print("   ES  %s" % es)
+            print("   EN  %s" % en)
+        # El tope se comprueba ANTES de pedir la voz. El guion se eligio
+        # midiendo el ESPANOL, y el ingles no dura lo mismo: sin esto, un
+        # capitulo que se pasa se descubre despues de haber pagado el audio
+        # entero, que es exactamente lo que ya paso una vez.
+        sobran = []
+        while len(a_leer) > 1:
+            dicho = video.duracion_del_guion(a_leer) * video.VOZ_MAS_LENTA
+            if dicho <= video.TOPE_CON_MARGEN:
+                break
+            sobran.append(a_leer.pop())
+            grupos = grupos[:-1]
+        if sobran:
+            # Se sacan oraciones ENTERAS y desde el final, nunca media: media
+            # oracion termina en el aire y el reel se lee como un error.
+            print()
+            print("El ingles da mas largo que el espanol: saco %d oracion(es) "
+                  "del final para entrar en el tope." % len(sobran))
+            unidades = [u for g in grupos for u in g]
+    if args.voz_ia:
+        letras = sum(len(u) for u in a_leer)
+        print()
+        print("Leyendo %d %s (%d caracteres) con la voz %s de OpenAI..."
+              % (len(a_leer), "oraciones" if args.ingles else "renglones",
+                 letras, args.voz_ia))
         try:
             voz, duraciones = video.voz_por_unidades(
-                unidades, carpeta / ("%s-voz" % frase.id), args.voz_ia,
+                a_leer, carpeta / ("%s-voz" % frase.id), args.voz_ia,
                 decir_fn=video.decir_con_ia, color=args.color)
         except video.VideoError as e:
             print(e)
             return 1
-        marcas = video.tiempos_exactos(duraciones)
+        marcas = (video.marcas_por_oracion(grupos, duraciones) if args.ingles
+                  else video.tiempos_exactos(duraciones))
         print("Listo. Lo pedido queda anotado en data/voz.jsonl; el costo se")
         print("mira en el panel de OpenAI, que es donde esta el precio de verdad.")
-        contar_lo_que_tardo(unidades, duraciones)
+        contar_lo_que_tardo(a_leer, duraciones)
     if args.voz_eleven is not None:
-        letras = sum(len(u) for u in unidades)
+        letras = sum(len(u) for u in a_leer)
         print()
-        print("Leyendo %d renglones (%d caracteres) con ElevenLabs..."
-              % (len(unidades), letras))
+        print("Leyendo %d %s (%d caracteres) con ElevenLabs..."
+              % (len(a_leer), "oraciones" if args.ingles else "renglones", letras))
         try:
             voz, duraciones = video.voz_por_unidades(
-                unidades, carpeta / ("%s-voz" % frase.id), args.voz_eleven,
+                a_leer, carpeta / ("%s-voz" % frase.id), args.voz_eleven,
                 decir_fn=video.decir_con_eleven, color=args.color)
         except video.VideoError as e:
             print(e)
             return 1
-        marcas = video.tiempos_exactos(duraciones)
+        marcas = (video.marcas_por_oracion(grupos, duraciones) if args.ingles
+                  else video.tiempos_exactos(duraciones))
         print("Listo. Lo pedido queda anotado en data/voz.jsonl; los creditos")
         print("se miran en el panel de ElevenLabs.")
-        contar_lo_que_tardo(unidades, duraciones)
+        contar_lo_que_tardo(a_leer, duraciones)
     if args.voz_mac is not None:
         quien = args.voz_mac or video.voz_preferida()
         print()
@@ -277,7 +318,7 @@ def main(argv=None) -> int:
                 print("`say` solo existe en Mac. Sin voz el reel sale igual, mudo.")
             return 1
         marcas = video.tiempos_exactos(duraciones)
-        contar_lo_que_tardo(unidades, duraciones)
+        contar_lo_que_tardo(a_leer, duraciones)
 
     try:
         ruta = video.armar(frase, pagina, titulo=tema.titulo, fondo=fondo, voz=voz,

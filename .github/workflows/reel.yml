@@ -47,6 +47,10 @@ on:
         description: "Musica de fondo"
         type: boolean
         default: true
+      ingles:
+        description: "Voz en INGLES y subtitulos en espanol"
+        type: boolean
+        default: true
       probar_voces:
         description: "Solo mandar muestras de voz al chat para elegir (no arma reel)"
         type: boolean
@@ -164,6 +168,9 @@ jobs:
           fi
           if [ -n "${{ inputs.color }}" ]; then
             ARGS="$ARGS --color ${{ inputs.color }}"
+          fi
+          if [ "${{ inputs.ingles }}" = "true" ]; then
+            ARGS="$ARGS --ingles"
           fi
           # Los clips solo se usan si de verdad hay VIDEOS: sin ellos el
           # fondo es el papel de la marca, que no depende de nada.
