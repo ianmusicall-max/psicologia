@@ -142,7 +142,7 @@ separadas serían dos cosas que consultar y `siguiente` miraría una sola.
 
 ## Los estilos del flyer
 
-Siete repartos del mismo flyer. Se eligen con `estilo:` en
+Once repartos del mismo flyer. Se eligen con `estilo:` en
 `config/pagina.yaml` y `scripts/probar_estilos.py` los dibuja todos con la
 misma frase para comparar mirando.
 
@@ -155,6 +155,10 @@ misma frase para comparar mirando.
 | `banda` | una franja de color abajo con el tema |
 | `palabra` | la palabra destacada gigante partiendo la frase, sobre un degradado |
 | `foto` | el mismo reparto sobre una foto de `assets/fotos` |
+| `marcador` | la palabra marcada con resaltador en vez de en color |
+| `ficha` | papel rayado limpio, con el margen del cuaderno |
+| `bloque` | la frase sobre un bloque de color y el pie sobre el crema |
+| `etiqueta` | una pastilla con el tema arriba, antes de la frase |
 
 Los dos últimos usan `destacar` para partir la frase en tres: lo que viene
 antes, la palabra en grande y lo que sigue. Es el recurso que se ve en las

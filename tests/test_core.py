@@ -383,7 +383,8 @@ class TestLosEstilos(unittest.TestCase):
 
     def test_son_los_cinco_y_el_de_siempre_es_el_de_fabrica(self):
         self.assertEqual(sorted(diseno.ESTILOS),
-                         ["banda", "comillas", "foto", "marco", "palabra", "regla", "tinta"])
+                         ["banda", "bloque", "comillas", "etiqueta", "ficha", "foto",
+                          "marcador", "marco", "palabra", "regla", "tinta"])
         self.assertEqual(diseno.POR_DEFECTO, "regla")
 
     def test_todos_dibujan_el_peor_caso_del_validador(self):
@@ -492,6 +493,24 @@ class TestLosEstilos(unittest.TestCase):
         for estilo in diseno.ESTILOS:
             c = diseno._colores(PAGINA, estilo)
             self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
+
+    def test_el_resaltador_deja_el_texto_legible(self):
+        # La palabra marcada no cambia de color: queda tinta sobre la mancha,
+        # así que lo que hay que mirar es el contraste contra la mancha.
+        c = diseno._colores(PAGINA, "marcador")
+        mancha = diseno._mezclar(c["fondo"], c["acento"], 0.34)
+        self.assertGreaterEqual(_contraste(c["tinta"], mancha), 7.0)
+
+    def test_las_rayas_de_la_ficha_no_tachan_el_encabezado(self):
+        # El bucle que busca la primera raya termina POR DEBAJO del tope, así
+        # que sin el paso de vuelta la raya cae sobre el nombre de la página.
+        img = diseno.render(TEMAS[4].frases[2], TEMAS[4], PAGINA, escala=1, estilo="ficha")
+        raya = diseno._rgb(diseno._mezclar(PAGINA.color("fondo", "#F3EFE6"),
+                                           PAGINA.color("suave", "#8C8F93"), 0.38))
+        for y in range(diseno.ARRIBA - 14, diseno.ARRIBA + 40):
+            fila = [img.getpixel((x, y)) for x in range(diseno.W - 200, diseno.W - 120)]
+            self.assertFalse(all(abs(p[0] - raya[0]) < 6 and abs(p[1] - raya[1]) < 6
+                                 for p in fila), y)
 
 
 class TestElLibro(unittest.TestCase):

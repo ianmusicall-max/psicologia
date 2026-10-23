@@ -17,6 +17,10 @@ pagina:
   #             degradado con grano. No lleva foto y no cuesta nada
   #   foto      el mismo reparto sobre una foto de assets/fotos; sin fotos
   #             ahi adentro, cae al degradado
+  #   marcador  la palabra marcada con resaltador en vez de en color
+  #   ficha     papel rayado limpio, con el margen del cuaderno
+  #   bloque    la frase sobre un bloque de color y el pie sobre el crema
+  #   etiqueta  una pastilla con el tema arriba, antes de la frase
   # `scripts/probar_estilos.py` los dibuja todos con la misma frase.
   estilo: regla
 

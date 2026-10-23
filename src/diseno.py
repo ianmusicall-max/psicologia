@@ -122,14 +122,31 @@ def _espaciado(draw, xy, texto: str, f, color, escala: int, derecha: bool = Fals
 
 
 def _escribir(draw, tokens, lineas, flags, f, x0, y, ancho, paso, tinta, acento,
-              centrado: bool = False) -> int:
-    """Dibuja los renglones y devuelve dónde terminó."""
+              centrado: bool = False, resaltado: Optional[str] = None) -> int:
+    """Dibuja los renglones y devuelve dónde terminó.
+
+    Con `resaltado`, la palabra marcada no cambia de color: lleva una mancha
+    detrás, como un marcador. La mancha se dibuja ANTES que el texto en cada
+    renglón, porque pintada encima lo taparía; por eso cada renglón se recorre
+    dos veces en vez de dibujarse de una.
+    """
     espacio = _ancho(draw, " ", f)
+    alto = f.size
     for linea in lineas:
         largo = sum(_ancho(draw, tokens[i], f) for i in linea) + espacio * (len(linea) - 1)
-        x = x0 + (ancho - largo) // 2 if centrado else x0
+        x0_linea = x0 + (ancho - largo) // 2 if centrado else x0
+        if resaltado:
+            x = x0_linea
+            for i in linea:
+                w = _ancho(draw, tokens[i], f)
+                if flags[i]:
+                    draw.rectangle([x - alto * 0.06, y + alto * 0.26,
+                                    x + w + alto * 0.06, y + alto * 1.02], fill=resaltado)
+                x += w + espacio
+        x = x0_linea
         for i in linea:
-            draw.text((x, y), tokens[i], font=f, fill=acento if flags[i] else tinta)
+            color = tinta if resaltado else (acento if flags[i] else tinta)
+            draw.text((x, y), tokens[i], font=f, fill=color)
             x += _ancho(draw, tokens[i], f) + espacio
         y += paso
     return y
@@ -464,9 +481,106 @@ def _estilo_foto(draw, frase, tema, pagina, e, c):
     _firma_clara(draw, pagina, tema, e, c["suave"])
 
 
+def _estilo_marcador(draw, frase, tema, pagina, e, c):
+    """La palabra marcada con resaltador en vez de en color. Es el gesto de
+    alguien subrayando un libro, que es lo que la pagina quiere provocar."""
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    ancho = (W - 2 * MARGEN) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, ZONA_ALTO * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = ZONA_Y * e + (ZONA_ALTO * e - paso * len(lineas)) // 2
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
+              c["tinta"], c["acento"], resaltado=_mezclar(c["fondo"], c["acento"], 0.34))
+    _pie(draw, pagina, tema, e, c["suave"])
+
+
+def _estilo_ficha(draw, frase, tema, pagina, e, c):
+    """Papel rayado limpio: el cuaderno sin fingir letra manuscrita.
+
+    Las rayas se dibujan DESPUES de medir el texto, a su mismo paso, para que
+    los renglones caigan sobre la linea. Con un paso fijo, el texto flota
+    entre dos rayas y se nota enseguida que el papel es de mentira.
+    """
+    margen_izq = 150
+    ancho = (W - margen_izq - MARGEN) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (ZONA_ALTO - 40) * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y0 = ZONA_Y * e + ((ZONA_ALTO - 40) * e - paso * len(lineas)) // 2
+    raya = _mezclar(c["fondo"], c["suave"], 0.38)
+    primera, ultima = y0 - 3 * paso, y0 + paso * (len(lineas) + 3)
+    y = y0 + int(tam * e * 1.06)
+    tope = max(primera, 210 * e)
+    while y > tope:
+        y -= paso
+    # El while termina POR DEBAJO del tope, asi que sin este paso de vuelta la
+    # primera raya cae sobre el encabezado y lo tacha.
+    if y < tope:
+        y += paso
+    while y < min(ultima, (PIE_Y - 40) * e):
+        draw.rectangle([MARGEN * e, y, (W - MARGEN) * e, y + 1 * e], fill=raya)
+        y += paso
+    draw.rectangle([(margen_izq - 34) * e, 150 * e, (margen_izq - 34) * e + 2 * e,
+                    (PIE_Y - 30) * e], fill=_mezclar(c["fondo"], c["acento"], 0.55))
+    _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
+    _escribir(draw, tokens, lineas, flags, f, margen_izq * e, y0, ancho, paso,
+              c["tinta"], c["acento"])
+    _pie(draw, pagina, tema, e, c["suave"], con_regla=False)
+
+
+def _estilo_bloque(draw, frase, tema, pagina, e, c):
+    """Dos tonos: la frase sobre un bloque de color y el pie sobre el crema."""
+    corte = 920
+    draw.rectangle([0, 0, W * e, corte * e], fill=c["tinta"])
+    f_enc = _fuente("Montserrat-Bold.ttf", ENCABEZADO * e)
+    _espaciado(draw, (MARGEN * e, ARRIBA * e), pagina.nombre.upper(), f_enc, c["fondo"], e)
+    f_cap = _fuente("Montserrat-Regular.ttf", ENCABEZADO * e)
+    _espaciado(draw, ((W - MARGEN) * e, ARRIBA * e), "CAPÍTULO %d" % tema.capitulo,
+               f_cap, _mezclar(c["tinta"], c["fondo"], 0.55), e, derecha=True)
+    ancho = (W - 2 * MARGEN) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (corte - 230) * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = 190 * e + ((corte - 230) * e - paso * len(lineas)) // 2
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
+              c["fondo"], _mezclar(c["acento"], c["fondo"], 0.42))
+    f_tit = _fuente("Lora-Italic.ttf", 44 * e)
+    draw.text((MARGEN * e, (corte + 92) * e), tema.titulo, font=f_tit, fill=c["tinta"])
+    f_pie = _fuente("Montserrat-Regular.ttf", PIE * e)
+    _espaciado(draw, (MARGEN * e, (corte + 190) * e), (pagina.firma or pagina.nombre).upper(),
+               f_pie, c["suave"], e)
+
+
+def _estilo_etiqueta(draw, frase, tema, pagina, e, c):
+    """Una pastilla con el tema arriba. Dice de que habla antes de leer."""
+    f_eti = _fuente("Montserrat-Bold.ttf", 26 * e)
+    rotulo = tema.tema.upper()
+    sep = ESPACIADO * e
+    ancho_rotulo = sum(_ancho(draw, x, f_eti) for x in rotulo) + sep * (len(rotulo) - 1)
+    alto_eti = 62
+    draw.rounded_rectangle([MARGEN * e, ARRIBA * e - 16 * e,
+                            MARGEN * e + ancho_rotulo + 56 * e, ARRIBA * e - 16 * e + alto_eti * e],
+                           radius=alto_eti * e // 2, fill=c["acento"])
+    _espaciado(draw, (MARGEN * e + 28 * e, ARRIBA * e + 1 * e), rotulo, f_eti, c["fondo"], e)
+    f_cap = _fuente("Montserrat-Regular.ttf", ENCABEZADO * e)
+    _espaciado(draw, ((W - MARGEN) * e, ARRIBA * e), "CAPÍTULO %d" % tema.capitulo,
+               f_cap, c["suave"], e, derecha=True)
+    ancho = (W - 2 * MARGEN) * e
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, ZONA_ALTO * e, e)
+    f = _fuente("Lora-SemiBold.ttf", tam * e)
+    paso = int(tam * e * INTERLINEA)
+    y = ZONA_Y * e + (ZONA_ALTO * e - paso * len(lineas)) // 2
+    _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
+              c["tinta"], c["acento"])
+    _pie(draw, pagina, tema, e, c["suave"])
+
+
 ESTILOS = {"regla": _estilo_regla, "tinta": _estilo_tinta, "comillas": _estilo_comillas,
            "marco": _estilo_marco, "banda": _estilo_banda,
-           "palabra": _estilo_palabra, "foto": _estilo_foto}
+           "palabra": _estilo_palabra, "foto": _estilo_foto,
+           "marcador": _estilo_marcador, "ficha": _estilo_ficha,
+           "bloque": _estilo_bloque, "etiqueta": _estilo_etiqueta}
 # Los que se dibujan sobre una imagen y no sobre el color de la marca.
 CON_IMAGEN = ("palabra", "foto")
 POR_DEFECTO = "regla"
