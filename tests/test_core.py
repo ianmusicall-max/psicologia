@@ -6,6 +6,9 @@ from __future__ import annotations
 
 import ast
 import json
+import re
+import shutil
+import subprocess
 import tempfile
 import unittest
 from datetime import date, datetime
@@ -14,7 +17,8 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, medir, parrilla, telegram
+from src import (bot, config, diseno, entorno, facebook, frases, instagram, libro,
+                 medir, parrilla, telegram, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -1682,6 +1686,217 @@ class TestElModeloDelTurnoSeCalculaEnUnLugar(unittest.TestCase):
         horas = [8, 12, 16, 20]
         salen = {diseno.estilo_de(pagina, date(2026, 10, 24), h, horas) for h in horas}
         self.assertEqual(len(salen), len(diseno.ESTILOS))
+
+
+# ---------------------------------------------------------------------------
+# El reel. Lo que puede salir mal no es el video sino el TEXTO: un corte en
+# mitad de un sintagma se lee mal aunque entre en pantalla, y una palabra
+# perdida al partir no la nota nadie hasta que el reel está publicado.
+# ---------------------------------------------------------------------------
+
+def _palabras_de(texto):
+    return [p for p in re.findall(r"[^\s]+", texto)]
+
+
+class TestElGuionDelReel(unittest.TestCase):
+
+    def test_sale_de_la_frase_y_de_su_reflexion(self):
+        # La frase sola son seis segundos de video. Lo que sostiene un reel es
+        # la explicación, que el banco ya tiene escrita y validada.
+        f = frases.por_id(TEMAS, "aut-01")
+        junto = " ".join(video.guion(f))
+        self.assertIn("Hablarte mal", junto)
+        self.assertIn("Mucha gente cree", junto)
+
+    def test_no_se_pierde_ni_una_palabra_al_partir(self):
+        # Es el peor error posible acá: el reel sale, se ve bien y le falta
+        # media idea.
+        for f in frases.todas(TEMAS):
+            esperado = _palabras_de("%s %s" % (f.texto, f.reflexion))
+            self.assertEqual(_palabras_de(" ".join(video.guion(f))), esperado, f.id)
+
+    def test_ninguna_unidad_pasa_del_tope(self):
+        for f in frases.todas(TEMAS):
+            for u in video.guion(f):
+                self.assertLessEqual(len(u), video.UNIDAD_MAXIMA, "%s: %r" % (f.id, u))
+
+    def test_el_corte_no_deja_el_renglon_colgando(self):
+        # «Vas a sufrir menos tiempo del / que crees ahora» se lee mal: el
+        # renglón termina en una palabra que pide la siguiente. Se mide sobre
+        # el banco entero porque el corte lo decide un puntaje, no una regla
+        # que se pueda leer de un vistazo.
+        colgados = []
+        for f in frases.todas(TEMAS):
+            unidades = video.guion(f)
+            for u in unidades[:-1]:
+                # Un renglón que termina en coma o en punto no cuelga: ahí la
+                # pausa la pide el texto. Lo que no puede pasar es cortar
+                # después de «del», «con» o «está», sin ningún signo.
+                if u.rstrip()[-1] in ",;:.!?»\"":
+                    continue
+                if video._pelada(u.split()[-1]) in video.NO_TERMINAN:
+                    colgados.append("%s: %r" % (f.id, u))
+        self.assertEqual(colgados, [])
+
+    def test_todas_las_frases_del_banco_entran_con_buen_cuerpo(self):
+        # Si entraran con el cuerpo mínimo, el texto se vería diminuto en un
+        # cuadro de 1920 y no se leería en el teléfono.
+        for f in frases.todas(TEMAS):
+            unidades = video.guion(f)
+            cuerpo, partido = video.reparto(unidades)
+            self.assertGreaterEqual(cuerpo, 72, f.id)
+            for lineas in partido:
+                self.assertLessEqual(len(lineas), video.RENGLONES, f.id)
+
+    def test_ningun_reel_del_banco_pasa_el_tope_de_facebook(self):
+        largos = [video.duracion_del_guion(video.guion(f)) for f in frases.todas(TEMAS)]
+        self.assertLess(max(largos), video.TOPE_SEGUNDOS)
+
+
+class TestLosTiemposDelReel(unittest.TestCase):
+
+    def test_sin_voz_cada_renglon_dura_lo_que_tarda_en_leerse(self):
+        unidades = ["corto", "uno bastante más largo que el anterior"]
+        marcas = video.tiempos(unidades)
+        self.assertEqual(marcas[0][0], 0.0)
+        self.assertAlmostEqual(marcas[0][1], marcas[1][0])
+        self.assertGreater(marcas[1][1] - marcas[1][0], marcas[0][1] - marcas[0][0])
+
+    def test_con_la_voz_entera_se_reparte_proporcional_y_termina_con_ella(self):
+        unidades = ["aaaa", "bbbbbbbb"]
+        marcas = video.tiempos(unidades, total=30.0)
+        self.assertAlmostEqual(marcas[-1][1], 30.0)
+        self.assertAlmostEqual(marcas[1][1] - marcas[1][0],
+                               2 * (marcas[0][1] - marcas[0][0]))
+
+    def test_con_la_voz_por_renglones_no_se_reparte_nada(self):
+        # Es la diferencia que importa entre los dos caminos de voz: acá cada
+        # marca es la duración medida de ESE renglón, así que el subtítulo cae
+        # exacto donde se lo dice y no se acumula desfase.
+        marcas = video.tiempos_exactos([2.0, 5.0, 1.0])
+        self.assertEqual(marcas, [(0.0, 2.0), (2.0, 7.0), (7.0, 8.0)])
+
+    def test_la_voz_por_unidades_mide_cada_una(self):
+        with tempfile.TemporaryDirectory() as d:
+            dichas = []
+
+            def fingir(texto, ruta, voz):
+                dichas.append(texto)
+                subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                                "-f", "lavfi", "-i", "anullsrc=r=22050:cl=mono",
+                                "-t", "%.2f" % (0.5 * len(dichas)), str(ruta)], check=True)
+                return ruta
+
+            entera, duraciones = video.voz_por_unidades(["uno", "dos"], Path(d),
+                                                        decir_fn=fingir)
+            # Adentro del `with`: afuera la carpeta temporal ya se borró y
+            # `exists()` daría False por el motivo equivocado.
+            self.assertTrue(entera.exists())
+        self.assertEqual(dichas, ["uno", "dos"])
+        self.assertEqual(len(duraciones), 2)
+        self.assertGreater(duraciones[1], duraciones[0])
+
+
+class TestElDibujoDelReel(unittest.TestCase):
+
+    def test_sobre_el_papel_va_la_tinta_y_sobre_un_video_el_amarillo(self):
+        # No es gusto: sobre un clip cualquiera la tinta desaparece, y sobre el
+        # crema de la marca el amarillo también.
+        unidades = ["una línea"]
+        marcas = video.tiempos(unidades)
+        papel = video.ass(unidades, marcas, PAGINA, "papel")
+        encima = video.ass(unidades, marcas, PAGINA, "video")
+        self.assertIn(video._ass_color(PAGINA.color("tinta", "#1F2933")), papel)
+        self.assertIn(video._ass_color(video.TEMAS["video"]["color"]), encima)
+        # Y el contorno solo existe sobre el video: sobre un fondo liso se
+        # vería como un sticker.
+        self.assertIn(",1,0,0,5,", papel)
+        self.assertIn(",1,4,2,5,", encima)
+
+    def test_el_ass_usa_la_lora_del_repo(self):
+        unidades = ["una línea"]
+        texto = video.ass(unidades, video.tiempos(unidades), PAGINA)
+        self.assertIn("Style: Frase,Lora,", texto)
+        self.assertIn("Dialogue: 0,0:00:00.00,", texto)
+
+    def test_el_color_de_ass_va_al_reves_que_el_html(self):
+        # ASS es &HAABBGGRR. Invertido, el amarillo sale celeste y nadie lo ve
+        # hasta mirar el video.
+        self.assertEqual(video._ass_color("#F5C542"), "&H0042C5F5")
+
+    def test_los_rotulos_son_una_capa_quieta_del_tamano_del_cuadro(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = video.marca(PAGINA, "Un capítulo", Path(d) / "m.png")
+            img = Image.open(ruta)
+        self.assertEqual(img.size, (video.ANCHO, video.ALTO))
+        self.assertEqual(img.mode, "RGBA")
+
+    def test_el_papel_se_dibuja_mas_grande_que_el_cuadro(self):
+        # Para poder derivar sin que aparezcan los bordes.
+        with tempfile.TemporaryDirectory() as d:
+            img = Image.open(video.papel(PAGINA, Path(d) / "p.png"))
+        self.assertGreater(img.size[0], video.ANCHO)
+        self.assertGreater(img.size[1], video.ALTO)
+
+
+class TestElComandoDelReel(unittest.TestCase):
+
+    def _comando(self, **kw):
+        return video.comando(Path("/tmp/g.ass"), Path("/tmp/s.mp4"), 20.0, **kw)
+
+    def test_la_voz_se_mapea_al_numero_de_entrada_que_le_toca(self):
+        # Contado y no deducido: con los rótulos de por medio la voz es la
+        # entrada 2, y un índice mal puesto hace fallar a ffmpeg con «matches
+        # no streams», que no dice cuál es el problema. Pasó.
+        con = self._comando(fondo=Path("f.png"), rotulos=Path("m.png"))
+        self.assertIn("2:a", con)
+        sin = self._comando(fondo=Path("f.png"))
+        self.assertIn("1:a", sin)
+
+    def test_un_clip_se_repite_y_una_imagen_deriva(self):
+        clip = self._comando(fondo=Path("playa.mp4"))
+        self.assertIn("-stream_loop", clip)
+        imagen = self._comando(fondo=Path("papel.png"))
+        self.assertIn("-loop", imagen)
+        self.assertIn("sin(t/14)", " ".join(imagen))
+
+    def test_lleva_la_carpeta_de_fuentes_del_repo(self):
+        # Sin esto, en otra computadora libass toma otra tipografía y el reel
+        # sale distinto sin que nadie se entere hasta verlo.
+        cadena = " ".join(self._comando(fondo=Path("f.png")))
+        self.assertIn("fontsdir=", cadena)
+        self.assertIn("assets/fonts", cadena)
+
+    def test_sale_vertical_y_con_audio_aunque_no_haya_voz(self):
+        # Un mp4 sin pista de audio lo aceptan igual, pero algunos reproductores
+        # lo tratan distinto; el silencio cuesta nada.
+        cadena = " ".join(self._comando(fondo=Path("f.png")))
+        self.assertIn("anullsrc", cadena)
+        self.assertIn("yuv420p", cadena)
+        self.assertIn("+faststart", cadena)
+
+
+@unittest.skipUnless(shutil.which("ffmpeg"), "sin ffmpeg no se puede armar un reel")
+class TestElReelEntero(unittest.TestCase):
+
+    def test_arma_un_mp4_vertical_con_la_duracion_del_guion(self):
+        f = frases.por_id(TEMAS, "aut-01")
+        with tempfile.TemporaryDirectory() as d:
+            ruta = video.armar(f, PAGINA, titulo="Un capítulo", carpeta=Path(d))
+            self.assertTrue(ruta.exists())
+            salida = subprocess.run(
+                ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                 "stream=width,height", "-of", "csv=p=0", str(ruta)],
+                capture_output=True, text=True).stdout.strip()
+            self.assertEqual(salida, "%d,%d" % (video.ANCHO, video.ALTO))
+            self.assertAlmostEqual(video.duracion(ruta),
+                                   video.duracion_del_guion(video.guion(f)), delta=1.0)
+
+    def test_el_reel_no_publica_nada(self):
+        # Deja el archivo y nada más: subirlo es una decisión, no un efecto de
+        # armarlo. Es la misma regla que el resto del repo.
+        self.assertFalse(_llama_a(ROOT / "scripts" / "reel.py",
+                                  {"publicar", "publicar_las_dos", "subir_foto"}))
 
 
 if __name__ == "__main__":

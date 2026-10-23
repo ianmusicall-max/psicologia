@@ -18,6 +18,7 @@ frases/        un archivo por tema = un capítulo del libro (19 temas, 153 frase
 src/frases.py  lee el banco, lo valida contra la línea editorial y dice cuál toca
 src/diseno.py  el flyer: 1080x1350, papel cálido, la frase grande, una palabra en color
 src/libro.py   arma libro/borrador.md con todas las frases y sus reflexiones
+src/video.py   el reel vertical: el texto renglón a renglón, con o sin voz
 src/facebook.py  publica una foto con su caption. Es el único que habla con Meta
 src/bot.py     el bot de Telegram: la tabla de botones y qué contesta cada uno
 src/telegram.py  mandar y recoger de Telegram. Transporte y nada más
@@ -49,6 +50,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/revisar_instagram.py` | si la página está en condiciones de publicar en Instagram. Solo lee |
 | `scripts/publicar_turno.py` | publica si a esta hora le toca. Pensado para correr cada hora |
 | `scripts/parrilla.py` | el calendario de la rampa y hasta cuándo alcanza el banco. Solo lee |
+| `scripts/reel.py` | el reel vertical de una frase. Deja el mp4 en `data/reels`, no publica |
 | `scripts/medir.py` | qué rindió cada modelo, tema, eje y hora. Solo lee. El mismo texto que contesta el bot |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
@@ -170,6 +172,51 @@ publicaría en la página.
 **Saltar no es posponer**: la frase queda anotada y no vuelve a tocar. Se anota
 en el mismo archivo que las publicadas, con el post vacío, porque dos listas
 separadas serían dos cosas que consultar y `siguiente` miraría una sola.
+
+## El reel
+
+El mismo texto en video vertical, con el renglón apareciendo a medida que se
+dice. Sale de la frase **y de su reflexión**: una frase sola son seis segundos.
+
+```
+scripts/reel.py                    la que toca, sin voz, sobre el papel
+scripts/reel.py --id aut-01        esa
+scripts/reel.py --fondo data/fondos   sobre un clip (o una carpeta con varios)
+scripts/reel.py --voz mi-voz.m4a   tu voz leyendo el texto
+scripts/reel.py --voz-mac          la voz de la Mac, renglón por renglón
+scripts/reel.py --ver              qué haría, sin armar nada
+```
+
+Deja el mp4 en `data/reels`. **No publica**: subirlo es una decisión.
+
+**Qué cuesta cada parte**, que es lo que decide cómo está hecho:
+
+- El armado es gratis: ffmpeg. No hay ninguna API.
+- El fondo puede ser gratis: por defecto no usa ningún video, dibuja el papel
+  de la marca con una deriva lenta y le pone el nombre de la página arriba y
+  el capítulo abajo. Un clip de naturaleza es una mejora, no un requisito.
+- La voz es lo único que se decide. La tuya grabada es gratis y la que mejor
+  suena; `say` es gratis y suena sintético; una voz de IA sería la primera API
+  paga del repo. Sin voz sale mudo y se lee igual.
+
+**Los dos caminos de voz no se diferencian por el timbre sino por el
+sincronismo.** `--voz-mac` lee renglón por renglón, mide cada uno y el
+subtítulo cae exacto donde se lo dice. Con un audio entero el tiempo se
+reparte proporcional al largo de cada renglón, que es lo más cerca que se
+puede estar sin tener los tiempos palabra por palabra.
+
+**Dónde se corta el texto es el problema de verdad**, no el video. Un corte en
+mitad de un sintagma —«exigirse con / dureza se vuelve»— se lee mal aunque
+entre en pantalla. Se corta primero por las comas y después por el mejor
+lugar: nunca después de una palabra que pide la siguiente (`del`, `con`,
+`está`) y de preferencia antes de un conector (`que`, `porque`, `si`). Dos
+pruebas lo cuidan sobre el banco entero, y una tercera exige que no se pierda
+ni una palabra al partir, que es el peor error posible acá: el reel sale, se
+ve bien y le falta media idea.
+
+El cuerpo de la letra se mide antes de dibujar, como en el flyer: el más
+grande con el que todas las unidades entran en dos renglones. Medido sobre las
+153 frases, sale entre 80 y 104 px.
 
 ## Los estilos del flyer
 
