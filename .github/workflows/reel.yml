@@ -129,9 +129,16 @@ jobs:
           if [ "${{ inputs.musica }}" = "true" ]; then
             ARGS="$ARGS --musica"
           fi
-          # Los clips de naturaleza solo se usan si estan en el repo: sin
-          # ellos el fondo es el papel de la marca, que no depende de nada.
-          if [ -d data/fondos ] && [ -n "$(ls -A data/fondos 2>/dev/null)" ]; then
+          # Los clips solo se usan si de verdad hay VIDEOS: sin ellos el
+          # fondo es el papel de la marca, que no depende de nada.
+          #
+          # Se cuentan los videos y no los archivos. Con `ls -A` alcanzaba un
+          # LEEME.md o un .DS_Store para que la carpeta pareciera llena, y
+          # entonces `reel.py` aborta con "no hay ningun video": el reel se
+          # perderia por un archivo de texto.
+          if [ -n "$(find data/fondos -maxdepth 1 -type f \
+                      \( -iname '*.mp4' -o -iname '*.mov' -o -iname '*.m4v' \
+                         -o -iname '*.webm' -o -iname '*.mkv' \) 2>/dev/null)" ]; then
             ARGS="$ARGS --fondo data/fondos"
           fi
           echo "scripts/reel.py $ARGS"
