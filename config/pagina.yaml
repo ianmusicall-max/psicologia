@@ -22,10 +22,19 @@ pagina:
   # `scripts/revisar_instagram.py` dice si esta todo.
   instagram: true
 
-  # Las horas a las que publica `scripts/publicar_turno.py`, que corre cada
-  # hora y sale sin hacer nada si no le toca. Ocho al dia gastan el banco de
-  # 113 frases en catorce dias: es una prueba, no un ritmo sostenible.
+  # La parrilla completa. De aca se eligen las horas de cada dia, repartidas
+  # parejo: con cuatro posts no salen las primeras cuatro -toda la manana y
+  # la tarde vacia- sino cuatro a lo largo del dia.
   horas: [8, 10, 12, 14, 16, 18, 20, 22]
+
+  # La rampa. Se cuenta desde el primer dia que se publico, no desde una
+  # fecha escrita aca: empieza sola y no hay que acordarse de nada.
+  arranque:
+    - {dias: 3, posts: 4}
+    - {dias: 4, posts: 5}
+    - {dias: 5, posts: 6}
+  # Y de ahi en adelante:
+  posts_por_dia: 8
 
   # Mientras dure la prueba, cada post del dia sale con un estilo distinto, y
   # el reparto se corre un lugar cada dia para que cada estilo pase por todas

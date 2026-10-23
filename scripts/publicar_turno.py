@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, diseno, frases  # noqa: E402
+from src import config, diseno, frases, parrilla  # noqa: E402
 
 
 def ya_salio_en_esta_hora(ya: dict, ahora: datetime) -> bool:
@@ -42,11 +42,6 @@ def main(argv=None) -> int:
     pagina = config.cargar()
     ahora = datetime.fromisoformat(args.ahora) if args.ahora else datetime.now()
 
-    if pagina.horas and ahora.hour not in pagina.horas:
-        print("A las %02d no toca. Las horas son %s."
-              % (ahora.hour, ", ".join("%02d" % h for h in pagina.horas)))
-        return 0
-
     temas = frases.leer()
     problemas = frases.revisar(temas, pagina)
     if problemas:
@@ -55,6 +50,14 @@ def main(argv=None) -> int:
         return 2
 
     ya = frases.publicadas()
+    desde = frases.primer_dia(ya) or ahora.date()
+    horas_hoy = parrilla.horas_del_dia(pagina, desde, ahora.date())
+    if horas_hoy and ahora.hour not in horas_hoy:
+        print("A las %02d no toca. Hoy (dia %d) salen %d: %s."
+              % (ahora.hour, parrilla.dia_de_la_prueba(desde, ahora.date()),
+                 len(horas_hoy), ", ".join("%02d" % h for h in horas_hoy)))
+        return 0
+
     if ya_salio_en_esta_hora(ya, ahora):
         print("A las %02d de hoy ya salio un post. No publico otro." % ahora.hour)
         return 0
@@ -65,7 +68,9 @@ def main(argv=None) -> int:
               % len(frases.todas(temas)))
         return 1
     tema = frases.tema_de(temas, frase)
-    estilo = (diseno.estilo_del_turno(ahora.date(), ahora.hour, pagina.horas)
+    # Las horas de HOY, no la parrilla entera: es lo que hace que en un dia
+    # de cuatro posts salgan cuatro estilos y no dos.
+    estilo = (diseno.estilo_del_turno(ahora.date(), ahora.hour, horas_hoy)
               if pagina.rotar_estilos else None)
     texto = frases.caption(frase, tema, pagina)
 

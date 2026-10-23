@@ -294,6 +294,11 @@ def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
     las 8 llevarian siempre el mismo estilo y no habria forma de separar el
     estilo de la hora. Con el corrimiento, cada estilo pasa por todas las
     horas a lo largo de la semana.
+
+    `horas` son las de ESE dia y no la parrilla completa. Con la rampa, un dia
+    de cuatro posts usa cuatro de las ocho horas; contando el lugar sobre las
+    ocho, esos cuatro caian en posiciones pares y salian solo DOS estilos
+    distintos en todo el dia. Contando sobre las del dia, salen cuatro.
     """
     nombres = list(ESTILOS)
     orden = list(horas or [])

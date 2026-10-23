@@ -48,6 +48,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/bot.py` | el bot de Telegram: muestra la frase que toca y la publica si aprietas el botón |
 | `scripts/revisar_instagram.py` | si la página está en condiciones de publicar en Instagram. Solo lee |
 | `scripts/publicar_turno.py` | publica si a esta hora le toca. Pensado para correr cada hora |
+| `scripts/parrilla.py` | el calendario de la rampa y hasta cuándo alcanza el banco. Solo lee |
 | `scripts/medir.py` | qué rindió cada estilo, tema, eje y hora. Solo lee |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
@@ -163,13 +164,27 @@ nadie lo note y después nadie sabe si se puede tocar.
 Ninguno lleva fondo oscuro, y eso es una prueba y no una intención: dibuja
 cada estilo y mira el fondo de verdad.
 
-## La prueba de ocho por día
+## La prueba: una rampa hasta ocho por día
 
-Ocho posts diarios durante una semana, rotando los cuatro estilos, para poder
-comparar. Se enciende con `horas` y `rotar_estilos` en `config/pagina.yaml`.
+El ritmo sube por etapas: **4 posts los primeros 3 días, 5 los 4 siguientes, 6
+los 5 siguientes, y 8 de ahí en adelante**. Está en `arranque` y
+`posts_por_dia` en `config/pagina.yaml`.
+
+La rampa se cuenta **desde el primer post publicado**, no desde una fecha
+escrita a mano: empieza sola y no hay nada que acordarse de cambiar.
+
+`scripts/parrilla.py` imprime el calendario entero: qué día sale cuánto, a qué
+hora y con qué diseño, y hasta cuándo alcanza el banco. Con 113 frases, hasta
+el día 19.
+
+Las horas de cada día **se reparten a lo largo del día**, no son las primeras
+N de la parrilla: con cuatro posts, las primeras cuatro los dejarían todos
+antes del mediodía.
 
 **Cada post del día sale con un estilo distinto**, y el reparto se corre un
-lugar cada día. Ese corrimiento no es decoración: sin él, las 8 llevarían
+lugar cada día. El lugar se cuenta sobre las horas de **ese día** y no sobre
+la parrilla completa: contándolo sobre las ocho, un día de cuatro posts caía
+en posiciones pares y salían solo dos estilos. Ese corrimiento no es decoración: sin él, las 8 llevarían
 siempre el mismo estilo y no habría forma de separar el estilo de la hora. Con
 él, en una semana cada estilo sale 14 veces y pasa por las ocho horas.
 
@@ -195,13 +210,13 @@ crontab -e
 
 ### Qué se puede concluir y qué no
 
-A ocho por día el banco de 113 frases dura **14 días**. No es un ritmo
-sostenible: es una prueba con fecha de vencimiento.
+Con la rampa, el banco de 113 frases dura **19 días**. A ocho fijos habría
+durado 14. Igual es una prueba con fecha de vencimiento: el día 19 hay que
+tener frases nuevas escritas.
 
-En una semana son 56 posts, 14 por estilo, repartidos en los 7 días y en las 8
-horas. Eso alcanza para una primera lectura del estilo. El informe muestra
-igual la columna de días, porque dice si un estilo vio días buenos y malos o
-se concentró en pocos.
+Con la rampa, la primera semana son 32 posts y no 56: ocho por estilo. Es una
+lectura temprana, no una conclusión. El informe muestra la columna de días
+porque dice si un estilo vio días buenos y malos o se concentró en pocos.
 
 **No alcanza para comparar temas** en ningún caso: son 14 temas y les tocan 4
 posts a cada uno. `scripts/medir.py` marca con «pocos, no concluir» todo grupo

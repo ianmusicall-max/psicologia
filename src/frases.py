@@ -340,6 +340,12 @@ def toca_nucleo(temas: Iterable[Tema], ya: Dict[str, dict]) -> bool:
     return nucleo < NUCLEO_CUANTOS * (apoyo + 1)
 
 
+def primer_dia(ya: Dict[str, dict]) -> Optional[date]:
+    """El día del primer post. Es desde donde se cuenta la rampa."""
+    dias = sorted(d.get("dia") for d in ya.values() if d.get("dia") and d.get("post_id"))
+    return date.fromisoformat(dias[0]) if dias else None
+
+
 def siguiente(temas: Iterable[Tema], ya: Dict[str, dict]) -> Optional[Frase]:
     """La próxima frase a publicar: del tema que hace más que no sale, la
     primera que todavía no salió.

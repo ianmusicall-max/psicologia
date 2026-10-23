@@ -14,7 +14,7 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, medir, telegram
+from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, medir, parrilla, telegram
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -1225,6 +1225,62 @@ class TestLaPrueba(unittest.TestCase):
         self.assertEqual(sorted(p.horas), p.horas)
         for a, b in zip(p.horas, p.horas[1:]):
             self.assertGreaterEqual(b - a, 2, (a, b))
+
+
+class TestLaRampa(unittest.TestCase):
+    """4 posts 3 días, 5 posts 4 días, 6 posts 5 días, y 8 de ahí en adelante."""
+
+    def setUp(self):
+        self.p = config.cargar()
+        self.desde = date(2026, 10, 24)
+
+    def _dia(self, n):
+        return date.fromordinal(self.desde.toordinal() + n - 1)
+
+    def test_la_rampa_es_la_que_se_pidio(self):
+        esperado = ([4] * 3) + ([5] * 4) + ([6] * 5) + ([8] * 4)
+        salen = [parrilla.posts_del_dia(self.p, self.desde, self._dia(n))
+                 for n in range(1, len(esperado) + 1)]
+        self.assertEqual(salen, esperado)
+
+    def test_las_horas_se_reparten_a_lo_largo_del_dia(self):
+        # Con cuatro posts, las primeras cuatro de la parrilla los dejarían
+        # todos antes del mediodía y la tarde vacía.
+        horas = parrilla.horas_del_dia(self.p, self.desde, self._dia(1))
+        self.assertEqual(len(horas), 4)
+        self.assertGreaterEqual(max(horas), 20)
+        for a, b in zip(horas, horas[1:]):
+            self.assertGreaterEqual(b - a, 2)
+
+    def test_cada_post_del_dia_lleva_un_diseno_distinto(self):
+        # Lo pidió el usuario, y la rampa lo rompía: contando el lugar sobre
+        # las ocho horas, un día de cuatro posts usaba posiciones pares y
+        # salían solo DOS estilos.
+        for n in (1, 4, 8, 13):
+            dia = self._dia(n)
+            horas = parrilla.horas_del_dia(self.p, self.desde, dia)
+            estilos = [diseno.estilo_del_turno(dia, h, horas) for h in horas]
+            self.assertEqual(len(set(estilos)), min(len(horas), len(diseno.ESTILOS)),
+                             (n, estilos))
+
+    def test_el_primer_dia_sale_del_primer_post_publicado(self):
+        # Así la rampa empieza sola y no hay una fecha escrita a mano que
+        # alguien tenga que acordarse de cambiar.
+        ya = {"a": {"dia": "2026-11-03", "post_id": "1"},
+              "b": {"dia": "2026-10-30", "post_id": "2"},
+              "c": {"dia": "2026-10-28", "post_id": ""}}
+        self.assertEqual(frases.primer_dia(ya), date(2026, 10, 30))
+        self.assertIsNone(frases.primer_dia({}))
+
+    def test_el_calendario_dice_cuando_se_acaba_el_banco(self):
+        filas = parrilla.calendario(self.p, self.desde, 113)
+        self.assertEqual(sum(f["posts"] for f in filas), 113)
+        self.assertEqual(filas[-1]["quedan"], 0)
+        self.assertEqual(filas[-1]["numero"], 19)
+
+    def test_el_ultimo_dia_solo_saca_las_que_quedan(self):
+        filas = parrilla.calendario(self.p, self.desde, 10)
+        self.assertEqual([f["posts"] for f in filas], [4, 4, 2])
 
 
 class TestLaMedicion(unittest.TestCase):

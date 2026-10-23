@@ -21,6 +21,8 @@ class Pagina:
     instagram: bool = False
     rotar_estilos: bool = False
     horas: List[int] = field(default_factory=list)
+    arranque: List[Dict] = field(default_factory=list)
+    posts_por_dia: int = 0
     hashtags_fijos: List[str] = field(default_factory=list)
     pie_sensible: str = ""
     page_id_env: str = "PSI_FB_PAGE_ID"
@@ -49,6 +51,8 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         instagram=bool(datos.get("instagram", False)),
         rotar_estilos=bool(datos.get("rotar_estilos", False)),
         horas=[int(h) for h in (datos.get("horas") or [])],
+        arranque=[dict(x) for x in (datos.get("arranque") or [])],
+        posts_por_dia=int(datos.get("posts_por_dia") or 0),
         hashtags_fijos=list(datos.get("hashtags_fijos") or []),
         pie_sensible=(datos.get("pie_sensible") or "").strip(),
         page_id_env=fb.get("page_id_env", "PSI_FB_PAGE_ID"),
