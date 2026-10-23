@@ -51,7 +51,20 @@ jobs:
       PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
       PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
     steps:
+      # SIN los clips de fondo. Pesan cientos de megas, este turno no los usa
+      # -el que arma videos es otro flujo- y corre 96 veces por dia: bajarlos
+      # cada vez son horas de descarga al mes para nada, y cada segundo de mas
+      # es un segundo mas cerca de que una corrida demorada se pase de la hora
+      # y pierda el post.
+      #
+      # `sparse-checkout` sin modo cono para poder EXCLUIR una carpeta: el
+      # modo cono solo sabe incluir.
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            /*
+            !/data/fondos
+          sparse-checkout-cone-mode: false
 
       - uses: actions/setup-python@v5
         with:

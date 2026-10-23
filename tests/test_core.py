@@ -2928,6 +2928,26 @@ class TestElTurnoDeGithub(unittest.TestCase):
         self.assertFalse(publicar.ya_salio_en_esta_hora(
             ya, _dt.now().replace(hour=17)))
 
+    def test_no_se_baja_los_clips_de_fondo(self):
+        # Pesan cientos de megas, este turno no los usa y corre 96 veces por
+        # dia. Ademas, cada segundo de mas acerca a que una corrida demorada
+        # se pase de la hora y pierda el post.
+        paso = [x for x in self._flujo()["jobs"]["publicar"]["steps"]
+                if x.get("uses", "").startswith("actions/checkout")][0]
+        patrones = paso["with"]["sparse-checkout"]
+        self.assertIn("!/data/fondos", patrones)
+        # Sin modo cono, o el patron de exclusion no vale.
+        self.assertIs(paso["with"]["sparse-checkout-cone-mode"], False)
+
+    def test_el_flujo_del_reel_si_se_los_baja(self):
+        # Son justamente lo que usa.
+        import yaml
+        d = yaml.safe_load((ROOT / ".github" / "workflows" / "reel.yml")
+                           .read_text(encoding="utf-8"))
+        paso = [x for x in d["jobs"]["reel"]["steps"]
+                if x.get("uses", "").startswith("actions/checkout")][0]
+        self.assertNotIn("sparse-checkout", paso.get("with") or {})
+
     def test_fija_la_hora_de_lima(self):
         # El runner viene en UTC. Sin esto, la parrilla saldría corrida cinco
         # horas y los posts de la noche caerían de madrugada.
