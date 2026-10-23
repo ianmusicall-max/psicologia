@@ -72,11 +72,24 @@ def main(argv=None) -> int:
     if not args.publicar:
         return 0
 
-    from src import facebook  # noqa: E402  (solo si hace falta: requests)
     dia = date.fromisoformat(args.dia) if args.dia else date.today()
-    post_id = facebook.publicar(pagina, texto, ruta)
+    if pagina.instagram:
+        from src import instagram  # noqa: E402  (solo si hace falta: requests)
+        salida = instagram.publicar_las_dos(pagina, texto, ruta)
+        post_id = salida["post_id"]
+    else:
+        from src import facebook  # noqa: E402
+        salida = {"post_id": facebook.publicar(pagina, texto, ruta),
+                  "instagram": "", "error_instagram": ""}
+        post_id = salida["post_id"]
     frases.anotar_publicada(frase.id, dia, post_id, pagina.nombre)
     print("publicada: post %s, anotada para el %s" % (post_id, dia.isoformat()))
+    if salida["instagram"]:
+        print("Instagram: %s" % salida["instagram"])
+    elif salida["error_instagram"]:
+        # El post de Facebook YA salio, asi que esto es un aviso y no un error
+        # del turno: la frase queda anotada igual y no se vuelve a ofrecer.
+        print("Instagram NO salio: %s" % salida["error_instagram"])
     return 0
 
 

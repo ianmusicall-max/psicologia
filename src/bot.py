@@ -69,6 +69,14 @@ def mostrar_siguiente(pagina: Pagina) -> Optional[frases.Frase]:
     return frase
 
 
+def _como_publica(pagina: Pagina) -> Callable:
+    """Facebook solo, o Facebook e Instagram si la página lo pide."""
+    if pagina.instagram:
+        from . import instagram
+        return instagram.publicar_las_dos
+    return facebook.publicar
+
+
 def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = None,
              hoy: Optional[date] = None) -> Optional[str]:
     """Publica esa frase. Es el ÚNICO camino del bot hacia Facebook.
@@ -78,7 +86,7 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
     queda atado a esa función para siempre y cambiar `facebook.publicar`
     después no cambia nada. Es el mismo error que el de las rutas clavadas.
     """
-    publicar_fn = publicar_fn or facebook.publicar
+    publicar_fn = publicar_fn or _como_publica(pagina)
     temas, ya = _banco()
     if frase_id in ya:
         telegram.enviar("%s ya había salido el %s." % (frase_id, ya[frase_id]["dia"]))
@@ -92,12 +100,23 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
     if not ruta.exists():
         ruta = diseno.dibujar(frase, tema, pagina)
     try:
-        post_id = publicar_fn(pagina, frases.caption(frase, tema, pagina), ruta)
+        salida = publicar_fn(pagina, frases.caption(frase, tema, pagina), ruta)
     except Exception as e:                       # noqa: BLE001
         telegram.enviar("No se pudo publicar %s: %s" % (frase_id, e))
         return None
+    if isinstance(salida, dict):
+        post_id, en_ig, fallo_ig = (salida.get("post_id") or "", salida.get("instagram") or "",
+                                    salida.get("error_instagram") or "")
+    else:
+        post_id, en_ig, fallo_ig = str(salida), "", ""
     frases.anotar_publicada(frase.id, hoy or date.today(), post_id, pagina.nombre)
-    telegram.enviar("Publicada: %s" % _enlace(post_id))
+    aviso = "Publicada: %s" % _enlace(post_id)
+    if en_ig:
+        aviso += "\nTambién en Instagram."
+    elif fallo_ig:
+        # Facebook ya salió: esto se avisa, no se trata como turno fallido.
+        aviso += "\nEn Instagram NO salió: %s" % fallo_ig
+    telegram.enviar(aviso)
     return post_id
 
 

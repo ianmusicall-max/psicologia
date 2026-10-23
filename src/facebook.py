@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 import requests
 
@@ -54,12 +55,14 @@ def _leer(camino, **params):
         return {"error": {"message": "respuesta que no es JSON: %s" % r.text[:200]}}
 
 
-def publicar(pagina: Pagina, caption: str, imagen: Path) -> str:
-    """Sube el flyer con su caption y devuelve el id del post.
+def subir_foto(pagina: Pagina, caption: str, imagen: Path) -> dict:
+    """Publica el flyer y devuelve {"post_id", "foto_id"}.
 
     `/photos` publica la foto como post de la página. La respuesta trae `id`
-    (el de la foto) y `post_id` (el del post, que es el que sirve para leer
-    comentarios después); se devuelve el segundo y, si no viene, el primero.
+    (el de la FOTO) y `post_id` (el del POST). Los dos sirven para cosas
+    distintas: el del post para leer comentarios, el de la foto para pedirle
+    a Meta la dirección pública de la imagen, que es lo que necesita
+    Instagram.
     """
     if not pagina.fb_page_id or not pagina.fb_token:
         raise FacebookError("Faltan %s y %s en el .env" % (pagina.page_id_env, pagina.token_env))
@@ -79,4 +82,31 @@ def publicar(pagina: Pagina, caption: str, imagen: Path) -> str:
     post_id = datos.get("post_id") or datos.get("id")
     if not post_id:
         raise FacebookError("Facebook no devolvió un id: %s" % datos)
-    return str(post_id)
+    return {"post_id": str(post_id), "foto_id": str(datos.get("id") or "")}
+
+
+def publicar(pagina: Pagina, caption: str, imagen: Path) -> str:
+    """El id del post. Es la forma corta de `subir_foto` y la que usa casi todo."""
+    return subir_foto(pagina, caption, imagen)["post_id"]
+
+
+def url_de_la_foto(pagina: Pagina, foto_id: str) -> Optional[str]:
+    """La dirección pública de una foto ya publicada, la más grande que haya.
+
+    Es lo que permite publicar en Instagram sin tener un servidor: Instagram
+    no acepta que le subas el archivo, pero sí baja la imagen de una URL, y
+    Meta ya está sirviendo esa misma foto.
+
+    `images` viene de mayor a menor según la documentación, pero se elige por
+    ancho y no por posición: si algún día cambia el orden, lo que saldría es
+    una miniatura, y eso se vería recién en Instagram.
+    """
+    if not foto_id:
+        return None
+    datos = _leer(foto_id, fields="images", access_token=pagina.fb_token or "")
+    if "error" in datos:
+        raise FacebookError(str((datos["error"] or {}).get("message") or datos["error"]))
+    imagenes = [x for x in (datos.get("images") or []) if x.get("source")]
+    if not imagenes:
+        return None
+    return max(imagenes, key=lambda x: int(x.get("width") or 0))["source"]

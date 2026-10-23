@@ -655,6 +655,27 @@ class TestElBot(unittest.TestCase):
         self.assertIn("Hablarte mal", b.todo)      # el caption que saldría
         self.assertIn("publicar:aut-01", b.datos_de_botones())
 
+    def test_con_instagram_prendido_el_bot_publica_en_las_dos(self):
+        pagina = config.cargar()
+        pagina.instagram = True
+        with _Bot() as b, mock.patch.object(instagram, "publicar_las_dos",
+                                            return_value={"post_id": "105_1", "instagram": "ig1",
+                                                          "error_instagram": ""}) as fn:
+            bot.atender(_update(data="publicar:aut-01"), pagina)
+        fn.assert_called_once()
+        self.assertIn("Instagram", b.todo)
+        self.assertIn("aut-01", frases.publicadas())
+
+    def test_si_instagram_falla_el_bot_igual_anota_la_frase(self):
+        pagina = config.cargar()
+        pagina.instagram = True
+        with _Bot() as b, mock.patch.object(instagram, "publicar_las_dos",
+                                            return_value={"post_id": "105_1", "instagram": "",
+                                                          "error_instagram": "sin permiso"}):
+            bot.atender(_update(data="publicar:aut-01"), pagina)
+        self.assertIn("aut-01", frases.publicadas())
+        self.assertIn("NO salió", b.todo)
+
     def test_el_boton_publicar_es_el_unico_que_publica(self):
         with _Bot() as b, mock.patch.object(facebook, "publicar", return_value="105_1") as fb:
             bot.atender(_update(data="publicar:aut-01"), PAGINA)
@@ -859,6 +880,17 @@ class TestLosCaminosPorDefecto(unittest.TestCase):
     siendo el camino viejo. Es un error que no se ve, porque las pruebas que
     pasan la ruta a mano nunca ejercitan el valor por defecto."""
 
+    def test_instagram_llama_a_facebook_por_el_modulo(self):
+        # Un `from .facebook import subir_foto` ata el nombre a la función que
+        # había al importar, así que parchear `facebook.subir_foto` no cambia
+        # lo que corre. Pasó, y el síntoma fue una prueba saliendo a la red.
+        import ast
+        arbol = ast.parse((ROOT / "src" / "instagram.py").read_text(encoding="utf-8"))
+        for nodo in ast.walk(arbol):
+            if isinstance(nodo, ast.ImportFrom) and nodo.module == "facebook":
+                traidos = {a.name for a in nodo.names}
+                self.assertFalse(traidos - {"GRAPH", "FacebookError"}, traidos)
+
     def test_ninguna_firma_clava_una_ruta_ni_una_funcion(self):
         # Vale igual para una función de otro módulo puesta por defecto: el
         # bot tenía `publicar_fn=facebook.publicar` y quedaba atado a esa
@@ -1021,6 +1053,71 @@ class TestInstagram(unittest.TestCase):
         with env, mock.patch.object(facebook.requests, "get",
                                     return_value=_Respuesta(200, {"data": {"scopes": []}})):
             self.assertEqual(instagram.scopes_del_token(p, "app", "secreto"), [])
+
+    def test_la_url_publica_sale_de_la_foto_mas_grande(self):
+        # Se elige por ancho y no por posición: si Meta cambia el orden, lo
+        # que saldría en Instagram es una miniatura, y eso se vería recién ahí.
+        p, env = self._pagina()
+        imagenes = {"images": [{"width": 320, "source": "chica.jpg"},
+                               {"width": 2048, "source": "grande.jpg"},
+                               {"width": 1080, "source": "media.jpg"}]}
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(200, imagenes)):
+            self.assertEqual(facebook.url_de_la_foto(p, "7"), "grande.jpg")
+
+    def test_subir_foto_devuelve_los_dos_ids(self):
+        # El del post sirve para los comentarios; el de la foto, para pedirle
+        # a Meta la dirección pública que necesita Instagram.
+        p, env = self._pagina()
+        with env, mock.patch.object(facebook.requests, "post",
+                                    return_value=_Respuesta(200, {"id": "9", "post_id": "105_1"})):
+            salida = facebook.subir_foto(p, "hola", Path(__file__))
+        self.assertEqual(salida, {"post_id": "105_1", "foto_id": "9"})
+
+    def test_espera_a_que_instagram_termine_de_procesar(self):
+        p, env = self._pagina()
+        estados = [_Respuesta(200, {"status_code": "IN_PROGRESS"}),
+                   _Respuesta(200, {"status_code": "FINISHED"})]
+        with env, mock.patch.object(facebook.requests, "get", side_effect=estados), \
+                mock.patch.object(instagram.requests, "post",
+                                  side_effect=[_Respuesta(200, {"id": "cont"}),
+                                               _Respuesta(200, {"id": "ig1"})]) as post:
+            ig = instagram.publicar(p, "texto", "http://x/foto.jpg", cuenta="77", paso=0)
+        self.assertEqual(ig, "ig1")
+        self.assertTrue(post.call_args_list[0][0][0].endswith("/77/media"))
+        self.assertTrue(post.call_args_list[1][0][0].endswith("/77/media_publish"))
+
+    def test_si_instagram_rechaza_la_imagen_no_publica(self):
+        p, env = self._pagina()
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(200, {"status_code": "ERROR",
+                                                                  "status": "mala proporción"})), \
+                mock.patch.object(instagram.requests, "post",
+                                  return_value=_Respuesta(200, {"id": "cont"})) as post:
+            with self.assertRaises(instagram.InstagramError):
+                instagram.publicar(p, "t", "http://x/f.jpg", cuenta="77", paso=0)
+        self.assertEqual(len(post.call_args_list), 1)   # no llegó a media_publish
+
+    def test_si_instagram_falla_el_post_de_facebook_igual_cuenta(self):
+        # Facebook ya salió. Levantar la excepción dejaría la frase sin anotar
+        # y mañana se ofrecería de nuevo, ya publicada.
+        p, env = self._pagina()
+        with env, mock.patch.object(facebook, "subir_foto",
+                                    return_value={"post_id": "105_1", "foto_id": "9"}), \
+                mock.patch.object(facebook, "url_de_la_foto",
+                                  side_effect=facebook.FacebookError("(#100) nada")):
+            salida = instagram.publicar_las_dos(p, "texto", Path(__file__))
+        self.assertEqual(salida["post_id"], "105_1")
+        self.assertEqual(salida["instagram"], "")
+        self.assertIn("(#100)", salida["error_instagram"])
+
+    def test_el_flyer_entra_en_la_proporcion_que_instagram_acepta(self):
+        # 1080x1350 es 4:5, el más alto que Instagram admite. El día que
+        # cambie el lienzo, Instagram rechaza el contenedor con un error que
+        # no dice que el problema es la proporción.
+        proporcion = diseno.W / diseno.H
+        self.assertGreaterEqual(round(proporcion, 4), instagram.PROPORCION_MINIMA)
+        self.assertLessEqual(proporcion, instagram.PROPORCION_MAXIMA)
 
     def test_el_comprobador_no_publica(self):
         # Mismo criterio que con Facebook: se lee el AST y se exige que no

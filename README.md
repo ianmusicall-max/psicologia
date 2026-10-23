@@ -184,19 +184,26 @@ cuál de los dos está mal, así que `revisar_token.py` los separa antes.
 
 ## Instagram
 
-**Todavía no se publica en Instagram**, y no es solo cuestión de permisos.
-`scripts/revisar_instagram.py` dice qué falta, en orden:
+Se publica en las dos con `instagram: true` en `config/pagina.yaml`. El flyer
+**no se sube dos veces**: Instagram no acepta que le subas el archivo, pero sí
+baja la imagen de una dirección pública, y la foto que Facebook acaba de
+publicar ya es una. Así que el orden es: Facebook primero, y la dirección de
+esa misma foto va al contenedor de Instagram. **No hace falta ningún
+servidor.**
 
-1. Una cuenta de Instagram **profesional vinculada a la página**. Eso se hace
-   en la configuración de la página en Facebook, no desde acá.
+Hacen falta dos cosas que no dependen del código:
+
+1. Una cuenta de Instagram **profesional vinculada a la página**, desde la
+   configuración de la página en Facebook.
 2. El token con `instagram_basic` e `instagram_content_publish`, que no hacen
    falta para Facebook.
-3. Una **dirección pública** de donde bajar el flyer. Instagram no acepta que
-   le subas el archivo: lo baja de internet. Hoy los flyers viven en el disco
-   de la máquina que publica, así que no hay de dónde bajarlos.
 
-El tercero es el que decide: o el proyecto corre en un servidor que sirva las
-imágenes, o Instagram se hace a mano.
+`scripts/revisar_instagram.py` dice si están y, si no, qué hacer.
+
+**Si Instagram falla, el post de Facebook ya salió.** Por eso la frase se
+anota como publicada igual y el fallo se avisa aparte. Si se tratara como
+turno fallido, la frase quedaría sin anotar y mañana se ofrecería de nuevo, ya
+publicada.
 
 ## Lo que falta
 

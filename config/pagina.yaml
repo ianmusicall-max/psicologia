@@ -15,6 +15,13 @@ pagina:
   # `scripts/probar_estilos.py` los dibuja todos con la misma frase.
   estilo: regla
 
+  # Publicar tambien en Instagram. El flyer no se sube dos veces: Instagram
+  # baja la imagen que Facebook acaba de publicar, asi que no hace falta
+  # ningun servidor. Necesita una cuenta profesional vinculada a la pagina y
+  # el token con instagram_basic e instagram_content_publish:
+  # `scripts/revisar_instagram.py` dice si esta todo.
+  instagram: false
+
   # Paleta propia. Es una página de psicología, no de salud: papel cálido,
   # tinta azul noche y un solo acento terracota para la palabra destacada.
   paleta:
