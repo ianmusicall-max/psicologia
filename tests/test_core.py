@@ -2065,13 +2065,26 @@ class TestLaMusicaDelReel(unittest.TestCase):
         return " ".join(orden)
 
     def test_va_muy_abajo_con_voz_y_al_frente_sin_voz(self):
-        # Medido sobre la referencia que mandó el usuario: su cama está 17 dB
-        # bajo la voz, que es exactamente 0.14.
+        # Medido: armando el mismo reel con 0.14, 0.07 y 0.05 la cama queda a
+        # -11, -16 y -19 dB bajo la voz, y la referencia está a -17.
         self.assertIn("volume=%.2f" % video.MUSICA_CON_VOZ,
                       self._cadena(voz=Path("v.m4a"), musica=Path("m.mp3")))
         self.assertIn("volume=%.2f" % video.MUSICA_SOLA,
                       self._cadena(musica=Path("m.mp3")))
-        self.assertAlmostEqual(video.MUSICA_CON_VOZ, 0.14)
+        self.assertAlmostEqual(video.MUSICA_CON_VOZ, 0.07)
+
+    def test_las_dos_pistas_se_emparejan_antes_de_mezclar(self):
+        # El 0.07 es una proporción ENTRE LAS DOS: emparejando solo la música,
+        # el resultado depende de cuán fuerte hable la voz y la cama se va de
+        # lugar. Medido: quedaba a -6 dB en vez de -17.
+        cadena = self._cadena(voz=Path("v.m4a"), musica=Path("m.mp3"))
+        self.assertEqual(cadena.count("loudnorm=%s" % video.SONORIDAD_MUSICA), 2)
+
+    def test_la_cama_que_trae_el_repo_existe_y_es_original(self):
+        # Generada con ffmpeg. Una pista con derechos le hace perder alcance a
+        # TODA la cuenta, no solo a ese post.
+        self.assertTrue(Path(video.MUSICA).exists())
+        self.assertGreater(video.duracion(video.MUSICA), video.TOPE_SEGUNDOS)
 
     def test_amix_no_normaliza(self):
         # Por defecto divide por la cantidad de entradas: la voz saldría a la

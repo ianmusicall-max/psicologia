@@ -8,7 +8,8 @@
     reel.py --voz mi-voz.m4a     tu voz grabada leyendo el texto
     reel.py --voz-mac            la voz de la Mac (`say`), renglon por renglon
     reel.py --voz-ia             la voz de IA de OpenAI: es la UNICA llamada paga
-    reel.py --musica cama.mp3    musica de fondo, bien abajo si hay voz
+    reel.py --musica             la cama que trae el repo, bien abajo si hay voz
+    reel.py --musica otra.mp3    la tuya
     reel.py --ver                dice que haria, sin armar nada
 
 UNA FRASE SON UNOS 30 SEGUNDOS HABLADOS y no llega al minuto por mas que se
@@ -65,6 +66,24 @@ def elegir_fondo(donde: str, semilla: str) -> list:
     return clips
 
 
+def buscar_musica(cual: str) -> Path:
+    """Un archivo, o el nombre de una de las que trae el repo.
+
+    Las del repo estan generadas con ffmpeg y son originales. Una pista con
+    derechos le hace perder alcance a TODA la cuenta, no solo a ese post, asi
+    que lo que viene incluido no puede ser de nadie mas.
+    """
+    ruta = Path(cual)
+    if ruta.is_file():
+        return ruta
+    propia = Path(video.MUSICA).parent / ("%s.m4a" % cual)
+    if propia.is_file():
+        return propia
+    hay = sorted(x.stem for x in Path(video.MUSICA).parent.glob("*.m4a"))
+    raise SystemExit("No encuentro la musica %r. Las que trae el repo: %s"
+                     % (cual, ", ".join(hay) or "ninguna"))
+
+
 def buscar_tema(temas, cual: str):
     """Por nombre («autoestima») o por numero de capitulo («3»)."""
     cual = (cual or "").strip().lower()
@@ -83,7 +102,9 @@ def main(argv=None) -> int:
                     metavar="SEG", help="cuanto durar con --tema (leido, no hablado)")
     ap.add_argument("--desde", type=int, default=0,
                     help="con --tema, desde que frase del capitulo empezar")
-    ap.add_argument("--musica", help="un audio de fondo")
+    ap.add_argument("--musica", nargs="?", const="calma", default=None,
+                    metavar="ARCHIVO",
+                    help="musica de fondo; sin nombre usa la que trae el repo")
     ap.add_argument("--voz-ia", nargs="?", const=video.VOZ_IA, default=None,
                     metavar="VOZ", help="voz de OpenAI (onyx, ash, sage...). CUESTA")
     ap.add_argument("--fondo", help="un clip o una carpeta con clips")
@@ -125,6 +146,8 @@ def main(argv=None) -> int:
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
                                       "  (el capitulo entero)" if args.tema else ""))
+    if args.musica:
+        print("musica: %s" % buscar_musica(args.musica).name)
     print("%d renglones, cuerpo %d, fondo %s"
           % (len(unidades), cuerpo,
              ", ".join(x.name for x in fondo[:3]) if fondo else "papel de la marca"))
@@ -189,7 +212,7 @@ def main(argv=None) -> int:
     try:
         ruta = video.armar(frase, pagina, titulo=tema.titulo, fondo=fondo, voz=voz,
                            carpeta=carpeta, marcas=marcas, unidades=unidades,
-                           musica=Path(args.musica) if args.musica else None)
+                           musica=buscar_musica(args.musica) if args.musica else None)
     except video.VideoError as e:
         print(e)
         return 1

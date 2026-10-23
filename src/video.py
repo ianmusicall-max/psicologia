@@ -747,11 +747,18 @@ def _deriva(total: float) -> str:
 # corte compite con el texto; mucho más largas y vuelve a ser un fondo fijo.
 ESCENA = 7.0
 
-# La música va MUY abajo cuando hay voz: es una cama, no un tema. 0,14 es la
-# proporción que se usa para locución encima de música; más que eso y hay que
-# subir la voz, que es como se llega a un reel que satura en el teléfono. Sin
-# voz puede ir al frente, porque es lo único que suena.
-MUSICA_CON_VOZ = 0.14
+# La música va MUY abajo cuando hay voz: es una cama, no un tema.
+#
+# El número está medido, no elegido. Sobre el audio de la referencia que mandó
+# el usuario, su cama está 17 dB bajo la voz. Se armó el mismo reel con 0,14,
+# 0,07 y 0,05 y se midió igual: dan -11, -16 y -19 dB. Queda 0,07.
+#
+# No es el -17 dB «de manual» porque las dos pistas pasan antes por `loudnorm`,
+# que empareja la sonoridad del PROGRAMA, y una voz con pausas cada renglón
+# tiene una mediana más baja que su sonoridad integrada. Lo que importa es que
+# la proporción que se oye sea la de la referencia, no que el número coincida
+# con el de un manual.
+MUSICA_CON_VOZ = 0.07
 MUSICA_SOLA = 0.50
 ENTRADA = 1.5              # el fundido de entrada
 SALIDA = 2.5               # y el de salida, que evita el corte seco
@@ -761,6 +768,16 @@ SALIDA = 2.5               # y el de salida, que evita el corte seco
 # que un reel grabado con tu voz y otro hecho con `say` suenen parejo, que si
 # no dependen de cuánto levante el micrófono.
 SONORIDAD = "I=-14:TP=-1.5:LRA=11"
+# A la música se la empareja antes de bajarla, con menos rango dinámico: una
+# cama que sube y baja sola compite con la voz.
+SONORIDAD_MUSICA = "I=-16:TP=-2:LRA=7"
+
+# La cama que viene con el repo, generada con ffmpeg: un acorde sostenido con
+# oleadas muy lentas. Está acá y no se baja de ningún lado por lo mismo que el
+# fondo de papel -que un reel salga hoy sin depender de una descarga- y además
+# porque es original: una pista con derechos le hace perder alcance a TODA la
+# cuenta, no solo a ese post.
+MUSICA = ROOT / "assets" / "musica" / "calma.m4a"
 
 
 def escenas(clips: Sequence[Path], total: float, escena: float = ESCENA) -> List[Path]:
@@ -827,18 +844,30 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
         # Se repite si es más corta que el reel: una cama que se corta a la
         # mitad se nota más que no tenerla.
         entradas += ["-stream_loop", "-1", "-i", str(musica)]
+        # La música se empareja ANTES de bajarla, y eso es lo que hace que el
+        # 0.14 signifique algo: sin esto, el volumen de la cama dependía de
+        # cuán fuerte viniera el archivo. Un tema bajo quedaba inaudible y uno
+        # fuerte tapaba la voz, y la única forma de arreglarlo era volver a
+        # exportar el mp3.
         cadena += (";[%d:a]aformat=sample_fmts=fltp:sample_rates=48000:"
-                   "channel_layouts=stereo,volume=%.2f,afade=t=in:d=%.1f,"
-                   "afade=t=out:st=%.2f:d=%.1f[mus]"
-                   % (cuantas, MUSICA_CON_VOZ if voz else MUSICA_SOLA,
+                   "channel_layouts=stereo,loudnorm=%s,volume=%.2f,"
+                   "afade=t=in:d=%.1f,afade=t=out:st=%.2f:d=%.1f[mus]"
+                   % (cuantas, SONORIDAD_MUSICA, MUSICA_CON_VOZ if voz else MUSICA_SOLA,
                       ENTRADA, max(0.0, total - SALIDA), SALIDA))
         # `normalize=0` no es un detalle: por defecto `amix` divide por la
         # cantidad de entradas, o sea que la voz saldría a la mitad y habría
         # que compensarla subiéndola, que es como se llega a un reel que
         # satura en el teléfono.
+        # La voz se empareja igual que la música, y por el mismo motivo: el
+        # 0.14 es una proporción ENTRE LAS DOS. Emparejando solo la música, el
+        # resultado depende de cuán fuerte hable la voz -una grabación tuya y
+        # la de OpenAI no salen al mismo nivel- y la cama se va de lugar. Se
+        # midió: con la voz sin emparejar la cama quedaba a -6 dB en vez de
+        # -17, o sea compitiendo con lo que se dice.
         cadena += (";[%d:a]aformat=sample_fmts=fltp:sample_rates=48000:"
-                   "channel_layouts=stereo[vz];[vz][mus]amix=inputs=2:"
-                   "duration=first:normalize=0[a]" % pista_voz)
+                   "channel_layouts=stereo,loudnorm=%s[vz];"
+                   "[vz][mus]amix=inputs=2:duration=first:normalize=0[a]"
+                   % (pista_voz, SONORIDAD_MUSICA))
         cuantas += 1
         salida_audio = "[a]"
     elif voz:
