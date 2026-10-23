@@ -2,7 +2,7 @@
 
 # Frases para pensar
 
-*Borrador armado del banco de frases: 14 capítulos, 113 frases.*
+*Borrador armado del banco de frases: 19 capítulos, 153 frases.*
 
 ## Índice
 
@@ -20,6 +20,11 @@
 12. Volver a encontrarse con quien ya está (8 frases)
 13. Cuando se termina, y cuando se vuelve (8 frases)
 14. Elegir a alguien, y qué predice que funcione (8 frases)
+15. Lo que la desconfianza hace (8 frases)
+16. Los que estaban antes (8 frases)
+17. Los que sí elegiste (8 frases)
+18. Culpa y vergüenza no son lo mismo (8 frases)
+19. El deseo con el tiempo (8 frases)
 
 
 ## Capítulo 1 · Sentir no es un error
@@ -996,42 +1001,402 @@ Se empieza a salir, después se queda a dormir siempre, después se junta la rop
 *Fuente:* Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
 
 
+## Capítulo 15 · Lo que la desconfianza hace
+
+Los celos no miden cuánto quieres a alguien: miden cuánto temes perderlo y cuánta incertidumbre toleras. Vigilar no los calma, los alimenta, porque siempre encuentra algo que interpretar. La confianza no se promete: se construye con respuestas repetidas a lo largo del tiempo.
+
+
+> Los celos no miden cuánto amas. Miden cuánto temes perder, que es otra cosa.
+
+Hay una idea muy instalada de que quien cela, quiere más. No es lo que se mide. Lo que predice los celos es la sensación de que el vínculo está en riesgo y la dificultad para tolerar no saber. Dos personas que quieren igual pueden celar muy distinto.
+
+*Principio:* Los celos responden a una amenaza percibida al vínculo, no a la intensidad del afecto.  
+*Fuente:* White & Mullen (1989); Buss (2000), teoría de los celos como respuesta a amenaza.
+
+
+> Revisarle el teléfono no te va a tranquilizar. Vas a encontrar algo, y si no, vas a buscar mejor.
+
+El estudio encontró un círculo: cuanto más se vigila, más se encuentra material ambiguo, y cuanto más material ambiguo, más ganas de vigilar. La vigilancia no produce certeza porque no existe un punto donde se haya revisado todo. Siempre queda un lugar más donde mirar.
+
+*Principio:* La vigilancia de la pareja aumenta los celos en vez de reducirlos: genera más información ambigua que interpretar.  
+*Fuente:* Muise, Christofides & Desmarais (2009), Cyberpsychology: el círculo de vigilancia y celos.
+
+
+> La confianza no se promete. Se construye con respuestas repetidas, y por eso lleva tiempo y se rompe rápido.
+
+Nadie confía porque le juraron algo. Se confía porque alguien respondió igual muchas veces, en cosas chicas, cuando podría no haberlo hecho. Eso explica las dos asimetrías: por qué la confianza tarda años en hacerse y por qué un solo hecho puede deshacerla.
+
+*Principio:* La confianza tiene tres componentes que se acumulan en el tiempo: previsibilidad, fiabilidad y fe en la buena intención del otro.  
+*Fuente:* Rempel, Holmes & Zanna (1985), JPSP: los componentes de la confianza en pareja.
+
+
+> Pedir que te tranquilicen una vez es sano. Pedirlo cada día enseña que sin esa frase no se puede estar en calma.
+
+El alivio que da escuchar «te quiero, no pasa nada» dura poco, y por eso se vuelve a pedir. El problema es lo que entrena: que la calma depende de que el otro la diga. Y del otro lado desgasta, porque nunca alcanza con haberlo dicho ayer.
+
+*Principio:* La búsqueda excesiva de tranquilización alivia a corto plazo y mantiene la inseguridad a largo plazo, y desgasta al que la da.  
+*Fuente:* Joiner et al. (1999), búsqueda excesiva de tranquilización; Coyne (1976).
+
+
+> Lo que alimenta los celos no es lo que viste. Es lo que no sabes y no toleras no saber.
+
+Por eso una explicación rara vez cierra el tema: lo que incomoda no es el dato que falta sino la sensación de no tener el control. La misma situación, con la misma información, molesta mucho o nada según cuánta incertidumbre pueda sostener quien mira.
+
+*Principio:* La incertidumbre relacional predice celos, vigilancia y conflicto, independientemente de la conducta real del otro.  
+*Fuente:* Knobloch & Solomon (2002), incertidumbre relacional; Carleton (2016), intolerancia a la incertidumbre.
+
+
+> Controlar a alguien no te hace sentir seguro. Te hace necesitar más control para sentir lo mismo.
+
+Empieza con una contraseña compartida y sigue con la ubicación, los horarios, con quién. Cada paso calma un rato y después deja de alcanzar. No es que la otra persona haga algo nuevo: es que la seguridad que viene de controlar se gasta siempre, porque no viene de confiar.
+
+*Principio:* Las conductas de control escalan: la seguridad que producen es transitoria y requiere dosis crecientes.  
+*Fuente:* Stark (2007), control coercitivo; Mikulincer & Shaver (2016), estrategias de hiperactivación.
+
+
+> Si te pone celoso que tenga una vida, el problema no es su vida.
+
+Hay celos que aparecen ante algo concreto y hay celos que aparecen porque el otro se fue a cenar con sus amigos. Los segundos no hablan de la relación, hablan de quien los siente. Reconocerlo no los hace desaparecer, pero cambia a quién hay que preguntarle qué pasa.
+
+*Principio:* Los celos ante la autonomía normal del otro señalan inseguridad del propio apego, no amenaza real.  
+*Fuente:* Mikulincer & Shaver (2016); Feeney (2007), JPSP: aceptar la dependencia promueve la autonomía.
+
+
+> Nadie puede darte una certeza que no existe. Lo máximo que puede darte alguien es su manera de tratarte.
+
+La pregunta «cómo sé que no me va a fallar» no tiene respuesta, y por eso quien la hace nunca termina satisfecho. La que sí tiene respuesta es otra: cómo te trata cuando no le conviene, cómo responde cuando lo necesitas. Eso se puede mirar, y es lo único que hay.
+
+*Principio:* La evidencia disponible sobre un vínculo es la conducta sostenida, no la garantía; exigir certeza mantiene la ansiedad.  
+*Fuente:* Dugas & Robichaud (2007), intolerancia a la incertidumbre; Rempel et al. (1985).
+
+
+## Capítulo 16 · Los que estaban antes
+
+Con la familia no se eligió nada: ni el lugar que te tocó ni el papel que aprendiste a cumplir. De adulto sí se elige, y eso incomoda a todos porque rompe un acuerdo que nadie firmó. Querer a alguien y poner un límite no son cosas opuestas; de hecho suelen ir juntas.
+
+
+> En tu familia tuviste un papel que no elegiste. De adulto puedes dejar de interpretarlo.
+
+El que arreglaba todo, el que no daba problemas, el que siempre exageraba. Esos lugares se reparten temprano y después cada reunión los confirma, porque todos esperan lo mismo de cada uno. Salirse del papel se siente como traicionar algo, y por eso cuesta tanto.
+
+*Principio:* Las familias asignan roles estables (el responsable, el que hace reír, el problemático) que persisten en la adultez salvo que se revisen.  
+*Fuente:* Minuchin (1974), estructura familiar; Bowen (1978), diferenciación del yo.
+
+
+> Puedes querer mucho a alguien y aun así no poder verlo seguido. No son cosas opuestas.
+
+La idea de que querer se demuestra con presencia deja solo dos salidas: aguantar lo que haga daño o cortar del todo. Hay una tercera, y es la que casi nadie nombra: verse menos, verse distinto, verse con un límite puesto antes. Eso también es querer.
+
+*Principio:* La diferenciación permite sostener el vínculo y la distancia a la vez; fusionar ambas cosas obliga a elegir entre cortar o anularse.  
+*Fuente:* Bowen (1978); Hess & Jacob (2011), distancia y cercanía en vínculos familiares.
+
+
+> Si de chico tuviste que cuidar a los adultos, de grande vas a confundir el amor con la responsabilidad.
+
+El chico que calmaba a su madre, que mediaba entre sus padres, que se ocupaba de su hermano, aprendió que ser querido es ser útil. De adulto se vuelve el que resuelve en todos sus vínculos, y le cuesta muchísimo pedir. No porque sea orgulloso: porque nunca le tocó.
+
+*Principio:* La parentificación (asumir funciones de cuidado adultas en la infancia) se asocia a sobreimplicación y dificultad para recibir cuidado en la adultez.  
+*Fuente:* Boszormenyi-Nagy & Spark (1973); Hooper (2007), revisión sobre parentificación.
+
+
+> Que un límite les moleste no significa que esté mal puesto. Significa que antes no había ninguno.
+
+Cuando alguien cambia una regla, el resto empuja para volver a lo de antes. En las familias eso pasa siempre, y se siente como una prueba de que uno se equivocó. No lo es. Un límite que no incomoda a nadie casi nunca es un límite: es algo que ya se estaba haciendo.
+
+*Principio:* La reacción negativa ante un límite nuevo es esperable y no informa sobre su legitimidad: señala un cambio en un acuerdo implícito.  
+*Fuente:* Bowen (1978), reacción del sistema al cambio; Cloud & Townsend (1992).
+
+
+> No tienes que perdonar a nadie para poder seguir. El perdón es una opción, no un requisito.
+
+Se escucha mucho que perdonar es para uno mismo. A veces sí. Pero convertirlo en obligación agrega una carga más al que ya está cargando: ahora, además de lo que pasó, está fallando por no haberlo superado. Se puede dejar de esperar algo de alguien sin firmar ningún perdón.
+
+*Principio:* El perdón puede favorecer el bienestar pero no es condición necesaria para la recuperación; imponerlo genera culpa adicional.  
+*Fuente:* Enright & Fitzgibbons (2015); McNulty (2011), PSPB, los límites del perdón.
+
+
+> Lo que aprendiste en tu casa no está condenado a repetirse. Pero si no lo miras, se repite solo.
+
+La transmisión existe y está medida, pero no es un destino: lo que más predice que alguien no repita lo que vivió es haber podido pensarlo y contarlo con coherencia. No hace falta haber tenido una buena infancia. Hace falta poder mirarla de frente.
+
+*Principio:* Los patrones de vínculo se transmiten entre generaciones, y esa transmisión se interrumpe cuando se vuelve consciente.  
+*Fuente:* Van IJzendoorn (1995), transmisión intergeneracional del apego; Main et al. (1985), seguridad ganada.
+
+
+> Con tus padres podés sentir cariño y enojo al mismo tiempo. La mayoría de la gente siente las dos cosas.
+
+Cuando se les pregunta por separado, la mayoría de los hijos adultos reporta a la vez afecto fuerte y tensión fuerte con sus padres. No es una contradicción que haya que resolver eligiendo una. Es cómo son casi todos estos vínculos, y pelearse con eso agrega culpa al asunto.
+
+*Principio:* La ambivalencia en los vínculos entre hijos adultos y padres es la norma estadística, no la excepción ni un signo de conflicto.  
+*Fuente:* Fingerman et al. (2008), ambivalencia intergeneracional; Lüscher & Pillemer (1998).
+
+
+> El orden en que naciste no te hizo como eres. Eso se midió en miles de personas y no apareció.
+
+La idea de que el mayor es responsable y el menor rebelde es de las más queridas de la psicología popular, y de las que peor resistieron. En muestras enormes, el efecto es tan chico que no se nota en ninguna persona concreta. Lo que sí influye es cómo te trataron, no en qué lugar llegaste.
+
+*Principio:* El efecto del orden de nacimiento sobre la personalidad es prácticamente nulo en estudios grandes y bien controlados.  
+*Fuente:* Damian & Roberts (2015), PNAS, con 377.000 estudiantes; Rohrer et al. (2015).
+
+
+## Capítulo 17 · Los que sí elegiste
+
+La amistad es el único vínculo enteramente elegido, y por eso es el primero que se cae cuando falta tiempo: nada obliga a sostenerlo. Se construye con horas y se mantiene con frecuencia, no con intensidad. Y a diferencia de una pareja, casi nunca se termina diciéndolo.
+
+
+> Una amistad no se hace con afinidad. Se hace con horas, y son más de las que creés.
+
+Mucha gente cree que con la persona correcta la amistad aparece sola. Lo que muestran los datos es menos romántico y más útil: hace falta estar, muchas veces, haciendo cualquier cosa. Por eso cuesta tanto hacer amigos de adulto, cuando ya nadie comparte ocho horas por día sin proponérselo.
+
+*Principio:* La cercanía en amistad escala con el tiempo compartido: se estiman unas 50 horas para un conocido cercano y unas 200 para un amigo íntimo.  
+*Fuente:* Hall (2019), Journal of Social and Personal Relationships: cuántas horas lleva hacer un amigo.
+
+
+> Después de los veinticinco, el círculo se achica solo. No es que la gente cambie: es que deja de cruzarse.
+
+Hasta los veinticinco, el contacto repetido viene de regalo: escuela, facultad, el primer trabajo. Después hay que fabricarlo. El círculo no se achica porque uno se haya vuelto difícil, se achica porque desapareció lo que lo sostenía sin esfuerzo.
+
+*Principio:* El tamaño de la red social crece hasta el inicio de la adultez y decrece de forma sostenida después, por cambios de contexto más que de personalidad.  
+*Fuente:* Wrzus et al. (2013), Psychological Bulletin, metaanálisis sobre redes sociales a lo largo de la vida.
+
+
+> La mitad de las personas que vos considerás amigas no te consideran a vos. Y es mutuo, con otros.
+
+Suena peor de lo que es. No significa que no te quieran: significa que cada uno ordena su lista distinto, y que casi nadie lo dice en voz alta. Saberlo ayuda a dejar de medir la amistad por el lugar que uno ocupa y a mirar lo que de verdad pasa cuando se ven.
+
+*Principio:* En redes medidas, cerca de la mitad de las amistades declaradas no son recíprocas, y las personas sobrestiman la reciprocidad.  
+*Fuente:* Almaatouq et al. (2016), PLoS ONE: reciprocidad en las amistades declaradas.
+
+
+> Las amistades casi nunca se terminan. Se dejan de contestar.
+
+Una pareja que se termina tiene una conversación, una fecha y a veces un motivo. Una amistad que se termina tiene mensajes cada vez más espaciados hasta que no hay más. Como no hubo final, tampoco hay duelo permitido, y por eso duelen de un modo que nadie reconoce.
+
+*Principio:* La disolución de amistades suele ocurrir por desvanecimiento gradual y no por ruptura explícita, lo que impide cerrar el vínculo.  
+*Fuente:* Rose (1984); Doka (2002), duelo desautorizado.
+
+
+> No hace falta una conversación profunda. Hace falta volver a aparecer.
+
+Hay gente que no escribe porque siente que debería escribir algo importante, y entonces no escribe nunca. Lo que sostiene una amistad son los mensajes sin contenido: una foto, una pavada, un me acordé de vos. La profundidad viene después, y solo si hubo antes.
+
+*Principio:* La frecuencia del contacto predice el mantenimiento de la amistad mejor que la profundidad de cada interacción.  
+*Fuente:* Hall (2019); Oswald, Clark & Kelly (2004), mantenimiento de la amistad.
+
+
+> Tener amigos te hace bien al cuerpo, no solo al ánimo. Y después de cierta edad, pesa más que la familia.
+
+En el metaanálisis más citado sobre el tema, tener vínculos sólidos se asoció a un efecto sobre la supervivencia comparable al de dejar de fumar. Y en la vejez, los amigos predicen bienestar mejor que los parientes, probablemente porque a los amigos se los sigue eligiendo todos los años.
+
+*Principio:* La calidad de las amistades predice salud y bienestar en la adultez tardía, con efectos comparables o superiores a los vínculos familiares.  
+*Fuente:* Chopik (2017), Personal Relationships; Holt-Lunstad et al. (2010), metaanálisis sobre vínculos y mortalidad.
+
+
+> Cómo reaccionás cuando a tu amigo le va bien dice más del vínculo que cómo reaccionás cuando le va mal.
+
+Estar en las malas es lo que todos sabemos que hay que hacer. Lo que casi nadie mira es el momento en que alguien llega con una buena noticia y recibe un «qué bien» tibio, o peor, un comentario que la achica. Eso se mide y pesa, en la pareja y en la amistad.
+
+*Principio:* La respuesta activa y constructiva ante las buenas noticias predice la calidad del vínculo mejor que el apoyo en la adversidad.  
+*Fuente:* Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien.
+
+
+> Pedir ayuda no gasta una amistad. Casi siempre la acerca, porque le da al otro algo que hacer.
+
+En los experimentos, la gente calcula que le van a decir que no mucho más de lo que realmente le dicen. Y del otro lado pasa algo que el que pide no ve: ayudar hace sentir cercano y útil. El que no pide para no molestar se está perdiendo las dos mitades.
+
+*Principio:* Las personas subestiman la disposición de otros a ayudar y el efecto positivo que el pedido tiene sobre el vínculo.  
+*Fuente:* Flynn & Lake (2008), JPSP: subestimar la ayuda ajena; Boothby & Bohns (2021).
+
+
+## Capítulo 18 · Culpa y vergüenza no son lo mismo
+
+La culpa dice hice algo mal y empuja a repararlo. La vergüenza dice soy algo malo y empuja a esconderse. Se parecen por dentro y hacen lo contrario por fuera: una mejora los vínculos y la otra los rompe. Distinguirlas es de las cosas más útiles que la psicología tiene para ofrecer.
+
+
+> La culpa dice hice algo mal. La vergüenza dice soy algo malo. Se parecen por dentro y hacen lo contrario por fuera.
+
+Es la distinción más útil de toda esta área y casi nadie la conoce. Quien siente culpa llama, pide disculpas, arregla. Quien siente vergüenza desaparece, se pone a la defensiva o ataca primero. El mismo error puede producir cualquiera de las dos, y el resultado no se parece en nada.
+
+*Principio:* La culpa se dirige a la conducta y motiva reparación; la vergüenza se dirige al yo y motiva ocultamiento y evitación.  
+*Fuente:* Tangney & Dearing (2002), Shame and Guilt; Tangney, Stuewig & Mashek (2007), Annual Review.
+
+
+> Esconderte no es cobardía. Es exactamente lo que la vergüenza está diseñada para hacerte hacer.
+
+La vergüenza empuja a achicarse, bajar la mirada y desaparecer de la escena. Entenderlo cambia la pregunta: en vez de por qué soy así, aparece qué estoy tratando de que nadie vea. Y eso sí se puede contestar.
+
+*Principio:* La vergüenza organiza una respuesta de ocultamiento y retirada social; no es un déficit de carácter sino la función de la emoción.  
+*Fuente:* Tangney et al. (2007); Gilbert (2009), terapia centrada en la compasión.
+
+
+> Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que sentís.
+
+Se midieron los pedazos de una disculpa por separado. El que más mueve la aguja es decir qué hiciste y hacerte cargo. «Perdón si te sentiste mal» no incluye eso, y por eso suena a lo que es: una forma de pedir disculpas sin reconocer nada.
+
+*Principio:* De los componentes de una disculpa, reconocer la responsabilidad es el que más pesa; la expresión de arrepentimiento sola pesa mucho menos.  
+*Fuente:* Lewicki, Polin & Lount (2016), Negotiation and Conflict Management Research: los componentes de una disculpa eficaz.
+
+
+> Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que hacés el día siguiente.
+
+Hay una idea de que el castigo interno paga la deuda, y por eso mucha gente se queda en el malestar como si eso fuera la reparación. No lo es para el otro, que no ve nada, y tampoco para uno. La culpa termina cuando algo cambió afuera, no cuando el malestar fue suficiente.
+
+*Principio:* La rumiación sobre una falta no produce reparación y se asocia a vergüenza; la acción reparadora concreta sí resuelve la culpa.  
+*Fuente:* Baumeister, Stillwell & Heatherton (1994), Psychological Bulletin: las funciones interpersonales de la culpa.
+
+
+> La culpa que no lleva a ninguna acción no es responsabilidad. Es un impuesto que te cobrás.
+
+Preguntale a la culpa qué querés que haga. Si tiene respuesta, es información y conviene hacerle caso. Si no tiene, no está pidiendo nada: está cobrando. Esa diferencia se puede chequear en treinta segundos y ahorra meses.
+
+*Principio:* La culpa adaptativa es específica y accionable; la culpa crónica y difusa no corrige nada y se asocia a malestar.  
+*Fuente:* Tilghman-Osborne, Cole & Felton (2010), revisión sobre culpa adaptativa y desadaptativa.
+
+
+> Sentirte culpable por descansar es la prueba de que creés que valés por lo que producís.
+
+Si el valor propio depende de lo hecho, cada hora sin hacer nada se siente como una pérdida de valor. Por eso hay gente que descansa peor que la que trabaja, y vuelve del descanso más cansada. El problema no es la agenda: es de dónde cree esa persona que viene su valor.
+
+*Principio:* La valía contingente al logro convierte el descanso en una transgresión, y mantiene el ciclo de agotamiento.  
+*Fuente:* Crocker & Wolfe (2001), Psychological Review, contingencias de la autoestima; Sonnentag & Fritz (2007).
+
+
+> Que alguien se enoje con vos no te hace culpable. Son dos cosas distintas y casi siempre se confunden.
+
+Hay personas que, apenas alguien se molesta, revisan qué hicieron mal, incluso cuando no hicieron nada. Aprendieron a usar el estado de ánimo del otro como el termómetro de su propia conducta. Son dos preguntas distintas: qué siente el otro, y si está bien lo que hice.
+
+*Principio:* La reacción emocional ajena no establece responsabilidad; confundirlas es un patrón central en personas con tendencia a la complacencia.  
+*Fuente:* Alberti & Emmons (2017), asertividad; Tangney & Dearing (2002).
+
+
+> Perdonarte no es decirte que da igual. Es dejar de cobrarte después de haber pagado.
+
+El autoperdón tiene mala prensa porque se confunde con hacerse el distraído. No es eso. Supone haber mirado qué pasó, haberse hecho cargo y haber hecho lo que se podía. Lo que viene después, seguir cobrándose indefinidamente, ya no mejora nada ni para uno ni para el otro.
+
+*Principio:* El autoperdón adaptativo requiere reconocer la falta y reparar; sin eso es autoindulgencia, y sin fin es autocastigo.  
+*Fuente:* Hall & Fincham (2005), modelo del autoperdón; Neff (2003), autocompasión.
+
+
+## Capítulo 19 · El deseo con el tiempo
+
+Casi todo lo que se cree sobre el deseo viene de las películas: que aparece solo, que si no aparece algo se terminó, que su frecuencia mide el amor. Lo medido dice otra cosa. El deseo suele responder en vez de aparecer, baja con los años en casi todas las parejas, y lo que más lo sostiene es hablar.
+
+
+> El deseo no siempre aparece primero. En muchas personas aparece después, como respuesta, y eso también es normal.
+
+El modelo clásico decía que primero viene el deseo y después todo lo demás. Basson mostró que en muchas personas el orden es el inverso: el deseo aparece cuando ya empezó el encuentro. Esperar las ganas antes de acercarse deja esperando sin motivo a quien funciona del otro modo.
+
+*Principio:* El deseo responsivo (que surge a partir del encuentro y no antes) es un patrón frecuente y saludable, no un trastorno.  
+*Fuente:* Basson (2000), modelo circular de la respuesta sexual femenina; Both et al. (2007).
+
+
+> Que el deseo baje con los años no significa que algo se rompió. Le pasa a casi todas las parejas.
+
+Es de los datos más consistentes y de los peor difundidos. Como casi nadie lo dice, cada pareja cree que le pasa solo a ella y lo lee como una señal de que el amor se terminó. Saber que es lo esperable no lo arregla, pero saca de encima una interpretación que hace mucho daño.
+
+*Principio:* La frecuencia y la intensidad del deseo descienden con la duración de la relación, con mayor pendiente en mujeres en los estudios disponibles.  
+*Fuente:* Klusmann (2002); Murray & Milhausen (2012), deseo y duración de la relación.
+
+
+> Hablar de esto predice mejor la satisfacción que cualquier técnica. Y es lo que menos se hace.
+
+El metaanálisis junta decenas de estudios y el resultado es claro: las parejas que hablan de lo que les gusta están más satisfechas, y la relación se sostiene en el tiempo. Se evita porque da vergüenza, y la vergüenza es exactamente lo que vuelve imposible pedir algo distinto.
+
+*Principio:* La comunicación sexual explícita se asocia de forma robusta con satisfacción sexual y de pareja, en ambos miembros.  
+*Fuente:* Mallory et al. (2019), Journal of Sex Research, metaanálisis sobre comunicación sexual.
+
+
+> Más frecuencia no es más felicidad. Pasada una vez por semana, el número deja de sumar.
+
+Lo midieron en más de treinta mil personas. Hasta una vez por semana, la frecuencia acompaña al bienestar; de ahí en adelante la curva se aplana. Sirve sobre todo para dejar de compararse con un número que alguien dijo en algún lado: no hay una cifra a la que haya que llegar.
+
+*Principio:* La asociación entre frecuencia sexual y bienestar se aplana aproximadamente en una vez por semana; más allá no aporta.  
+*Fuente:* Muise, Schimmack & Impett (2016), Social Psychological and Personality Science.
+
+
+> Lo que más enciende en una pareja de años no es la novedad. Es sentir que el otro te está prestando atención.
+
+En los estudios de Birnbaum, alguien que escucha, que recuerda lo que dijiste y que responde a lo que de verdad contaste resulta más deseable que alguien con mejores credenciales. Es una buena noticia práctica: casi todo lo que enciende es algo que se hace, no algo que se es.
+
+*Principio:* La responsividad percibida predice deseo en relaciones de larga duración, por encima de factores de novedad o atractivo.  
+*Fuente:* Birnbaum et al. (2016), JPSP: la importancia de la responsividad para el deseo sexual.
+
+
+> El cansancio y el estrés bajan el deseo más que cualquier problema de pareja. Y casi nadie lo revisa primero.
+
+Antes de concluir que la pareja está en crisis conviene mirar cuántas horas durmió cada uno y cuánto estrés trajo de afuera. No siempre es eso, pero es lo más frecuente, lo más fácil de comprobar y lo que menos se mira, porque la explicación emocional resulta más interesante.
+
+*Principio:* El estrés y la privación de sueño reducen el deseo por vías fisiológicas, independientemente de la calidad del vínculo.  
+*Fuente:* Hamilton & Meston (2013), estrés y deseo; Kalmbach et al. (2015), sueño y función sexual.
+
+
+> Que uno quiera más seguido que el otro es lo normal, no la excepción. La diferencia no es el problema.
+
+Casi todas las parejas tienen distinto nivel de deseo, y eso por sí solo no predice infelicidad. Lo que sí predice es que el tema se vuelva un reclamo o un reproche. Las parejas a las que les va bien con esto no coinciden más: lo conversan sin que nadie quede acusado.
+
+*Principio:* La discrepancia de deseo entre miembros de una pareja es muy frecuente; lo que predice el malestar es cómo se maneja, no su existencia.  
+*Fuente:* Mark (2015), revisión sobre discrepancia de deseo; Day, Muise, Joel & Impett (2015).
+
+
+> Hacerlo por el otro, sin ganas pero sin resentimiento, suele salir bien. Hacerlo para evitar un conflicto, no.
+
+La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para acercarse, aunque las ganas vinieran después, se asocia a mejor clima en la pareja. Hacerlo para que no haya problema se asocia a lo contrario, y el efecto se acumula.
+
+*Principio:* Acceder por motivos de aproximación (cuidar al otro, acercarse) se asocia a mejor bienestar; por motivos de evitación (no pelear, culpa), a peor.  
+*Fuente:* Impett, Peplau & Gable (2005); Muise, Impett & Desmarais (2013), motivos sexuales.
+
+
 ## Fuentes citadas
 
 - Ainsworth et al. (1978); Hazan & Shaver (1987); Mikulincer & Shaver (2016).
 - Alberti & Emmons (2017), asertividad; Lerner (1985), The Dance of Anger.
+- Alberti & Emmons (2017), asertividad; Tangney & Dearing (2002).
 - Alberti & Emmons (2017); Gottman & Silver (1999), quejas vs. críticas.
 - Algoe, Gable & Maisel (2010), Personal Relationships; Gordon et al. (2012), JPSP.
+- Almaatouq et al. (2016), PLoS ONE: reciprocidad en las amistades declaradas.
 - Aron, Norman, Aron, McKenna & Heyman (2000), JPSP; Aron & Aron (1986), modelo de autoexpansión.
 - Averill (1982); Gross (1998), modelo de regulación emocional.
 - Barrett (2017); Ekman (1992), funciones de las emociones básicas.
+- Basson (2000), modelo circular de la respuesta sexual femenina; Both et al. (2007).
+- Baumeister, Stillwell & Heatherton (1994), Psychological Bulletin: las funciones interpersonales de la culpa.
 - Beck (1976), pensamientos automáticos; Hayes et al. (2012).
 - Beck (1976); Burns (1980), distorsiones cognitivas.
 - Beck (1976); Rozin & Royzman (2001), sesgo de negatividad.
+- Birnbaum et al. (2016), JPSP: la importancia de la responsividad para el deseo sexual.
 - Birnbaum et al. (2016), JPSP: responsividad y deseo; Mark & Lasslo (2018), revisión.
 - Bonanno & Keltner (1997), J. Abnormal Psychology; Keltner & Bonanno (1997), JPSP.
 - Borkovec (1994); Watkins (2008), pensamiento repetitivo constructivo y no constructivo.
 - Borkovec et al. (1983); Wells (1995), modelo metacognitivo.
 - Borkovec et al. (1998); Beck & Clark (1997).
+- Boszormenyi-Nagy & Spark (1973); Hooper (2007), revisión sobre parentificación.
 - Bowen (1978), diferenciación del yo; Lerner (1989), The Dance of Intimacy.
+- Bowen (1978), reacción del sistema al cambio; Cloud & Townsend (1992).
 - Bowen (1978); Deci & Ryan (2000), autonomía en los vínculos.
+- Bowen (1978); Hess & Jacob (2011), distancia y cercanía en vínculos familiares.
 - Bowlby (1969); Feeney (2007), JPSP 92(2): la paradoja de la dependencia.
 - Burns (1980); Beck et al. (1979), terapia cognitiva.
 - Cacioppo & Patrick (2008); Hawkley & Cacioppo (2010).
 - Carrère & Gottman (1999), Family Process: los tres primeros minutos predijeron el desenlace seis años después.
+- Chopik (2017), Personal Relationships; Holt-Lunstad et al. (2010), metaanálisis sobre vínculos y mortalidad.
+- Crocker & Wolfe (2001), Psychological Review, contingencias de la autoestima; Sonnentag & Fritz (2007).
 - Crocker & Wolfe (2001), Psychological Review; Rogers (1959), consideración positiva incondicional.
 - Dailey, Pfiester, Jin, Beck & Clark (2009), relaciones intermitentes; Vennum et al. (2014).
+- Damian & Roberts (2015), PNAS, con 377.000 estudiantes; Rohrer et al. (2015).
 - Doka (1989, 2002), disenfranchised grief.
 - Doka (2002); Harris (2010), reglas sociales del duelo.
 - Drigotas, Rusbult, Wieselquist & Whitton (1999), JPSP: el fenómeno de Miguel Ángel.
+- Dugas & Robichaud (2007), intolerancia a la incertidumbre; Rempel et al. (1985).
 - Dugas & Robichaud (2007); Carleton (2016).
 - Eastwick & Finkel (2008), JPSP; Eastwick, Luchies, Finkel & Hunt (2014), revisión.
 - Eastwick, Finkel, Krishnamurti & Loewenstein (2008), JPSP: el error al predecir el dolor de una ruptura.
 - Ellis (1962), modelo ABC; Beck (1976). Idea con linaje estoico (Epicteto).
+- Enright & Fitzgibbons (2015); McNulty (2011), PSPB, los límites del perdón.
 - Festinger (1954); Vogel et al. (2014), Psychology of Popular Media Culture 3(4).
 - Festinger, Schachter & Back (1950), proximidad; Reis, Maniaci, Caprariello, Eastwick & Finkel (2011), JPSP.
+- Fingerman et al. (2008), ambivalencia intergeneracional; Lüscher & Pillemer (1998).
 - Finkel, Hui, Carswell & Larson (2014), Psychological Inquiry: el modelo de la asfixia del matrimonio.
 - Finkel, Slotter, Luchies, Walton & Gross (2013), Psychological Science: 21 minutos al año.
+- Flynn & Lake (2008), JPSP: subestimar la ayuda ajena; Boothby & Bohns (2021).
 - Fogg (2019), Tiny Habits; Lally et al. (2010), formación de hábitos.
 - Frijda (1986), tendencias de acción; terapia de aceptación y compromiso (Hayes).
 - Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien.
@@ -1047,34 +1412,49 @@ Se empieza a salir, después se queda a dormir siempre, después se junta la rop
 - Gottman (1999), repair attempts; Gottman & Levenson (2000).
 - Gottman (1999), The Seven Principles: el 69% de los conflictos son problemas perpetuos.
 - Gross & Levenson (1997); Wegner (1994), procesos irónicos.
+- Hall & Fincham (2005), modelo del autoperdón; Neff (2003), autocompasión.
+- Hall (2019), Journal of Social and Personal Relationships: cuántas horas lleva hacer un amigo.
+- Hall (2019); Oswald, Clark & Kelly (2004), mantenimiento de la amistad.
+- Hamilton & Meston (2013), estrés y deseo; Kalmbach et al. (2015), sueño y función sexual.
 - Hayes et al. (1996), evitación experiencial; Kashdan et al. (2006).
 - Hayes et al. (2012), ACT; activación conductual (Jacobson et al., 1996).
 - Hayes et al. (2012), ACT; Teasdale et al. (2002), descentramiento.
 - Hayes et al. (2012), ACT; Wilson & Murrell (2004).
 - Hayes et al. (2012), «en tu dolor están tus valores»; Wilson & DuFrene (2009).
 - Hewitt & Flett (1991); Curran & Hill (2019), Psychological Bulletin: 41.641 estudiantes entre 1989 y 2016.
+- Impett, Peplau & Gable (2005); Muise, Impett & Desmarais (2013), motivos sexuales.
 - Jacobson et al. (1996); Martell et al. (2001), activación conductual.
 - Joel et al. (2020), PNAS: 43 estudios longitudinales y más de 11.000 parejas.
+- Joiner et al. (1999), búsqueda excesiva de tranquilización; Coyne (1976).
 - Kabat-Zinn (1990); Bishop et al. (2004), definición operacional de mindfulness.
 - Kahneman (1973); Simon (1971), economía de la atención.
 - Karasek (1979), modelo demanda-control; Sapolsky (2004).
 - Killingsworth & Gilbert (2010), Science; Kabat-Zinn (1990).
 - Klass, Silverman & Nickman (1996), continuing bonds; Field et al. (2005).
+- Klusmann (2002); Murray & Milhausen (2012), deseo y duración de la relación.
 - Knee (1998), JPSP: teorías implícitas de las relaciones; Franiuk, Cohen & Pomerantz (2002).
+- Knobloch & Solomon (2002), incertidumbre relacional; Carleton (2016), intolerancia a la incertidumbre.
 - LaFreniere & Newman (2020), Behavior Therapy 51(3): el 91,4% de las preocupaciones no se cumplió.
 - Lally et al. (2010): saltarse una ocasión no afectó la formación del hábito; Marlatt & Gordon (1985).
 - Le & Agnew (2003), Personal Relationships: metaanálisis del modelo de inversión de Rusbult.
+- Lewicki, Polin & Lount (2016), Negotiation and Conflict Management Research: los componentes de una disculpa eficaz.
 - Lieberman et al. (2007), Psychological Science; Torre & Lieberman (2018).
 - Main et al. (1985), apego ganado; Roisman et al. (2002); Fraley (2019).
+- Mallory et al. (2019), Journal of Sex Research, metaanálisis sobre comunicación sexual.
+- Mark (2015), revisión sobre discrepancia de deseo; Day, Muise, Joel & Impett (2015).
 - Marshall (2012), Cyberpsychology: seguir al ex en Facebook y la recuperación posterior.
 - Mauss et al. (2011), Emotion 11(4); Frankl (1946), la felicidad como consecuencia.
 - McAdams (2001), identidad narrativa; Bonanno (2004), resiliencia.
 - McNulty (2011), PSPB: el lado oscuro del perdón; McNulty (2008).
 - Mikulincer & Shaver (2016), estrategias de hiperactivación; Levine & Heller (2010).
+- Mikulincer & Shaver (2016); Feeney (2007), JPSP: aceptar la dependencia promueve la autonomía.
 - Mikulincer & Shaver (2016); Johnson (2008), terapia focalizada en las emociones.
 - Mikulincer & Shaver (2016); Levine & Heller (2010), conducta de protesta.
+- Minuchin (1974), estructura familiar; Bowen (1978), diferenciación del yo.
 - Mogilner, Chance & Norton (2012), Psychological Science; Dunn et al. (2008), gasto prosocial.
 - Mowrer (1947), teoría de los dos factores; Craske et al. (2014), aprendizaje inhibitorio.
+- Muise, Christofides & Desmarais (2009), Cyberpsychology: el círculo de vigilancia y celos.
+- Muise, Schimmack & Impett (2016), Social Psychological and Personality Science.
 - Neff & Germer (2013), programa Mindful Self-Compassion.
 - Neff & Karney (2004, 2009), JPSP: desbordamiento del estrés a la pareja.
 - Neff (2003, 2011); Breines & Chen (2012), motivación de mejora.
@@ -1089,7 +1469,9 @@ Se empieza a salir, después se queda a dormir siempre, después se junta la rop
 - Rando (1993), sudden temporary upsurges of grief.
 - Reis & Shaver (1988), modelo de intimidad; Birnbaum & Reis (2012, 2016), responsividad y atracción.
 - Reis & Shaver (1988), modelo de responsividad; Laurenceau et al. (1998).
+- Rempel, Holmes & Zanna (1985), JPSP: los componentes de la confianza en pareja.
 - Rogers (1951), escucha reflexiva; Markman, Stanley & Blumberg (1994), programa PREP.
+- Rose (1984); Doka (2002), duelo desautorizado.
 - Rubinstein et al. (2001); Mark et al. (2008), interrupciones.
 - Ryan & Deci (2000), teoría de la autodeterminación; Erikson (1950), generatividad.
 - Sapolsky (2004), Why Zebras Don't Get Ulcers; LeDoux (1996).
@@ -1099,14 +1481,21 @@ Se empieza a salir, después se queda a dormir siempre, después se junta la rop
 - Slotter, Gardner & Finkel (2010), PSPB: ¿quién soy yo sin ti?
 - Sonnentag & Fritz (2007), recuperación del trabajo; Meijman & Mulder (1998).
 - Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
+- Stark (2007), control coercitivo; Mikulincer & Shaver (2016), estrategias de hiperactivación.
 - Steger (2012); Martela & Steger (2016); Ryan & Deci (2000), necesidad de relación.
 - Stroebe & Schut (1999), modelo de proceso dual; Bonanno (2009).
+- Tangney & Dearing (2002), Shame and Guilt; Tangney, Stuewig & Mashek (2007), Annual Review.
+- Tangney et al. (2007); Gilbert (2009), terapia centrada en la compasión.
+- Tilghman-Osborne, Cole & Felton (2010), revisión sobre culpa adaptativa y desadaptativa.
 - Van Boven & Gilovich (2003); Dunn, Aknin & Norton (2008).
+- Van IJzendoorn (1995), transmisión intergeneracional del apego; Main et al. (1985), seguridad ganada.
 - Vennum, Lindstrom, Monk & Adams (2014); Halpern-Meekin et al. (2013), relationship churning.
 - Watkins (2008), procesamiento abstracto vs. concreto; Kross & Ayduk (2017).
+- White & Mullen (1989); Buss (2000), teoría de los celos como respuesta a amenaza.
 - Wood & Neal (2007); Gollwitzer (1999), intenciones de implementación.
 - Wood et al. (2005); Thaler & Sunstein (2008), arquitectura de decisiones.
 - Worden (2009), tareas del duelo; Tonkin (1996), Bereavement Care: crecer alrededor del duelo.
 - Worden (2009); Neimeyer (2001), reconstrucción de significado.
+- Wrzus et al. (2013), Psychological Bulletin, metaanálisis sobre redes sociales a lo largo de la vida.
 - Yoo et al. (2007), Current Biology: +60% de reactividad de la amígdala; Ben Simon et al. (2020).
 - Zaccaro et al. (2018), revisión; Balban et al. (2023), Cell Reports Medicine: el suspiro fisiológico.

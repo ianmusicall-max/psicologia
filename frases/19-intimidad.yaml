@@ -1,0 +1,101 @@
+# Capítulo 19 · El deseo con el tiempo
+tema: intimidad
+capitulo: 19
+eje: nucleo
+sensible: true
+titulo: El deseo con el tiempo
+hashtags: [intimidad, deseo, pareja]
+tesis: >-
+  Casi todo lo que se cree sobre el deseo viene de las películas: que aparece
+  solo, que si no aparece algo se terminó, que su frecuencia mide el amor. Lo
+  medido dice otra cosa. El deseo suele responder en vez de aparecer, baja con
+  los años en casi todas las parejas, y lo que más lo sostiene es hablar.
+
+frases:
+  - id: int-01
+    texto: "El deseo no siempre aparece primero. En muchas personas aparece después, como respuesta, y eso también es normal."
+    destacar: [como respuesta]
+    principio: "El deseo responsivo (que surge a partir del encuentro y no antes) es un patrón frecuente y saludable, no un trastorno."
+    fuente: "Basson (2000), modelo circular de la respuesta sexual femenina; Both et al. (2007)."
+    reflexion: >-
+      El modelo clásico decía que primero viene el deseo y después todo lo
+      demás. Basson mostró que en muchas personas el orden es el inverso: el
+      deseo aparece cuando ya empezó el encuentro. Esperar las ganas antes de
+      acercarse deja esperando sin motivo a quien funciona del otro modo.
+
+  - id: int-02
+    texto: "Que el deseo baje con los años no significa que algo se rompió. Le pasa a casi todas las parejas."
+    destacar: [casi todas]
+    principio: "La frecuencia y la intensidad del deseo descienden con la duración de la relación, con mayor pendiente en mujeres en los estudios disponibles."
+    fuente: "Klusmann (2002); Murray & Milhausen (2012), deseo y duración de la relación."
+    reflexion: >-
+      Es de los datos más consistentes y de los peor difundidos. Como casi
+      nadie lo dice, cada pareja cree que le pasa solo a ella y lo lee como
+      una señal de que el amor se terminó. Saber que es lo esperable no lo
+      arregla, pero saca de encima una interpretación que hace mucho daño.
+
+  - id: int-03
+    texto: "Hablar de esto predice mejor la satisfacción que cualquier técnica. Y es lo que menos se hace."
+    destacar: [hablar]
+    principio: "La comunicación sexual explícita se asocia de forma robusta con satisfacción sexual y de pareja, en ambos miembros."
+    fuente: "Mallory et al. (2019), Journal of Sex Research, metaanálisis sobre comunicación sexual."
+    reflexion: >-
+      El metaanálisis junta decenas de estudios y el resultado es claro: las
+      parejas que hablan de lo que les gusta están más satisfechas, y la
+      relación se sostiene en el tiempo. Se evita porque da vergüenza, y la
+      vergüenza es exactamente lo que vuelve imposible pedir algo distinto.
+
+  - id: int-04
+    texto: "Más frecuencia no es más felicidad. Pasada una vez por semana, el número deja de sumar."
+    destacar: [deja de sumar]
+    principio: "La asociación entre frecuencia sexual y bienestar se aplana aproximadamente en una vez por semana; más allá no aporta."
+    fuente: "Muise, Schimmack & Impett (2016), Social Psychological and Personality Science."
+    reflexion: >-
+      Lo midieron en más de treinta mil personas. Hasta una vez por semana, la
+      frecuencia acompaña al bienestar; de ahí en adelante la curva se aplana.
+      Sirve sobre todo para dejar de compararse con un número que alguien dijo
+      en algún lado: no hay una cifra a la que haya que llegar.
+
+  - id: int-05
+    texto: "Lo que más enciende en una pareja de años no es la novedad. Es sentir que el otro te está prestando atención."
+    destacar: [atención]
+    principio: "La responsividad percibida predice deseo en relaciones de larga duración, por encima de factores de novedad o atractivo."
+    fuente: "Birnbaum et al. (2016), JPSP: la importancia de la responsividad para el deseo sexual."
+    reflexion: >-
+      En los estudios de Birnbaum, alguien que escucha, que recuerda lo que
+      dijiste y que responde a lo que de verdad contaste resulta más deseable
+      que alguien con mejores credenciales. Es una buena noticia práctica:
+      casi todo lo que enciende es algo que se hace, no algo que se es.
+
+  - id: int-06
+    texto: "El cansancio y el estrés bajan el deseo más que cualquier problema de pareja. Y casi nadie lo revisa primero."
+    destacar: [el cansancio]
+    principio: "El estrés y la privación de sueño reducen el deseo por vías fisiológicas, independientemente de la calidad del vínculo."
+    fuente: "Hamilton & Meston (2013), estrés y deseo; Kalmbach et al. (2015), sueño y función sexual."
+    reflexion: >-
+      Antes de concluir que la pareja está en crisis conviene mirar cuántas
+      horas durmió cada uno y cuánto estrés trajo de afuera. No siempre es
+      eso, pero es lo más frecuente, lo más fácil de comprobar y lo que menos
+      se mira, porque la explicación emocional resulta más interesante.
+
+  - id: int-07
+    texto: "Que uno quiera más seguido que el otro es lo normal, no la excepción. La diferencia no es el problema."
+    destacar: [lo normal]
+    principio: "La discrepancia de deseo entre miembros de una pareja es muy frecuente; lo que predice el malestar es cómo se maneja, no su existencia."
+    fuente: "Mark (2015), revisión sobre discrepancia de deseo; Day, Muise, Joel & Impett (2015)."
+    reflexion: >-
+      Casi todas las parejas tienen distinto nivel de deseo, y eso por sí solo
+      no predice infelicidad. Lo que sí predice es que el tema se vuelva un
+      reclamo o un reproche. Las parejas a las que les va bien con esto no
+      coinciden más: lo conversan sin que nadie quede acusado.
+
+  - id: int-08
+    texto: "Hacerlo por el otro, sin ganas pero sin resentimiento, suele salir bien. Hacerlo para evitar un conflicto, no."
+    destacar: [para evitar]
+    principio: "Acceder por motivos de aproximación (cuidar al otro, acercarse) se asocia a mejor bienestar; por motivos de evitación (no pelear, culpa), a peor."
+    fuente: "Impett, Peplau & Gable (2005); Muise, Impett & Desmarais (2013), motivos sexuales."
+    reflexion: >-
+      La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo
+      para acercarse, aunque las ganas vinieran después, se asocia a mejor
+      clima en la pareja. Hacerlo para que no haya problema se asocia a lo
+      contrario, y el efecto se acumula.

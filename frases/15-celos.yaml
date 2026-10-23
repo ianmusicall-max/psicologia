@@ -1,0 +1,100 @@
+# Capítulo 15 · Lo que la desconfianza hace
+tema: celos
+capitulo: 15
+eje: nucleo
+titulo: Lo que la desconfianza hace
+hashtags: [celos, confianza, pareja]
+tesis: >-
+  Los celos no miden cuánto quieres a alguien: miden cuánto temes perderlo y
+  cuánta incertidumbre toleras. Vigilar no los calma, los alimenta, porque
+  siempre encuentra algo que interpretar. La confianza no se promete: se
+  construye con respuestas repetidas a lo largo del tiempo.
+
+frases:
+  - id: cel-01
+    texto: "Los celos no miden cuánto amas. Miden cuánto temes perder, que es otra cosa."
+    destacar: [temes perder]
+    principio: "Los celos responden a una amenaza percibida al vínculo, no a la intensidad del afecto."
+    fuente: "White & Mullen (1989); Buss (2000), teoría de los celos como respuesta a amenaza."
+    reflexion: >-
+      Hay una idea muy instalada de que quien cela, quiere más. No es lo que
+      se mide. Lo que predice los celos es la sensación de que el vínculo
+      está en riesgo y la dificultad para tolerar no saber. Dos personas que
+      quieren igual pueden celar muy distinto.
+
+  - id: cel-02
+    texto: "Revisarle el teléfono no te va a tranquilizar. Vas a encontrar algo, y si no, vas a buscar mejor."
+    destacar: [buscar mejor]
+    principio: "La vigilancia de la pareja aumenta los celos en vez de reducirlos: genera más información ambigua que interpretar."
+    fuente: "Muise, Christofides & Desmarais (2009), Cyberpsychology: el círculo de vigilancia y celos."
+    reflexion: >-
+      El estudio encontró un círculo: cuanto más se vigila, más se encuentra
+      material ambiguo, y cuanto más material ambiguo, más ganas de vigilar.
+      La vigilancia no produce certeza porque no existe un punto donde se
+      haya revisado todo. Siempre queda un lugar más donde mirar.
+
+  - id: cel-03
+    texto: "La confianza no se promete. Se construye con respuestas repetidas, y por eso lleva tiempo y se rompe rápido."
+    destacar: [respuestas repetidas]
+    principio: "La confianza tiene tres componentes que se acumulan en el tiempo: previsibilidad, fiabilidad y fe en la buena intención del otro."
+    fuente: "Rempel, Holmes & Zanna (1985), JPSP: los componentes de la confianza en pareja."
+    reflexion: >-
+      Nadie confía porque le juraron algo. Se confía porque alguien respondió
+      igual muchas veces, en cosas chicas, cuando podría no haberlo hecho.
+      Eso explica las dos asimetrías: por qué la confianza tarda años en
+      hacerse y por qué un solo hecho puede deshacerla.
+
+  - id: cel-04
+    texto: "Pedir que te tranquilicen una vez es sano. Pedirlo cada día enseña que sin esa frase no se puede estar en calma."
+    destacar: [cada día]
+    principio: "La búsqueda excesiva de tranquilización alivia a corto plazo y mantiene la inseguridad a largo plazo, y desgasta al que la da."
+    fuente: "Joiner et al. (1999), búsqueda excesiva de tranquilización; Coyne (1976)."
+    reflexion: >-
+      El alivio que da escuchar «te quiero, no pasa nada» dura poco, y por eso
+      se vuelve a pedir. El problema es lo que entrena: que la calma depende
+      de que el otro la diga. Y del otro lado desgasta, porque nunca alcanza
+      con haberlo dicho ayer.
+
+  - id: cel-05
+    texto: "Lo que alimenta los celos no es lo que viste. Es lo que no sabes y no toleras no saber."
+    destacar: [no saber]
+    principio: "La incertidumbre relacional predice celos, vigilancia y conflicto, independientemente de la conducta real del otro."
+    fuente: "Knobloch & Solomon (2002), incertidumbre relacional; Carleton (2016), intolerancia a la incertidumbre."
+    reflexion: >-
+      Por eso una explicación rara vez cierra el tema: lo que incomoda no es
+      el dato que falta sino la sensación de no tener el control. La misma
+      situación, con la misma información, molesta mucho o nada según cuánta
+      incertidumbre pueda sostener quien mira.
+
+  - id: cel-06
+    texto: "Controlar a alguien no te hace sentir seguro. Te hace necesitar más control para sentir lo mismo."
+    destacar: [más control]
+    principio: "Las conductas de control escalan: la seguridad que producen es transitoria y requiere dosis crecientes."
+    fuente: "Stark (2007), control coercitivo; Mikulincer & Shaver (2016), estrategias de hiperactivación."
+    reflexion: >-
+      Empieza con una contraseña compartida y sigue con la ubicación, los
+      horarios, con quién. Cada paso calma un rato y después deja de alcanzar.
+      No es que la otra persona haga algo nuevo: es que la seguridad que viene
+      de controlar se gasta siempre, porque no viene de confiar.
+
+  - id: cel-07
+    texto: "Si te pone celoso que tenga una vida, el problema no es su vida."
+    destacar: [su vida]
+    principio: "Los celos ante la autonomía normal del otro señalan inseguridad del propio apego, no amenaza real."
+    fuente: "Mikulincer & Shaver (2016); Feeney (2007), JPSP: aceptar la dependencia promueve la autonomía."
+    reflexion: >-
+      Hay celos que aparecen ante algo concreto y hay celos que aparecen
+      porque el otro se fue a cenar con sus amigos. Los segundos no hablan de
+      la relación, hablan de quien los siente. Reconocerlo no los hace
+      desaparecer, pero cambia a quién hay que preguntarle qué pasa.
+
+  - id: cel-08
+    texto: "Nadie puede darte una certeza que no existe. Lo máximo que puede darte alguien es su manera de tratarte."
+    destacar: [su manera de tratarte]
+    principio: "La evidencia disponible sobre un vínculo es la conducta sostenida, no la garantía; exigir certeza mantiene la ansiedad."
+    fuente: "Dugas & Robichaud (2007), intolerancia a la incertidumbre; Rempel et al. (1985)."
+    reflexion: >-
+      La pregunta «cómo sé que no me va a fallar» no tiene respuesta, y por
+      eso quien la hace nunca termina satisfecho. La que sí tiene respuesta es
+      otra: cómo te trata cuando no le conviene, cómo responde cuando lo
+      necesitas. Eso se puede mirar, y es lo único que hay.

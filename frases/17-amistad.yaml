@@ -1,0 +1,101 @@
+# Capítulo 17 · Los que sí elegiste
+tema: amistad
+capitulo: 17
+eje: nucleo
+titulo: Los que sí elegiste
+hashtags: [amistad, amigos, vinculos]
+tesis: >-
+  La amistad es el único vínculo enteramente elegido, y por eso es el primero
+  que se cae cuando falta tiempo: nada obliga a sostenerlo. Se construye con
+  horas y se mantiene con frecuencia, no con intensidad. Y a diferencia de una
+  pareja, casi nunca se termina diciéndolo.
+
+frases:
+  - id: ami-01
+    texto: "Una amistad no se hace con afinidad. Se hace con horas, y son más de las que creés."
+    destacar: [horas]
+    principio: "La cercanía en amistad escala con el tiempo compartido: se estiman unas 50 horas para un conocido cercano y unas 200 para un amigo íntimo."
+    fuente: "Hall (2019), Journal of Social and Personal Relationships: cuántas horas lleva hacer un amigo."
+    reflexion: >-
+      Mucha gente cree que con la persona correcta la amistad aparece sola. Lo
+      que muestran los datos es menos romántico y más útil: hace falta estar,
+      muchas veces, haciendo cualquier cosa. Por eso cuesta tanto hacer amigos
+      de adulto, cuando ya nadie comparte ocho horas por día sin proponérselo.
+
+  - id: ami-02
+    texto: "Después de los veinticinco, el círculo se achica solo. No es que la gente cambie: es que deja de cruzarse."
+    destacar: [se achica solo]
+    principio: "El tamaño de la red social crece hasta el inicio de la adultez y decrece de forma sostenida después, por cambios de contexto más que de personalidad."
+    fuente: "Wrzus et al. (2013), Psychological Bulletin, metaanálisis sobre redes sociales a lo largo de la vida."
+    reflexion: >-
+      Hasta los veinticinco, el contacto repetido viene de regalo: escuela,
+      facultad, el primer trabajo. Después hay que fabricarlo. El círculo no
+      se achica porque uno se haya vuelto difícil, se achica porque desapareció
+      lo que lo sostenía sin esfuerzo.
+
+  - id: ami-03
+    texto: "La mitad de las personas que vos considerás amigas no te consideran a vos. Y es mutuo, con otros."
+    destacar: [no te consideran]
+    principio: "En redes medidas, cerca de la mitad de las amistades declaradas no son recíprocas, y las personas sobrestiman la reciprocidad."
+    fuente: "Almaatouq et al. (2016), PLoS ONE: reciprocidad en las amistades declaradas."
+    reflexion: >-
+      Suena peor de lo que es. No significa que no te quieran: significa que
+      cada uno ordena su lista distinto, y que casi nadie lo dice en voz alta.
+      Saberlo ayuda a dejar de medir la amistad por el lugar que uno ocupa y
+      a mirar lo que de verdad pasa cuando se ven.
+
+  - id: ami-04
+    texto: "Las amistades casi nunca se terminan. Se dejan de contestar."
+    destacar: [se dejan de contestar]
+    principio: "La disolución de amistades suele ocurrir por desvanecimiento gradual y no por ruptura explícita, lo que impide cerrar el vínculo."
+    fuente: "Rose (1984); Doka (2002), duelo desautorizado."
+    reflexion: >-
+      Una pareja que se termina tiene una conversación, una fecha y a veces un
+      motivo. Una amistad que se termina tiene mensajes cada vez más
+      espaciados hasta que no hay más. Como no hubo final, tampoco hay duelo
+      permitido, y por eso duelen de un modo que nadie reconoce.
+
+  - id: ami-05
+    texto: "No hace falta una conversación profunda. Hace falta volver a aparecer."
+    destacar: [volver a aparecer]
+    principio: "La frecuencia del contacto predice el mantenimiento de la amistad mejor que la profundidad de cada interacción."
+    fuente: "Hall (2019); Oswald, Clark & Kelly (2004), mantenimiento de la amistad."
+    reflexion: >-
+      Hay gente que no escribe porque siente que debería escribir algo
+      importante, y entonces no escribe nunca. Lo que sostiene una amistad son
+      los mensajes sin contenido: una foto, una pavada, un me acordé de vos.
+      La profundidad viene después, y solo si hubo antes.
+
+  - id: ami-06
+    texto: "Tener amigos te hace bien al cuerpo, no solo al ánimo. Y después de cierta edad, pesa más que la familia."
+    destacar: [al cuerpo]
+    principio: "La calidad de las amistades predice salud y bienestar en la adultez tardía, con efectos comparables o superiores a los vínculos familiares."
+    fuente: "Chopik (2017), Personal Relationships; Holt-Lunstad et al. (2010), metaanálisis sobre vínculos y mortalidad."
+    reflexion: >-
+      En el metaanálisis más citado sobre el tema, tener vínculos sólidos se
+      asoció a un efecto sobre la supervivencia comparable al de dejar de
+      fumar. Y en la vejez, los amigos predicen bienestar mejor que los
+      parientes, probablemente porque a los amigos se los sigue eligiendo
+      todos los años.
+
+  - id: ami-07
+    texto: "Cómo reaccionás cuando a tu amigo le va bien dice más del vínculo que cómo reaccionás cuando le va mal."
+    destacar: [le va bien]
+    principio: "La respuesta activa y constructiva ante las buenas noticias predice la calidad del vínculo mejor que el apoyo en la adversidad."
+    fuente: "Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien."
+    reflexion: >-
+      Estar en las malas es lo que todos sabemos que hay que hacer. Lo que
+      casi nadie mira es el momento en que alguien llega con una buena noticia
+      y recibe un «qué bien» tibio, o peor, un comentario que la achica. Eso
+      se mide y pesa, en la pareja y en la amistad.
+
+  - id: ami-08
+    texto: "Pedir ayuda no gasta una amistad. Casi siempre la acerca, porque le da al otro algo que hacer."
+    destacar: [la acerca]
+    principio: "Las personas subestiman la disposición de otros a ayudar y el efecto positivo que el pedido tiene sobre el vínculo."
+    fuente: "Flynn & Lake (2008), JPSP: subestimar la ayuda ajena; Boothby & Bohns (2021)."
+    reflexion: >-
+      En los experimentos, la gente calcula que le van a decir que no mucho
+      más de lo que realmente le dicen. Y del otro lado pasa algo que el que
+      pide no ve: ayudar hace sentir cercano y útil. El que no pide para no
+      molestar se está perdiendo las dos mitades.

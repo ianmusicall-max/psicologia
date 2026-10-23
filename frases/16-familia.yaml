@@ -1,0 +1,101 @@
+# Capítulo 16 · Los que estaban antes
+tema: familia
+capitulo: 16
+eje: nucleo
+titulo: Los que estaban antes
+hashtags: [familia, limites, padres]
+tesis: >-
+  Con la familia no se eligió nada: ni el lugar que te tocó ni el papel que
+  aprendiste a cumplir. De adulto sí se elige, y eso incomoda a todos porque
+  rompe un acuerdo que nadie firmó. Querer a alguien y poner un límite no son
+  cosas opuestas; de hecho suelen ir juntas.
+
+frases:
+  - id: fam-01
+    texto: "En tu familia tuviste un papel que no elegiste. De adulto puedes dejar de interpretarlo."
+    destacar: [papel]
+    principio: "Las familias asignan roles estables (el responsable, el que hace reír, el problemático) que persisten en la adultez salvo que se revisen."
+    fuente: "Minuchin (1974), estructura familiar; Bowen (1978), diferenciación del yo."
+    reflexion: >-
+      El que arreglaba todo, el que no daba problemas, el que siempre
+      exageraba. Esos lugares se reparten temprano y después cada reunión los
+      confirma, porque todos esperan lo mismo de cada uno. Salirse del papel
+      se siente como traicionar algo, y por eso cuesta tanto.
+
+  - id: fam-02
+    texto: "Puedes querer mucho a alguien y aun así no poder verlo seguido. No son cosas opuestas."
+    destacar: [no son cosas opuestas]
+    principio: "La diferenciación permite sostener el vínculo y la distancia a la vez; fusionar ambas cosas obliga a elegir entre cortar o anularse."
+    fuente: "Bowen (1978); Hess & Jacob (2011), distancia y cercanía en vínculos familiares."
+    reflexion: >-
+      La idea de que querer se demuestra con presencia deja solo dos salidas:
+      aguantar lo que haga daño o cortar del todo. Hay una tercera, y es la
+      que casi nadie nombra: verse menos, verse distinto, verse con un límite
+      puesto antes. Eso también es querer.
+
+  - id: fam-03
+    texto: "Si de chico tuviste que cuidar a los adultos, de grande vas a confundir el amor con la responsabilidad."
+    destacar: [responsabilidad]
+    principio: "La parentificación (asumir funciones de cuidado adultas en la infancia) se asocia a sobreimplicación y dificultad para recibir cuidado en la adultez."
+    fuente: "Boszormenyi-Nagy & Spark (1973); Hooper (2007), revisión sobre parentificación."
+    reflexion: >-
+      El chico que calmaba a su madre, que mediaba entre sus padres, que se
+      ocupaba de su hermano, aprendió que ser querido es ser útil. De adulto
+      se vuelve el que resuelve en todos sus vínculos, y le cuesta muchísimo
+      pedir. No porque sea orgulloso: porque nunca le tocó.
+
+  - id: fam-04
+    texto: "Que un límite les moleste no significa que esté mal puesto. Significa que antes no había ninguno."
+    destacar: [no había ninguno]
+    principio: "La reacción negativa ante un límite nuevo es esperable y no informa sobre su legitimidad: señala un cambio en un acuerdo implícito."
+    fuente: "Bowen (1978), reacción del sistema al cambio; Cloud & Townsend (1992)."
+    reflexion: >-
+      Cuando alguien cambia una regla, el resto empuja para volver a lo de
+      antes. En las familias eso pasa siempre, y se siente como una prueba de
+      que uno se equivocó. No lo es. Un límite que no incomoda a nadie casi
+      nunca es un límite: es algo que ya se estaba haciendo.
+
+  - id: fam-05
+    texto: "No tienes que perdonar a nadie para poder seguir. El perdón es una opción, no un requisito."
+    destacar: [una opción]
+    principio: "El perdón puede favorecer el bienestar pero no es condición necesaria para la recuperación; imponerlo genera culpa adicional."
+    fuente: "Enright & Fitzgibbons (2015); McNulty (2011), PSPB, los límites del perdón."
+    reflexion: >-
+      Se escucha mucho que perdonar es para uno mismo. A veces sí. Pero
+      convertirlo en obligación agrega una carga más al que ya está cargando:
+      ahora, además de lo que pasó, está fallando por no haberlo superado. Se
+      puede dejar de esperar algo de alguien sin firmar ningún perdón.
+
+  - id: fam-06
+    texto: "Lo que aprendiste en tu casa no está condenado a repetirse. Pero si no lo miras, se repite solo."
+    destacar: [se repite solo]
+    principio: "Los patrones de vínculo se transmiten entre generaciones, y esa transmisión se interrumpe cuando se vuelve consciente."
+    fuente: "Van IJzendoorn (1995), transmisión intergeneracional del apego; Main et al. (1985), seguridad ganada."
+    reflexion: >-
+      La transmisión existe y está medida, pero no es un destino: lo que más
+      predice que alguien no repita lo que vivió es haber podido pensarlo y
+      contarlo con coherencia. No hace falta haber tenido una buena infancia.
+      Hace falta poder mirarla de frente.
+
+  - id: fam-07
+    texto: "Con tus padres podés sentir cariño y enojo al mismo tiempo. La mayoría de la gente siente las dos cosas."
+    destacar: [al mismo tiempo]
+    principio: "La ambivalencia en los vínculos entre hijos adultos y padres es la norma estadística, no la excepción ni un signo de conflicto."
+    fuente: "Fingerman et al. (2008), ambivalencia intergeneracional; Lüscher & Pillemer (1998)."
+    reflexion: >-
+      Cuando se les pregunta por separado, la mayoría de los hijos adultos
+      reporta a la vez afecto fuerte y tensión fuerte con sus padres. No es
+      una contradicción que haya que resolver eligiendo una. Es cómo son casi
+      todos estos vínculos, y pelearse con eso agrega culpa al asunto.
+
+  - id: fam-08
+    texto: "El orden en que naciste no te hizo como eres. Eso se midió en miles de personas y no apareció."
+    destacar: [no apareció]
+    principio: "El efecto del orden de nacimiento sobre la personalidad es prácticamente nulo en estudios grandes y bien controlados."
+    fuente: "Damian & Roberts (2015), PNAS, con 377.000 estudiantes; Rohrer et al. (2015)."
+    reflexion: >-
+      La idea de que el mayor es responsable y el menor rebelde es de las más
+      queridas de la psicología popular, y de las que peor resistieron. En
+      muestras enormes, el efecto es tan chico que no se nota en ninguna
+      persona concreta. Lo que sí influye es cómo te trataron, no en qué lugar
+      llegaste.

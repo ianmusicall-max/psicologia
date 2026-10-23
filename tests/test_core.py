@@ -124,13 +124,16 @@ class TestElBanco(unittest.TestCase):
     def test_los_capitulos_van_de_uno_en_uno_sin_repetir(self):
         self.assertEqual([t.capitulo for t in TEMAS], list(range(1, len(TEMAS) + 1)))
 
-    def test_el_nucleo_son_los_cinco_pilares_de_la_pagina(self):
+    def test_el_nucleo_cubre_los_pilares_de_la_pagina(self):
         # La descripción de la página promete amor propio, recuperar a la
         # pareja, la ex pareja, encontrar a alguien y comunicación. Estos son
         # los temas que contestan eso, y son los que la cuota publica más.
-        self.assertEqual(sorted(t.tema for t in TEMAS if t.eje == "nucleo"),
-                         ["apego", "autoestima", "comunicacion", "elegir",
-                          "limites", "reconexion", "ruptura"])
+        nucleo = sorted(t.tema for t in TEMAS if t.eje == "nucleo")
+        for pilar in ("autoestima", "reconexion", "ruptura", "elegir", "comunicacion"):
+            self.assertIn(pilar, nucleo)
+        # Y son mayoría: la cuota pide dos de cada tres posts del núcleo, así
+        # que si el apoyo creciera más que el núcleo, dejaría de alcanzar.
+        self.assertGreaterEqual(len(nucleo), len(TEMAS) - len(nucleo))
 
     def test_un_eje_que_no_existe_rebota(self):
         self.assertTrue(any("eje" in x for x in frases.validar_tema(tema(eje="central"))))
@@ -159,8 +162,12 @@ class TestElBanco(unittest.TestCase):
         for f in frases.todas(TEMAS):
             self.assertTrue(f.destacar, f.id)
 
-    def test_los_temas_sensibles_son_el_duelo_y_la_ruptura(self):
-        self.assertEqual(sorted(t.tema for t in TEMAS if t.sensible), ["duelo", "ruptura"])
+    SENSIBLES = ["duelo", "intimidad", "ruptura"]
+
+    def test_los_temas_sensibles_son_los_que_tocan_fondo(self):
+        # Duelo y ruptura por el dolor; intimidad porque habla de sexualidad
+        # y conviene que el caption recuerde que esto no reemplaza terapia.
+        self.assertEqual(sorted(t.tema for t in TEMAS if t.sensible), self.SENSIBLES)
 
     def test_la_revision_detecta_un_id_repetido(self):
         t = tema(frases=[una(id="pru-01"), una(id="pru-01")])
@@ -275,9 +282,10 @@ class TestElCaption(unittest.TestCase):
         self.assertEqual(hs.count("#psicología") + hs.count("#psicologia"), 1)
 
     def test_solo_los_temas_sensibles_llevan_el_pie(self):
+        sensibles = {t.tema for t in TEMAS if t.sensible}
         for t in TEMAS:
             c = frases.caption(t.frases[0], t, PAGINA)
-            self.assertEqual(PAGINA.pie_sensible in c, t.tema in ("duelo", "ruptura"), t.tema)
+            self.assertEqual(PAGINA.pie_sensible in c, t.tema in sensibles, t.tema)
 
     def test_una_frase_puede_pedir_el_pie_sola(self):
         t = tema(sensible=False)
@@ -721,9 +729,12 @@ class TestElBot(unittest.TestCase):
         self.assertEqual(len(b.acuses), 1)
 
     def test_que_queda_cuenta_por_tema(self):
+        # El total se calcula, no se escribe: si se fijara acá, cada frase
+        # nueva rompería la prueba sin que nada esté mal.
+        n = len(frases.todas(TEMAS))
         with _Bot() as b:
             bot.atender(_update(data="estado"), PAGINA)
-        self.assertIn("Quedan 113 de 113", b.todo)
+        self.assertIn("Quedan %d de %d" % (n, n), b.todo)
         self.assertIn("autoestima", b.todo)
 
     def test_un_banco_roto_frena_la_publicacion(self):
