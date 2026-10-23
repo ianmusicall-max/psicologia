@@ -1204,7 +1204,12 @@ SONORIDAD_MUSICA = "I=-16:TP=-2:LRA=7"
 # fondo de papel -que un reel salga hoy sin depender de una descarga- y además
 # porque es original: una pista con derechos le hace perder alcance a TODA la
 # cuenta, no solo a ese post.
-MUSICA = ROOT / "assets" / "musica" / "calma.m4a"
+# Piano, no el colchon grave de antes. El usuario pidio «un leve piano como
+# el video de referencia», y la medicion le daba la razon: `calma.m4a` no
+# tenia nada arriba de 1 kHz -la diferencia de firma con la referencia era de
+# 26,8 dB- y un piano se reconoce justamente por sus armonicos. El nuevo queda
+# a 4,6 dB. Se genera con `scripts/hacer_musica.py` y es original.
+MUSICA = ROOT / "assets" / "musica" / "piano.m4a"
 
 
 def escenas(clips: Sequence[Path], total: float, escena: float = ESCENA) -> List[Path]:

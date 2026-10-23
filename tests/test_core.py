@@ -2858,6 +2858,55 @@ class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
             self.assertIsNone(traducir.guardada(["Uno.", "Dos."], cache=cache))
 
 
+class TestLaMusicaDelRepo(unittest.TestCase):
+    """Es propia y suena a piano. Las dos cosas importan: una pista con
+    derechos le hace perder alcance a TODA la cuenta, y la que habia no
+    sonaba a lo que el usuario pidio."""
+
+    def test_la_musica_por_defecto_existe_y_es_la_de_piano(self):
+        self.assertTrue(video.MUSICA.is_file(), str(video.MUSICA))
+        self.assertEqual(video.MUSICA.stem, "piano")
+
+    def test_hay_un_script_que_la_genera(self):
+        # Es lo que la hace ORIGINAL y reproducible: sin el script, la pista
+        # es un archivo que nadie sabe de donde salio.
+        self.assertTrue((ROOT / "scripts" / "hacer_musica.py").is_file())
+
+    def test_la_musica_es_mas_larga_que_el_tope_del_reel(self):
+        # Si durara menos, el final del reel quedaria en silencio.
+        self.assertGreater(video.duracion(video.MUSICA), video.TOPE_SEGUNDOS)
+
+    @staticmethod
+    def _banda(ruta, desde, hasta):
+        """Nivel medio de una banda, en dB. Se mide con ffmpeg y no con una
+        transformada casera: la primera version la hacia a mano con tres
+        frecuencias por banda y daba lo MISMO para el colchon y para el
+        piano, o sea que la prueba pasaba sin probar nada."""
+        import subprocess
+        r = subprocess.run(
+            [video.ffmpeg(), "-hide_banner", "-ss", "10", "-t", "20",
+             "-i", str(ruta),
+             # Dos veces cada filtro: de a uno la pendiente es muy suave y la
+             # banda de al lado se cuela.
+             "-af", ("highpass=f=%d,highpass=f=%d,lowpass=f=%d,lowpass=f=%d,"
+                     "volumedetect" % (desde, desde, hasta, hasta)),
+             "-f", "null", "-"], capture_output=True, text=True, timeout=120)
+        for linea in (r.stderr or "").splitlines():
+            if "mean_volume:" in linea:
+                return float(linea.split("mean_volume:")[1].replace("dB", ""))
+        raise AssertionError("ffmpeg no midio nada en %s" % ruta)
+
+    def test_el_piano_tiene_armonicos_y_no_es_un_colchon(self):
+        # Es la diferencia MEDIDA con la que habia: en `calma.m4a` los medios
+        # estan 42,6 dB por debajo de los graves -no tiene practicamente nada
+        # arriba de 1 kHz- y un piano se reconoce justamente por sus
+        # armonicos. En el nuevo la caida es de 5,8 dB.
+        graves = self._banda(video.MUSICA, 120, 250)
+        medios = self._banda(video.MUSICA, 1000, 2000)
+        self.assertLess(graves - medios, 25,
+                        "la musica se parece a un colchon, no a un piano")
+
+
 class TestDondeEstaFfmpeg(unittest.TestCase):
     """En la Mac del usuario no estaba, y el error era «[Errno 2] No such file
     or directory: 'ffmpeg'», que no dice qué hacer."""

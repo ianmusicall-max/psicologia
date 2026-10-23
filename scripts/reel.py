@@ -155,7 +155,7 @@ def main(argv=None) -> int:
     ap.add_argument("--etiqueta-cada", type=int, default=video.ETIQUETA_CADA,
                     metavar="N", help="cada cuantas oraciones se repite la "
                                       "etiqueta (1 = todas, 0 = ninguna)")
-    ap.add_argument("--musica", nargs="?", const="calma", default=None,
+    ap.add_argument("--musica", nargs="?", const="piano", default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
     ap.add_argument("--voz-ia", nargs="?", const=video.VOZ_IA, default=None,
