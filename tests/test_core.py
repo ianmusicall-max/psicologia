@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import ast
+import dataclasses
 import json
 import sys
 import re
@@ -2077,18 +2078,101 @@ class TestElReelDeUnCapitulo(unittest.TestCase):
     """Para llegar al minuto no hacen falta frases más largas sino más frases:
     una frase con su reflexión son unos 30 segundos hablados."""
 
-    def test_una_frase_sola_no_llega_al_minuto_por_mas_que_se_estire(self):
+    def test_una_frase_sola_se_queda_corta_para_un_reel_largo(self):
         # Es el dato que decide que el reel largo sea un capítulo y no una
-        # frase: no hay nada que estirar, el texto es el que es.
-        largos = [video.duracion_del_guion(video.guion(f)) * 1.22
-                  for f in frases.todas(TEMAS)]
-        self.assertLess(max(largos), 60)
+        # frase: no hay nada que estirar, el texto es el que es. La mediana
+        # hablada es de unos 44 segundos, menos de la mitad del tope.
+        largos = sorted(video.duracion_del_guion(video.guion(f)) * video.VOZ_MAS_LENTA
+                        for f in frases.todas(TEMAS))
+        self.assertLess(largos[len(largos) // 2], 50)
+        self.assertLess(max(largos), 65)
 
-    def test_un_capitulo_pasa_el_minuto_y_no_llega_al_tope(self):
+    def _hablado(self, unidades):
+        return video.duracion_del_guion(unidades) * video.VOZ_MAS_LENTA
+
+    def _no_puede_llegar_al_minuto(self, t):
+        """No hay forma de que este capítulo pase el minuto: ni las dos
+        partes más cortas entran juntas en el tope, ni la más larga llega
+        sola al minuto. Si las dos más cortas no entran juntas, ninguna
+        combinación de dos o más entra, así que el techo es una parte sola.
+
+        La tesis cuenta como una parte más, porque se puede dejar afuera."""
+        partes = [video.unidades_de(t.tesis)] + [
+            video.unidades_de(f.texto) + video.unidades_de(f.reflexion)
+            for f in t.frases]
+        largos = sorted(self._hablado(p) for p in partes)
+        cabe_un_par = largos[0] + largos[1] <= video.TOPE_CON_MARGEN
+        return not cabe_un_par and largos[-1] < 60
+
+    def test_ningun_capitulo_se_pasa_del_tope_ni_se_le_acerca(self):
+        # Es el límite duro -Facebook e Instagram cortan en 90- y hay que
+        # medirlo HABLADO: leído entra, dicho se pasa. El factor está medido
+        # con la voz onyx: 58 segundos leídos dieron 100 hablados. Con el 1.22
+        # que se suponía antes el reel se pasaba por diez segundos, y eso se
+        # descubría DESPUÉS de haber pagado las 28 voces.
+        #
+        # Se exige el tope CON MARGEN y no el pelado, que es el punto: el
+        # factor sale de una sola medición y el ritmo real cambia con el
+        # texto. Un capítulo calculado en 89 que la voz diga en 91 no se
+        # puede publicar.
         for t in TEMAS:
-            hablado = video.duracion_del_guion(video.guion_de_tema(t)) * 1.22
-            self.assertGreater(hablado, 60, t.tema)
-            self.assertLess(hablado, video.TOPE_SEGUNDOS, t.tema)
+            self.assertLessEqual(self._hablado(video.guion_de_tema(t)),
+                                 video.TOPE_CON_MARGEN, t.tema)
+
+    def test_el_margen_del_tope_existe_y_deja_aire(self):
+        self.assertLess(video.TOPE_CON_MARGEN, video.TOPE_SEGUNDOS)
+        # Y el aire que deja es de verdad: al menos cuatro segundos, o sea un
+        # 4% de error en `VOZ_MAS_LENTA` sin que ningún capítulo se caiga.
+        peor = max(self._hablado(video.guion_de_tema(t)) for t in TEMAS)
+        self.assertGreater(video.TOPE_SEGUNDOS - peor, 4)
+
+    def test_un_capitulo_pasa_el_minuto_salvo_que_no_quepan_dos_frases(self):
+        # Lo que se busca es un reel de más de un minuto, y lo consiguen
+        # todos menos uno. La excepción NO está escrita con su nombre: se
+        # deduce del texto, así que el día que una reflexión crezca y otro
+        # capítulo quede corto, este test lo dice en vez de taparlo.
+        cortos = []
+        for t in TEMAS:
+            hablado = self._hablado(video.guion_de_tema(t))
+            if self._no_puede_llegar_al_minuto(t):
+                cortos.append(t.tema)
+                # Una frase sola, pero entera: un reel de casi un minuto
+                # sigue siendo un reel.
+                self.assertGreater(hablado, 55, t.tema)
+            else:
+                self.assertGreater(hablado, 60, t.tema)
+        # Hoy es ruptura, cuyas reflexiones son las más largas del banco: su
+        # tesis son 43 segundos hablados y cada frase entre 49 y 58, así que
+        # cualquier par se pasa de 90.
+        self.assertEqual(cortos, ["ruptura"])
+
+    def test_si_ninguna_frase_entra_con_la_tesis_la_tesis_se_va(self):
+        # La tesis sola es un resumen sin un solo ejemplo. Entre la tesis y
+        # una frase con su reflexión, lo que sostiene el reel es la frase.
+        t = [x for x in TEMAS if x.tema == "ruptura"][0]
+        junto = " ".join(video.guion_de_tema(t))
+        self.assertNotIn(" ".join(t.tesis.split())[:40], junto)
+        entraron = [f for f in t.frases if " ".join(f.texto.split()) in junto]
+        self.assertEqual(len(entraron), 1)
+
+    def test_el_largo_no_depende_del_orden_de_las_frases(self):
+        # Es lo que se gana eligiendo por combinación en vez de una detrás de
+        # otra. Tomándolas en orden, una frase larga adelante dejaba el
+        # capítulo a la mitad -comunicación quedaba en 36 segundos hablados-
+        # o veinte segundos sin usar que una posterior llenaba.
+        for nombre in ("comunicacion", "elegir", "reconexion"):
+            t = [x for x in TEMAS if x.tema == nombre][0]
+            derecho = self._hablado(video.guion_de_tema(t))
+            alrevés = dataclasses.replace(t, frases=list(t.frases)[::-1])
+            self.assertAlmostEqual(self._hablado(video.guion_de_tema(alrevés)),
+                                   derecho, delta=0.1, msg=nombre)
+
+    def test_lo_que_tarda_la_voz_sale_de_una_medicion(self):
+        self.assertAlmostEqual(video.VOZ_MAS_LENTA, 1.75)
+        # El objetivo está en segundos leídos y el minuto es hablado: se
+        # deriva uno del otro y no se escriben aparte, así que cambiar el
+        # factor no deja al objetivo mintiendo.
+        self.assertAlmostEqual(video.OBJETIVO * video.VOZ_MAS_LENTA, 60.0)
 
     def test_el_capitulo_abre_con_su_tesis(self):
         t = TEMAS[2]
@@ -2105,8 +2189,12 @@ class TestElReelDeUnCapitulo(unittest.TestCase):
             self.assertIn(" ".join(f.reflexion.split())[:60], junto)
 
     def test_desde_cambia_las_frases_pero_deja_la_tesis(self):
+        # El salto tiene que dejar afuera una frase que el capítulo estaba
+        # usando: eligiendo por combinación, saltear frases que no entraban
+        # igual no cambia nada, y un `desde` chico pasaría sin probar nada.
         t = TEMAS[2]
-        uno, otro = video.guion_de_tema(t), video.guion_de_tema(t, desde=2)
+        uno = video.guion_de_tema(t)
+        otro = video.guion_de_tema(t, desde=len(t.frases) - 1)
         self.assertEqual(uno[0], otro[0])
         self.assertNotEqual(uno, otro)
 

@@ -100,7 +100,9 @@ def main(argv=None) -> int:
     ap.add_argument("--id", help="que frase")
     ap.add_argument("--tema", help="el capitulo entero, por nombre o por numero")
     ap.add_argument("--objetivo", type=float, default=video.OBJETIVO,
-                    metavar="SEG", help="cuanto durar con --tema (leido, no hablado)")
+                    metavar="SEG",
+                    help="con --tema, el minimo que se busca (leido, no hablado); "
+                         "el maximo lo pone el tope de Facebook")
     ap.add_argument("--desde", type=int, default=0,
                     help="con --tema, desde que frase del capitulo empezar")
     ap.add_argument("--musica", nargs="?", const="calma", default=None,
@@ -167,8 +169,13 @@ def main(argv=None) -> int:
     if args.ver:
         leido = video.duracion_del_guion(unidades)
         print()
-        print("Duraria %.0f s leido, o sea unos %.0f hablados (tope %d)."
-              % (leido, leido * 1.22, video.TOPE_SEGUNDOS))
+        # El tope que se muestra es el que el codigo respeta, que es el de
+        # Facebook MENOS el margen: si dijera 90, un reel de 88 pareceria
+        # tener aire y en realidad ya no se habria armado asi.
+        print("Duraria %.0f s leido, o sea unos %.0f hablados (tope %.0f, "
+              "que son los %d de Facebook con margen)."
+              % (leido, leido * video.VOZ_MAS_LENTA, video.TOPE_CON_MARGEN,
+                 video.TOPE_SEGUNDOS))
         letras = sum(len(u) for u in unidades)
         nuevas = [u for u in unidades if not video.en_cache(u, args.voz_ia or video.VOZ_IA)]
         print("Con --voz-ia serian %d caracteres, %d renglones, y %d habria que "

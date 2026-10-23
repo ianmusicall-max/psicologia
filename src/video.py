@@ -26,6 +26,7 @@ y se elige solo según haya fondo o no.
 """
 from __future__ import annotations
 
+import itertools
 import re
 import subprocess
 from pathlib import Path
@@ -189,39 +190,6 @@ def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
     return unidades_de(frase.texto, tope) + unidades_de(frase.reflexion, tope)
 
 
-# El largo que se busca cuando el reel es un capítulo. Está en segundos LEÍDOS
-# y no hablados, que es lo único que se puede saber antes de sintetizar la voz.
-# Una voz tarda cerca de un 20% más que la lectura, así que 60 acá son unos 73
-# hablados: lejos del tope de 90 y cómodamente arriba del minuto.
-OBJETIVO = 60.0
-
-
-def guion_de_tema(tema, segundos: float = OBJETIVO, desde: int = 0,
-                  tope: int = UNIDAD_MAXIMA) -> List[str]:
-    """Un capítulo en un reel: su tesis y las frases que entren.
-
-    Para llegar al minuto no hacen falta frases más largas sino MÁS frases.
-    Una frase con su reflexión son unos 30 segundos hablados; la tesis del
-    capítulo más dos o tres frases llegan al minuto con texto que ya está
-    escrito, validado por la línea editorial y ordenado -la tesis presenta el
-    asunto y cada frase lo desarrolla-, que es exactamente lo que el libro
-    hace con ese mismo material.
-
-    Nunca se corta una frase por la mitad: entra entera o no entra. Media
-    reflexión termina en el aire y el reel se lee como un error.
-    """
-    unidades = unidades_de(tema.tesis, tope)
-    for frase in list(tema.frases)[desde:]:
-        candidatas = unidades + unidades_de(frase.texto, tope) + \
-            unidades_de(frase.reflexion, tope)
-        if duracion_del_guion(candidatas) > segundos * 1.25:
-            break
-        unidades = candidatas
-        if duracion_del_guion(unidades) >= segundos:
-            break
-    return unidades
-
-
 def tiempos(unidades: Sequence[str], total: Optional[float] = None) -> List[Tuple[float, float]]:
     """Cuándo entra y cuándo sale cada unidad.
 
@@ -245,6 +213,106 @@ def tiempos(unidades: Sequence[str], total: Optional[float] = None) -> List[Tupl
 def duracion_del_guion(unidades: Sequence[str], total: Optional[float] = None) -> float:
     marcas = tiempos(unidades, total)
     return (marcas[-1][1] if marcas else 0.0) + COLA
+
+
+# Cuánto más tarda una voz que la lectura. MEDIDO, no estimado: el capítulo de
+# autoestima da 58 segundos leído y la voz onyx lo dijo en 100, o sea un 72%
+# más. La primera versión suponía un 20% y el reel se pasaba del tope de
+# Facebook por diez segundos, después de haber pagado las 28 voces.
+#
+# Tiene sentido que sea tanto: `INSTRUCCIONES` le pide ritmo pausado y que
+# deje respirar las frases. Una voz apurada entraría de sobra y sonaría a
+# publicidad.
+VOZ_MAS_LENTA = 1.75
+
+# Hasta dónde se deja llegar al guion, hablado. NO es el tope de Facebook: es
+# el tope menos un margen, y el margen existe porque `VOZ_MAS_LENTA` sale de
+# UNA medición y el ritmo real cambia con el texto -la puntuación, el largo de
+# las frases-. Un capítulo calculado en 89 segundos que la voz dice en 91 no
+# se puede publicar, y eso se descubre después de haber pagado las 24 voces.
+TOPE_CON_MARGEN = TOPE_SEGUNDOS * 0.95
+
+# El mínimo que se busca cuando el reel es un capítulo: que pase el minuto
+# HABLADO, que es lo que se pidió. Está en segundos LEÍDOS porque es lo único
+# que se puede saber antes de sintetizar la voz.
+OBJETIVO = 60.0 / VOZ_MAS_LENTA
+
+
+def _combinacion(costos: Sequence[float], minimo: float) -> Tuple[int, ...]:
+    """Cuáles de las partes llenan mejor el reel sin pasarse del tope.
+
+    Se eligen por combinación y no una detrás de otra, y eso no es
+    refinamiento: en orden, una frase larga deja veinte segundos sin usar que
+    una posterior llenaría, y `elegir` y `reconexión` quedaban en 57 segundos
+    hablados con casi treinta libres.
+
+    Se elige QUÉ partes entran, no en qué orden: el guion se arma después en
+    el orden del libro, así que la tesis sigue abriendo y cada frase sigue
+    desarrollando lo que la anterior dejó planteado.
+
+    La preferencia, en este orden: que pase el minuto, que esté la tesis, y
+    que sea lo más largo que entre. La tesis va segunda y no primera a
+    propósito: si ocupa tanto que no deja lugar a ninguna frase, se va. Una
+    tesis sola es un resumen sin un solo ejemplo, y lo que sostiene el reel
+    son las frases. Le pasa a `ruptura`, cuyas reflexiones son las más largas
+    del banco: su tesis son 43 segundos hablados y cada frase entre 49 y 58,
+    así que cualquier par se pasa del tope y lo que sale es una frase sola.
+    """
+    mejor: Optional[Tuple[Tuple, Tuple[int, ...]]] = None
+    for cuantas in range(1, len(costos) + 1):
+        entro_alguna = False
+        for cuales in itertools.combinations(range(len(costos)), cuantas):
+            total = sum(costos[i] for i in cuales) + COLA
+            if total * VOZ_MAS_LENTA > TOPE_CON_MARGEN:
+                continue
+            entro_alguna = True
+            # La tesis se prefiere SOLO entre las que ya pasan el minuto. Si
+            # ninguna lo pasa, lo que importa es el largo: la tesis de
+            # `ruptura` sola son 43 segundos hablados y cualquiera de sus
+            # frases llega a 58.
+            pasa = total >= minimo
+            clave = (pasa, pasa and 0 in cuales, total)
+            if mejor is None or clave > mejor[0]:
+                mejor = (clave, cuales)
+        # Si ninguna combinación de este tamaño entró, una más grande tampoco
+        # va a entrar: sumar una parte más solo agrega segundos.
+        if not entro_alguna:
+            break
+    if mejor is None:
+        # Nada entra en el tope. Hoy no pasa -la parte más larga del banco son
+        # 58 segundos hablados contra 85 de tope- pero si algún día pasa, sale
+        # la más corta sola: un reel corto se ve y se arregla, y uno sin una
+        # palabra escrita parece otra cosa.
+        return (min(range(len(costos)), key=lambda i: costos[i]),)
+    return mejor[1]
+
+
+def guion_de_tema(tema, segundos: float = OBJETIVO, desde: int = 0,
+                  tope: int = UNIDAD_MAXIMA) -> List[str]:
+    """Un capítulo en un reel: su tesis y las frases que entren.
+
+    Para pasar el minuto no hacen falta frases más largas sino MÁS frases.
+    Una frase con su reflexión son unos 45 segundos hablados; la tesis del
+    capítulo y una o dos frases pasan el minuto con texto que ya está
+    escrito, validado por la línea editorial y ordenado -la tesis presenta el
+    asunto y cada frase lo desarrolla-, que es lo mismo que hace el libro con
+    ese material.
+
+    Nunca se corta una frase por la mitad: entra entera o no entra. Media
+    reflexión termina en el aire y el reel se lee como un error.
+    """
+    partes = [unidades_de(tema.tesis, tope)]
+    partes += [unidades_de(f.texto, tope) + unidades_de(f.reflexion, tope)
+               for f in list(tema.frases)[desde:]]
+    # Lo que mide cada parte por separado, sin la cola, que se suma una vez
+    # sola al final. Sale de `duracion_del_guion` y no de una cuenta repetida
+    # acá: dos copias de la misma fórmula es como se descubre tarde que una
+    # de las dos quedó vieja.
+    costos = [duracion_del_guion(p) - COLA for p in partes]
+    unidades: List[str] = []
+    for i in _combinacion(costos, segundos):
+        unidades += partes[i]
+    return unidades
 
 
 # ---------------------------------------------------------------------------

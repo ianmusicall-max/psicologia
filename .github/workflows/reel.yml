@@ -56,10 +56,17 @@ jobs:
 
       # La voz es lo unico que se paga, y la maquina es nueva cada vez: sin
       # esto, rehacer un reel -o cambiarle el fondo, o la musica- vuelve a
-      # pagar los mismos renglones. La llave lleva el numero de corrida para
-      # que cada una guarde lo suyo, y `restore-keys` recupera la ultima.
+      # pagar los mismos renglones.
+      #
+      # Va separado en recuperar y guardar, y no con `actions/cache` de una
+      # pieza, por una razon que costo dinero: esa version guarda SOLO si el
+      # trabajo termina bien, y los dos primeros intentos fallaron DESPUES de
+      # haber pedido las 28 voces. Las pago las dos veces y no guardo ninguna.
+      # Con `if: always()` lo que ya se pago queda guardado aunque el reel
+      # despues no se arme.
       - name: Recuperar las voces ya pagadas
-        uses: actions/cache@v4
+        id: voces
+        uses: actions/cache/restore@v4
         with:
           path: data/voz_cache
           key: voz-${{ github.run_id }}
@@ -84,6 +91,15 @@ jobs:
           fi
           echo "scripts/reel.py $ARGS"
           python scripts/reel.py $ARGS --telegram
+
+      # Aunque el reel no se haya armado: lo que se le pago a OpenAI ya esta
+      # pagado y tiene que sobrevivir al fallo.
+      - name: Guardar las voces
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/voz_cache
+          key: voz-${{ github.run_id }}
 
       # Queda para bajar aunque Telegram falle o el video pase de 50 MB, que
       # es el tope de un bot. Sin esto, un reel que no se pudo mandar se
