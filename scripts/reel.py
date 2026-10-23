@@ -137,6 +137,12 @@ def main(argv=None) -> int:
                     help="como suena la voz: nada, calida, cine, honda")
     ap.add_argument("--ingles", action="store_true",
                     help="la VOZ en ingles y los SUBTITULOS en espanol")
+    ap.add_argument("--etiqueta", default=None, metavar="TAG",
+                    help="indicacion de actuacion entre corchetes, en cada "
+                         "oracion (por defecto %s). Vacio para ninguna"
+                         % video.ETIQUETA_INICIAL)
+    ap.add_argument("--etiqueta-solo-al-empezar", action="store_true",
+                    help="la etiqueta solo en la primera oracion")
     ap.add_argument("--musica", nargs="?", const="calma", default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
@@ -265,6 +271,29 @@ def main(argv=None) -> int:
             print("El ingles da mas largo que el espanol: saco %d oracion(es) "
                   "del final para entrar en el tope." % len(sobran))
             unidades = [u for g in grupos for u in g]
+
+        # La etiqueta va DESPUES de traducir: viajando con el texto, el
+        # traductor la tomaria por palabras y devolveria «[sighing]» o la
+        # borraria.
+        #
+        # Y en TODAS las oraciones, que es lo que se pidio: con una sola al
+        # principio el tono se pierde a los pocos segundos. Cada oracion es un
+        # audio aparte, asi que sin repetirla las demas salen sin ella.
+        #
+        # NO entra en la cuenta del tope de arriba: son caracteres que no se
+        # leen en voz alta, asi que sumarlos achicaria el guion por una
+        # duracion que no existe.
+        etiqueta = video.ETIQUETA_INICIAL if args.etiqueta is None else args.etiqueta
+        if etiqueta and a_leer:
+            etiqueta = etiqueta.strip()
+            if args.etiqueta_solo_al_empezar:
+                a_leer = ["%s %s" % (etiqueta, a_leer[0])] + a_leer[1:]
+                donde = "al empezar"
+            else:
+                a_leer = ["%s %s" % (etiqueta, x) for x in a_leer]
+                donde = "en las %d oraciones" % len(a_leer)
+            print()
+            print("Con %s %s." % (etiqueta, donde))
     if args.voz_ia:
         letras = sum(len(u) for u in a_leer)
         print()

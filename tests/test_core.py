@@ -2250,12 +2250,17 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
             video._llave(texto, "v1", video.MODELO_ELEVEN,
                          video._ajustes_como_texto(otros)))
 
-    def test_la_voz_elegida_esta_puesta_y_el_modelo_es_multilingue(self):
-        # El texto viaja en español tal cual: no hay traduccion ni paso por el
-        # ingles en ningun lado. Con un modelo solo-ingles, los acentos y las
-        # eñes se leerian mal, asi que el modelo es parte de la decision.
+    def test_es_el_mismo_modelo_con_el_que_se_eligio_la_voz(self):
+        # El usuario probo «Milo» en el panel con Eleven v4. Con otro modelo
+        # la misma voz suena distinto, asi que lo que aprobo no seria lo que
+        # sale.
         self.assertEqual(video.VOZ_ELEVEN, "GUDYcgRAONiI1nXDcNQQ")
-        self.assertIn("multilingual", video.MODELO_ELEVEN)
+        self.assertEqual(video.MODELO_ELEVEN, "eleven_v4")
+
+    def test_no_se_le_mandan_a_v4_los_controles_que_no_tiene(self):
+        # v4 no tiene estilo ni velocidad: mandarlos seria mandar algo que el
+        # modelo ignora o rechaza.
+        self.assertEqual(set(video.AJUSTES_ELEVEN), {"stability", "similarity_boost"})
 
     def test_lo_que_se_le_manda_a_eleven_es_el_texto_en_espanol(self):
         # La guarda de verdad: que el texto llegue SIN tocar, con sus tildes.
@@ -2713,6 +2718,44 @@ class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
     def test_las_lineas_se_ordenan_por_su_numero_y_no_por_como_vienen(self):
         self.assertEqual(traducir._leer_numeradas("3. C.\n1. A.\n2. B.", 3),
                          ["A.", "B.", "C."])
+
+    def test_la_etiqueta_no_pasa_por_el_traductor(self):
+        # Viajando con el texto, el traductor la tomaria por palabras y
+        # devolveria «[sighing]» o la borraria. Por eso se agrega despues, y
+        # por eso la prueba mira lo que se MANDA a traducir.
+        mandado = []
+
+        def pedir(clave, cuerpo):
+            mandado.append(cuerpo["messages"][1]["content"])
+            return "1. One line."
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(os.environ, {"OPENAI_API_KEY": "x"}):
+            traducir.a_ingles(["Una oracion."], cache=Path(d), pedir=pedir)
+        self.assertNotIn("[", mandado[0])
+        self.assertNotIn("sighs", mandado[0])
+
+    def test_la_etiqueta_es_una_indicacion_entre_corchetes(self):
+        # Sin corchetes, v4 la lee en voz alta como una palabra mas.
+        self.assertTrue(video.ETIQUETA_INICIAL.startswith("["))
+        self.assertTrue(video.ETIQUETA_INICIAL.endswith("]"))
+
+    def test_la_etiqueta_no_cambia_el_subtitulo_ni_los_tiempos(self):
+        # Se agrega a lo que se LEE, no a lo que se MUESTRA: si entrara en el
+        # subtitulo se veria «[sighs]» en pantalla, y si entrara en la cuenta
+        # del tope achicaria el guion por una duracion que no existe.
+        etiqueta = video.ETIQUETA_INICIAL
+        oraciones = ["One line.", "Two lines."]
+        leido = [("%s %s" % (etiqueta, x)) for x in oraciones]
+        self.assertEqual(len(leido), len(oraciones))
+        for sin, con in zip(oraciones, leido):
+            self.assertTrue(con.endswith(sin))
+            self.assertIn(etiqueta, con)
+        # Y los tiempos salen de los AUDIOS, no del texto leido.
+        grupos = [["One line."], ["Two lines."]]
+        marcas = video.marcas_por_oracion(grupos, [2.0, 3.0])
+        self.assertEqual(len(marcas), 2)
+        self.assertAlmostEqual(marcas[1][1], 5.0)
 
     def test_lo_traducido_queda_en_disco_y_no_se_vuelve_a_pagar(self):
         veces = []

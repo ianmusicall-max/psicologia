@@ -739,11 +739,31 @@ def decir_con_ia(texto: str, ruta: Path, voz: str = VOZ_IA,
 # ---------------------------------------------------------------------------
 
 API_ELEVEN = "https://api.elevenlabs.io/v1"
-# Multilingüe, y por eso el texto viaja EN ESPAÑOL tal cual: este modelo lee
-# el español nativo, no hay ninguna traducción ni ningún paso por el inglés en
-# todo el camino. Si algún día alguien lo cambia por un modelo solo-inglés,
-# los acentos y las eñes se leerían mal.
-MODELO_ELEVEN = "eleven_multilingual_v2"
+
+# El MISMO modelo con el que el usuario eligió la voz, que es el punto: probó
+# «Milo» en el panel con Eleven v4 y le gustó cómo sonó. Con otro modelo la
+# misma voz suena distinto, así que lo que aprobó no sería lo que sale.
+MODELO_ELEVEN = "eleven_v4"
+
+# Una indicación de actuación, entre corchetes, al principio del texto. v4 las
+# entiende; `[sighs]` es un suspiro, que es lo que el usuario puso en el panel
+# ([suspirando], porque la interfaz está en español: a la API van en inglés,
+# que es como están documentadas).
+#
+# Va en TODAS las oraciones, que es lo que pidió el usuario: con una sola al
+# principio el tono se pierde a los pocos segundos, porque estas indicaciones
+# afectan sobre todo a lo que viene justo después. Se puede dejar solo en la
+# primera con `--etiqueta-solo-al-empezar`, por si repetida suena a alguien
+# con problemas para respirar: eso se decide oyéndolo.
+#
+# Y se agrega DESPUÉS de traducir, nunca antes: si viajara con el texto, el
+# traductor la tomaría por palabras y devolvería «[sighing]» o la borraría.
+ETIQUETA_INICIAL = "[sighs]"
+
+# Eleven v4 NO tiene los controles de estilo ni de velocidad -lo dice su
+# documentación- así que mandarlos sería mandar algo que el modelo ignora o
+# rechaza. Quedan los dos que el usuario movió en el panel.
+AJUSTES_ELEVEN = {"stability": 0.55, "similarity_boost": 0.85}
 
 # La voz se guarda por ID y NO por nombre. Los nombres se repiten entre
 # cuentas y los de la biblioteca compartida se pueden renombrar; el id no
@@ -752,15 +772,6 @@ MODELO_ELEVEN = "eleven_multilingual_v2"
 # La eligió el usuario el 2026-10-23, escuchándolas, después de descartar las
 # cinco de OpenAI y los cuatro procesados.
 VOZ_ELEVEN = "GUDYcgRAONiI1nXDcNQQ"
-
-# Para narrar, no para conversar. `stability` alta deja un tono parejo -una
-# baja hace que cada frase suene de otro ánimo, que en un reel de una idea
-# sola se oye como otra persona-. `style` en 0 a propósito: lo que sube el
-# estilo es la expresividad, y acá se busca lo contrario, alguien que cuenta
-# algo en voz baja.
-AJUSTES_ELEVEN = {"stability": 0.55, "similarity_boost": 0.8,
-                  "style": 0.0, "use_speaker_boost": True}
-
 
 def _ajustes_como_texto(ajustes: dict) -> str:
     """Los ajustes en la llave de la cache: cambian lo que se oye.
