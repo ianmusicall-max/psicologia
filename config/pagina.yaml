@@ -13,8 +13,8 @@ pagina:
   #   comillas  una comilla enorme detrás, apenas visible, y el texto centrado
   #   marco     como la página de un libro: un filete alrededor
   #   banda     una banda de color abajo con el tema
-  #   palabra   la palabra destacada gigante partiendo la frase, sobre un
-  #             degradado con grano. No lleva foto y no cuesta nada
+  #   palabra   la palabra destacada gigante partiendo la frase, sobre el
+  #             crema con grano de papel. No lleva foto y no cuesta nada
   #   foto      el mismo reparto sobre una foto de assets/fotos; sin fotos
   #             ahi adentro, cae al degradado
   #   marcador  la palabra marcada con resaltador en vez de en color

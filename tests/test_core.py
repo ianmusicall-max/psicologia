@@ -494,6 +494,28 @@ class TestLosEstilos(unittest.TestCase):
             c = diseno._colores(PAGINA, estilo)
             self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
 
+    def test_solo_dos_estilos_quedan_oscuros(self):
+        # El usuario pidió que no hubiera fondos negros. Lo que se mide es
+        # oscuro Y NEUTRO: el terracota de la banda también es oscuro de
+        # luminancia, pero es el color de la marca y no es lo que molestaba.
+        # Se mira el píxel de abajo del flyer ya dibujado y no la tabla de
+        # colores, porque lo que se juzga es cómo se ve la pieza.
+        for estilo in diseno.ESTILOS:
+            img = diseno.render(TEMAS[4].frases[2], TEMAS[4], PAGINA, escala=1, estilo=estilo)
+            px = img.getpixel((diseno.W // 2, diseno.H - 20))
+            abajo = "#%02x%02x%02x" % px
+            apagado = max(px) - min(px) < 40 and _luminancia(abajo) < 0.3
+            self.assertEqual(apagado, estilo in diseno.OSCUROS, (estilo, abajo))
+
+    def test_el_bloque_es_calido_y_no_casi_negro(self):
+        # Terracota puro da 3,7 de contraste con el crema y una frase entera
+        # encima se lee a duras penas; oscurecido a la mitad da 7,1.
+        c = diseno._colores(PAGINA, "bloque")
+        bloque = diseno._mezclar(c["acento"], c["tinta"], diseno.BLOQUE_OSCURO)
+        self.assertGreaterEqual(_contraste(c["fondo"], bloque), 7.0)
+        r, g, b = diseno._rgb(bloque)
+        self.assertGreater(r, b + 20, "el bloque tiene que ser cálido, no azul ni neutro")
+
     def test_el_resaltador_deja_el_texto_legible(self):
         # La palabra marcada no cambia de color: queda tinta sobre la mancha,
         # así que lo que hay que mirar es el contraste contra la mancha.

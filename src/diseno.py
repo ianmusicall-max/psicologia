@@ -301,6 +301,8 @@ TIT_AIRE = 14
 # punto mas claro del fondo tiene que dejar contraste suficiente. Con #7C94A1
 # -el primero que se probo- el blanco quedaba en 3,2 y se lee flojo.
 DEGRADADO = ("#1F2E38", "#5C7482")
+BLOQUE_OSCURO = 0.50    # cuanto se le baja al terracota para el bloque
+GRANO_PAPEL = 0.10      # la textura del fondo claro de «palabra»
 VELO_MINIMO = 0.22      # el tinte que toda foto lleva, para que sea una pagina y no un collage
 VELO_MAXIMO = 0.78
 VELO_BANDA = 0.45       # la franja de arriba donde cae el texto
@@ -474,6 +476,8 @@ def _firma_clara(draw, pagina, tema, e, color):
 def _estilo_palabra(draw, frase, tema, pagina, e, c):
     _titular(draw, frase, tema, pagina, e, c)
     _firma_clara(draw, pagina, tema, e, c["suave"])
+    draw.rectangle([MARGEN * e, (PIE_Y + 6) * e, (W - MARGEN) * e, (PIE_Y + 6) * e + 2 * e],
+                   fill=_mezclar(c["fondo"], c["suave"], 0.5))
 
 
 def _estilo_foto(draw, frase, tema, pagina, e, c):
@@ -530,23 +534,31 @@ def _estilo_ficha(draw, frase, tema, pagina, e, c):
 
 
 def _estilo_bloque(draw, frase, tema, pagina, e, c):
-    """Dos tonos: la frase sobre un bloque de color y el pie sobre el crema."""
+    """Dos tonos: la frase sobre un bloque de color y el pie sobre el crema.
+
+    El bloque es terracota oscurecido y no la tinta, que es casi negro: con
+    el casi negro el flyer se lee como de otra pagina, y el usuario pidio
+    explicitamente que no hubiera fondos negros. El terracota puro no sirve:
+    da 3,7 de contraste con el crema y una frase entera ahi encima se lee a
+    duras penas. Oscurecido a la mitad da 7,1.
+    """
     corte = 920
-    draw.rectangle([0, 0, W * e, corte * e], fill=c["tinta"])
+    bloque = _mezclar(c["acento"], c["tinta"], BLOQUE_OSCURO)
+    draw.rectangle([0, 0, W * e, corte * e], fill=bloque)
     f_enc = _fuente("Montserrat-Bold.ttf", ENCABEZADO * e)
     _espaciado(draw, (MARGEN * e, ARRIBA * e), pagina.nombre.upper(), f_enc, c["fondo"], e)
     f_cap = _fuente("Montserrat-Regular.ttf", ENCABEZADO * e)
     _espaciado(draw, ((W - MARGEN) * e, ARRIBA * e), "CAPÍTULO %d" % tema.capitulo,
-               f_cap, _mezclar(c["tinta"], c["fondo"], 0.55), e, derecha=True)
+               f_cap, _mezclar(bloque, c["fondo"], 0.55), e, derecha=True)
     ancho = (W - 2 * MARGEN) * e
     tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (corte - 230) * e, e)
     f = _fuente("Lora-SemiBold.ttf", tam * e)
     paso = int(tam * e * INTERLINEA)
     y = 190 * e + ((corte - 230) * e - paso * len(lineas)) // 2
     _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
-              c["fondo"], _mezclar(c["acento"], c["fondo"], 0.42))
+              c["fondo"], _mezclar(c["acento"], c["fondo"], 0.52))
     f_tit = _fuente("Lora-Italic.ttf", 44 * e)
-    draw.text((MARGEN * e, (corte + 92) * e), tema.titulo, font=f_tit, fill=c["tinta"])
+    draw.text((MARGEN * e, (corte + 92) * e), tema.titulo, font=f_tit, fill=bloque)
     f_pie = _fuente("Montserrat-Regular.ttf", PIE * e)
     _espaciado(draw, (MARGEN * e, (corte + 190) * e), (pagina.firma or pagina.nombre).upper(),
                f_pie, c["suave"], e)
@@ -581,8 +593,17 @@ ESTILOS = {"regla": _estilo_regla, "tinta": _estilo_tinta, "comillas": _estilo_c
            "palabra": _estilo_palabra, "foto": _estilo_foto,
            "marcador": _estilo_marcador, "ficha": _estilo_ficha,
            "bloque": _estilo_bloque, "etiqueta": _estilo_etiqueta}
-# Los que se dibujan sobre una imagen y no sobre el color de la marca.
-CON_IMAGEN = ("palabra", "foto")
+# El unico que se dibuja sobre una imagen. «palabra» era de este grupo y se
+# paso al crema: el usuario no quiere fondos oscuros, y el reparto de la
+# palabra gigante no depende del fondo. El degradado quedo como lo que hay
+# detras de «foto» cuando no hay ninguna foto cargada.
+CON_IMAGEN = ("foto",)
+# Los unicos dos con fondo apagado, y es una decision del usuario: no quiere
+# fondos negros. «Apagado» es oscuro Y NEUTRO: la banda de terracota tambien
+# es oscura de luminancia y no es lo que molestaba, porque es el color de la
+# marca. Si manana se agrega un estilo gris o negro tiene que entrar aca, y
+# hay una prueba que recorre los once y lo exige.
+OSCUROS = ("tinta", "foto")
 POR_DEFECTO = "regla"
 
 
@@ -622,13 +643,16 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
         raise ValueError("no existe el estilo %r; hay %s" % (estilo, ", ".join(sorted(ESTILOS))))
     c = _colores(pagina, estilo)
     if estilo in CON_IMAGEN:
-        foto = _foto_de(frase.id, W * e, H * e) if estilo == "foto" else None
+        foto = _foto_de(frase.id, W * e, H * e)
         if foto is not None:
             img = _velo(foto, DEGRADADO[0], 0.42)
         else:
             # Sin fotos en assets/fotos, «foto» cae al degradado en vez de
             # fallar: un turno perdido seria peor que un fondo mas simple.
             img = _grano(_degradado(W * e, H * e, *DEGRADADO))
+    elif estilo == "palabra":
+        # Grano sobre el crema: da textura de papel sin cambiar el color.
+        img = _grano(Image.new("RGB", (W * e, H * e), c["fondo"]), GRANO_PAPEL)
     else:
         img = Image.new("RGB", (W * e, H * e), c["fondo"])
     draw = ImageDraw.Draw(img)

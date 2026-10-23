@@ -153,14 +153,15 @@ misma frase para comparar mirando.
 | `comillas` | una comilla enorme detrás, apenas visible, y el texto centrado |
 | `marco` | como la página de un libro: un filete alrededor |
 | `banda` | una franja de color abajo con el tema |
-| `palabra` | la palabra destacada gigante partiendo la frase, sobre un degradado |
+| `palabra` | la palabra destacada gigante partiendo la frase, sobre el crema |
 | `foto` | el mismo reparto sobre una foto de `assets/fotos` |
 | `marcador` | la palabra marcada con resaltador en vez de en color |
 | `ficha` | papel rayado limpio, con el margen del cuaderno |
 | `bloque` | la frase sobre un bloque de color y el pie sobre el crema |
 | `etiqueta` | una pastilla con el tema arriba, antes de la frase |
 
-Los dos últimos usan `destacar` para partir la frase en tres: lo que viene
+Solo dos quedan oscuros, `tinta` y `foto`; los otros nueve van sobre el crema
+de la marca. `palabra` y `foto` usan `destacar` para partir la frase en tres: lo que viene
 antes, la palabra en grande y lo que sigue. Es el recurso que se ve en las
 cuentas grandes, y sale de un campo que el banco ya tenía.
 
