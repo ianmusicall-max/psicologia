@@ -38,7 +38,7 @@ lector que llegó por un post encuentre esa frase adentro.
 Unas 1.500 palabras por capítulo. Veintinueve capítulos son unas 43.000
 palabras de texto nuevo, que llevan el manuscrito de 27.000 a cerca de 70.000.
 
-Escritos hasta ahora: el 3.
+Escritos hasta ahora: 1, 2 y 3.
 
 ## Cómo sale del banco
 
