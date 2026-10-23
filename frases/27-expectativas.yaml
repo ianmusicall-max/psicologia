@@ -1,0 +1,112 @@
+# Capítulo 27 · Lo que nos contaron del amor
+tema: expectativas
+capitulo: 27
+eje: nucleo
+titulo: Lo que nos contaron del amor
+hashtags: [expectativas, amor, mitos]
+tesis: >-
+  Muchas de las ideas con las que entramos a una relación vienen de las
+  historias que escuchamos, no de cómo funcionan los vínculos: que existe una
+  persona destinada, que el amor verdadero no requiere esfuerzo, que si hay
+  que hablarlo ya está mal. Esas creencias predicen peor ajuste cuando aparece
+  la primera dificultad real.
+
+frases:
+  - id: exp-01
+    texto: "Creer que existe una sola persona para vos vuelve cualquier problema una señal de error."
+    destacar: [señal]
+    principio: "Las creencias de destino se asocian a abandonar ante la dificultad, mientras que las creencias de crecimiento se asocian a persistir y resolver."
+    fuente: "Knee (1998), teorías implícitas de las relaciones."
+    reflexion: >-
+      Si creés que la relación correcta se reconoce porque fluye, el primer
+      problema serio se lee como prueba de que no era. Si creés que las
+      relaciones se construyen, el mismo problema se lee como algo que toca
+      resolver. Los dos ven lo mismo y hacen cosas opuestas.
+
+  - id: exp-02
+    texto: "Que cueste no significa que esté mal. Significa que es real."
+    destacar: [cueste]
+    principio: "El esfuerzo relacional no predice insatisfacción; la atribución del esfuerzo a incompatibilidad sí."
+    fuente: "Knee, Patrick y Lonsbary (2003); Franiuk, Cohen y Pomerantz (2002)."
+    reflexion: >-
+      Las historias que consumimos muestran el enamoramiento y cortan antes de
+      la convivencia. Entonces el esfuerzo aparece como síntoma y no como
+      parte. Toda relación larga pide trabajo en algún tramo, y eso no la
+      descalifica.
+
+  - id: exp-03
+    texto: "Nadie puede ser tu pareja, tu terapeuta, tu mejor amigo y tu familia entera."
+    destacar: [entera]
+    principio: "La concentración de todas las necesidades relacionales en la pareja aumenta la presión sobre el vínculo y se asocia a menor satisfacción."
+    fuente: "Finkel y colegas (2014), el modelo del matrimonio asfixiante."
+    reflexion: >-
+      Hace cien años a una pareja se le pedía compañía y sustento. Hoy se le
+      pide además crecimiento personal, vida social y comprensión total. Las
+      expectativas subieron más rápido que el tiempo disponible, y eso vuelve
+      frágil a vínculos que funcionarían bien con menos carga.
+
+  - id: exp-04
+    texto: "Si tengo que pedirlo, ya no vale: esa idea arruina más vínculos que el egoísmo."
+    destacar: [pedirlo]
+    principio: "La expectativa de que la pareja anticipe las necesidades sin comunicación explícita predice mayor conflicto y menor satisfacción."
+    fuente: "Epstein y Eidelson (1981), creencias disfuncionales de pareja."
+    reflexion: >-
+      Se llama lectura de mente y es una de las creencias que más predice
+      conflicto. Esperás que el otro adivine, el otro no adivina, y la falta
+      de adivinación se interpreta como falta de amor. Pedir no le quita valor
+      a lo que recibís.
+
+  - id: exp-05
+    texto: "El enamoramiento intenso dura meses, no años. Lo que viene después es otra cosa, no menos."
+    destacar: [después]
+    principio: "La pasión intensa inicial tiende a disminuir con el tiempo, mientras que el amor compañero puede mantenerse o aumentar."
+    fuente: "Hatfield y Rapson (1993); Acevedo y Aron (2009)."
+    reflexion: >-
+      Hay un cambio químico y de atención en los primeros meses que no está
+      diseñado para durar una década. Cuando baja, mucha gente cree que se
+      terminó el amor. Lo que se terminó es una etapa, y lo que sigue tiene
+      otras ventajas, aunque nadie las filme.
+
+  - id: exp-06
+    texto: "Las comedias románticas no son manuales. Cortan justo donde empieza la vida en común."
+    destacar: [manuales]
+    principio: "La exposición a contenido romántico idealizado se asocia a mayor endoso de creencias irreales sobre las relaciones."
+    fuente: "Holmes (2007); Johnson y Holmes (2009), medios y expectativas."
+    reflexion: >-
+      La historia termina en el beso. Lo que no se cuenta es quién saca la
+      basura, cómo discuten por plata y qué hacen cuando uno está de mal humor
+      tres días seguidos. Sin ese material, la vara con la que medimos una
+      relación está armada solo con escenas finales.
+
+  - id: exp-07
+    texto: "Elegir pareja pensando en quién vas a ser a los sesenta, no a los treinta."
+    destacar: [sesenta]
+    principio: "La similitud en valores y metas a largo plazo predice estabilidad mejor que la atracción inicial o la similitud en intereses."
+    fuente: "Gonzaga, Campos y Bradbury (2007); Joel y colegas (2020)."
+    reflexion: >-
+      En el mayor estudio hecho sobre predicción de satisfacción en pareja, las
+      características individuales del otro predijeron bastante poco; lo que
+      más pesó fue cómo se sentía cada uno dentro del vínculo. Eso cambia qué
+      mirar: menos el currículum, más cómo te tratan.
+
+  - id: exp-08
+    texto: "La compatibilidad no se descubre. Se construye a fuerza de acuerdos."
+    destacar: [construye]
+    principio: "La compatibilidad percibida aumenta con la negociación explícita de diferencias y no se explica solo por similitud previa."
+    fuente: "Knee (1998); Markman, Stanley y Blumberg (2010)."
+    reflexion: >-
+      La idea de encajar sugiere que hay piezas que ya vienen con la forma
+      correcta. En la práctica dos personas distintas se van acomodando a
+      fuerza de hablar lo que no coincide. Lo que parece compatibilidad
+      natural casi siempre es negociación vieja.
+
+  - id: exp-09
+    texto: "Nadie te completa. Como mucho, te acompaña mientras te completás vos."
+    destacar: [acompaña]
+    principio: "La dependencia de la pareja para la regulación de la autoestima se asocia a mayor ansiedad relacional y menor satisfacción de ambos."
+    fuente: "Knee, Canevello, Bush y Cook (2008), contingencias de autoestima."
+    reflexion: >-
+      La idea de la media naranja suena romántica y pone un peso imposible:
+      que el otro sea quien resuelva lo que te falta. Los vínculos aguantan
+      mejor cuando cada uno llega entero y el otro suma, en vez de llegar roto
+      y esperar reparación.

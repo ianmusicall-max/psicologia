@@ -33,6 +33,10 @@ from typing import Callable, Optional
 from . import diseno, facebook, frases, libro, medir, parrilla, telegram
 from .config import Pagina
 
+# Con menos de esto se avisa: escribir un capítulo nuevo lleva su tiempo y
+# conviene enterarse antes de que el banco se termine, no el día que pasa.
+AVISAR_DIAS = 7
+
 BIENVENIDA = ("Soy el bot de la página. ¿Qué hago?\n\n"
               "Ninguna de estas publica nada: muestran, cuentan y comprueban. "
               "Lo único que sale a Facebook es la frase que apruebes con "
@@ -160,8 +164,22 @@ def estado(pagina: Optional[Pagina] = None) -> str:
         lineas.append("%-14s %d de %d%s" % (t.tema, salieron, len(t.frases),
                                             "  (tu tema)" if t.eje == "nucleo" else ""))
     total = len(frases.todas(temas))
+    quedan = total - len(ya)
     lineas.append("")
-    lineas.append("Quedan %d de %d." % (total - len(ya), total))
+    lineas.append("Quedan %d de %d." % (quedan, total))
+    # Cuántos días aguanta, no cuántas frases: con la rampa el mismo número de
+    # frases dura muy distinto, y lo que hace falta saber es cuándo escribir
+    # más. Sin este aviso, que el banco se agote se descubre el día que el bot
+    # dice que no quedan.
+    dias = parrilla.calendario(pagina, frases.primer_dia(ya) or date.today(), quedan) \
+        if pagina else []
+    if dias:
+        lineas.append("Alcanzan para %d días, hasta el %s."
+                      % (len(dias), dias[-1]["dia"].isoformat()))
+        if len(dias) <= AVISAR_DIAS:
+            lineas.append("")
+            lineas.append("Quedan menos de %d días de banco: es hora de escribir "
+                          "más frases." % (AVISAR_DIAS + 1))
     return "\n".join(lineas)
 
 

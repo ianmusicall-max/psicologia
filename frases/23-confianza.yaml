@@ -1,0 +1,111 @@
+# Capítulo 23 · Reconstruir lo que se rompió
+tema: confianza
+capitulo: 23
+eje: nucleo
+titulo: Reconstruir lo que se rompió
+hashtags: [confianza, reconstruir, honestidad]
+tesis: >-
+  La confianza no se recupera con promesas sino con tiempo y transparencia
+  sostenida. Después de una traición hay dos trabajos distintos: el de quien
+  dañó, que es hacerse cargo y volverse previsible, y el de quien fue dañado,
+  que es decidir si quiere volver a arriesgar. Ninguno puede hacer el del otro.
+
+frases:
+  - id: con-01
+    texto: "La confianza no se promete. Se acumula en cosas chicas y repetidas."
+    destacar: [acumula]
+    principio: "La confianza se construye por acumulación de conductas consistentes y previsibles a lo largo del tiempo, no por declaraciones de intención."
+    fuente: "Rempel, Holmes y Zanna (1985), dimensiones de la confianza."
+    reflexion: >-
+      Nadie confía porque le dijeron confiá en mí. Se confía porque el otro
+      avisó que llegaba tarde, porque hizo lo que dijo que iba a hacer,
+      porque contó algo incómodo en vez de esconderlo. Son cosas minúsculas,
+      y son el único material que hay.
+
+  - id: con-02
+    texto: "Después de una traición, la transparencia no es castigo. Es la obra."
+    destacar: [transparencia]
+    principio: "La recuperación de la confianza tras una infidelidad se asocia a apertura sostenida del ofensor y disponibilidad para responder preguntas."
+    fuente: "Gordon, Baucom y Snyder (2004), modelo de recuperación en tres etapas."
+    reflexion: >-
+      Quien rompió la confianza suele vivir las preguntas como una condena
+      interminable. No lo son: son el único modo de reconstruir lo que no se
+      puede declarar. La transparencia tiene fecha de vencimiento, pero esa
+      fecha la pone la recuperación, no la incomodidad.
+
+  - id: con-03
+    texto: "Si cada pregunta se vive como ataque, la reconstrucción no empezó."
+    destacar: [ataque]
+    principio: "La actitud defensiva del ofensor ante preguntas predice menor recuperación de la confianza que la respuesta abierta."
+    fuente: "Gordon y Baucom (2003); Gottman (2011), atonement."
+    reflexion: >-
+      Hay una etapa en la que el que preguntó mil veces necesita preguntar una
+      vez más. Contestar de nuevo, sin suspirar, es lo que de a poco baja la
+      alarma del otro. Defenderse la sube. No es justo ni cómodo, y es lo que
+      hay que hacer si se quiere volver.
+
+  - id: con-04
+    texto: "Perdonaste, no te acordás menos. Las dos cosas pueden convivir un tiempo."
+    destacar: [convivir]
+    principio: "Los recuerdos intrusivos tras una traición disminuyen gradualmente y su presencia no indica que el proceso haya fracasado."
+    fuente: "Gordon, Baucom y Snyder (2005); literatura sobre trauma relacional."
+    reflexion: >-
+      Mucha gente cree que si todavía le vuelven las imágenes es porque no
+      perdonó de verdad. No funciona así. Los recuerdos tardan más que la
+      decisión. Que aparezcan no significa que volviste atrás, significa que
+      todavía estás en el camino.
+
+  - id: con-05
+    texto: "Confiar de nuevo es una apuesta. No hay forma de sacarle el riesgo."
+    destacar: [apuesta]
+    principio: "La confianza implica vulnerabilidad voluntaria ante la posibilidad de daño; no puede fundarse en certeza."
+    fuente: "Mayer, Davis y Schoorman (1995), modelo integrador de confianza."
+    reflexion: >-
+      Quien fue dañado busca una garantía antes de volver a abrirse, y esa
+      garantía no existe. Lo que sí se puede medir es la probabilidad: qué
+      hace el otro hoy, con qué constancia, durante cuánto. Eso no saca el
+      riesgo. Lo vuelve razonable o no.
+
+  - id: con-06
+    texto: "Vigilar el teléfono calma diez minutos y alimenta la desconfianza."
+    destacar: [vigilar]
+    principio: "Las conductas de comprobación reducen la ansiedad a corto plazo y la mantienen a largo plazo al impedir la desconfirmación."
+    fuente: "Salkovskis (1999), modelo de conductas de seguridad."
+    reflexion: >-
+      Revisar funciona como un alivio inmediato, y por eso se repite. El
+      problema es que cada revisión le enseña a tu cabeza que sin revisar no
+      se puede estar tranquilo. La calma que da hoy te cobra más ansiedad
+      mañana.
+
+  - id: con-07
+    texto: "Hay confianza que no vuelve, y no es un fracaso de nadie."
+    destacar: [vuelve]
+    principio: "No todas las rupturas de confianza se recuperan; la decisión de no reconstruir es un desenlace legítimo del proceso."
+    fuente: "Gordon, Baucom y Snyder (2004); Enright y Fitzgibbons (2015)."
+    reflexion: >-
+      A veces se hace todo bien -se habla, se repara, se espera- y la confianza
+      no vuelve. Eso no quiere decir que faltó voluntad. Hay vínculos que no
+      resisten ciertas cosas, y decidir no seguir también es un final del
+      proceso y no una interrupción.
+
+  - id: con-08
+    texto: "Prometer que no vuelve a pasar no sirve. Contar cómo vas a evitarlo, sí."
+    destacar: [cómo]
+    principio: "Los planes de implementación, que especifican situación y respuesta, predicen el cambio de conducta mejor que las intenciones generales."
+    fuente: "Gollwitzer y Sheeran (2006), metaanálisis de intenciones de implementación."
+    reflexion: >-
+      Prometer que no pasa de nuevo es una intención, y las intenciones
+      generales casi no cambian conducta. Si pasa esto, hago esto otro sí la cambia. Aplicado acá: no
+      alcanza con jurar, hay que decir qué situaciones se evitan y qué se hace
+      cuando aparecen.
+
+  - id: con-09
+    texto: "Quien rompió no decide cuánto tarda el otro en volver a confiar."
+    destacar: [tarda]
+    principio: "Imponer plazos a la recuperación del dañado se asocia a menor restauración de la confianza y a mayor conflicto."
+    fuente: "Gordon y Baucom (2003); Worthington (2006)."
+    reflexion: >-
+      Es frecuente que quien falló quiera cerrar el tema: ya pedí perdón,
+      hasta cuándo. Ese apuro vuelve a poner sus necesidades primero, que es
+      justo lo que rompió la confianza. El tiempo lo marca el que fue dañado,
+      y el otro lo acompaña.

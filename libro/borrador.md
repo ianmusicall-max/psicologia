@@ -2,7 +2,7 @@
 
 # Frases para pensar
 
-*Borrador armado del banco de frases: 19 capítulos, 153 frases.*
+*Borrador armado del banco de frases: 29 capítulos, 243 frases.*
 
 ## Índice
 
@@ -25,6 +25,16 @@
 17. Los que sí elegiste (8 frases)
 18. Culpa y vergüenza no son lo mismo (8 frases)
 19. El deseo con el tiempo (8 frases)
+20. Perdonar no es volver (9 frases)
+21. Estar solo no es sentirse solo (9 frases)
+22. Discutir sin romper (9 frases)
+23. Reconstruir lo que se rompió (9 frases)
+24. Medirte contra una vidriera (9 frases)
+25. La plata en la pareja (9 frases)
+26. El día a día que nadie cuenta (9 frases)
+27. Lo que nos contaron del amor (9 frases)
+28. La gente cambia, pero no así (9 frases)
+29. El miedo que decide por vos (9 frases)
 
 
 ## Capítulo 1 · Sentir no es un error
@@ -1346,14 +1356,787 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 *Fuente:* Impett, Peplau & Gable (2005); Muise, Impett & Desmarais (2013), motivos sexuales.
 
 
+## Capítulo 20 · Perdonar no es volver
+
+Perdonar y reconciliar son dos decisiones distintas, y confundirlas atrapa a mucha gente: creen que soltar el rencor les obliga a volver. Perdonar es dejar de cobrarle a alguien una deuda que ya no va a pagar; reconciliar es volver a confiar, y eso exige que el otro cambie. Se puede hacer lo primero sin lo segundo.
+
+
+> Perdonar no es decir que estuvo bien. Es dejar de pagar vos la cuenta.
+
+Mucha gente no perdona porque cree que perdonar es firmar que lo que le hicieron estuvo bien. No es eso. El daño sigue siendo daño; lo que cambia es quién carga con el costo diario de recordarlo. Podés tener razón y aun así estar cansado de sostenerla.
+
+*Principio:* El perdón se define como la reducción de la motivación de venganza y evitación, no como excusar el daño ni como reconciliarse.  
+*Fuente:* McCullough, Worthington y Rachal (1997); Enright (2001).
+
+
+> Perdonar y volver son dos decisiones. Nadie te obliga a tomar las dos.
+
+Se confunden todo el tiempo, y esa confusión deja a gente atrapada en vínculos que ya no quiere. Podés soltar el rencor y no volver a abrir la puerta. Podés desearle que le vaya bien desde lejos. La única condición que el perdón te pone es interna.
+
+*Principio:* Perdón y reconciliación son procesos separables: el primero es intrapersonal, el segundo requiere confianza restaurada y cambio del otro.  
+*Fuente:* Enright y Fitzgibbons (2015), terapia del perdón.
+
+
+> El rencor es una deuda que cobrás vos todos los días.
+
+Cuando repasás lo que te hicieron, tu cuerpo responde como si estuviera pasando otra vez: sube la presión, se tensa todo. El otro no se entera. La escena se repite en una sola cabeza, y es la tuya. Eso no te pide perdonar por generosidad; te lo pide por descanso.
+
+*Principio:* Rumiar una ofensa mantiene activa la respuesta de estrés; el malestar fisiológico persiste aunque el otro no esté presente.  
+*Fuente:* Witvliet, Ludwig y Vander Laan (2001), respuestas cardiovasculares.
+
+
+> Pedir perdón sin cambiar nada es pedir permiso para repetirlo.
+
+Hay disculpas que funcionan como un botón de reinicio: se dicen, baja la tensión y todo sigue igual hasta la próxima. Lo que distingue a una disculpa real no es la emoción con la que se dice, sino lo que pasa la semana siguiente. Mirá eso y no el tono.
+
+*Principio:* Una disculpa eficaz incluye reconocimiento del daño, responsabilidad sin excusas, reparación y un cambio verificable de conducta.  
+*Fuente:* Lewicki, Polin y Lount (2016), componentes de la disculpa.
+
+
+> Perdonarte a vos mismo también cuenta, y suele ser lo último que se hace.
+
+Mucha gente perdona a otros con facilidad y se guarda el juicio más duro para sí. El autoperdón que sirve no es el que dice que no pasó nada: es el que reconoce el daño, hace lo que puede para repararlo y después deja de cobrarse. Lo primero sin lo segundo es solo castigo.
+
+*Principio:* El autoperdón se asocia a menor depresión y ansiedad, y funciona mejor cuando incluye responsabilidad y reparación, no solo alivio.  
+*Fuente:* Hall y Fincham (2005); Woodyatt y Wenzel (2013).
+
+
+> No hace falta que el otro lo entienda para que vos puedas seguir.
+
+Hay gente que espera años una conversación que no va a ocurrir: que reconozca, que explique, que se haga cargo. Esa espera convierte tu descanso en algo que decide otro. Podés cerrar vos lo que el otro dejó abierto, aunque sea menos justo de lo que merecías.
+
+*Principio:* El perdón no requiere la participación del ofensor; intervenciones unilaterales reducen la rumiación y mejoran el estado de ánimo.  
+*Fuente:* Wade, Hoyt, Kidwell y Worthington (2014), metaanálisis de intervenciones.
+
+
+> Hay cosas que no se perdonan rápido, y apurarlo no las perdona mejor.
+
+Hay un perdón que llega antes de tiempo, empujado por la incomodidad o por la presión de otros. Ese no sostiene: vuelve como enojo por cosas chicas. Reconocer primero el tamaño de lo que pasó no es regodearse, es lo que hace que después el perdón aguante.
+
+*Principio:* El perdón prematuro, sin procesar la ofensa, predice peor ajuste que el perdón alcanzado tras reconocer el daño.  
+*Fuente:* Luskin (2002); McNulty (2011), efectos según el contexto.
+
+
+> Si cada vez que perdonás vuelve a pasar, el problema no es tu perdón.
+
+El perdón repetido sin cambio del otro no es generosidad, es información: le dice que esto no cuesta. Hay vínculos donde perdonar una vez abre una puerta y perdonar cinco la deja sin picaporte. Ahí lo que falta no es indulgencia, es un límite.
+
+*Principio:* Perdonar a una pareja que no repara su conducta se asocia a reincidencia; el perdón funciona como señal de que el costo es bajo.  
+*Fuente:* McNulty (2011), estudio longitudinal en parejas.
+
+
+> Lo que soltás no es la historia. Es el peso de estar reclamándola.
+
+Nadie te pide que borres lo que pasó, ni que lo cuentes distinto. Lo que cambia es el lugar que ocupa: deja de ser un reclamo que llevás abierto y pasa a ser algo que te pasó. Seguís sabiéndolo. Ya no estás esperando que alguien lo repare.
+
+*Principio:* El perdón no implica olvidar ni minimizar; implica cambiar la relación con el recuerdo, de demanda activa a hecho pasado.  
+*Fuente:* Worthington (2006), modelo REACH del perdón.
+
+
+## Capítulo 21 · Estar solo no es sentirse solo
+
+La soledad que duele no se mide en personas alrededor: se mide en la distancia entre los vínculos que tenés y los que querrías tener. Por eso se puede estar acompañado y sentirse solo, y vivir solo sin sentirlo. Es una señal, como el hambre, y lo que la calma no es más gente sino más cercanía.
+
+
+> Se puede estar rodeado de gente y seguir sintiéndote solo. No estás fallando.
+
+La soledad no cuenta cabezas, mide distancia. Por eso una mesa llena puede dejarte más solo que una tarde a solas: lo que falta no es compañía, es que alguien sepa de verdad cómo estás. Entenderlo cambia lo que buscás: no más planes, más cercanía en alguno.
+
+*Principio:* La soledad se define como la discrepancia entre las relaciones deseadas y las percibidas, no como aislamiento objetivo.  
+*Fuente:* Peplau y Perlman (1982); Cacioppo y Patrick (2008).
+
+
+> La soledad funciona como el hambre: avisa de algo que falta.
+
+Es incómoda a propósito. Si no doliera, nadie haría el esfuerzo de acercarse a otro. Tratarla como un defecto de carácter es como enojarse con el hambre. Es una señal, y como toda señal conviene escuchar qué está pidiendo antes de taparla.
+
+*Principio:* La soledad se conceptualiza como una señal aversiva que motiva la reconexión social, análoga a las señales de hambre o dolor.  
+*Fuente:* Cacioppo y Hawkley (2009), modelo evolutivo de la soledad.
+
+
+> Estar solo un rato no es lo mismo que estar aislado mucho tiempo.
+
+Hay una soledad que elegís y que descansa, y otra que te pasa y que desgasta. La diferencia no está en las horas sino en si la puerta está abierta. Si podés volver cuando querés, es descanso. Si no sabés cómo volver, es otra cosa.
+
+*Principio:* La soledad elegida y breve se asocia a recuperación y creatividad; el aislamiento crónico percibido se asocia a peor salud física y mental.  
+*Fuente:* Long y Averill (2003); Holt-Lunstad y colegas (2015), metaanálisis.
+
+
+> La soledad te hace ver amenaza donde hay distracción. Ese es su truco.
+
+Cuando llevás tiempo solo, el cerebro empieza a leer rechazo en cosas que no lo son: un mensaje que tarda, una cara distraída. Y esa lectura te hace retirarte, lo que te deja más solo. Saber que el filtro está puesto es lo que te permite no creerle del todo.
+
+*Principio:* La soledad crónica aumenta la vigilancia ante señales sociales negativas y sesga la interpretación de gestos ambiguos como rechazo.  
+*Fuente:* Cacioppo y Hawkley (2009); Spithoven, Bijttebier y Goossens (2017).
+
+
+> Un vínculo donde podés decir la verdad vale más que diez donde actuás.
+
+El estudio más largo que se hizo sobre vidas adultas encontró que lo que sostiene no es la agenda llena: es tener vínculos donde no hace falta actuar. Uno o dos alcanzan. Si estás midiendo tu vida social por cantidad, estás mirando la columna equivocada.
+
+*Principio:* La calidad percibida de las relaciones predice bienestar mejor que la cantidad de contactos sociales.  
+*Fuente:* Waldinger y Schulz (2010), Estudio de Harvard sobre el desarrollo adulto.
+
+
+> Esperar a sentirte bien para ver gente es esperar al revés.
+
+La trampa es que el ánimo bajo te saca las ganas justo de lo que lo levanta. Si esperás a tener ganas, la espera se hace larga. Lo que suele funcionar es al revés: ir primero, aunque sea un rato corto, y dejar que las ganas lleguen después.
+
+*Principio:* El contacto social predice aumentos posteriores del estado de ánimo; esperar a sentirse bien invierte la secuencia y mantiene el retraimiento.  
+*Fuente:* Lewinsohn (1974), modelo conductual; activación conductual.
+
+
+> Las conversaciones cortas con desconocidos también cuentan. Más de lo que parece.
+
+Hablar dos minutos con quien te atiende el café parece insignificante y no lo es. Esos contactos sostienen una parte del tejido que las relaciones cercanas no cubren. No reemplazan a nadie; hacen que el día tenga a alguien adentro.
+
+*Principio:* Las interacciones breves con vínculos débiles se asocian a aumentos medibles de bienestar y sentido de pertenencia.  
+*Fuente:* Sandstrom y Dunn (2014), estudios con vínculos débiles.
+
+
+> Pedir compañía no es ser una carga. Es la forma en que se arman los vínculos.
+
+Quien pide ayuda casi siempre cree que molesta más de lo que molesta, y quien la recibe casi siempre se alegra más de lo que el otro imagina. Esa diferencia hace que muchos vínculos no empiecen nunca. Alguien tiene que mandar el primer mensaje.
+
+*Principio:* Las personas tienden a sobrestimar el costo que su pedido representa para otros y a subestimar la disposición a ayudar.  
+*Fuente:* Flynn y Lake (2008); Zhao y Epley (2022).
+
+
+> Si te aislás cuando estás mal, tu cabeza se queda sin nadie que la contradiga.
+
+Solo, las ideas sobre vos mismo no encuentran resistencia: giran y se confirman. Una conversación cualquiera las interrumpe, aunque no hablen del tema. No hace falta contarle todo a nadie. Alcanza con que haya otra voz en el día.
+
+*Principio:* El aislamiento reduce la exposición a perspectivas alternativas y facilita el mantenimiento de interpretaciones negativas sobre uno mismo.  
+*Fuente:* Nolen-Hoeksema (2000), rumiación; terapia cognitiva.
+
+
+## Capítulo 22 · Discutir sin romper
+
+Las parejas que duran no discuten menos: discuten distinto. Lo que predice la ruptura no es la cantidad de conflictos sino cuatro maneras de pelear -criticar a la persona en vez del hecho, despreciar, defenderse de todo y apagarse- y la capacidad de frenar a tiempo. Discutir bien se aprende.
+
+
+> Los primeros tres minutos de una discusión predicen cómo termina.
+
+No es magia: una discusión que arranca con un reproche pone al otro a defenderse, y desde ahí ya nadie escucha. Cambiar el arranque cambia casi todo lo que viene después. Empezar por el hecho y no por la acusación vale más que cualquier técnica del medio.
+
+*Principio:* El tono de los primeros minutos de una conversación conflictiva predice su desenlace y, en seguimientos largos, la estabilidad de la pareja.  
+*Fuente:* Gottman y Levenson (1999), arranque áspero.
+
+
+> Decí lo que pasó, no lo que el otro es. El hecho se discute, el carácter no.
+
+No es lo mismo dejaste los platos que siempre sos un desastre. Lo primero tiene arreglo, lo segundo es una sentencia sobre quién es. Y nadie negocia con una sentencia: se defiende. La queja concreta deja la puerta abierta; la etiqueta la cierra.
+
+*Principio:* La crítica a la persona, frente a la queja sobre una conducta concreta, escala el conflicto y reduce la probabilidad de resolución.  
+*Fuente:* Gottman (1994), los cuatro jinetes.
+
+
+> El desprecio es el que más daño hace. Y casi siempre empieza en un gesto.
+
+Poner los ojos en blanco, imitar el tono del otro, reírse de lo que dijo. Son segundos y dejan marca, porque no discuten una idea: dicen que la persona vale menos. Es lo primero que conviene sacar, incluso antes de aprender a escuchar mejor.
+
+*Principio:* El desprecio es el predictor individual más fuerte de disolución en los estudios de observación de parejas.  
+*Fuente:* Gottman y Silver (1999), observación longitudinal.
+
+
+> Si ya no escuchás, no estás discutiendo: estás esperando tu turno.
+
+Pasado cierto punto, el cuerpo entra en alerta y la conversación se vuelve imposible: el otro habla y vos ya estás armando la respuesta. No es mala voluntad, es fisiología. Lo único que sirve ahí es parar, y volver cuando bajó.
+
+*Principio:* Durante la activación fisiológica alta se reduce la capacidad de procesar información nueva y aumenta la conducta defensiva.  
+*Fuente:* Gottman (1994), inundación fisiológica.
+
+
+> Pedir veinte minutos no es escaparse. Escaparse es no volver.
+
+La pausa funciona con dos condiciones: que dure lo suficiente para que el cuerpo baje, y que se avise cuándo se vuelve. Sin lo segundo, el otro no lee una pausa sino un portazo, y la próxima vez va a querer resolver todo antes de que te vayas.
+
+*Principio:* La pausa eficaz requiere un tiempo mínimo de recuperación fisiológica y un acuerdo explícito de retomar la conversación.  
+*Fuente:* Gottman y Silver (1999); Levenson y Gottman (1985).
+
+
+> La mayoría de los problemas de una pareja no se resuelven. Se administran.
+
+Dos tercios de lo que se discute no tiene solución: uno es más ordenado, el otro llega tarde, a uno le gusta salir. Buscar la solución definitiva es lo que convierte un tema en una guerra. Las parejas que duran aprenden a hablar del mismo asunto sin lastimarse.
+
+*Principio:* Cerca de dos tercios de los conflictos de pareja son perpetuos, ligados a diferencias estables de personalidad o valores.  
+*Fuente:* Gottman y Silver (1999), problemas perpetuos.
+
+
+> Un chiste a tiempo repara más que una hora de explicaciones.
+
+En medio de una pelea aparecen pequeños gestos que buscan bajar el tono: una broma, una mano, un cambio de voz. Lo que marca la diferencia no es que aparezcan sino que el otro los acepte. Son más importantes que el argumento que estaban discutiendo.
+
+*Principio:* Los intentos de reparación durante el conflicto, y su aceptación, distinguen a las parejas estables de las que se separan.  
+*Fuente:* Gottman (1999), intentos de reparación.
+
+
+> Detrás de casi todo reclamo hay un pedido. Decí el pedido.
+
+Nunca me acompañás es un reclamo; me gustaría que vinieras el viernes es un pedido. El reclamo invita a defenderse, el pedido invita a contestar sí o no. Traducir uno en el otro cuesta un segundo y cambia la conversación entera.
+
+*Principio:* Formular una necesidad concreta en lugar de una queja aumenta la probabilidad de respuesta positiva de la pareja.  
+*Fuente:* Rosenberg (2003), comunicación no violenta; Gottman (1999).
+
+
+> Ganar la discusión y perder la noche no es ganar.
+
+En una pareja no hay un jurado. Probar que tenías razón te deja con la razón y con alguien dolido al lado, que es un premio bastante pobre. La pregunta útil en el medio de una pelea no es quién tiene razón sino qué quiero que pase después.
+
+*Principio:* El objetivo de la comunicación conflictiva en parejas estables es la comprensión mutua, no la determinación de quién tiene razón.  
+*Fuente:* Gottman y Silver (1999); Markman, Stanley y Blumberg (2010).
+
+
+## Capítulo 23 · Reconstruir lo que se rompió
+
+La confianza no se recupera con promesas sino con tiempo y transparencia sostenida. Después de una traición hay dos trabajos distintos: el de quien dañó, que es hacerse cargo y volverse previsible, y el de quien fue dañado, que es decidir si quiere volver a arriesgar. Ninguno puede hacer el del otro.
+
+
+> La confianza no se promete. Se acumula en cosas chicas y repetidas.
+
+Nadie confía porque le dijeron confiá en mí. Se confía porque el otro avisó que llegaba tarde, porque hizo lo que dijo que iba a hacer, porque contó algo incómodo en vez de esconderlo. Son cosas minúsculas, y son el único material que hay.
+
+*Principio:* La confianza se construye por acumulación de conductas consistentes y previsibles a lo largo del tiempo, no por declaraciones de intención.  
+*Fuente:* Rempel, Holmes y Zanna (1985), dimensiones de la confianza.
+
+
+> Después de una traición, la transparencia no es castigo. Es la obra.
+
+Quien rompió la confianza suele vivir las preguntas como una condena interminable. No lo son: son el único modo de reconstruir lo que no se puede declarar. La transparencia tiene fecha de vencimiento, pero esa fecha la pone la recuperación, no la incomodidad.
+
+*Principio:* La recuperación de la confianza tras una infidelidad se asocia a apertura sostenida del ofensor y disponibilidad para responder preguntas.  
+*Fuente:* Gordon, Baucom y Snyder (2004), modelo de recuperación en tres etapas.
+
+
+> Si cada pregunta se vive como ataque, la reconstrucción no empezó.
+
+Hay una etapa en la que el que preguntó mil veces necesita preguntar una vez más. Contestar de nuevo, sin suspirar, es lo que de a poco baja la alarma del otro. Defenderse la sube. No es justo ni cómodo, y es lo que hay que hacer si se quiere volver.
+
+*Principio:* La actitud defensiva del ofensor ante preguntas predice menor recuperación de la confianza que la respuesta abierta.  
+*Fuente:* Gordon y Baucom (2003); Gottman (2011), atonement.
+
+
+> Perdonaste, no te acordás menos. Las dos cosas pueden convivir un tiempo.
+
+Mucha gente cree que si todavía le vuelven las imágenes es porque no perdonó de verdad. No funciona así. Los recuerdos tardan más que la decisión. Que aparezcan no significa que volviste atrás, significa que todavía estás en el camino.
+
+*Principio:* Los recuerdos intrusivos tras una traición disminuyen gradualmente y su presencia no indica que el proceso haya fracasado.  
+*Fuente:* Gordon, Baucom y Snyder (2005); literatura sobre trauma relacional.
+
+
+> Confiar de nuevo es una apuesta. No hay forma de sacarle el riesgo.
+
+Quien fue dañado busca una garantía antes de volver a abrirse, y esa garantía no existe. Lo que sí se puede medir es la probabilidad: qué hace el otro hoy, con qué constancia, durante cuánto. Eso no saca el riesgo. Lo vuelve razonable o no.
+
+*Principio:* La confianza implica vulnerabilidad voluntaria ante la posibilidad de daño; no puede fundarse en certeza.  
+*Fuente:* Mayer, Davis y Schoorman (1995), modelo integrador de confianza.
+
+
+> Vigilar el teléfono calma diez minutos y alimenta la desconfianza.
+
+Revisar funciona como un alivio inmediato, y por eso se repite. El problema es que cada revisión le enseña a tu cabeza que sin revisar no se puede estar tranquilo. La calma que da hoy te cobra más ansiedad mañana.
+
+*Principio:* Las conductas de comprobación reducen la ansiedad a corto plazo y la mantienen a largo plazo al impedir la desconfirmación.  
+*Fuente:* Salkovskis (1999), modelo de conductas de seguridad.
+
+
+> Hay confianza que no vuelve, y no es un fracaso de nadie.
+
+A veces se hace todo bien -se habla, se repara, se espera- y la confianza no vuelve. Eso no quiere decir que faltó voluntad. Hay vínculos que no resisten ciertas cosas, y decidir no seguir también es un final del proceso y no una interrupción.
+
+*Principio:* No todas las rupturas de confianza se recuperan; la decisión de no reconstruir es un desenlace legítimo del proceso.  
+*Fuente:* Gordon, Baucom y Snyder (2004); Enright y Fitzgibbons (2015).
+
+
+> Prometer que no vuelve a pasar no sirve. Contar cómo vas a evitarlo, sí.
+
+Prometer que no pasa de nuevo es una intención, y las intenciones generales casi no cambian conducta. Si pasa esto, hago esto otro sí la cambia. Aplicado acá: no alcanza con jurar, hay que decir qué situaciones se evitan y qué se hace cuando aparecen.
+
+*Principio:* Los planes de implementación, que especifican situación y respuesta, predicen el cambio de conducta mejor que las intenciones generales.  
+*Fuente:* Gollwitzer y Sheeran (2006), metaanálisis de intenciones de implementación.
+
+
+> Quien rompió no decide cuánto tarda el otro en volver a confiar.
+
+Es frecuente que quien falló quiera cerrar el tema: ya pedí perdón, hasta cuándo. Ese apuro vuelve a poner sus necesidades primero, que es justo lo que rompió la confianza. El tiempo lo marca el que fue dañado, y el otro lo acompaña.
+
+*Principio:* Imponer plazos a la recuperación del dañado se asocia a menor restauración de la confianza y a mayor conflicto.  
+*Fuente:* Gordon y Baucom (2003); Worthington (2006).
+
+
+## Capítulo 24 · Medirte contra una vidriera
+
+Compararse es automático, pero el material con el que nos comparamos cambió: hoy medimos nuestro día completo contra los momentos editados de cientos de personas. La comparación hacia arriba, sostenida y con desconocidos, predice peor ánimo. No se trata de dejar de comparar sino de elegir contra qué.
+
+
+> Comparás tu día entero con el mejor minuto del otro.
+
+Vos tenés acceso a tu día completo: el aburrimiento, la discusión, el rato tirado en la cama. Del otro ves quince segundos elegidos entre cien. La comparación no es injusta por envidia, es injusta porque los dos lados no tienen el mismo tamaño.
+
+*Principio:* El contenido social en línea muestra momentos seleccionados, lo que sesga la comparación al presentar solo los extremos positivos de otros.  
+*Fuente:* Chou y Edge (2012), percepción de las vidas ajenas.
+
+
+> El problema no es mirar. Es mirar durante una hora sin hacer nada más.
+
+Scrollear sin interactuar es lo que más se asocia a sentirse peor después. Escribirle a alguien, en cambio, no. La misma aplicación hace dos cosas distintas según cómo se use, y el cuerpo nota la diferencia aunque uno no la nombre.
+
+*Principio:* El uso pasivo de redes sociales se asocia a descensos del bienestar, mientras que el uso activo y la interacción directa no muestran el mismo efecto.  
+*Fuente:* Verduyn y colegas (2015); Burke y Kraut (2016).
+
+
+> Compararte con quien empezó hace diez años no te dice nada útil.
+
+La comparación sirve para orientarse: saber si vas bien, qué te falta. Para eso el otro tiene que ser parecido a vos en el punto de partida. Contra alguien que lleva una década de ventaja no obtenés información, obtenés desánimo.
+
+*Principio:* La comparación social es informativa cuando el referente es similar en condiciones de partida; con referentes muy distintos pierde valor diagnóstico.  
+*Fuente:* Festinger (1954), teoría de la comparación social.
+
+
+> Mirar a alguien que va mejor puede alentarte o hundirte. Depende de si lo ves posible.
+
+El mismo ejemplo funciona de dos maneras opuestas. Si pensás eso lo puedo hacer, te empuja. Si pensás yo nunca, te desarma. Antes de seguir a alguien conviene notar cuál de las dos cosas te pasa en el cuerpo cuando lo mirás.
+
+*Principio:* La comparación ascendente motiva cuando el referente se percibe como alcanzable y desmoraliza cuando se percibe como inalcanzable.  
+*Fuente:* Lockwood y Kunda (1997), modelos a seguir.
+
+
+> La envidia te está señalando algo que querés. Eso es información.
+
+La envidia tiene mala fama y es un dato preciso: marca lo que querrías y no estás teniendo. La diferencia está en hacia dónde apunta. Si apunta a lo que el otro consiguió, te mueve. Si apunta a que el otro lo pierda, te deja donde estabas.
+
+*Principio:* La envidia benigna, dirigida a lo que el otro logró, se asocia a motivación de mejora; la envidia maliciosa, dirigida a la persona, no.  
+*Fuente:* Van de Ven, Zeelenberg y Pieters (2009), dos tipos de envidia.
+
+
+> Nadie postea la parte en la que no sabía qué hacer.
+
+En un estudio, la gente subestimaba sistemáticamente cuánto sufrían los demás, porque el malestar ajeno no se ve. Eso ya pasaba antes de las redes; ahora pasa a escala. Lo que parece que a todos les va bien es, en buena medida, lo que a nadie le conviene mostrar.
+
+*Principio:* Las normas de autopresentación en línea favorecen mostrar logros y ocultar dificultades, lo que genera percepciones distorsionadas de la norma.  
+*Fuente:* Jordan y colegas (2011), subestimación del malestar ajeno.
+
+
+> Compararte con vos de hace un año es la única comparación con datos reales.
+
+De esa comparación tenés las dos mitades: sabés de dónde saliste y lo que costó. No hay edición de por medio. Es la única medida que te dice algo verdadero sobre si estás avanzando, y casi nunca es la que usamos.
+
+*Principio:* La comparación temporal con uno mismo se asocia a mayor bienestar que la comparación social, al usar un referente con información completa.  
+*Fuente:* Albert (1977), comparación temporal; Wilson y Ross (2000).
+
+
+> Seguir cuentas que te hacen sentir mal no es información. Es un hábito.
+
+Casi nadie decide cada mañana ver eso que lo deja peor: la mano abre la aplicación sola. Por eso el consejo de tener más fuerza de voluntad no funciona y cambiar lo que aparece en la pantalla sí. Dejar de seguir no es un gesto dramático; es sacar el disparador.
+
+*Principio:* La exposición repetida a contenido que genera comparación negativa se mantiene por hábito automático más que por decisión deliberada.  
+*Fuente:* Wood y Neal (2007), hábitos; Verduyn y colegas (2017).
+
+
+> Si todo lo que ves te muestra lo que te falta, vas a sentir que te falta todo.
+
+La vara con la que medís tu vida no es fija: se arma con lo que ves seguido. Si lo que ves seguido son casas, viajes y parejas perfectas, tu vida normal va a parecer poca, aunque no haya cambiado nada en ella. Cambiar la dieta cambia la vara.
+
+*Principio:* La exposición selectiva a referentes superiores desplaza el punto de referencia usado para evaluar la propia situación.  
+*Fuente:* Kahneman y Tversky (1979), puntos de referencia; Festinger (1954).
+
+
+## Capítulo 25 · La plata en la pareja
+
+El dinero es uno de los temas que más se discute en pareja y casi nunca se discute por el dinero: se discute por lo que significa para cada uno -seguridad, libertad, estatus, control-. Las parejas que lo manejan bien no ganan más: hablan del tema antes de que explote y acuerdan reglas claras.
+
+
+> Casi nunca pelean por la plata. Pelean por lo que la plata significa.
+
+Para uno gastar es disfrutar lo que costó ganar; para el otro ahorrar es dormir tranquilo. No están discutiendo un monto, están discutiendo dos ideas de seguridad. Mientras la conversación sea sobre el número, no se resuelve.
+
+*Principio:* Los conflictos financieros en pareja suelen reflejar diferencias de valores y significados atribuidos al dinero más que la cantidad disponible.  
+*Fuente:* Papp, Cummings y Goeke-Morey (2009), conflictos cotidianos.
+
+
+> Las discusiones por dinero son las que más se repiten sin resolverse.
+
+En los estudios que registran discusiones día por día, las de dinero duran más, suben más de tono y terminan sin acuerdo más seguido que las de cualquier otro tema. Saberlo ayuda: no es que ustedes sean especialmente malos en esto.
+
+*Principio:* Los desacuerdos financieros son más recurrentes, más intensos y se resuelven peor que otros temas de conflicto en parejas.  
+*Fuente:* Papp, Cummings y Goeke-Morey (2009); Dew, Britt y Huston (2012).
+
+
+> Esconder gastos hace más daño que el gasto.
+
+Lo que rompe no es haber comprado algo caro: es haberlo guardado. El monto se discute una tarde; el descubrimiento de que hubo algo oculto reabre la pregunta de qué más no sé. Por eso conviene decirlo antes, incluso cuando da vergüenza.
+
+*Principio:* La ocultación financiera a la pareja se asocia a menor satisfacción relacional, con efecto independiente del monto implicado.  
+*Fuente:* Jeanfreau, Noguchi, Mong y Stadthagen (2018), infidelidad financiera.
+
+
+> Tener algo propio no es desconfiar. Es tener margen.
+
+Un fondo común para lo que es de los dos y un margen propio para lo que no necesita explicación suele funcionar mejor que los extremos. Evita dos problemas a la vez: rendir cuentas por cada café y no saber nunca cómo están parados.
+
+*Principio:* Los arreglos que combinan fondos comunes con cuentas individuales se asocian a menor conflicto que los modelos puramente separados o totalmente comunes.  
+*Fuente:* Olson y Rick (2022); Pahl (1995), gestión del dinero en pareja.
+
+
+> El que gana más no gana la discusión.
+
+Cuando uno aporta más y eso se convierte en que decide más, aparece un desequilibrio que desgasta aunque nadie lo diga en voz alta. La diferencia de ingresos no es el problema; convertirla en autoridad sí. Conviene nombrarlo antes de que se vuelva costumbre.
+
+*Principio:* La asimetría de ingresos se asocia a mayor conflicto cuando se traduce en poder de decisión desigual, no por la diferencia en sí.  
+*Fuente:* Kulik (2011); Bennett (2013), poder económico y satisfacción.
+
+
+> Hablar de plata una vez al mes evita la conversación de emergencia.
+
+Si el tema solo aparece cuando algo salió mal, el tema queda asociado a pelear. Una conversación corta y agendada, cuando no pasa nada, hace que la próxima no arranque en el peor momento. Veinte minutos al mes alcanzan.
+
+*Principio:* Las parejas que planifican finanzas de forma regular reportan mayor satisfacción y menor conflicto financiero.  
+*Fuente:* Dew y Stewart (2012); Archuleta, Britt y Grable (2011).
+
+
+> Los dos tienen que saber cómo están. No saber también es una decisión.
+
+Es común que uno se encargue de todo y el otro prefiera no mirar. Mientras todo va bien no se nota, y el día que cambia algo, uno de los dos no sabe ni dónde están las cuentas. No hace falta administrar de a dos; hace falta que los dos sepan.
+
+*Principio:* La delegación total de las finanzas en un miembro de la pareja se asocia a mayor vulnerabilidad económica del otro ante separación o viudez.  
+*Fuente:* Pahl (1995); literatura sobre autonomía financiera.
+
+
+> Prestarle plata a alguien cercano compra un problema futuro, no un favor.
+
+Los vínculos cercanos funcionan con una lógica de dar sin llevar cuenta; un préstamo mete adentro una lógica de deuda. Cuando las dos conviven, cada encuentro tiene una pregunta no dicha. Si vas a prestar, conviene decidir de antemano si podés regalarlo.
+
+*Principio:* Los préstamos informales entre allegados generan asimetrías de obligación que deterioran el vínculo cuando la devolución se demora.  
+*Fuente:* Clark y Mills (1979), relaciones comunales e intercambio.
+
+
+> Los acuerdos de plata se escriben. No por desconfianza, por memoria.
+
+Dos personas honestas recuerdan el mismo acuerdo de maneras distintas, y cada una recuerda la versión que la favorece un poco. No hace falta mala fe para terminar discutiendo qué se había dicho. Un mensaje escrito resuelve eso antes de que ocurra.
+
+*Principio:* La memoria de acuerdos verbales diverge sistemáticamente entre las partes, con sesgo autofavorable en la reconstrucción.  
+*Fuente:* Ross y Sicoly (1979), sesgo egocéntrico en la memoria.
+
+
+## Capítulo 26 · El día a día que nadie cuenta
+
+La convivencia se rompe en lo chico: el reparto de tareas, la carga de pensar en todo, los ruidos que molestan. Casi nada de eso es grave por sí mismo y casi todo se vuelve grave cuando se acumula sin hablarse. Lo que sostiene no es la compatibilidad sino la negociación explícita.
+
+
+> La tarea más pesada de la casa es acordarse de todo.
+
+Se puede repartir quién lava y quién cocina y que uno siga llevando toda la planificación: qué falta, cuándo se vence, a quién hay que avisar. Esa parte no se ve y cansa igual. Si el reparto solo cuenta acciones, deja afuera la mitad del trabajo.
+
+*Principio:* La carga mental, planificar y anticipar las tareas domésticas, se distribuye de forma más desigual que la ejecución y se asocia a agotamiento.  
+*Fuente:* Daminger (2019), la división del trabajo cognitivo en el hogar.
+
+
+> Ayudar en casa es la palabra del problema. No se ayuda en lo propio.
+
+Ayudar supone que la tarea es de otro y vos colaborás. Mientras la palabra siga ahí, la responsabilidad de que las cosas pasen queda en el mismo lugar, aunque las manos sean dos. Cambiar el verbo no resuelve el reparto, pero lo deja a la vista.
+
+*Principio:* El encuadre de la participación doméstica como ayuda mantiene la responsabilidad en un solo miembro y predice reparto desigual.  
+*Fuente:* Hochschild y Machung (1989), la segunda jornada.
+
+
+> Cada uno cree que hace más de la mitad. Los dos tienen razón en parte.
+
+Cuando se les pregunta por separado cuánto aporta cada uno, los porcentajes suman más de cien. No es que mientan: cada uno ve su propio esfuerzo completo y del otro solo lo que presenció. Saberlo baja el tono de la discusión antes de empezarla.
+
+*Principio:* Las personas recuerdan mejor sus propias contribuciones que las ajenas, por lo que la suma de los aportes percibidos supera el cien por cien.  
+*Fuente:* Ross y Sicoly (1979), sesgo de disponibilidad en la responsabilidad.
+
+
+> Lo que no se habla no desaparece. Se guarda y sale con intereses.
+
+Nadie estalla por un plato. Estalla por el plato número cuarenta, después de treinta y nueve veces en que no dijo nada para no hacer un problema. El que mira desde afuera ve una reacción enorme por algo mínimo, y tiene razón en lo mínimo y se pierde lo anterior.
+
+*Principio:* La acumulación de quejas no expresadas predice escaladas desproporcionadas ante desencadenantes menores.  
+*Fuente:* Gottman (1999); Baumeister, Stillwell y Wotman (1990).
+
+
+> Repartir tareas por gusto funciona mejor que repartirlas por justicia.
+
+Partir todo al medio suena justo y suele andar mal: cada uno hace cosas que detesta y las hace tarde y mal. Si a uno no le molesta cocinar y al otro no le molesta ordenar, repartir por eso da más resultado, mientras el total quede parejo.
+
+*Principio:* La asignación de tareas según preferencia y habilidad relativa se asocia a mayor cumplimiento y menor conflicto que el reparto estrictamente igualitario.  
+*Fuente:* Becker (1991); Coltrane (2000), revisión sobre trabajo doméstico.
+
+
+> Cada uno necesita un rato de nadie. Pedirlo no es rechazar al otro.
+
+Hay gente que se recarga sola y gente que se recarga acompañada, y la convivencia junta a las dos. Pedir una hora propio no dice nada del vínculo. Lo que daña es tomarla sin avisar, porque el otro lee distancia donde había cansancio.
+
+*Principio:* La necesidad de tiempo en soledad varía entre personas y su satisfacción se asocia a mejor regulación emocional y menor irritabilidad.  
+*Fuente:* Nguyen, Ryan y Deci (2018), soledad y autonomía.
+
+
+> Los pequeños ruidos no son pequeños cuando son todos los días.
+
+Un ruido una vez es nada. El mismo ruido cada noche durante un año es otra cosa, y quien lo sufre no está exagerando. En convivencia conviene tomarse en serio lo que se repite, aunque contado suene ridículo.
+
+*Principio:* Los estresores cotidianos menores, por su frecuencia, predicen malestar acumulado comparable al de eventos vitales aislados.  
+*Fuente:* Lazarus y Folkman (1984); Almeida (2005), estresores diarios.
+
+
+> Revisar el acuerdo cada tanto evita que se vuelva una pelea.
+
+Los repartos se arman solos al principio y después nadie los vuelve a mirar, aunque cambien los horarios y el trabajo. Sentarse veinte minutos cada tanto a revisar quién hace qué es menos incómodo que descubrirlo en medio de una discusión.
+
+*Principio:* Los acuerdos domésticos explícitos y revisados periódicamente se asocian a mayor equidad percibida que los arreglos implícitos.  
+*Fuente:* Coltrane (2000); Carlson, Miller y Sassler (2018).
+
+
+> Vivir juntos no prueba nada por sí solo. Lo que prueba es cómo se arregla lo que falla.
+
+Toda convivencia produce fricción: es lo que pasa cuando dos costumbres comparten metros cuadrados. Lo que distingue a las que funcionan no es que no choquen, es lo que hacen después del choque, y con qué rapidez.
+
+*Principio:* La estabilidad de la convivencia se asocia más a la capacidad de reparación tras el conflicto que a la ausencia de desacuerdos.  
+*Fuente:* Gottman (1999); Rusbult, Verette y colegas (1991), acomodación.
+
+
+## Capítulo 27 · Lo que nos contaron del amor
+
+Muchas de las ideas con las que entramos a una relación vienen de las historias que escuchamos, no de cómo funcionan los vínculos: que existe una persona destinada, que el amor verdadero no requiere esfuerzo, que si hay que hablarlo ya está mal. Esas creencias predicen peor ajuste cuando aparece la primera dificultad real.
+
+
+> Creer que existe una sola persona para vos vuelve cualquier problema una señal de error.
+
+Si creés que la relación correcta se reconoce porque fluye, el primer problema serio se lee como prueba de que no era. Si creés que las relaciones se construyen, el mismo problema se lee como algo que toca resolver. Los dos ven lo mismo y hacen cosas opuestas.
+
+*Principio:* Las creencias de destino se asocian a abandonar ante la dificultad, mientras que las creencias de crecimiento se asocian a persistir y resolver.  
+*Fuente:* Knee (1998), teorías implícitas de las relaciones.
+
+
+> Que cueste no significa que esté mal. Significa que es real.
+
+Las historias que consumimos muestran el enamoramiento y cortan antes de la convivencia. Entonces el esfuerzo aparece como síntoma y no como parte. Toda relación larga pide trabajo en algún tramo, y eso no la descalifica.
+
+*Principio:* El esfuerzo relacional no predice insatisfacción; la atribución del esfuerzo a incompatibilidad sí.  
+*Fuente:* Knee, Patrick y Lonsbary (2003); Franiuk, Cohen y Pomerantz (2002).
+
+
+> Nadie puede ser tu pareja, tu terapeuta, tu mejor amigo y tu familia entera.
+
+Hace cien años a una pareja se le pedía compañía y sustento. Hoy se le pide además crecimiento personal, vida social y comprensión total. Las expectativas subieron más rápido que el tiempo disponible, y eso vuelve frágil a vínculos que funcionarían bien con menos carga.
+
+*Principio:* La concentración de todas las necesidades relacionales en la pareja aumenta la presión sobre el vínculo y se asocia a menor satisfacción.  
+*Fuente:* Finkel y colegas (2014), el modelo del matrimonio asfixiante.
+
+
+> Si tengo que pedirlo, ya no vale: esa idea arruina más vínculos que el egoísmo.
+
+Se llama lectura de mente y es una de las creencias que más predice conflicto. Esperás que el otro adivine, el otro no adivina, y la falta de adivinación se interpreta como falta de amor. Pedir no le quita valor a lo que recibís.
+
+*Principio:* La expectativa de que la pareja anticipe las necesidades sin comunicación explícita predice mayor conflicto y menor satisfacción.  
+*Fuente:* Epstein y Eidelson (1981), creencias disfuncionales de pareja.
+
+
+> El enamoramiento intenso dura meses, no años. Lo que viene después es otra cosa, no menos.
+
+Hay un cambio químico y de atención en los primeros meses que no está diseñado para durar una década. Cuando baja, mucha gente cree que se terminó el amor. Lo que se terminó es una etapa, y lo que sigue tiene otras ventajas, aunque nadie las filme.
+
+*Principio:* La pasión intensa inicial tiende a disminuir con el tiempo, mientras que el amor compañero puede mantenerse o aumentar.  
+*Fuente:* Hatfield y Rapson (1993); Acevedo y Aron (2009).
+
+
+> Las comedias románticas no son manuales. Cortan justo donde empieza la vida en común.
+
+La historia termina en el beso. Lo que no se cuenta es quién saca la basura, cómo discuten por plata y qué hacen cuando uno está de mal humor tres días seguidos. Sin ese material, la vara con la que medimos una relación está armada solo con escenas finales.
+
+*Principio:* La exposición a contenido romántico idealizado se asocia a mayor endoso de creencias irreales sobre las relaciones.  
+*Fuente:* Holmes (2007); Johnson y Holmes (2009), medios y expectativas.
+
+
+> Elegir pareja pensando en quién vas a ser a los sesenta, no a los treinta.
+
+En el mayor estudio hecho sobre predicción de satisfacción en pareja, las características individuales del otro predijeron bastante poco; lo que más pesó fue cómo se sentía cada uno dentro del vínculo. Eso cambia qué mirar: menos el currículum, más cómo te tratan.
+
+*Principio:* La similitud en valores y metas a largo plazo predice estabilidad mejor que la atracción inicial o la similitud en intereses.  
+*Fuente:* Gonzaga, Campos y Bradbury (2007); Joel y colegas (2020).
+
+
+> La compatibilidad no se descubre. Se construye a fuerza de acuerdos.
+
+La idea de encajar sugiere que hay piezas que ya vienen con la forma correcta. En la práctica dos personas distintas se van acomodando a fuerza de hablar lo que no coincide. Lo que parece compatibilidad natural casi siempre es negociación vieja.
+
+*Principio:* La compatibilidad percibida aumenta con la negociación explícita de diferencias y no se explica solo por similitud previa.  
+*Fuente:* Knee (1998); Markman, Stanley y Blumberg (2010).
+
+
+> Nadie te completa. Como mucho, te acompaña mientras te completás vos.
+
+La idea de la media naranja suena romántica y pone un peso imposible: que el otro sea quien resuelva lo que te falta. Los vínculos aguantan mejor cuando cada uno llega entero y el otro suma, en vez de llegar roto y esperar reparación.
+
+*Principio:* La dependencia de la pareja para la regulación de la autoestima se asocia a mayor ansiedad relacional y menor satisfacción de ambos.  
+*Fuente:* Knee, Canevello, Bush y Cook (2008), contingencias de autoestima.
+
+
+## Capítulo 28 · La gente cambia, pero no así
+
+La gente cambia, pero no por amor, ni por una promesa, ni porque alguien se lo pida con suficiente insistencia. Cambia cuando el costo de seguir igual supera al de moverse, cuando decide hacerlo por sí misma y cuando el cambio se apoya en pasos concretos y en el entorno, no en la fuerza de voluntad.
+
+
+> Nadie cambia porque se lo pidan. Cambia cuando le conviene más cambiar que seguir.
+
+Lo que se hace para que el otro deje de insistir dura lo que dura la insistencia. Es la diferencia entre dejar de fumar porque tu pareja amenaza y dejar porque te asustaste vos. Desde afuera se parecen; a los seis meses no.
+
+*Principio:* El cambio sostenido requiere motivación autónoma; la presión externa produce cumplimiento temporal y mayor recaída.  
+*Fuente:* Deci y Ryan (2000), teoría de la autodeterminación.
+
+
+> Esperar que alguien cambie por amor es apostarle a lo que menos funciona.
+
+Los rasgos de fondo se mueven despacio y poco. Entrar a una relación contando con que el otro va a dejar de ser como es suele terminar en resentimiento de los dos lados: uno por no haber cambiado, el otro por haber esperado. Conviene decidir mirando lo que hay hoy.
+
+*Principio:* La expectativa de cambio en la pareja predice menor satisfacción cuando el cambio no ocurre, y la mayoría de los rasgos estables no cambian.  
+*Fuente:* Roberts y Mroczek (2008), estabilidad de la personalidad.
+
+
+> Querer no alcanza. Lo que cambia la conducta es el plan, no la intención.
+
+Voy a hacer ejercicio casi no mueve la aguja. Los martes y jueves a las siete, zapatillas al lado de la cama sí. La diferencia entre las dos no es ganas, es que la segunda le saca al momento la decisión que la primera le deja.
+
+*Principio:* Especificar cuándo, dónde y cómo se ejecutará una conducta aumenta sustancialmente la probabilidad de realizarla frente a la intención general.  
+*Fuente:* Gollwitzer y Sheeran (2006), metaanálisis de intenciones de implementación.
+
+
+> Cambiar el entorno cuesta menos que cambiar la fuerza de voluntad.
+
+Quienes parecen tener más disciplina no están resistiendo todo el día: se arman la vida para no tener que resistir. Sacar la aplicación del teléfono, no comprar lo que no querés comer. Lo que no está adelante no hay que vencerlo.
+
+*Principio:* Las personas con mejor autorregulación reportan menos conflictos de tentación porque estructuran su entorno, no porque resistan más.  
+*Fuente:* Hofmann, Baumeister, Förster y Vohs (2012); Galla y Duckworth (2015).
+
+
+> Los cambios que duran son aburridos y chicos. Los grandes se abandonan.
+
+El lunes que empieza todo junto -dieta, gimnasio, horarios, lectura- suele durar hasta el jueves. Un cambio por vez, lo bastante pequeño como para que casi no cueste, es lo que todavía está en pie en marzo. No es inspirador y funciona.
+
+*Principio:* Los cambios conductuales graduales presentan mayor adherencia a largo plazo que los cambios drásticos iniciados de una vez.  
+*Fuente:* Prochaska y DiClemente (1983), modelo transteórico.
+
+
+> Una recaída no borra lo anterior. Interrumpirlo del todo, sí.
+
+Un día que fallás no deshace tres semanas. Lo que las deshace es la conclusión de que ya está arruinado, que lleva a abandonar del todo. La recaída está prevista en cualquier cambio real; la salida está en volver al día siguiente.
+
+*Principio:* Interpretar una recaída como fracaso total predice abandono; el modelo de prevención de recaídas la trata como parte esperable del proceso.  
+*Fuente:* Marlatt y Gordon (1985), efecto de violación de la abstinencia.
+
+
+> Decir que vas a cambiar te da parte de la satisfacción de haberlo hecho.
+
+Contar el plan a todo el mundo da un anticipo del reconocimiento que vendría después, y ese anticipo baja las ganas de hacerlo. No es una regla absoluta, pero conviene saberlo: a veces conviene contar menos y mostrar después.
+
+*Principio:* Anunciar una meta de identidad puede reducir el esfuerzo posterior al generar una sensación prematura de completitud.  
+*Fuente:* Gollwitzer, Sheeran, Michalski y Seifert (2009).
+
+
+> Si alguien cambia solo cuando lo vas a dejar, el cambio dura hasta que te quedás.
+
+Es un patrón conocido: la crisis produce una mejora inmediata y visible, y la mejora se desarma a las pocas semanas de que pasó el peligro. Lo que conviene mirar no es la intensidad de la reacción, es qué queda tres meses después.
+
+*Principio:* El cambio motivado por evitar una consecuencia inminente revierte cuando la consecuencia desaparece.  
+*Fuente:* Deci y Ryan (2000); Marlatt y Gordon (1985).
+
+
+> Preguntate qué va a ser distinto el martes a las siete. Si no hay respuesta, no hay cambio.
+
+Es la prueba más rápida que hay, y sirve tanto para vos como para lo que te promete otro. Voy a estar más presente no se puede comprobar; el martes salgo a las seis y te paso a buscar sí. Si nadie puede nombrar la escena, todavía no hay plan.
+
+*Principio:* Los compromisos de cambio sin especificación conductual concreta no se distinguen empíricamente de la ausencia de compromiso.  
+*Fuente:* Gollwitzer y Sheeran (2006); Locke y Latham (2002), fijación de metas.
+
+
+## Capítulo 29 · El miedo que decide por vos
+
+Buena parte de lo que parece desinterés en los vínculos es miedo: a que te dejen, a que te conozcan, a elegir mal y perder el tiempo. El miedo no avisa que algo es peligroso, avisa que algo importa. El problema no es sentirlo sino dejar que elija por vos sin que lo nombres.
+
+
+> Lo que parece frialdad muchas veces es miedo bien escondido.
+
+Hay quien se aleja justo cuando la cosa se pone cercana. Desde afuera parece desinterés; por dentro suele ser una forma vieja de protegerse. Entenderlo no obliga a quedarse, pero cambia la historia que te contás sobre por qué pasó.
+
+*Principio:* La evitación del apego funciona como estrategia de desactivación: reduce la expresión de necesidad para evitar el rechazo anticipado.  
+*Fuente:* Mikulincer y Shaver (2007), estrategias de apego.
+
+
+> Si el miedo a que te dejen te hace revisar todo, acabás empujando al otro.
+
+El miedo pide pruebas, y las pruebas cansan. Cuanto más se pide, más se aleja el otro, y cuanto más se aleja, más miedo da. Es el círculo más frecuente en los vínculos ansiosos, y lo rompe el que puede nombrarlo en voz alta en vez de actuarlo.
+
+*Principio:* La ansiedad de apego predice conductas de comprobación y demanda que, sostenidas, se asocian a menor satisfacción de la pareja.  
+*Fuente:* Simpson y Rholes (2017); Campbell y colegas (2005).
+
+
+> Decir tengo miedo cambia la conversación entera.
+
+Ponerle nombre a lo que sentís baja la reacción, y además le da al otro algo con qué trabajar. No es lo mismo recibir un reproche que recibir un me da miedo que esto no funcione. Lo segundo invita a acercarse; lo primero, a defenderse.
+
+*Principio:* Etiquetar verbalmente una emoción reduce la activación de la amígdala y la intensidad subjetiva del estado afectivo.  
+*Fuente:* Lieberman y colegas (2007), el efecto de poner en palabras.
+
+
+> El miedo no te dice que algo es peligroso. Te dice que algo importa.
+
+Nadie tiene miedo de perder lo que no le interesa. Por eso el nerviosismo antes de algo importante no es una señal de que te vaya a ir mal: es la prueba de que te importa. Son dos lecturas del mismo síntoma y llevan a decisiones opuestas.
+
+*Principio:* La respuesta de ansiedad se activa ante la incertidumbre sobre resultados valorados, no solo ante amenazas objetivas.  
+*Fuente:* Gray y McNaughton (2000), sistema de inhibición conductual.
+
+
+> Evitar lo que te asusta lo vuelve más grande. Siempre en esa dirección.
+
+Cada vez que evitás, el alivio inmediato le confirma a tu cabeza que había peligro. Por eso el miedo evitado crece y el miedo enfrentado, de a poco, se achica. No hay que hacerlo de golpe; hay que hacerlo en una dirección sola.
+
+*Principio:* La evitación reduce la ansiedad a corto plazo e impide el aprendizaje de seguridad, lo que mantiene y amplifica el miedo.  
+*Fuente:* Foa y Kozak (1986), procesamiento emocional; Craske y colegas (2014).
+
+
+> Quedarte por miedo a estar solo no te ahorra la soledad. La hace compartida.
+
+Hay un miedo que empuja a aceptar menos de lo que uno querría, y después a quedarse. Los estudios sobre ese miedo encuentran que lleva a elegir peor y a permanecer más tiempo. La soledad que se evitaba termina ocurriendo igual, con alguien al lado.
+
+*Principio:* La permanencia en relaciones insatisfactorias por temor a la soledad se asocia a menor bienestar que la separación en seguimientos longitudinales.  
+*Fuente:* Spielmann y colegas (2013), miedo a la soltería.
+
+
+> El miedo a elegir mal también es una elección, y suele ser peor.
+
+No decidir se siente más seguro porque no tiene un momento visible de error. Pero el tiempo pasa igual y las opciones se cierran solas. A la larga la gente se arrepiente más de lo que no hizo que de lo que hizo mal.
+
+*Principio:* La postergación de decisiones ante incertidumbre genera costos acumulados y no reduce el arrepentimiento anticipado.  
+*Fuente:* Anderson (2003), evitación de decisiones; Gilovich y Medvec (1995).
+
+
+> Mostrarte como sos da miedo porque recién ahí el rechazo cuenta.
+
+Si mostrás una versión editada y te eligen, no sabés si te eligieron a vos. Si mostrás lo que hay y te eligen, ya sabés. El costo de lo segundo es que el rechazo duele de verdad; el beneficio es que la aceptación también vale.
+
+*Principio:* La autorrevelación aumenta la cercanía percibida y también la vulnerabilidad al rechazo, lo que explica su evitación.  
+*Fuente:* Aron y colegas (1997), generación de cercanía; Collins y Miller (1994).
+
+
+> El coraje no es dejar de sentir miedo. Es moverte con el miedo puesto.
+
+Esperar a no tener miedo para hablar, para empezar, para irte, es esperar algo que no llega. La pregunta útil no es cómo saco esto de encima sino qué haría si esto no tuviera que irse primero. Casi siempre hay un paso chico disponible.
+
+*Principio:* La acción comprometida con los propios valores puede ocurrir en presencia de ansiedad; esperar su ausencia posterga indefinidamente la conducta.  
+*Fuente:* Hayes, Strosahl y Wilson (2011), terapia de aceptación y compromiso.
+
+
 ## Fuentes citadas
 
 - Ainsworth et al. (1978); Hazan & Shaver (1987); Mikulincer & Shaver (2016).
+- Albert (1977), comparación temporal; Wilson y Ross (2000).
 - Alberti & Emmons (2017), asertividad; Lerner (1985), The Dance of Anger.
 - Alberti & Emmons (2017), asertividad; Tangney & Dearing (2002).
 - Alberti & Emmons (2017); Gottman & Silver (1999), quejas vs. críticas.
 - Algoe, Gable & Maisel (2010), Personal Relationships; Gordon et al. (2012), JPSP.
 - Almaatouq et al. (2016), PLoS ONE: reciprocidad en las amistades declaradas.
+- Anderson (2003), evitación de decisiones; Gilovich y Medvec (1995).
+- Aron y colegas (1997), generación de cercanía; Collins y Miller (1994).
 - Aron, Norman, Aron, McKenna & Heyman (2000), JPSP; Aron & Aron (1986), modelo de autoexpansión.
 - Averill (1982); Gross (1998), modelo de regulación emocional.
 - Barrett (2017); Ekman (1992), funciones de las emociones básicas.
@@ -1362,6 +2145,7 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 - Beck (1976), pensamientos automáticos; Hayes et al. (2012).
 - Beck (1976); Burns (1980), distorsiones cognitivas.
 - Beck (1976); Rozin & Royzman (2001), sesgo de negatividad.
+- Becker (1991); Coltrane (2000), revisión sobre trabajo doméstico.
 - Birnbaum et al. (2016), JPSP: la importancia de la responsividad para el deseo sexual.
 - Birnbaum et al. (2016), JPSP: responsividad y deseo; Mark & Lasslo (2018), revisión.
 - Bonanno & Keltner (1997), J. Abnormal Psychology; Keltner & Bonanno (1997), JPSP.
@@ -1376,12 +2160,21 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 - Bowlby (1969); Feeney (2007), JPSP 92(2): la paradoja de la dependencia.
 - Burns (1980); Beck et al. (1979), terapia cognitiva.
 - Cacioppo & Patrick (2008); Hawkley & Cacioppo (2010).
+- Cacioppo y Hawkley (2009), modelo evolutivo de la soledad.
+- Cacioppo y Hawkley (2009); Spithoven, Bijttebier y Goossens (2017).
 - Carrère & Gottman (1999), Family Process: los tres primeros minutos predijeron el desenlace seis años después.
 - Chopik (2017), Personal Relationships; Holt-Lunstad et al. (2010), metaanálisis sobre vínculos y mortalidad.
+- Chou y Edge (2012), percepción de las vidas ajenas.
+- Clark y Mills (1979), relaciones comunales e intercambio.
+- Coltrane (2000); Carlson, Miller y Sassler (2018).
 - Crocker & Wolfe (2001), Psychological Review, contingencias de la autoestima; Sonnentag & Fritz (2007).
 - Crocker & Wolfe (2001), Psychological Review; Rogers (1959), consideración positiva incondicional.
 - Dailey, Pfiester, Jin, Beck & Clark (2009), relaciones intermitentes; Vennum et al. (2014).
 - Damian & Roberts (2015), PNAS, con 377.000 estudiantes; Rohrer et al. (2015).
+- Daminger (2019), la división del trabajo cognitivo en el hogar.
+- Deci y Ryan (2000), teoría de la autodeterminación.
+- Deci y Ryan (2000); Marlatt y Gordon (1985).
+- Dew y Stewart (2012); Archuleta, Britt y Grable (2011).
 - Doka (1989, 2002), disenfranchised grief.
 - Doka (2002); Harris (2010), reglas sociales del duelo.
 - Drigotas, Rusbult, Wieselquist & Whitton (1999), JPSP: el fenómeno de Miguel Ángel.
@@ -1391,65 +2184,117 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 - Eastwick, Finkel, Krishnamurti & Loewenstein (2008), JPSP: el error al predecir el dolor de una ruptura.
 - Ellis (1962), modelo ABC; Beck (1976). Idea con linaje estoico (Epicteto).
 - Enright & Fitzgibbons (2015); McNulty (2011), PSPB, los límites del perdón.
+- Enright y Fitzgibbons (2015), terapia del perdón.
+- Epstein y Eidelson (1981), creencias disfuncionales de pareja.
+- Festinger (1954), teoría de la comparación social.
 - Festinger (1954); Vogel et al. (2014), Psychology of Popular Media Culture 3(4).
 - Festinger, Schachter & Back (1950), proximidad; Reis, Maniaci, Caprariello, Eastwick & Finkel (2011), JPSP.
 - Fingerman et al. (2008), ambivalencia intergeneracional; Lüscher & Pillemer (1998).
+- Finkel y colegas (2014), el modelo del matrimonio asfixiante.
 - Finkel, Hui, Carswell & Larson (2014), Psychological Inquiry: el modelo de la asfixia del matrimonio.
 - Finkel, Slotter, Luchies, Walton & Gross (2013), Psychological Science: 21 minutos al año.
 - Flynn & Lake (2008), JPSP: subestimar la ayuda ajena; Boothby & Bohns (2021).
+- Flynn y Lake (2008); Zhao y Epley (2022).
+- Foa y Kozak (1986), procesamiento emocional; Craske y colegas (2014).
 - Fogg (2019), Tiny Habits; Lally et al. (2010), formación de hábitos.
 - Frijda (1986), tendencias de acción; terapia de aceptación y compromiso (Hayes).
 - Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien.
 - Gilbert & Irons (2005); Young et al. (2003), esquemas tempranos.
 - Gilbert (2009), terapia centrada en la compasión; Breines & Chen (2012).
+- Gollwitzer y Sheeran (2006), metaanálisis de intenciones de implementación.
+- Gollwitzer y Sheeran (2006); Locke y Latham (2002), fijación de metas.
+- Gollwitzer, Sheeran, Michalski y Seifert (2009).
+- Gonzaga, Campos y Bradbury (2007); Joel y colegas (2020).
+- Gordon y Baucom (2003); Gottman (2011), atonement.
+- Gordon y Baucom (2003); Worthington (2006).
+- Gordon, Baucom y Snyder (2004), modelo de recuperación en tres etapas.
+- Gordon, Baucom y Snyder (2004); Enright y Fitzgibbons (2015).
+- Gordon, Baucom y Snyder (2005); literatura sobre trauma relacional.
 - Gottman & Driver (2002): quienes seguían juntos respondían al 86% de esos pedidos; los que se separaron, al 33%.
 - Gottman & Levenson (1986), desbordamiento fisiológico; Gottman (1999), la pausa de veinte minutos.
 - Gottman & Levenson (1992), JPSP: alrededor de 5 a 1 en las parejas estables.
 - Gottman & Silver (1999), los cuatro jinetes.
 - Gottman (1994), harsh start-up; Carrère & Gottman (1999).
+- Gottman (1994), inundación fisiológica.
+- Gottman (1994), los cuatro jinetes.
 - Gottman (1994); Gottman & Levenson (2000).
 - Gottman (1999), arranque suave; Christensen & Jacobson (2000), terapia conductual integrativa de pareja.
+- Gottman (1999), intentos de reparación.
 - Gottman (1999), repair attempts; Gottman & Levenson (2000).
 - Gottman (1999), The Seven Principles: el 69% de los conflictos son problemas perpetuos.
+- Gottman (1999); Baumeister, Stillwell y Wotman (1990).
+- Gottman (1999); Rusbult, Verette y colegas (1991), acomodación.
+- Gottman y Levenson (1999), arranque áspero.
+- Gottman y Silver (1999), observación longitudinal.
+- Gottman y Silver (1999), problemas perpetuos.
+- Gottman y Silver (1999); Levenson y Gottman (1985).
+- Gottman y Silver (1999); Markman, Stanley y Blumberg (2010).
+- Gray y McNaughton (2000), sistema de inhibición conductual.
 - Gross & Levenson (1997); Wegner (1994), procesos irónicos.
 - Hall & Fincham (2005), modelo del autoperdón; Neff (2003), autocompasión.
 - Hall (2019), Journal of Social and Personal Relationships: cuántas horas lleva hacer un amigo.
 - Hall (2019); Oswald, Clark & Kelly (2004), mantenimiento de la amistad.
+- Hall y Fincham (2005); Woodyatt y Wenzel (2013).
 - Hamilton & Meston (2013), estrés y deseo; Kalmbach et al. (2015), sueño y función sexual.
+- Hatfield y Rapson (1993); Acevedo y Aron (2009).
 - Hayes et al. (1996), evitación experiencial; Kashdan et al. (2006).
 - Hayes et al. (2012), ACT; activación conductual (Jacobson et al., 1996).
 - Hayes et al. (2012), ACT; Teasdale et al. (2002), descentramiento.
 - Hayes et al. (2012), ACT; Wilson & Murrell (2004).
 - Hayes et al. (2012), «en tu dolor están tus valores»; Wilson & DuFrene (2009).
+- Hayes, Strosahl y Wilson (2011), terapia de aceptación y compromiso.
 - Hewitt & Flett (1991); Curran & Hill (2019), Psychological Bulletin: 41.641 estudiantes entre 1989 y 2016.
+- Hochschild y Machung (1989), la segunda jornada.
+- Hofmann, Baumeister, Förster y Vohs (2012); Galla y Duckworth (2015).
+- Holmes (2007); Johnson y Holmes (2009), medios y expectativas.
 - Impett, Peplau & Gable (2005); Muise, Impett & Desmarais (2013), motivos sexuales.
 - Jacobson et al. (1996); Martell et al. (2001), activación conductual.
+- Jeanfreau, Noguchi, Mong y Stadthagen (2018), infidelidad financiera.
 - Joel et al. (2020), PNAS: 43 estudios longitudinales y más de 11.000 parejas.
 - Joiner et al. (1999), búsqueda excesiva de tranquilización; Coyne (1976).
+- Jordan y colegas (2011), subestimación del malestar ajeno.
 - Kabat-Zinn (1990); Bishop et al. (2004), definición operacional de mindfulness.
 - Kahneman (1973); Simon (1971), economía de la atención.
+- Kahneman y Tversky (1979), puntos de referencia; Festinger (1954).
 - Karasek (1979), modelo demanda-control; Sapolsky (2004).
 - Killingsworth & Gilbert (2010), Science; Kabat-Zinn (1990).
 - Klass, Silverman & Nickman (1996), continuing bonds; Field et al. (2005).
 - Klusmann (2002); Murray & Milhausen (2012), deseo y duración de la relación.
 - Knee (1998), JPSP: teorías implícitas de las relaciones; Franiuk, Cohen & Pomerantz (2002).
+- Knee (1998), teorías implícitas de las relaciones.
+- Knee (1998); Markman, Stanley y Blumberg (2010).
+- Knee, Canevello, Bush y Cook (2008), contingencias de autoestima.
+- Knee, Patrick y Lonsbary (2003); Franiuk, Cohen y Pomerantz (2002).
 - Knobloch & Solomon (2002), incertidumbre relacional; Carleton (2016), intolerancia a la incertidumbre.
+- Kulik (2011); Bennett (2013), poder económico y satisfacción.
 - LaFreniere & Newman (2020), Behavior Therapy 51(3): el 91,4% de las preocupaciones no se cumplió.
 - Lally et al. (2010): saltarse una ocasión no afectó la formación del hábito; Marlatt & Gordon (1985).
+- Lazarus y Folkman (1984); Almeida (2005), estresores diarios.
 - Le & Agnew (2003), Personal Relationships: metaanálisis del modelo de inversión de Rusbult.
 - Lewicki, Polin & Lount (2016), Negotiation and Conflict Management Research: los componentes de una disculpa eficaz.
+- Lewicki, Polin y Lount (2016), componentes de la disculpa.
+- Lewinsohn (1974), modelo conductual; activación conductual.
 - Lieberman et al. (2007), Psychological Science; Torre & Lieberman (2018).
+- Lieberman y colegas (2007), el efecto de poner en palabras.
+- Lockwood y Kunda (1997), modelos a seguir.
+- Long y Averill (2003); Holt-Lunstad y colegas (2015), metaanálisis.
+- Luskin (2002); McNulty (2011), efectos según el contexto.
 - Main et al. (1985), apego ganado; Roisman et al. (2002); Fraley (2019).
 - Mallory et al. (2019), Journal of Sex Research, metaanálisis sobre comunicación sexual.
 - Mark (2015), revisión sobre discrepancia de deseo; Day, Muise, Joel & Impett (2015).
+- Marlatt y Gordon (1985), efecto de violación de la abstinencia.
 - Marshall (2012), Cyberpsychology: seguir al ex en Facebook y la recuperación posterior.
 - Mauss et al. (2011), Emotion 11(4); Frankl (1946), la felicidad como consecuencia.
+- Mayer, Davis y Schoorman (1995), modelo integrador de confianza.
 - McAdams (2001), identidad narrativa; Bonanno (2004), resiliencia.
+- McCullough, Worthington y Rachal (1997); Enright (2001).
+- McNulty (2011), estudio longitudinal en parejas.
 - McNulty (2011), PSPB: el lado oscuro del perdón; McNulty (2008).
 - Mikulincer & Shaver (2016), estrategias de hiperactivación; Levine & Heller (2010).
 - Mikulincer & Shaver (2016); Feeney (2007), JPSP: aceptar la dependencia promueve la autonomía.
 - Mikulincer & Shaver (2016); Johnson (2008), terapia focalizada en las emociones.
 - Mikulincer & Shaver (2016); Levine & Heller (2010), conducta de protesta.
+- Mikulincer y Shaver (2007), estrategias de apego.
 - Minuchin (1974), estructura familiar; Bowen (1978), diferenciación del yo.
 - Mogilner, Chance & Norton (2012), Psychological Science; Dunn et al. (2008), gasto prosocial.
 - Mowrer (1947), teoría de los dos factores; Craske et al. (2014), aprendizaje inhibitorio.
@@ -1459,27 +2304,44 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 - Neff & Karney (2004, 2009), JPSP: desbordamiento del estrés a la pareja.
 - Neff (2003, 2011); Breines & Chen (2012), motivación de mejora.
 - Nesse (1990); Barrett (2017), emociones construidas.
+- Nguyen, Ryan y Deci (2018), soledad y autonomía.
 - Noetel et al. (2024), BMJ: 218 estudios y 14.170 personas; Schuch et al. (2016).
 - Nolen-Hoeksema (1991, 2008), rumiación.
+- Nolen-Hoeksema (2000), rumiación; terapia cognitiva.
 - Nolen-Hoeksema et al. (2008); Watkins (2008).
+- Olson y Rick (2022); Pahl (1995), gestión del dinero en pareja.
 - OMS (2013), violencia de pareja; Johnson (2008), tipologías de violencia en la pareja.
 - Overall & McNulty (2017), Current Opinion in Psychology; Overall et al. (2009).
+- Pahl (1995); literatura sobre autonomía financiera.
+- Papp, Cummings y Goeke-Morey (2009), conflictos cotidianos.
+- Papp, Cummings y Goeke-Morey (2009); Dew, Britt y Huston (2012).
+- Peplau y Perlman (1982); Cacioppo y Patrick (2008).
 - Prochaska & DiClemente (1983), modelo transteórico.
 - Prochaska & DiClemente (1983); Marlatt & Donovan (2005).
+- Prochaska y DiClemente (1983), modelo transteórico.
 - Rando (1993), sudden temporary upsurges of grief.
 - Reis & Shaver (1988), modelo de intimidad; Birnbaum & Reis (2012, 2016), responsividad y atracción.
 - Reis & Shaver (1988), modelo de responsividad; Laurenceau et al. (1998).
 - Rempel, Holmes & Zanna (1985), JPSP: los componentes de la confianza en pareja.
+- Rempel, Holmes y Zanna (1985), dimensiones de la confianza.
+- Roberts y Mroczek (2008), estabilidad de la personalidad.
 - Rogers (1951), escucha reflexiva; Markman, Stanley & Blumberg (1994), programa PREP.
 - Rose (1984); Doka (2002), duelo desautorizado.
+- Rosenberg (2003), comunicación no violenta; Gottman (1999).
+- Ross y Sicoly (1979), sesgo de disponibilidad en la responsabilidad.
+- Ross y Sicoly (1979), sesgo egocéntrico en la memoria.
 - Rubinstein et al. (2001); Mark et al. (2008), interrupciones.
 - Ryan & Deci (2000), teoría de la autodeterminación; Erikson (1950), generatividad.
+- Salkovskis (1999), modelo de conductas de seguridad.
+- Sandstrom y Dunn (2014), estudios con vínculos débiles.
 - Sapolsky (2004), Why Zebras Don't Get Ulcers; LeDoux (1996).
 - Sapolsky (2004); McEwen (1998), carga alostática.
 - Sbarra, Boals, Mason, Larson & Mehl (2013), Clinical Psychological Science.
+- Simpson y Rholes (2017); Campbell y colegas (2005).
 - Skinner (1953); Haynes & O'Brien (1990), análisis funcional.
 - Slotter, Gardner & Finkel (2010), PSPB: ¿quién soy yo sin ti?
 - Sonnentag & Fritz (2007), recuperación del trabajo; Meijman & Mulder (1998).
+- Spielmann y colegas (2013), miedo a la soltería.
 - Stanley, Rhoades & Markman (2006), Family Relations: deslizarse o decidir.
 - Stark (2007), control coercitivo; Mikulincer & Shaver (2016), estrategias de hiperactivación.
 - Steger (2012); Martela & Steger (2016); Ryan & Deci (2000), necesidad de relación.
@@ -1488,14 +2350,21 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 - Tangney et al. (2007); Gilbert (2009), terapia centrada en la compasión.
 - Tilghman-Osborne, Cole & Felton (2010), revisión sobre culpa adaptativa y desadaptativa.
 - Van Boven & Gilovich (2003); Dunn, Aknin & Norton (2008).
+- Van de Ven, Zeelenberg y Pieters (2009), dos tipos de envidia.
 - Van IJzendoorn (1995), transmisión intergeneracional del apego; Main et al. (1985), seguridad ganada.
 - Vennum, Lindstrom, Monk & Adams (2014); Halpern-Meekin et al. (2013), relationship churning.
+- Verduyn y colegas (2015); Burke y Kraut (2016).
+- Wade, Hoyt, Kidwell y Worthington (2014), metaanálisis de intervenciones.
+- Waldinger y Schulz (2010), Estudio de Harvard sobre el desarrollo adulto.
 - Watkins (2008), procesamiento abstracto vs. concreto; Kross & Ayduk (2017).
 - White & Mullen (1989); Buss (2000), teoría de los celos como respuesta a amenaza.
+- Witvliet, Ludwig y Vander Laan (2001), respuestas cardiovasculares.
 - Wood & Neal (2007); Gollwitzer (1999), intenciones de implementación.
 - Wood et al. (2005); Thaler & Sunstein (2008), arquitectura de decisiones.
+- Wood y Neal (2007), hábitos; Verduyn y colegas (2017).
 - Worden (2009), tareas del duelo; Tonkin (1996), Bereavement Care: crecer alrededor del duelo.
 - Worden (2009); Neimeyer (2001), reconstrucción de significado.
+- Worthington (2006), modelo REACH del perdón.
 - Wrzus et al. (2013), Psychological Bulletin, metaanálisis sobre redes sociales a lo largo de la vida.
 - Yoo et al. (2007), Current Biology: +60% de reactividad de la amígdala; Ben Simon et al. (2020).
 - Zaccaro et al. (2018), revisión; Balban et al. (2023), Cell Reports Medicine: el suspiro fisiológico.

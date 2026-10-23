@@ -1,0 +1,111 @@
+# Capítulo 22 · Discutir sin romper
+tema: discutir
+capitulo: 22
+eje: nucleo
+titulo: Discutir sin romper
+hashtags: [discusiones, pareja, conflicto]
+tesis: >-
+  Las parejas que duran no discuten menos: discuten distinto. Lo que predice
+  la ruptura no es la cantidad de conflictos sino cuatro maneras de pelear
+  -criticar a la persona en vez del hecho, despreciar, defenderse de todo y
+  apagarse- y la capacidad de frenar a tiempo. Discutir bien se aprende.
+
+frases:
+  - id: dis-01
+    texto: "Los primeros tres minutos de una discusión predicen cómo termina."
+    destacar: [minutos]
+    principio: "El tono de los primeros minutos de una conversación conflictiva predice su desenlace y, en seguimientos largos, la estabilidad de la pareja."
+    fuente: "Gottman y Levenson (1999), arranque áspero."
+    reflexion: >-
+      No es magia: una discusión que arranca con un reproche pone al otro a
+      defenderse, y desde ahí ya nadie escucha. Cambiar el arranque cambia casi
+      todo lo que viene después. Empezar por el hecho y no por la acusación
+      vale más que cualquier técnica del medio.
+
+  - id: dis-02
+    texto: "Decí lo que pasó, no lo que el otro es. El hecho se discute, el carácter no."
+    destacar: [carácter]
+    principio: "La crítica a la persona, frente a la queja sobre una conducta concreta, escala el conflicto y reduce la probabilidad de resolución."
+    fuente: "Gottman (1994), los cuatro jinetes."
+    reflexion: >-
+      No es lo mismo dejaste los platos que siempre sos un desastre. Lo primero
+      tiene arreglo, lo segundo es una sentencia sobre quién es. Y nadie
+      negocia con una sentencia: se defiende. La queja concreta deja la puerta
+      abierta; la etiqueta la cierra.
+
+  - id: dis-03
+    texto: "El desprecio es el que más daño hace. Y casi siempre empieza en un gesto."
+    destacar: [desprecio]
+    principio: "El desprecio es el predictor individual más fuerte de disolución en los estudios de observación de parejas."
+    fuente: "Gottman y Silver (1999), observación longitudinal."
+    reflexion: >-
+      Poner los ojos en blanco, imitar el tono del otro, reírse de lo que dijo.
+      Son segundos y dejan marca, porque no discuten una idea: dicen que la
+      persona vale menos. Es lo primero que conviene sacar, incluso antes de
+      aprender a escuchar mejor.
+
+  - id: dis-04
+    texto: "Si ya no escuchás, no estás discutiendo: estás esperando tu turno."
+    destacar: [turno]
+    principio: "Durante la activación fisiológica alta se reduce la capacidad de procesar información nueva y aumenta la conducta defensiva."
+    fuente: "Gottman (1994), inundación fisiológica."
+    reflexion: >-
+      Pasado cierto punto, el cuerpo entra en alerta y la conversación se
+      vuelve imposible: el otro habla y vos ya estás armando la respuesta. No
+      es mala voluntad, es fisiología. Lo único que sirve ahí es parar, y
+      volver cuando bajó.
+
+  - id: dis-05
+    texto: "Pedir veinte minutos no es escaparse. Escaparse es no volver."
+    destacar: [volver]
+    principio: "La pausa eficaz requiere un tiempo mínimo de recuperación fisiológica y un acuerdo explícito de retomar la conversación."
+    fuente: "Gottman y Silver (1999); Levenson y Gottman (1985)."
+    reflexion: >-
+      La pausa funciona con dos condiciones: que dure lo suficiente para que el
+      cuerpo baje, y que se avise cuándo se vuelve. Sin lo segundo, el otro no
+      lee una pausa sino un portazo, y la próxima vez va a querer resolver todo
+      antes de que te vayas.
+
+  - id: dis-06
+    texto: "La mayoría de los problemas de una pareja no se resuelven. Se administran."
+    destacar: [administran]
+    principio: "Cerca de dos tercios de los conflictos de pareja son perpetuos, ligados a diferencias estables de personalidad o valores."
+    fuente: "Gottman y Silver (1999), problemas perpetuos."
+    reflexion: >-
+      Dos tercios de lo que se discute no tiene solución: uno es más ordenado,
+      el otro llega tarde, a uno le gusta salir. Buscar la solución definitiva
+      es lo que convierte un tema en una guerra. Las parejas que duran
+      aprenden a hablar del mismo asunto sin lastimarse.
+
+  - id: dis-07
+    texto: "Un chiste a tiempo repara más que una hora de explicaciones."
+    destacar: [repara]
+    principio: "Los intentos de reparación durante el conflicto, y su aceptación, distinguen a las parejas estables de las que se separan."
+    fuente: "Gottman (1999), intentos de reparación."
+    reflexion: >-
+      En medio de una pelea aparecen pequeños gestos que buscan bajar el tono:
+      una broma, una mano, un cambio de voz. Lo que marca la diferencia no es
+      que aparezcan sino que el otro los acepte. Son más importantes que el
+      argumento que estaban discutiendo.
+
+  - id: dis-08
+    texto: "Detrás de casi todo reclamo hay un pedido. Decí el pedido."
+    destacar: [pedido]
+    principio: "Formular una necesidad concreta en lugar de una queja aumenta la probabilidad de respuesta positiva de la pareja."
+    fuente: "Rosenberg (2003), comunicación no violenta; Gottman (1999)."
+    reflexion: >-
+      Nunca me acompañás es un reclamo; me gustaría que vinieras el viernes es
+      un pedido. El reclamo invita a defenderse, el pedido invita a contestar
+      sí o no. Traducir uno en el otro cuesta un segundo y cambia la
+      conversación entera.
+
+  - id: dis-09
+    texto: "Ganar la discusión y perder la noche no es ganar."
+    destacar: [ganar]
+    principio: "El objetivo de la comunicación conflictiva en parejas estables es la comprensión mutua, no la determinación de quién tiene razón."
+    fuente: "Gottman y Silver (1999); Markman, Stanley y Blumberg (2010)."
+    reflexion: >-
+      En una pareja no hay un jurado. Probar que tenías razón te deja con la
+      razón y con alguien dolido al lado, que es un premio bastante pobre. La
+      pregunta útil en el medio de una pelea no es quién tiene razón sino qué
+      quiero que pase después.

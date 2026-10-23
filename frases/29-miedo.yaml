@@ -1,0 +1,111 @@
+# Capítulo 29 · El miedo que decide por vos
+tema: miedo
+capitulo: 29
+eje: nucleo
+titulo: El miedo que decide por vos
+hashtags: [miedo, compromiso, abandono]
+tesis: >-
+  Buena parte de lo que parece desinterés en los vínculos es miedo: a que te
+  dejen, a que te conozcan, a elegir mal y perder el tiempo. El miedo no
+  avisa que algo es peligroso, avisa que algo importa. El problema no es
+  sentirlo sino dejar que elija por vos sin que lo nombres.
+
+frases:
+  - id: mie-01
+    texto: "Lo que parece frialdad muchas veces es miedo bien escondido."
+    destacar: [frialdad]
+    principio: "La evitación del apego funciona como estrategia de desactivación: reduce la expresión de necesidad para evitar el rechazo anticipado."
+    fuente: "Mikulincer y Shaver (2007), estrategias de apego."
+    reflexion: >-
+      Hay quien se aleja justo cuando la cosa se pone cercana. Desde afuera
+      parece desinterés; por dentro suele ser una forma vieja de protegerse.
+      Entenderlo no obliga a quedarse, pero cambia la historia que te contás
+      sobre por qué pasó.
+
+  - id: mie-02
+    texto: "Si el miedo a que te dejen te hace revisar todo, acabás empujando al otro."
+    destacar: [empujando]
+    principio: "La ansiedad de apego predice conductas de comprobación y demanda que, sostenidas, se asocian a menor satisfacción de la pareja."
+    fuente: "Simpson y Rholes (2017); Campbell y colegas (2005)."
+    reflexion: >-
+      El miedo pide pruebas, y las pruebas cansan. Cuanto más se pide, más se
+      aleja el otro, y cuanto más se aleja, más miedo da. Es el círculo más
+      frecuente en los vínculos ansiosos, y lo rompe el que puede nombrarlo
+      en voz alta en vez de actuarlo.
+
+  - id: mie-03
+    texto: "Decir tengo miedo cambia la conversación entera."
+    destacar: [miedo]
+    principio: "Etiquetar verbalmente una emoción reduce la activación de la amígdala y la intensidad subjetiva del estado afectivo."
+    fuente: "Lieberman y colegas (2007), el efecto de poner en palabras."
+    reflexion: >-
+      Ponerle nombre a lo que sentís baja la reacción, y además le da al otro
+      algo con qué trabajar. No es lo mismo recibir un reproche que recibir un
+      me da miedo que esto no funcione. Lo segundo invita a acercarse; lo
+      primero, a defenderse.
+
+  - id: mie-04
+    texto: "El miedo no te dice que algo es peligroso. Te dice que algo importa."
+    destacar: [importa]
+    principio: "La respuesta de ansiedad se activa ante la incertidumbre sobre resultados valorados, no solo ante amenazas objetivas."
+    fuente: "Gray y McNaughton (2000), sistema de inhibición conductual."
+    reflexion: >-
+      Nadie tiene miedo de perder lo que no le interesa. Por eso el nerviosismo
+      antes de algo importante no es una señal de que te vaya a ir mal: es la
+      prueba de que te importa. Son dos lecturas del mismo síntoma y llevan a
+      decisiones opuestas.
+
+  - id: mie-05
+    texto: "Evitar lo que te asusta lo vuelve más grande. Siempre en esa dirección."
+    destacar: [evitar]
+    principio: "La evitación reduce la ansiedad a corto plazo e impide el aprendizaje de seguridad, lo que mantiene y amplifica el miedo."
+    fuente: "Foa y Kozak (1986), procesamiento emocional; Craske y colegas (2014)."
+    reflexion: >-
+      Cada vez que evitás, el alivio inmediato le confirma a tu cabeza que
+      había peligro. Por eso el miedo evitado crece y el miedo enfrentado, de
+      a poco, se achica. No hay que hacerlo de golpe; hay que hacerlo en una
+      dirección sola.
+
+  - id: mie-06
+    texto: "Quedarte por miedo a estar solo no te ahorra la soledad. La hace compartida."
+    destacar: [compartida]
+    principio: "La permanencia en relaciones insatisfactorias por temor a la soledad se asocia a menor bienestar que la separación en seguimientos longitudinales."
+    fuente: "Spielmann y colegas (2013), miedo a la soltería."
+    reflexion: >-
+      Hay un miedo que empuja a aceptar menos de lo que uno querría, y después
+      a quedarse. Los estudios sobre ese miedo encuentran que lleva a elegir
+      peor y a permanecer más tiempo. La soledad que se evitaba termina
+      ocurriendo igual, con alguien al lado.
+
+  - id: mie-07
+    texto: "El miedo a elegir mal también es una elección, y suele ser peor."
+    destacar: [elección]
+    principio: "La postergación de decisiones ante incertidumbre genera costos acumulados y no reduce el arrepentimiento anticipado."
+    fuente: "Anderson (2003), evitación de decisiones; Gilovich y Medvec (1995)."
+    reflexion: >-
+      No decidir se siente más seguro porque no tiene un momento visible de
+      error. Pero el tiempo pasa igual y las opciones se cierran solas. A la
+      larga la gente se arrepiente más de lo que no hizo que de lo que hizo
+      mal.
+
+  - id: mie-08
+    texto: "Mostrarte como sos da miedo porque recién ahí el rechazo cuenta."
+    destacar: [rechazo]
+    principio: "La autorrevelación aumenta la cercanía percibida y también la vulnerabilidad al rechazo, lo que explica su evitación."
+    fuente: "Aron y colegas (1997), generación de cercanía; Collins y Miller (1994)."
+    reflexion: >-
+      Si mostrás una versión editada y te eligen, no sabés si te eligieron a
+      vos. Si mostrás lo que hay y te eligen, ya sabés. El costo de lo segundo
+      es que el rechazo duele de verdad; el beneficio es que la aceptación
+      también vale.
+
+  - id: mie-09
+    texto: "El coraje no es dejar de sentir miedo. Es moverte con el miedo puesto."
+    destacar: [moverte]
+    principio: "La acción comprometida con los propios valores puede ocurrir en presencia de ansiedad; esperar su ausencia posterga indefinidamente la conducta."
+    fuente: "Hayes, Strosahl y Wilson (2011), terapia de aceptación y compromiso."
+    reflexion: >-
+      Esperar a no tener miedo para hablar, para empezar, para irte, es
+      esperar algo que no llega. La pregunta útil no es cómo saco esto de
+      encima sino qué haría si esto no tuviera que irse primero. Casi siempre
+      hay un paso chico disponible.

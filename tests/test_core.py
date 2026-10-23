@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import ast
 import json
+import sys
 import re
 import shutil
 import subprocess
@@ -194,22 +195,44 @@ class TestLaSiguiente(unittest.TestCase):
             orden.append(f)
             dia = date.fromordinal(dia.toordinal() + 1)
 
-    def test_dos_de_cada_tres_son_del_nucleo(self):
+    def test_al_menos_dos_de_cada_tres_son_del_nucleo(self):
         # La cuota: la página publica sobre todo lo que su descripción promete.
+        #
+        # Es un PISO y no un número exacto, y la diferencia importa: `toca_nucleo`
+        # fuerza el núcleo cuando va atrasado, pero en un turno de apoyo igual
+        # sale el tema que hace más que no sale, que puede ser del núcleo. Con
+        # 20 temas de núcleo contra 9 de apoyo eso deja la proporción cerca del
+        # 70%. El tope de arriba es lo que seguiría fallando si algún día el
+        # apoyo desapareciera del reparto.
         orden = self._publicar_todo(TEMAS)
         eje_de = {t.tema: t.eje for t in TEMAS}
-        for corte in (15, 30, 60):
+        for corte in (15, 30, 60, 120):
             nucleo = sum(1 for f in orden[:corte] if eje_de[f.tema] == "nucleo")
-            self.assertEqual(nucleo, round(corte * 2 / 3), corte)
+            self.assertGreaterEqual(nucleo, corte * 2 / 3, corte)
+            self.assertLessEqual(nucleo, corte * 0.75, corte)
 
     def test_el_nucleo_sale_intercalado_y_no_todo_junto(self):
         # Cumplir la cuota turno a turno y no contando al final es lo que evita
         # un mes de pareja seguido de un mes de lo demás.
         orden = self._publicar_todo(TEMAS)
         eje_de = {t.tema: t.eje for t in TEMAS}
-        ejes = [eje_de[f.tema] for f in orden[:60]]
-        self.assertNotIn(["nucleo"] * 3, [ejes[i:i + 3] for i in range(len(ejes) - 2)])
-        self.assertNotIn(["apoyo"] * 2, [ejes[i:i + 2] for i in range(len(ejes) - 1)])
+        ejes = [eje_de[f.tema] for f in orden]
+        def racha(cual):
+            mayor = actual = 0
+            for e in ejes:
+                actual = actual + 1 if e == cual else 0
+                mayor = max(mayor, actual)
+            return mayor
+        # Cuatro seguidos del núcleo es el máximo que da este banco, y sale de
+        # que la cuota es una preferencia: fuerza el núcleo cuando va atrasado,
+        # pero en un turno de apoyo igual sale el tema que hace más que no
+        # sale, y con 20 temas de núcleo contra 9 de apoyo ese suele ser del
+        # núcleo. Cinco querría decir que el apoyo dejó de entrar.
+        self.assertLessEqual(racha("nucleo"), 4)
+        self.assertEqual(racha("apoyo"), 1)
+        # Y el apoyo nunca se ausenta por más de una tanda de diez.
+        self.assertEqual([i for i in range(len(ejes) - 9)
+                          if "apoyo" not in ejes[i:i + 10]], [])
 
     def test_la_cuota_es_una_preferencia_y_no_un_filtro(self):
         # Sin frases del núcleo pendientes sale una de apoyo igual: perder un
@@ -2317,6 +2340,72 @@ class TestLosScriptsLeenElEnv(unittest.TestCase):
             necesita = any(c in texto for c in claves) or "--voz-ia" in texto
             if necesita:
                 self.assertIn("load_dotenv", texto, archivo.name)
+
+
+class TestEncenderLaPublicacion(unittest.TestCase):
+    """El turno automático publica SIN aprobación, así que encenderlo tiene que
+    ser una decisión explícita y nunca un efecto de correr un script."""
+
+    def _mod(self):
+        return _script("enc", "encender.py")
+
+    def test_sin_banderas_no_instala_ni_llama_a_launchctl(self):
+        enc = self._mod()
+        with mock.patch.object(enc.Path, "write_text",
+                               side_effect=AssertionError("escribió el plist")), \
+                mock.patch.object(enc.subprocess, "run",
+                                  side_effect=AssertionError("llamó a launchctl")), \
+                mock.patch("builtins.print"):
+            self.assertEqual(enc.main([]), 0)
+
+    def test_avisa_que_publica_sin_aprobacion(self):
+        # Es el cambio de postura del proyecto: hasta ahora nada salía sin que
+        # lo aprobaran en el bot.
+        enc = self._mod()
+        dichas = []
+        with mock.patch("builtins.print", side_effect=lambda *a, **k: dichas.append(" ".join(map(str, a)))):
+            enc.main([])
+        self.assertIn("SIN APROBACION", "\n".join(dichas))
+
+    def test_el_plist_usa_el_python_del_proyecto(self):
+        # El del sistema no tiene PyYAML: el turno fallaría cada hora en
+        # silencio, y el único rastro quedaría en un log que nadie mira.
+        enc = self._mod()
+        import plistlib
+        datos = plistlib.loads(enc.plist().encode("utf-8"))
+        self.assertTrue(datos["ProgramArguments"][0].endswith(".venv/bin/python")
+                        or datos["ProgramArguments"][0] == sys.executable)
+        self.assertTrue(datos["ProgramArguments"][1].endswith("publicar_turno.py"))
+
+    def test_corre_cada_hora_en_punto_y_no_al_cargarse(self):
+        # Cada hora porque la parrilla cambia con la rampa y el que decide si
+        # toca es el script. `RunAtLoad` en falso: instalarlo no es publicar.
+        enc = self._mod()
+        import plistlib
+        datos = plistlib.loads(enc.plist().encode("utf-8"))
+        self.assertEqual(datos["StartCalendarInterval"], {"Minute": 0})
+        self.assertFalse(datos["RunAtLoad"])
+        self.assertTrue(datos["StandardErrorPath"].endswith("publicar.log"))
+
+
+class TestElAvisoDeBancoCorto(unittest.TestCase):
+
+    def test_dice_cuantos_dias_aguanta_y_no_solo_cuantas_frases(self):
+        # Con la rampa, el mismo número de frases dura muy distinto: lo que
+        # hace falta saber es cuándo sentarse a escribir más.
+        texto = bot.estado(PAGINA)
+        self.assertIn("Alcanzan para", texto)
+        self.assertIn("días", texto)
+
+    def test_avisa_cuando_queda_menos_de_una_semana(self):
+        temas = frases.leer()
+        todas = frases.todas(temas)
+        # Todas publicadas menos unas pocas: quedan menos de siete días.
+        ya = {f.id: {"dia": "2026-11-01", "post_id": "p", "pagina": "x"}
+              for f in todas[:-6]}
+        with mock.patch.object(frases, "publicadas", return_value=ya):
+            texto = bot.estado(PAGINA)
+        self.assertIn("es hora de escribir", texto)
 
 
 if __name__ == "__main__":

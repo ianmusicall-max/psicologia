@@ -1,0 +1,109 @@
+# Capítulo 26 · El día a día que nadie cuenta
+tema: hogar
+capitulo: 26
+eje: nucleo
+titulo: El día a día que nadie cuenta
+hashtags: [convivencia, tareas, acuerdos]
+tesis: >-
+  La convivencia se rompe en lo chico: el reparto de tareas, la carga de
+  pensar en todo, los ruidos que molestan. Casi nada de eso es grave por sí
+  mismo y casi todo se vuelve grave cuando se acumula sin hablarse. Lo que
+  sostiene no es la compatibilidad sino la negociación explícita.
+
+frases:
+  - id: hog-01
+    texto: "La tarea más pesada de la casa es acordarse de todo."
+    destacar: [acordarse]
+    principio: "La carga mental, planificar y anticipar las tareas domésticas, se distribuye de forma más desigual que la ejecución y se asocia a agotamiento."
+    fuente: "Daminger (2019), la división del trabajo cognitivo en el hogar."
+    reflexion: >-
+      Se puede repartir quién lava y quién cocina y que uno siga llevando toda
+      la planificación: qué falta, cuándo se vence, a quién hay que avisar.
+      Esa parte no se ve y cansa igual. Si el reparto solo cuenta acciones,
+      deja afuera la mitad del trabajo.
+
+  - id: hog-02
+    texto: "Ayudar en casa es la palabra del problema. No se ayuda en lo propio."
+    destacar: [ayudar]
+    principio: "El encuadre de la participación doméstica como ayuda mantiene la responsabilidad en un solo miembro y predice reparto desigual."
+    fuente: "Hochschild y Machung (1989), la segunda jornada."
+    reflexion: >-
+      Ayudar supone que la tarea es de otro y vos colaborás. Mientras la
+      palabra siga ahí, la responsabilidad de que las cosas pasen queda en el
+      mismo lugar, aunque las manos sean dos. Cambiar el verbo no resuelve el
+      reparto, pero lo deja a la vista.
+
+  - id: hog-03
+    texto: "Cada uno cree que hace más de la mitad. Los dos tienen razón en parte."
+    destacar: [mitad]
+    principio: "Las personas recuerdan mejor sus propias contribuciones que las ajenas, por lo que la suma de los aportes percibidos supera el cien por cien."
+    fuente: "Ross y Sicoly (1979), sesgo de disponibilidad en la responsabilidad."
+    reflexion: >-
+      Cuando se les pregunta por separado cuánto aporta cada uno, los
+      porcentajes suman más de cien. No es que mientan: cada uno ve su propio
+      esfuerzo completo y del otro solo lo que presenció. Saberlo baja el tono
+      de la discusión antes de empezarla.
+
+  - id: hog-04
+    texto: "Lo que no se habla no desaparece. Se guarda y sale con intereses."
+    destacar: [intereses]
+    principio: "La acumulación de quejas no expresadas predice escaladas desproporcionadas ante desencadenantes menores."
+    fuente: "Gottman (1999); Baumeister, Stillwell y Wotman (1990)."
+    reflexion: >-
+      Nadie estalla por un plato. Estalla por el plato número cuarenta,
+      después de treinta y nueve veces en que no dijo nada para no hacer un
+      problema. El que mira desde afuera ve una reacción enorme por algo
+      mínimo, y tiene razón en lo mínimo y se pierde lo anterior.
+
+  - id: hog-05
+    texto: "Repartir tareas por gusto funciona mejor que repartirlas por justicia."
+    destacar: [gusto]
+    principio: "La asignación de tareas según preferencia y habilidad relativa se asocia a mayor cumplimiento y menor conflicto que el reparto estrictamente igualitario."
+    fuente: "Becker (1991); Coltrane (2000), revisión sobre trabajo doméstico."
+    reflexion: >-
+      Partir todo al medio suena justo y suele andar mal: cada uno hace cosas
+      que detesta y las hace tarde y mal. Si a uno no le molesta cocinar y al
+      otro no le molesta ordenar, repartir por eso da más resultado, mientras
+      el total quede parejo.
+
+  - id: hog-06
+    texto: "Cada uno necesita un rato de nadie. Pedirlo no es rechazar al otro."
+    destacar: [rato]
+    principio: "La necesidad de tiempo en soledad varía entre personas y su satisfacción se asocia a mejor regulación emocional y menor irritabilidad."
+    fuente: "Nguyen, Ryan y Deci (2018), soledad y autonomía."
+    reflexion: >-
+      Hay gente que se recarga sola y gente que se recarga acompañada, y la
+      convivencia junta a las dos. Pedir una hora propio no dice nada del
+      vínculo. Lo que daña es tomarla sin avisar, porque el otro lee
+      distancia donde había cansancio.
+
+  - id: hog-07
+    texto: "Los pequeños ruidos no son pequeños cuando son todos los días."
+    destacar: [días]
+    principio: "Los estresores cotidianos menores, por su frecuencia, predicen malestar acumulado comparable al de eventos vitales aislados."
+    fuente: "Lazarus y Folkman (1984); Almeida (2005), estresores diarios."
+    reflexion: >-
+      Un ruido una vez es nada. El mismo ruido cada noche durante un año es
+      otra cosa, y quien lo sufre no está exagerando. En convivencia conviene
+      tomarse en serio lo que se repite, aunque contado suene ridículo.
+
+  - id: hog-08
+    texto: "Revisar el acuerdo cada tanto evita que se vuelva una pelea."
+    destacar: [revisar]
+    principio: "Los acuerdos domésticos explícitos y revisados periódicamente se asocian a mayor equidad percibida que los arreglos implícitos."
+    fuente: "Coltrane (2000); Carlson, Miller y Sassler (2018)."
+    reflexion: >-
+      Los repartos se arman solos al principio y después nadie los vuelve a
+      mirar, aunque cambien los horarios y el trabajo. Sentarse veinte minutos
+      cada tanto a revisar quién hace qué es menos incómodo que descubrirlo en
+      medio de una discusión.
+
+  - id: hog-09
+    texto: "Vivir juntos no prueba nada por sí solo. Lo que prueba es cómo se arregla lo que falla."
+    destacar: [arregla]
+    principio: "La estabilidad de la convivencia se asocia más a la capacidad de reparación tras el conflicto que a la ausencia de desacuerdos."
+    fuente: "Gottman (1999); Rusbult, Verette y colegas (1991), acomodación."
+    reflexion: >-
+      Toda convivencia produce fricción: es lo que pasa cuando dos costumbres
+      comparten metros cuadrados. Lo que distingue a las que funcionan no es
+      que no choquen, es lo que hacen después del choque, y con qué rapidez.

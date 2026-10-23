@@ -1,0 +1,111 @@
+# Capítulo 21 · Estar solo no es sentirse solo
+tema: soledad
+capitulo: 21
+eje: nucleo
+titulo: Estar solo no es sentirse solo
+hashtags: [soledad, vinculos, companiaa]
+tesis: >-
+  La soledad que duele no se mide en personas alrededor: se mide en la
+  distancia entre los vínculos que tenés y los que querrías tener. Por eso se
+  puede estar acompañado y sentirse solo, y vivir solo sin sentirlo. Es una
+  señal, como el hambre, y lo que la calma no es más gente sino más cercanía.
+
+frases:
+  - id: sol-01
+    texto: "Se puede estar rodeado de gente y seguir sintiéndote solo. No estás fallando."
+    destacar: [rodeado]
+    principio: "La soledad se define como la discrepancia entre las relaciones deseadas y las percibidas, no como aislamiento objetivo."
+    fuente: "Peplau y Perlman (1982); Cacioppo y Patrick (2008)."
+    reflexion: >-
+      La soledad no cuenta cabezas, mide distancia. Por eso una mesa llena
+      puede dejarte más solo que una tarde a solas: lo que falta no es
+      compañía, es que alguien sepa de verdad cómo estás. Entenderlo cambia lo
+      que buscás: no más planes, más cercanía en alguno.
+
+  - id: sol-02
+    texto: "La soledad funciona como el hambre: avisa de algo que falta."
+    destacar: [avisa]
+    principio: "La soledad se conceptualiza como una señal aversiva que motiva la reconexión social, análoga a las señales de hambre o dolor."
+    fuente: "Cacioppo y Hawkley (2009), modelo evolutivo de la soledad."
+    reflexion: >-
+      Es incómoda a propósito. Si no doliera, nadie haría el esfuerzo de
+      acercarse a otro. Tratarla como un defecto de carácter es como enojarse
+      con el hambre. Es una señal, y como toda señal conviene escuchar qué está
+      pidiendo antes de taparla.
+
+  - id: sol-03
+    texto: "Estar solo un rato no es lo mismo que estar aislado mucho tiempo."
+    destacar: [aislado]
+    principio: "La soledad elegida y breve se asocia a recuperación y creatividad; el aislamiento crónico percibido se asocia a peor salud física y mental."
+    fuente: "Long y Averill (2003); Holt-Lunstad y colegas (2015), metaanálisis."
+    reflexion: >-
+      Hay una soledad que elegís y que descansa, y otra que te pasa y que
+      desgasta. La diferencia no está en las horas sino en si la puerta está
+      abierta. Si podés volver cuando querés, es descanso. Si no sabés cómo
+      volver, es otra cosa.
+
+  - id: sol-04
+    texto: "La soledad te hace ver amenaza donde hay distracción. Ese es su truco."
+    destacar: [amenaza]
+    principio: "La soledad crónica aumenta la vigilancia ante señales sociales negativas y sesga la interpretación de gestos ambiguos como rechazo."
+    fuente: "Cacioppo y Hawkley (2009); Spithoven, Bijttebier y Goossens (2017)."
+    reflexion: >-
+      Cuando llevás tiempo solo, el cerebro empieza a leer rechazo en cosas
+      que no lo son: un mensaje que tarda, una cara distraída. Y esa lectura te
+      hace retirarte, lo que te deja más solo. Saber que el filtro está puesto
+      es lo que te permite no creerle del todo.
+
+  - id: sol-05
+    texto: "Un vínculo donde podés decir la verdad vale más que diez donde actuás."
+    destacar: [verdad]
+    principio: "La calidad percibida de las relaciones predice bienestar mejor que la cantidad de contactos sociales."
+    fuente: "Waldinger y Schulz (2010), Estudio de Harvard sobre el desarrollo adulto."
+    reflexion: >-
+      El estudio más largo que se hizo sobre vidas adultas encontró que lo que
+      sostiene no es la agenda llena: es tener vínculos donde no hace falta
+      actuar. Uno o dos alcanzan. Si estás midiendo tu vida social por cantidad,
+      estás mirando la columna equivocada.
+
+  - id: sol-06
+    texto: "Esperar a sentirte bien para ver gente es esperar al revés."
+    destacar: [esperar]
+    principio: "El contacto social predice aumentos posteriores del estado de ánimo; esperar a sentirse bien invierte la secuencia y mantiene el retraimiento."
+    fuente: "Lewinsohn (1974), modelo conductual; activación conductual."
+    reflexion: >-
+      La trampa es que el ánimo bajo te saca las ganas justo de lo que lo
+      levanta. Si esperás a tener ganas, la espera se hace larga. Lo que suele
+      funcionar es al revés: ir primero, aunque sea un rato corto, y dejar que
+      las ganas lleguen después.
+
+  - id: sol-07
+    texto: "Las conversaciones cortas con desconocidos también cuentan. Más de lo que parece."
+    destacar: [desconocidos]
+    principio: "Las interacciones breves con vínculos débiles se asocian a aumentos medibles de bienestar y sentido de pertenencia."
+    fuente: "Sandstrom y Dunn (2014), estudios con vínculos débiles."
+    reflexion: >-
+      Hablar dos minutos con quien te atiende el café parece insignificante y
+      no lo es. Esos contactos sostienen una parte del tejido que las
+      relaciones cercanas no cubren. No reemplazan a nadie; hacen que el día
+      tenga a alguien adentro.
+
+  - id: sol-08
+    texto: "Pedir compañía no es ser una carga. Es la forma en que se arman los vínculos."
+    destacar: [carga]
+    principio: "Las personas tienden a sobrestimar el costo que su pedido representa para otros y a subestimar la disposición a ayudar."
+    fuente: "Flynn y Lake (2008); Zhao y Epley (2022)."
+    reflexion: >-
+      Quien pide ayuda casi siempre cree que molesta más de lo que molesta, y
+      quien la recibe casi siempre se alegra más de lo que el otro imagina.
+      Esa diferencia hace que muchos vínculos no empiecen nunca. Alguien tiene
+      que mandar el primer mensaje.
+
+  - id: sol-09
+    texto: "Si te aislás cuando estás mal, tu cabeza se queda sin nadie que la contradiga."
+    destacar: [contradiga]
+    principio: "El aislamiento reduce la exposición a perspectivas alternativas y facilita el mantenimiento de interpretaciones negativas sobre uno mismo."
+    fuente: "Nolen-Hoeksema (2000), rumiación; terapia cognitiva."
+    reflexion: >-
+      Solo, las ideas sobre vos mismo no encuentran resistencia: giran y se
+      confirman. Una conversación cualquiera las interrumpe, aunque no hablen
+      del tema. No hace falta contarle todo a nadie. Alcanza con que haya otra
+      voz en el día.

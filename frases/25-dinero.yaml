@@ -1,0 +1,111 @@
+# Capítulo 25 · La plata en la pareja
+tema: dinero
+capitulo: 25
+eje: nucleo
+titulo: La plata en la pareja
+hashtags: [dinero, pareja, acuerdos]
+tesis: >-
+  El dinero es uno de los temas que más se discute en pareja y casi nunca se
+  discute por el dinero: se discute por lo que significa para cada uno
+  -seguridad, libertad, estatus, control-. Las parejas que lo manejan bien no
+  ganan más: hablan del tema antes de que explote y acuerdan reglas claras.
+
+frases:
+  - id: din-01
+    texto: "Casi nunca pelean por la plata. Pelean por lo que la plata significa."
+    destacar: [significa]
+    principio: "Los conflictos financieros en pareja suelen reflejar diferencias de valores y significados atribuidos al dinero más que la cantidad disponible."
+    fuente: "Papp, Cummings y Goeke-Morey (2009), conflictos cotidianos."
+    reflexion: >-
+      Para uno gastar es disfrutar lo que costó ganar; para el otro ahorrar es
+      dormir tranquilo. No están discutiendo un monto, están discutiendo dos
+      ideas de seguridad. Mientras la conversación sea sobre el número, no se
+      resuelve.
+
+  - id: din-02
+    texto: "Las discusiones por dinero son las que más se repiten sin resolverse."
+    destacar: [repiten]
+    principio: "Los desacuerdos financieros son más recurrentes, más intensos y se resuelven peor que otros temas de conflicto en parejas."
+    fuente: "Papp, Cummings y Goeke-Morey (2009); Dew, Britt y Huston (2012)."
+    reflexion: >-
+      En los estudios que registran discusiones día por día, las de dinero
+      duran más, suben más de tono y terminan sin acuerdo más seguido que las
+      de cualquier otro tema. Saberlo ayuda: no es que ustedes sean
+      especialmente malos en esto.
+
+  - id: din-03
+    texto: "Esconder gastos hace más daño que el gasto."
+    destacar: [esconder]
+    principio: "La ocultación financiera a la pareja se asocia a menor satisfacción relacional, con efecto independiente del monto implicado."
+    fuente: "Jeanfreau, Noguchi, Mong y Stadthagen (2018), infidelidad financiera."
+    reflexion: >-
+      Lo que rompe no es haber comprado algo caro: es haberlo guardado. El
+      monto se discute una tarde; el descubrimiento de que hubo algo oculto
+      reabre la pregunta de qué más no sé. Por eso conviene decirlo antes,
+      incluso cuando da vergüenza.
+
+  - id: din-04
+    texto: "Tener algo propio no es desconfiar. Es tener margen."
+    destacar: [margen]
+    principio: "Los arreglos que combinan fondos comunes con cuentas individuales se asocian a menor conflicto que los modelos puramente separados o totalmente comunes."
+    fuente: "Olson y Rick (2022); Pahl (1995), gestión del dinero en pareja."
+    reflexion: >-
+      Un fondo común para lo que es de los dos y un margen propio para lo que
+      no necesita explicación suele funcionar mejor que los extremos. Evita
+      dos problemas a la vez: rendir cuentas por cada café y no saber nunca
+      cómo están parados.
+
+  - id: din-05
+    texto: "El que gana más no gana la discusión."
+    destacar: [gana]
+    principio: "La asimetría de ingresos se asocia a mayor conflicto cuando se traduce en poder de decisión desigual, no por la diferencia en sí."
+    fuente: "Kulik (2011); Bennett (2013), poder económico y satisfacción."
+    reflexion: >-
+      Cuando uno aporta más y eso se convierte en que decide más, aparece un
+      desequilibrio que desgasta aunque nadie lo diga en voz alta. La
+      diferencia de ingresos no es el problema; convertirla en autoridad sí.
+      Conviene nombrarlo antes de que se vuelva costumbre.
+
+  - id: din-06
+    texto: "Hablar de plata una vez al mes evita la conversación de emergencia."
+    destacar: [emergencia]
+    principio: "Las parejas que planifican finanzas de forma regular reportan mayor satisfacción y menor conflicto financiero."
+    fuente: "Dew y Stewart (2012); Archuleta, Britt y Grable (2011)."
+    reflexion: >-
+      Si el tema solo aparece cuando algo salió mal, el tema queda asociado a
+      pelear. Una conversación corta y agendada, cuando no pasa nada, hace que
+      la próxima no arranque en el peor momento. Veinte minutos al mes
+      alcanzan.
+
+  - id: din-07
+    texto: "Los dos tienen que saber cómo están. No saber también es una decisión."
+    destacar: [saber]
+    principio: "La delegación total de las finanzas en un miembro de la pareja se asocia a mayor vulnerabilidad económica del otro ante separación o viudez."
+    fuente: "Pahl (1995); literatura sobre autonomía financiera."
+    reflexion: >-
+      Es común que uno se encargue de todo y el otro prefiera no mirar. Mientras
+      todo va bien no se nota, y el día que cambia algo, uno de los dos no
+      sabe ni dónde están las cuentas. No hace falta administrar de a dos;
+      hace falta que los dos sepan.
+
+  - id: din-08
+    texto: "Prestarle plata a alguien cercano compra un problema futuro, no un favor."
+    destacar: [problema]
+    principio: "Los préstamos informales entre allegados generan asimetrías de obligación que deterioran el vínculo cuando la devolución se demora."
+    fuente: "Clark y Mills (1979), relaciones comunales e intercambio."
+    reflexion: >-
+      Los vínculos cercanos funcionan con una lógica de dar sin llevar cuenta;
+      un préstamo mete adentro una lógica de deuda. Cuando las dos conviven,
+      cada encuentro tiene una pregunta no dicha. Si vas a prestar, conviene
+      decidir de antemano si podés regalarlo.
+
+  - id: din-09
+    texto: "Los acuerdos de plata se escriben. No por desconfianza, por memoria."
+    destacar: [memoria]
+    principio: "La memoria de acuerdos verbales diverge sistemáticamente entre las partes, con sesgo autofavorable en la reconstrucción."
+    fuente: "Ross y Sicoly (1979), sesgo egocéntrico en la memoria."
+    reflexion: >-
+      Dos personas honestas recuerdan el mismo acuerdo de maneras distintas, y
+      cada una recuerda la versión que la favorece un poco. No hace falta mala
+      fe para terminar discutiendo qué se había dicho. Un mensaje escrito
+      resuelve eso antes de que ocurra.

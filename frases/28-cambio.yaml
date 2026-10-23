@@ -1,0 +1,111 @@
+# Capítulo 28 · La gente cambia, pero no así
+tema: cambio
+capitulo: 28
+eje: apoyo
+titulo: La gente cambia, pero no así
+hashtags: [cambio, habitos, decisiones]
+tesis: >-
+  La gente cambia, pero no por amor, ni por una promesa, ni porque alguien se
+  lo pida con suficiente insistencia. Cambia cuando el costo de seguir igual
+  supera al de moverse, cuando decide hacerlo por sí misma y cuando el cambio
+  se apoya en pasos concretos y en el entorno, no en la fuerza de voluntad.
+
+frases:
+  - id: cam-01
+    texto: "Nadie cambia porque se lo pidan. Cambia cuando le conviene más cambiar que seguir."
+    destacar: [conviene]
+    principio: "El cambio sostenido requiere motivación autónoma; la presión externa produce cumplimiento temporal y mayor recaída."
+    fuente: "Deci y Ryan (2000), teoría de la autodeterminación."
+    reflexion: >-
+      Lo que se hace para que el otro deje de insistir dura lo que dura la
+      insistencia. Es la diferencia entre dejar de fumar porque tu pareja
+      amenaza y dejar porque te asustaste vos. Desde afuera se parecen; a los
+      seis meses no.
+
+  - id: cam-02
+    texto: "Esperar que alguien cambie por amor es apostarle a lo que menos funciona."
+    destacar: [apostarle]
+    principio: "La expectativa de cambio en la pareja predice menor satisfacción cuando el cambio no ocurre, y la mayoría de los rasgos estables no cambian."
+    fuente: "Roberts y Mroczek (2008), estabilidad de la personalidad."
+    reflexion: >-
+      Los rasgos de fondo se mueven despacio y poco. Entrar a una relación
+      contando con que el otro va a dejar de ser como es suele terminar en
+      resentimiento de los dos lados: uno por no haber cambiado, el otro por
+      haber esperado. Conviene decidir mirando lo que hay hoy.
+
+  - id: cam-03
+    texto: "Querer no alcanza. Lo que cambia la conducta es el plan, no la intención."
+    destacar: [plan]
+    principio: "Especificar cuándo, dónde y cómo se ejecutará una conducta aumenta sustancialmente la probabilidad de realizarla frente a la intención general."
+    fuente: "Gollwitzer y Sheeran (2006), metaanálisis de intenciones de implementación."
+    reflexion: >-
+      Voy a hacer ejercicio casi no mueve la aguja. Los martes y jueves a las
+      siete, zapatillas al lado de la cama sí. La diferencia entre las dos no
+      es ganas, es que la segunda le saca al momento la decisión que la primera
+      le deja.
+
+  - id: cam-04
+    texto: "Cambiar el entorno cuesta menos que cambiar la fuerza de voluntad."
+    destacar: [entorno]
+    principio: "Las personas con mejor autorregulación reportan menos conflictos de tentación porque estructuran su entorno, no porque resistan más."
+    fuente: "Hofmann, Baumeister, Förster y Vohs (2012); Galla y Duckworth (2015)."
+    reflexion: >-
+      Quienes parecen tener más disciplina no están resistiendo todo el día:
+      se arman la vida para no tener que resistir. Sacar la aplicación del
+      teléfono, no comprar lo que no querés comer. Lo que no está adelante no
+      hay que vencerlo.
+
+  - id: cam-05
+    texto: "Los cambios que duran son aburridos y chicos. Los grandes se abandonan."
+    destacar: [chicos]
+    principio: "Los cambios conductuales graduales presentan mayor adherencia a largo plazo que los cambios drásticos iniciados de una vez."
+    fuente: "Prochaska y DiClemente (1983), modelo transteórico."
+    reflexion: >-
+      El lunes que empieza todo junto -dieta, gimnasio, horarios, lectura-
+      suele durar hasta el jueves. Un cambio por vez, lo bastante pequeño como
+      para que casi no cueste, es lo que todavía está en pie en marzo. No es
+      inspirador y funciona.
+
+  - id: cam-06
+    texto: "Una recaída no borra lo anterior. Interrumpirlo del todo, sí."
+    destacar: [recaída]
+    principio: "Interpretar una recaída como fracaso total predice abandono; el modelo de prevención de recaídas la trata como parte esperable del proceso."
+    fuente: "Marlatt y Gordon (1985), efecto de violación de la abstinencia."
+    reflexion: >-
+      Un día que fallás no deshace tres semanas. Lo que las deshace es la
+      conclusión de que ya está arruinado, que lleva a abandonar del todo. La
+      recaída está prevista en cualquier cambio real; la salida está en volver
+      al día siguiente.
+
+  - id: cam-07
+    texto: "Decir que vas a cambiar te da parte de la satisfacción de haberlo hecho."
+    destacar: [satisfacción]
+    principio: "Anunciar una meta de identidad puede reducir el esfuerzo posterior al generar una sensación prematura de completitud."
+    fuente: "Gollwitzer, Sheeran, Michalski y Seifert (2009)."
+    reflexion: >-
+      Contar el plan a todo el mundo da un anticipo del reconocimiento que
+      vendría después, y ese anticipo baja las ganas de hacerlo. No es una
+      regla absoluta, pero conviene saberlo: a veces conviene contar menos y
+      mostrar después.
+
+  - id: cam-08
+    texto: "Si alguien cambia solo cuando lo vas a dejar, el cambio dura hasta que te quedás."
+    destacar: [dura]
+    principio: "El cambio motivado por evitar una consecuencia inminente revierte cuando la consecuencia desaparece."
+    fuente: "Deci y Ryan (2000); Marlatt y Gordon (1985)."
+    reflexion: >-
+      Es un patrón conocido: la crisis produce una mejora inmediata y visible,
+      y la mejora se desarma a las pocas semanas de que pasó el peligro. Lo que
+      conviene mirar no es la intensidad de la reacción, es qué queda tres
+      meses después.
+
+  - id: cam-09
+    texto: "Preguntate qué va a ser distinto el martes a las siete. Si no hay respuesta, no hay cambio."
+    destacar: [martes]
+    principio: "Los compromisos de cambio sin especificación conductual concreta no se distinguen empíricamente de la ausencia de compromiso."
+    fuente: "Gollwitzer y Sheeran (2006); Locke y Latham (2002), fijación de metas."
+    reflexion: >-
+      Es la prueba más rápida que hay, y sirve tanto para vos como para lo que
+      te promete otro. Voy a estar más presente no se puede comprobar; el
+      martes salgo a las seis y te paso a buscar sí. Si nadie puede nombrar la
+      escena, todavía no hay plan.

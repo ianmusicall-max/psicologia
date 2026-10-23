@@ -1,0 +1,110 @@
+# Capítulo 24 · Medirte contra una vidriera
+tema: redes
+capitulo: 24
+eje: apoyo
+titulo: Medirte contra una vidriera
+hashtags: [comparacion, redes, envidia]
+tesis: >-
+  Compararse es automático, pero el material con el que nos comparamos cambió:
+  hoy medimos nuestro día completo contra los momentos editados de cientos de
+  personas. La comparación hacia arriba, sostenida y con desconocidos, predice
+  peor ánimo. No se trata de dejar de comparar sino de elegir contra qué.
+
+frases:
+  - id: red-01
+    texto: "Comparás tu día entero con el mejor minuto del otro."
+    destacar: [minuto]
+    principio: "El contenido social en línea muestra momentos seleccionados, lo que sesga la comparación al presentar solo los extremos positivos de otros."
+    fuente: "Chou y Edge (2012), percepción de las vidas ajenas."
+    reflexion: >-
+      Vos tenés acceso a tu día completo: el aburrimiento, la discusión, el
+      rato tirado en la cama. Del otro ves quince segundos elegidos entre
+      cien. La comparación no es injusta por envidia, es injusta porque los
+      dos lados no tienen el mismo tamaño.
+
+  - id: red-02
+    texto: "El problema no es mirar. Es mirar durante una hora sin hacer nada más."
+    destacar: [hora]
+    principio: "El uso pasivo de redes sociales se asocia a descensos del bienestar, mientras que el uso activo y la interacción directa no muestran el mismo efecto."
+    fuente: "Verduyn y colegas (2015); Burke y Kraut (2016)."
+    reflexion: >-
+      Scrollear sin interactuar es lo que más se asocia a sentirse peor
+      después. Escribirle a alguien, en cambio, no. La misma aplicación hace
+      dos cosas distintas según cómo se use, y el cuerpo nota la diferencia
+      aunque uno no la nombre.
+
+  - id: red-03
+    texto: "Compararte con quien empezó hace diez años no te dice nada útil."
+    destacar: [útil]
+    principio: "La comparación social es informativa cuando el referente es similar en condiciones de partida; con referentes muy distintos pierde valor diagnóstico."
+    fuente: "Festinger (1954), teoría de la comparación social."
+    reflexion: >-
+      La comparación sirve para orientarse: saber si vas bien, qué te falta.
+      Para eso el otro tiene que ser parecido a vos en el punto de partida.
+      Contra alguien que lleva una década de ventaja no obtenés información,
+      obtenés desánimo.
+
+  - id: red-04
+    texto: "Mirar a alguien que va mejor puede alentarte o hundirte. Depende de si lo ves posible."
+    destacar: [posible]
+    principio: "La comparación ascendente motiva cuando el referente se percibe como alcanzable y desmoraliza cuando se percibe como inalcanzable."
+    fuente: "Lockwood y Kunda (1997), modelos a seguir."
+    reflexion: >-
+      El mismo ejemplo funciona de dos maneras opuestas. Si pensás eso lo
+      puedo hacer, te empuja. Si pensás yo nunca, te desarma. Antes de seguir a
+      alguien conviene notar cuál de las dos cosas te pasa en el cuerpo cuando
+      lo mirás.
+
+  - id: red-05
+    texto: "La envidia te está señalando algo que querés. Eso es información."
+    destacar: [información]
+    principio: "La envidia benigna, dirigida a lo que el otro logró, se asocia a motivación de mejora; la envidia maliciosa, dirigida a la persona, no."
+    fuente: "Van de Ven, Zeelenberg y Pieters (2009), dos tipos de envidia."
+    reflexion: >-
+      La envidia tiene mala fama y es un dato preciso: marca lo que querrías y
+      no estás teniendo. La diferencia está en hacia dónde apunta. Si apunta a
+      lo que el otro consiguió, te mueve. Si apunta a que el otro lo pierda, te
+      deja donde estabas.
+
+  - id: red-06
+    texto: "Nadie postea la parte en la que no sabía qué hacer."
+    destacar: [postea]
+    principio: "Las normas de autopresentación en línea favorecen mostrar logros y ocultar dificultades, lo que genera percepciones distorsionadas de la norma."
+    fuente: "Jordan y colegas (2011), subestimación del malestar ajeno."
+    reflexion: >-
+      En un estudio, la gente subestimaba sistemáticamente cuánto sufrían los
+      demás, porque el malestar ajeno no se ve. Eso ya pasaba antes de las
+      redes; ahora pasa a escala. Lo que parece que a todos les va bien es, en
+      buena medida, lo que a nadie le conviene mostrar.
+
+  - id: red-07
+    texto: "Compararte con vos de hace un año es la única comparación con datos reales."
+    destacar: [reales]
+    principio: "La comparación temporal con uno mismo se asocia a mayor bienestar que la comparación social, al usar un referente con información completa."
+    fuente: "Albert (1977), comparación temporal; Wilson y Ross (2000)."
+    reflexion: >-
+      De esa comparación tenés las dos mitades: sabés de dónde saliste y lo que
+      costó. No hay edición de por medio. Es la única medida que te dice algo
+      verdadero sobre si estás avanzando, y casi nunca es la que usamos.
+
+  - id: red-08
+    texto: "Seguir cuentas que te hacen sentir mal no es información. Es un hábito."
+    destacar: [hábito]
+    principio: "La exposición repetida a contenido que genera comparación negativa se mantiene por hábito automático más que por decisión deliberada."
+    fuente: "Wood y Neal (2007), hábitos; Verduyn y colegas (2017)."
+    reflexion: >-
+      Casi nadie decide cada mañana ver eso que lo deja peor: la mano abre la
+      aplicación sola. Por eso el consejo de tener más fuerza de voluntad no
+      funciona y cambiar lo que aparece en la pantalla sí. Dejar de seguir no
+      es un gesto dramático; es sacar el disparador.
+
+  - id: red-09
+    texto: "Si todo lo que ves te muestra lo que te falta, vas a sentir que te falta todo."
+    destacar: [falta]
+    principio: "La exposición selectiva a referentes superiores desplaza el punto de referencia usado para evaluar la propia situación."
+    fuente: "Kahneman y Tversky (1979), puntos de referencia; Festinger (1954)."
+    reflexion: >-
+      La vara con la que medís tu vida no es fija: se arma con lo que ves
+      seguido. Si lo que ves seguido son casas, viajes y parejas perfectas, tu
+      vida normal va a parecer poca, aunque no haya cambiado nada en ella.
+      Cambiar la dieta cambia la vara.
