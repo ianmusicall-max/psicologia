@@ -38,7 +38,7 @@ lector que llegó por un post encuentre esa frase adentro.
 Unas 1.500 palabras por capítulo. Veintinueve capítulos son unas 43.000
 palabras de texto nuevo, que llevan el manuscrito de 27.000 a cerca de 70.000.
 
-Escritos hasta ahora: 1, 2, 3, 4, 5, 6 y 7.
+Escritos hasta ahora: del 1 al 8.
 
 Una prueba (`TestLosCapitulosEscritos`) exige que cada capítulo escrito
 cite TODAS las frases de su tema, que tenga el largo de un capítulo y que
