@@ -144,6 +144,9 @@ def main(argv=None) -> int:
     ap.add_argument("--voz", help="un audio tuyo leyendo el texto")
     ap.add_argument("--voz-mac", nargs="?", const="", default=None, metavar="VOZ",
                     help="usar `say`; sin nombre elige la mejor en espanol que tengas")
+    ap.add_argument("--voz-eleven", nargs="?", const=video.VOZ_ELEVEN, default=None,
+                    metavar="ID", help="voz de ElevenLabs (el id, o vacio para la "
+                                       "elegida por defecto). CUESTA")
     ap.add_argument("--ver", action="store_true", help="decir que haria, sin armar")
     ap.add_argument("--carpeta", default=str(video.REELS))
     ap.add_argument("--telegram", action="store_true",
@@ -195,11 +198,14 @@ def main(argv=None) -> int:
     for u in unidades:
         print("   %s" % u)
 
-    cuantas = sum(1 for x in (args.voz, args.voz_mac is not None, args.voz_ia) if x)
+    # Las CUATRO, no tres: con dos banderas puestas se armaba la voz dos veces
+    # -la segunda pisando a la primera- y se pagaban las dos.
+    cuantas = sum(1 for x in (args.voz, args.voz_mac is not None,
+                              args.voz_ia, args.voz_eleven is not None) if x)
     if cuantas > 1:
         print()
-        print("Elegi una voz sola: --voz es tu grabacion, --voz-mac la del Mac")
-        print("y --voz-ia la de OpenAI.")
+        print("Elegi una voz sola: --voz es tu grabacion, --voz-mac la del Mac,")
+        print("--voz-ia la de OpenAI y --voz-eleven la de ElevenLabs.")
         return 2
 
     if args.ver:
@@ -236,6 +242,22 @@ def main(argv=None) -> int:
         marcas = video.tiempos_exactos(duraciones)
         print("Listo. Lo pedido queda anotado en data/voz.jsonl; el costo se")
         print("mira en el panel de OpenAI, que es donde esta el precio de verdad.")
+        contar_lo_que_tardo(unidades, duraciones)
+    if args.voz_eleven is not None:
+        letras = sum(len(u) for u in unidades)
+        print()
+        print("Leyendo %d renglones (%d caracteres) con ElevenLabs..."
+              % (len(unidades), letras))
+        try:
+            voz, duraciones = video.voz_por_unidades(
+                unidades, carpeta / ("%s-voz" % frase.id), args.voz_eleven,
+                decir_fn=video.decir_con_eleven, color=args.color)
+        except video.VideoError as e:
+            print(e)
+            return 1
+        marcas = video.tiempos_exactos(duraciones)
+        print("Listo. Lo pedido queda anotado en data/voz.jsonl; los creditos")
+        print("se miran en el panel de ElevenLabs.")
         contar_lo_que_tardo(unidades, duraciones)
     if args.voz_mac is not None:
         quien = args.voz_mac or video.voz_preferida()

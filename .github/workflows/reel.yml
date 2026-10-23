@@ -12,6 +12,8 @@
 #   OPENAI_API_KEY    para la voz. Sin el, el reel sale mudo igual.
 #   TELEGRAM_TOKEN    para mandarlo al chat
 #   TELEGRAM_CHAT_ID  a que chat
+#   ELEVENLABS_API_KEY  la voz de ElevenLabs. Sin ella, `voz_eleven` falla y
+#                     el resto sigue andando con la de OpenAI.
 #   PEXELS_API_KEY    para bajar el metraje de fondo. Es gratuita y se saca en
 #                     https://www.pexels.com/api/ con un correo. SIN ELLA el
 #                     reel sale con el papel de la marca de fondo, que es
@@ -33,6 +35,14 @@ on:
         description: "Voz de OpenAI: onyx, ash, sage, ballad. Vacio: sin voz"
         required: false
         default: "onyx"
+      voz_eleven:
+        description: "Id de voz de ElevenLabs. Si se pone, se usa esta y no la de OpenAI"
+        required: false
+        default: ""
+      listar_eleven:
+        description: "Solo decir que voces de ElevenLabs tiene la cuenta y mandar muestras"
+        type: boolean
+        default: false
       musica:
         description: "Musica de fondo"
         type: boolean
@@ -62,6 +72,7 @@ jobs:
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -102,7 +113,7 @@ jobs:
           key: fondos-v1
 
       - name: Bajar el metraje que falte
-        if: ${{ !inputs.probar_voces }}
+        if: ${{ !inputs.probar_voces && !inputs.listar_eleven }}
         run: |
           if [ -z "$PEXELS_API_KEY" ]; then
             echo "Sin PEXELS_API_KEY: el reel va a salir con el papel de la"
@@ -120,6 +131,10 @@ jobs:
           key: fondos-v1
         continue-on-error: true
 
+      - name: Probar voces de ElevenLabs
+        if: ${{ inputs.listar_eleven }}
+        run: python scripts/probar_voces.py --eleven
+
       - name: Probar voces
         if: ${{ inputs.probar_voces }}
         run: |
@@ -133,13 +148,15 @@ jobs:
           python scripts/probar_voces.py $ARGS
 
       - name: Armar el reel
-        if: ${{ !inputs.probar_voces }}
+        if: ${{ !inputs.probar_voces && !inputs.listar_eleven }}
         run: |
           ARGS="--carpeta data/reels"
           if [ -n "${{ inputs.tema }}" ]; then
             ARGS="$ARGS --tema ${{ inputs.tema }}"
           fi
-          if [ -n "${{ inputs.voz }}" ]; then
+          if [ -n "${{ inputs.voz_eleven }}" ]; then
+            ARGS="$ARGS --voz-eleven ${{ inputs.voz_eleven }}"
+          elif [ -n "${{ inputs.voz }}" ]; then
             ARGS="$ARGS --voz-ia ${{ inputs.voz }}"
           fi
           if [ "${{ inputs.musica }}" = "true" ]; then

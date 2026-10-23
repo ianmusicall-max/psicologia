@@ -2228,6 +2228,69 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
         conel = [q for q, o in ordenes if "-af" in o and video.COLORES["cine"] in o]
         self.assertEqual(conel, ["pegar la voz"])
 
+    def test_eleven_y_openai_no_comparten_entrada_de_cache(self):
+        # Lo unico grave de una cache de audio es devolver la voz equivocada.
+        # El modelo entra en la llave, asi que las dos conviven en la misma
+        # carpeta sin pisarse.
+        texto = "La misma frase exacta."
+        a = video._llave(texto, "onyx", video.MODELO_VOZ, video.INSTRUCCIONES)
+        b = video._llave(texto, "onyx", video.MODELO_ELEVEN,
+                         video._ajustes_como_texto(video.AJUSTES_ELEVEN))
+        self.assertNotEqual(a, b)
+
+    def test_los_ajustes_de_eleven_entran_en_la_llave(self):
+        # Sin esto, bajar la estabilidad y volver a pedir devolveria el audio
+        # viejo desde la cache y pareceria que el ajuste no hace nada.
+        texto = "Una frase."
+        otros = dict(video.AJUSTES_ELEVEN, stability=0.2)
+        self.assertNotEqual(
+            video._llave(texto, "v1", video.MODELO_ELEVEN,
+                         video._ajustes_como_texto(video.AJUSTES_ELEVEN)),
+            video._llave(texto, "v1", video.MODELO_ELEVEN,
+                         video._ajustes_como_texto(otros)))
+
+    def test_eleven_sin_voz_elegida_avisa_y_no_pide_nada(self):
+        with self.assertRaises(video.VideoError) as c:
+            video.decir_con_eleven("hola", Path("/tmp/no-deberia-escribirse.mp3"),
+                                   voz="", pedir=lambda *a: b"x")
+        self.assertIn("ElevenLabs", str(c.exception))
+
+    def test_eleven_usa_la_cache_antes_de_pedir_la_clave(self):
+        # Un audio que ya esta en disco no necesita cuenta, y el dia que la
+        # clave falte es justo cuando mas conviene poder seguir.
+        with tempfile.TemporaryDirectory() as d:
+            cache = Path(d) / "cache"
+            cache.mkdir()
+            llave = video._llave("hola", "vid1", video.MODELO_ELEVEN,
+                                 video._ajustes_como_texto(video.AJUSTES_ELEVEN))
+            (cache / ("%s.mp3" % llave)).write_bytes(b"audio")
+            salida = Path(d) / "sale.mp3"
+            with mock.patch.dict(video.os.environ if hasattr(video, "os") else {},
+                                 {}, clear=False):
+                video.decir_con_eleven("hola", salida, "vid1", cache=cache,
+                                       pedir=lambda *a: self.fail("pidio audio"))
+            self.assertEqual(salida.read_bytes(), b"audio")
+
+    def test_el_registro_dice_de_que_proveedor_es_cada_pedido(self):
+        # Son dos facturas distintas: un registro que las mezcla no sirve para
+        # cotejar ninguna de las dos.
+        import json as _json
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "voz.jsonl"
+            with mock.patch.object(video, "REGISTRO", reg):
+                video._anotar(10, 1.0, "onyx", video.MODELO_VOZ)
+                video._anotar(10, 1.0, "vid1", video.MODELO_ELEVEN,
+                              proveedor="elevenlabs")
+            filas = [_json.loads(x) for x in reg.read_text().splitlines()]
+        self.assertEqual([f["proveedor"] for f in filas], ["openai", "elevenlabs"])
+
+    def test_el_reel_no_acepta_dos_voces_a_la_vez(self):
+        # Con dos banderas se armaba la voz dos veces -la segunda pisando a la
+        # primera- y se pagaban las dos.
+        reel = _cargar_script("reel")
+        self.assertEqual(reel.main(["--tema", "autoestima", "--voz-ia", "onyx",
+                                    "--voz-eleven", "abc", "--ver"]), 2)
+
     def test_probar_voces_con_ver_no_pide_nada(self):
         probar = _cargar_script("probar_voces")
         with mock.patch.object(video, "decir_con_ia",
@@ -2713,7 +2776,8 @@ class TestElReelDesdeGithub(unittest.TestCase):
         disparos = self._flujo().get("on") or self._flujo().get(True)
         self.assertEqual(list(disparos), ["workflow_dispatch"])
         self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
-                         ["color", "colores", "musica", "probar_voces", "tema", "voz"])
+                         ["color", "colores", "listar_eleven", "musica",
+                          "probar_voces", "tema", "voz", "voz_eleven"])
 
     def test_probar_voces_no_arma_ningun_reel(self):
         # Es el modo para elegir voz por oído. Si además armara el reel,
@@ -2723,6 +2787,20 @@ class TestElReelDesdeGithub(unittest.TestCase):
         self.assertIn("inputs.probar_voces", pasos["Probar voces"]["if"])
         # Y tampoco baja metraje: el fondo no se oye.
         self.assertIn("!inputs.probar_voces", pasos["Bajar el metraje que falte"]["if"])
+
+    def test_listar_eleven_tampoco_arma_reel(self):
+        # Es para elegir voz: armar el capitulo entero con cada una seria
+        # pagar el reel completo por cada voz que se quiere oir.
+        pasos = {s.get("name"): s for s in self._flujo()["jobs"]["reel"]["steps"]}
+        self.assertIn("!inputs.listar_eleven", pasos["Armar el reel"]["if"])
+        self.assertIn("!inputs.listar_eleven", pasos["Bajar el metraje que falte"]["if"])
+
+    def test_la_voz_de_eleven_le_gana_a_la_de_openai(self):
+        # Si se pusieran las dos, se armaria la voz dos veces y se pagarian
+        # las dos facturas por el mismo reel.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("--voz-eleven", texto)
+        self.assertIn("elif", texto.split("--voz-eleven")[1][:200])
 
     def test_el_metraje_se_baja_aca_y_se_guarda_entre_corridas(self):
         # Desde donde se escribe el código Pexels no se alcanza, así que si no

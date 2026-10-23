@@ -41,6 +41,77 @@ TEXTO = ("El valor de una persona no se gana ni se pierde: se reconoce. "
          "primero.")
 
 
+def probar_eleven(args) -> int:
+    """Las voces de ElevenLabs de la cuenta, leyendo la misma frase.
+
+    Se listan las de la CUENTA y no una lista escrita a mano: los nombres de
+    la biblioteca compartida cambian y los ids no, asi que una lista fija se
+    rompe en silencio el dia que renombren una voz.
+    """
+    from src import telegram
+    try:
+        todas = video.voces_de_eleven()
+    except video.VideoError as e:
+        print(e)
+        return 1
+    if not todas:
+        print("La cuenta no tiene ninguna voz. Agregá alguna desde la Voice "
+              "Library de ElevenLabs y volvé a correr esto.")
+        return 1
+
+    print("%d voces en la cuenta:" % len(todas))
+    for v in todas:
+        etiquetas = v.get("labels") or {}
+        print("  %-26s %s  %s" % (
+            v.get("name", "?"), v.get("voice_id", "?"),
+            " ".join("%s=%s" % (k, etiquetas[k]) for k in sorted(etiquetas))))
+    if args.listar:
+        print()
+        print("Con --listar no pedi ningun audio.")
+        return 0
+
+    elegidas = todas[:max(1, args.cuantas)]
+    letras = len(args.texto) * len(elegidas)
+    print()
+    print("Voy a pedir %d voces x %d caracteres = %d creditos."
+          % (len(elegidas), len(args.texto), letras))
+    if args.ver:
+        print("Con --ver no pedi ni mande nada.")
+        return 0
+
+    carpeta = Path(args.carpeta)
+    carpeta.mkdir(parents=True, exist_ok=True)
+    mandadas = 0
+    for v in elegidas:
+        vid, nombre = v.get("voice_id"), v.get("name", "?")
+        print()
+        print("Pidiendo %s..." % nombre)
+        try:
+            ruta = video.decir_con_eleven(
+                args.texto, carpeta / ("eleven-%s.mp3" % vid), vid)
+        except video.VideoError as e:
+            # Una voz que falla no se lleva las demas: con las otras todavia
+            # se compara.
+            print("  no pude: %s" % e)
+            continue
+        print("  %s" % ruta)
+        if not telegram.configurado():
+            continue
+        try:
+            telegram.enviar_audio(ruta, "ElevenLabs · %s · %s" % (nombre, vid))
+            mandadas += 1
+        except telegram.TelegramError as e:
+            print("  no pude mandarla al chat: %s" % e)
+    if telegram.configurado() and mandadas:
+        print()
+        print("Mande %d al chat." % mandadas)
+        telegram.enviar(
+            "Esas son las voces de ElevenLabs de tu cuenta, todas leyendo lo "
+            "mismo. Decime el NOMBRE de la que mas se parezca a la del reel "
+            "de referencia y la dejo puesta.")
+    return 0
+
+
 def probar_colores(args, voz: str) -> int:
     """La MISMA voz con varios procesados, para elegir el timbre.
 
@@ -118,6 +189,12 @@ def main(argv=None) -> int:
     ap.add_argument("--colores", default=None, metavar="LISTA",
                     help="en vez de varias voces, UNA voz con varios procesados "
                          "(ej: nada,calida,cine,honda)")
+    ap.add_argument("--eleven", action="store_true",
+                    help="probar las voces de ElevenLabs en vez de las de OpenAI")
+    ap.add_argument("--listar", action="store_true",
+                    help="con --eleven: decir que voces tiene la cuenta, sin pedir audio")
+    ap.add_argument("--cuantas", type=int, default=6,
+                    help="con --eleven: cuantas voces probar (las primeras)")
     ap.add_argument("--texto", default=TEXTO, help="que lean")
     ap.add_argument("--ver", action="store_true", help="no pide nada ni gasta")
     ap.add_argument("--carpeta", default="data/voces_prueba")
@@ -129,6 +206,8 @@ def main(argv=None) -> int:
         print("No me dijiste ninguna voz.")
         return 2
 
+    if args.eleven:
+        return probar_eleven(args)
     if args.colores:
         return probar_colores(args, voces[0])
 

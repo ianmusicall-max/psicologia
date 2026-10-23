@@ -662,14 +662,20 @@ def _llave(texto: str, voz: str, modelo: str, instrucciones: str) -> str:
     return hashlib.sha256(crudo.encode("utf-8")).hexdigest()[:32]
 
 
-def _anotar(caracteres: int, segundos: float, voz: str, modelo: str) -> None:
-    """Lo gastado, sin precio. El precio lo pone el panel de OpenAI."""
+def _anotar(caracteres: int, segundos: float, voz: str, modelo: str,
+            proveedor: str = "openai") -> None:
+    """Lo gastado, sin precio. El precio lo pone el panel de cada proveedor.
+
+    Lleva `proveedor` desde que hay dos: son dos facturas distintas y un
+    registro que las mezcla no sirve para cotejar ninguna de las dos.
+    """
     import json
     from datetime import datetime
     try:
         REGISTRO.parent.mkdir(parents=True, exist_ok=True)
         with open(REGISTRO, "a", encoding="utf-8") as f:
             f.write(json.dumps({"cuando": datetime.now().isoformat(timespec="seconds"),
+                                "proveedor": proveedor,
                                 "modelo": modelo, "voz": voz,
                                 "caracteres": caracteres,
                                 "segundos": round(segundos, 2)}) + "\n")
@@ -717,6 +723,138 @@ def decir_con_ia(texto: str, ruta: Path, voz: str = VOZ_IA,
         pass
     _anotar(len(texto), duracion(ruta), voz, modelo)
     return ruta
+
+
+# ---------------------------------------------------------------------------
+# ElevenLabs.
+#
+# Se agregó porque el usuario escuchó las cinco voces de OpenAI y ninguna se
+# parecía a la del reel de referencia, y la medición le daba la razón: esa voz
+# tiene 35 dB de caída de graves a agudos y las de OpenAI salen mucho más
+# brillantes. El color (`COLORES`) acerca el timbre pero no cambia QUIÉN lee.
+#
+# Convive con OpenAI, no la reemplaza: `decir_con_ia` queda igual y sigue
+# siendo la que se usa si no se pide otra cosa. Son dos facturas distintas y
+# por eso el registro anota de cuál es cada pedido.
+# ---------------------------------------------------------------------------
+
+API_ELEVEN = "https://api.elevenlabs.io/v1"
+MODELO_ELEVEN = "eleven_multilingual_v2"
+
+# La voz se guarda por ID y NO por nombre. Los nombres se repiten entre
+# cuentas y los de la biblioteca compartida se pueden renombrar; el id no
+# cambia nunca. Vacío hasta que el usuario elija una escuchándolas.
+VOZ_ELEVEN = ""
+
+# Para narrar, no para conversar. `stability` alta deja un tono parejo -una
+# baja hace que cada frase suene de otro ánimo, que en un reel de una idea
+# sola se oye como otra persona-. `style` en 0 a propósito: lo que sube el
+# estilo es la expresividad, y acá se busca lo contrario, alguien que cuenta
+# algo en voz baja.
+AJUSTES_ELEVEN = {"stability": 0.55, "similarity_boost": 0.8,
+                  "style": 0.0, "use_speaker_boost": True}
+
+
+def _ajustes_como_texto(ajustes: dict) -> str:
+    """Los ajustes en la llave de la cache: cambian lo que se oye.
+
+    Sin esto, bajar la estabilidad y volver a pedir devolvería el audio viejo
+    desde la cache y parecería que el ajuste no hace nada.
+    """
+    return ",".join("%s=%s" % (k, ajustes[k]) for k in sorted(ajustes))
+
+
+def voces_de_eleven(clave: Optional[str] = None) -> List[dict]:
+    """Las voces de la cuenta. Solo lee."""
+    import os
+    import requests
+    clave = clave or os.environ.get("ELEVENLABS_API_KEY")
+    if not clave:
+        raise VideoError("falta ELEVENLABS_API_KEY en el .env")
+    try:
+        r = requests.get("%s/voices" % API_ELEVEN, timeout=60,
+                         headers={"xi-api-key": clave})
+    except requests.RequestException as e:
+        raise VideoError("no se pudo llegar a ElevenLabs: %s" % e)
+    if r.status_code != 200:
+        raise VideoError("ElevenLabs contestó %d: %s" % (r.status_code, r.text[:200]))
+    return r.json().get("voices", [])
+
+
+def _pedir_voz_eleven(clave: str, voz: str, cuerpo: dict) -> bytes:
+    import requests
+    try:
+        r = requests.post("%s/text-to-speech/%s" % (API_ELEVEN, voz),
+                          params={"output_format": "mp3_44100_128"},
+                          json=cuerpo, timeout=180,
+                          headers={"xi-api-key": clave,
+                                   "Content-Type": "application/json"})
+    except requests.RequestException as e:
+        raise VideoError("no se pudo llegar a ElevenLabs: %s" % e)
+    if r.status_code != 200:
+        raise VideoError("ElevenLabs contestó %d: %s" % (r.status_code, r.text[:200]))
+    return r.content
+
+
+def decir_con_eleven(texto: str, ruta: Path, voz: str = "",
+                     modelo: str = MODELO_ELEVEN,
+                     ajustes: Optional[dict] = None,
+                     cache: Optional[Path] = None, pedir=None) -> Path:
+    """Una unidad leída por ElevenLabs. Misma forma que `decir_con_ia`.
+
+    Mira la cache ANTES de pedir la clave, por lo mismo que la de OpenAI: un
+    audio que ya está en disco no necesita cuenta.
+    """
+    import os
+    import shutil
+    ruta = Path(ruta)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    voz = voz or VOZ_ELEVEN
+    if not voz:
+        raise VideoError(
+            "no hay ninguna voz de ElevenLabs elegida. Para ver las de tu "
+            "cuenta: scripts/probar_voces.py --eleven --listar")
+    ajustes = dict(ajustes or AJUSTES_ELEVEN)
+    # La llave lleva el modelo, la voz, los ajustes y el texto. El modelo de
+    # ElevenLabs nunca coincide con el de OpenAI, así que las dos caches
+    # conviven en la misma carpeta sin pisarse.
+    guardado = Path(cache or CACHE_VOZ) / (
+        "%s.mp3" % _llave(texto, voz, modelo, _ajustes_como_texto(ajustes)))
+    if guardado.exists() and guardado.stat().st_size > 0:
+        shutil.copyfile(guardado, ruta)
+        return ruta
+    if len(texto) > TOPE_CARACTERES:
+        raise VideoError("son %d caracteres y el tope es %d" % (len(texto), TOPE_CARACTERES))
+    clave = os.environ.get("ELEVENLABS_API_KEY")
+    if not clave:
+        raise VideoError("falta ELEVENLABS_API_KEY en el .env")
+    pedir = pedir or _pedir_voz_eleven
+    audio = pedir(clave, voz, {"text": texto, "model_id": modelo,
+                               "voice_settings": ajustes})
+    if not audio:
+        raise VideoError("ElevenLabs devolvió un audio vacío")
+    tmp = ruta.with_suffix(".parcial")
+    tmp.write_bytes(audio)
+    tmp.replace(ruta)
+    guardado.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.copyfile(ruta, guardado)
+    except OSError:
+        pass
+    _anotar(len(texto), duracion(ruta), voz, modelo, proveedor="elevenlabs")
+    return ruta
+
+
+def en_cache_eleven(texto: str, voz: str = "", modelo: str = MODELO_ELEVEN,
+                    ajustes: Optional[dict] = None,
+                    cache: Optional[Path] = None) -> bool:
+    voz = voz or VOZ_ELEVEN
+    if not voz:
+        return False
+    llave = _llave(texto, voz, modelo,
+                   _ajustes_como_texto(dict(ajustes or AJUSTES_ELEVEN)))
+    guardado = Path(cache or CACHE_VOZ) / ("%s.mp3" % llave)
+    return guardado.exists() and guardado.stat().st_size > 0
 
 
 def en_cache(texto: str, voz: str = VOZ_IA, modelo: str = MODELO_VOZ,
