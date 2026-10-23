@@ -90,3 +90,22 @@ def por(filas: List[dict], campo: str, metrica: str = "reacciones") -> List[tupl
 
 def alcanza(cuantos: int) -> bool:
     return cuantos >= MINIMO
+
+
+def dias_por(filas: List[dict], campo: str) -> Dict[str, int]:
+    """Cuántos DÍAS distintos tiene cada grupo, no cuántos posts.
+
+    Con el estilo rotando por día, los ocho posts de una jornada comparten
+    todo lo que pasó ese día: la hora en que el algoritmo mostró la página,
+    quién estaba conectado, si hubo un post que se compartió. Ocho posts de
+    dos días no son dieciséis observaciones independientes: son dos.
+
+    Por eso el informe cuenta los dos números. El que manda para concluir
+    sobre el estilo es este.
+    """
+    dias: Dict[str, set] = {}
+    for f in filas:
+        if f.get(campo) in (None, ""):
+            continue
+        dias.setdefault(str(f[campo]), set()).add(f.get("dia"))
+    return {k: len(v) for k, v in dias.items()}

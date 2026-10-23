@@ -168,10 +168,10 @@ cada estilo y mira el fondo de verdad.
 Ocho posts diarios durante una semana, rotando los cuatro estilos, para poder
 comparar. Se enciende con `horas` y `rotar_estilos` en `config/pagina.yaml`.
 
-**El estilo rota en orden fijo y no depende del tema ni de la hora.** Esa
-independencia es todo el experimento: si el estilo cambiara junto con el tema,
-no habría forma de saber cuál de los dos movió el número. En una semana cada
-estilo sale 14 veces.
+**El estilo cambia por día**: los ocho posts de una jornada salen iguales y al
+día siguiente cambia. Así el feed de cada día se ve de una pieza. Sale de la
+fecha y no de la cuenta de publicados, para que un día salteado no corra la
+rueda y volver a dibujar el mismo post dé el mismo estilo.
 
 `scripts/publicar_turno.py` corre **cada hora** y sale sin hacer nada si no le
 toca, así que se programa una sola vez. Es idempotente: si en esa hora ya
@@ -194,10 +194,16 @@ crontab -e
 A ocho por día el banco de 113 frases dura **14 días**. No es un ritmo
 sostenible: es una prueba con fecha de vencimiento.
 
-En una semana son 56 posts. Alcanza para comparar **estilos**, con 14 cada
-uno. **No alcanza para comparar temas**: son 14 temas y les tocan 4 posts a
-cada uno. `scripts/medir.py` marca con «pocos, no concluir» todo grupo con
-menos de 7.
+En una semana son 56 posts, 14 por estilo. Pero el estilo rota **por día**, así
+que esos 14 posts salieron en **2 días**, y los ocho posts de una jornada
+comparten todo lo que pasó ese día. Dos días no son catorce observaciones: son
+dos. Por eso el informe muestra las dos columnas, posts y días, y la que manda
+para el estilo es la de días. **La lectura honesta del estilo llega a los 14
+días**, con tres o cuatro días de cada uno.
+
+**No alcanza para comparar temas** en ningún caso: son 14 temas y les tocan 4
+posts a cada uno. `scripts/medir.py` marca con «pocos, no concluir» todo grupo
+con menos de 7.
 
 Y se usa la **mediana y no el promedio**: un post que se comparte de más tira
 el promedio de todo un grupo y hace parecer que gana algo que no ganó.

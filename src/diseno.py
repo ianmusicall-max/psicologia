@@ -283,16 +283,19 @@ ESTILOS = {"regla": _estilo_regla, "marco": _estilo_marco,
 POR_DEFECTO = "regla"
 
 
-def estilo_del_turno(cuantos_ya: int) -> str:
-    """El estilo que le toca al post numero `cuantos_ya + 1`.
+def estilo_del_dia(dia) -> str:
+    """El estilo de TODOS los posts de ese dia. Cambia al dia siguiente.
 
-    Rota en orden fijo, independiente del tema y de la hora. Esa
-    independencia es lo que hace comparable la medicion: si el estilo
-    cambiara junto con el tema, no habria forma de saber cual de los dos
-    movio el numero.
+    Se rota por dia y no por post porque el feed de un dia se ve de una sola
+    pieza: ocho posts con cuatro diseños distintos se leen como cuatro
+    paginas, no como una.
+
+    Sale de la FECHA y no de la cuenta de publicados: asi un dia que se
+    saltea no corre la rueda, y volver a dibujar el mismo post da el mismo
+    estilo, que es lo que hace que el flyer aprobado sea el que sale.
     """
     nombres = list(ESTILOS)
-    return nombres[cuantos_ya % len(nombres)]
+    return nombres[dia.toordinal() % len(nombres)]
 
 
 def _colores(pagina: Pagina, estilo: str) -> dict:

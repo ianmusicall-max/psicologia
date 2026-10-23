@@ -21,16 +21,19 @@ from dotenv import load_dotenv  # noqa: E402
 from src import config, frases, medir  # noqa: E402
 
 
-def tabla(titulo: str, filas, campo: str, metrica: str) -> None:
+def tabla(titulo: str, filas, campo: str, metrica: str, con_dias: bool = False) -> None:
     print()
     print(titulo)
     datos = medir.por(filas, campo, metrica)
     if not datos:
         print("  (todavia no hay posts con ese dato)")
         return
+    dias = medir.dias_por(filas, campo) if con_dias else {}
     for valor, cuantos, mediana in datos:
+        extra = "  %2d dias" % dias.get(valor, 0) if con_dias else ""
         aviso = "" if medir.alcanza(cuantos) else "   (pocos, no concluir)"
-        print("  %-14s %3d posts   mediana %6.1f%s" % (valor, cuantos, mediana, aviso))
+        print("  %-14s %3d posts%s   mediana %6.1f%s"
+              % (valor, cuantos, extra, mediana, aviso))
 
 
 def main(argv=None) -> int:
@@ -57,7 +60,7 @@ def main(argv=None) -> int:
               "scripts/revisar_token.py")
         return 1
 
-    tabla("POR ESTILO", medidos, "estilo", args.metrica)
+    tabla("POR ESTILO", medidos, "estilo", args.metrica, con_dias=True)
     tabla("POR EJE (nucleo = los temas de la pagina)", medidos, "eje", args.metrica)
     tabla("POR TEMA", medidos, "tema", args.metrica)
     tabla("POR HORA", medidos, "hora", args.metrica)
@@ -69,6 +72,13 @@ def main(argv=None) -> int:
     if pocos:
         print("Con menos de %d posts por grupo todavia no hay nada que concluir."
               % medir.MINIMO)
+    dias = medir.dias_por(medidos, "estilo")
+    if dias and min(dias.values()) < 3:
+        print()
+        print("OJO CON LA COLUMNA DE DIAS: el estilo rota por dia, asi que los ocho")
+        print("posts de una jornada comparten todo lo que paso ese dia. Un estilo con")
+        print("dos dias tiene dos observaciones, no dieciseis. Para leer el estilo")
+        print("hacen falta tres o cuatro dias de cada uno, o sea catorce dias.")
     return 0
 
 

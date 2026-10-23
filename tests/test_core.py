@@ -1155,19 +1155,32 @@ class TestLaPrueba(unittest.TestCase):
     """Ocho por día durante una semana, rotando el estilo, para poder
     comparar después."""
 
-    def test_el_estilo_rota_en_orden_y_no_depende_del_tema(self):
-        # Si el estilo cambiara junto con el tema no habría forma de saber
-        # cuál de los dos movió el número.
-        rotacion = [diseno.estilo_del_turno(i) for i in range(12)]
-        self.assertEqual(rotacion[:4], list(diseno.ESTILOS))
-        self.assertEqual(rotacion[:4], rotacion[4:8])
-        for estilo in diseno.ESTILOS:
-            self.assertEqual(rotacion.count(estilo), 3)
+    def test_todos_los_posts_de_un_dia_llevan_el_mismo_estilo(self):
+        # El feed de un día se ve de una sola pieza: ocho posts con cuatro
+        # diseños distintos se leen como cuatro páginas.
+        dia = date(2026, 10, 24)
+        self.assertEqual(len({diseno.estilo_del_dia(dia) for _ in range(8)}), 1)
 
-    def test_en_una_semana_cada_estilo_sale_la_misma_cantidad(self):
-        ocho_por_dia = [diseno.estilo_del_turno(i) for i in range(56)]
-        cuantos = {e: ocho_por_dia.count(e) for e in diseno.ESTILOS}
-        self.assertEqual(set(cuantos.values()), {14})
+    def test_cambia_al_dia_siguiente_y_cierra_la_vuelta(self):
+        dias = [date.fromordinal(date(2026, 10, 24).toordinal() + i) for i in range(8)]
+        rotacion = [diseno.estilo_del_dia(d) for d in dias]
+        self.assertEqual(len(set(rotacion[:4])), 4)
+        self.assertEqual(rotacion[:4], rotacion[4:])
+
+    def test_sale_de_la_fecha_y_no_de_cuantos_se_publicaron(self):
+        # Así un día salteado no corre la rueda, y volver a dibujar el mismo
+        # post da el mismo estilo: el flyer aprobado es el que sale.
+        import inspect
+        firma = inspect.signature(diseno.estilo_del_dia)
+        self.assertEqual(list(firma.parameters), ["dia"])
+
+    def test_en_catorce_dias_cada_estilo_lleva_la_misma_cantidad_de_dias(self):
+        # Es la ventana que dura el banco a ocho por día, y la que hace
+        # comparable la medición: a una semana cada estilo tiene dos días.
+        inicio = date(2026, 10, 24)
+        dias = [diseno.estilo_del_dia(date.fromordinal(inicio.toordinal() + i))
+                for i in range(12)]
+        self.assertEqual(set(dias.count(e) for e in diseno.ESTILOS), {3})
 
     def test_el_registro_guarda_con_que_salio_el_post(self):
         # Sin esto no se puede comparar nada: el post ya salió y Facebook no
@@ -1227,6 +1240,17 @@ class TestLaMedicion(unittest.TestCase):
     def test_avisa_cuando_el_grupo_es_chico(self):
         self.assertFalse(medir.alcanza(2))
         self.assertTrue(medir.alcanza(medir.MINIMO))
+
+    def test_cuenta_los_dias_y_no_solo_los_posts(self):
+        # Con el estilo rotando por día, ocho posts de dos días no son
+        # dieciséis observaciones independientes: son dos.
+        filas = [{"estilo": "regla", "dia": "2026-10-24", "reacciones": 5},
+                 {"estilo": "regla", "dia": "2026-10-24", "reacciones": 7},
+                 {"estilo": "regla", "dia": "2026-10-28", "reacciones": 6},
+                 {"estilo": "ficha", "dia": "2026-10-25", "reacciones": 9}]
+        self.assertEqual(medir.dias_por(filas, "estilo"), {"regla": 2, "ficha": 1})
+        self.assertEqual(dict((e, n) for e, n, _ in medir.por(filas, "estilo")),
+                         {"regla": 3, "ficha": 1})
 
     def test_una_frase_salteada_no_se_mide(self):
         # No salió, así que no tiene números: contarla como cero hundiría la
