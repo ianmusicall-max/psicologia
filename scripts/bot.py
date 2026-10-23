@@ -67,8 +67,14 @@ def main(argv=None) -> int:
         print("Menu enviado.")
         return 0
 
-    print("Escuchando. Escribile cualquier cosa al bot EN TELEGRAM (no en esta ventana).")
-    print("Cortalo con Control-C.")
+    # Decirlo fuerte: un usuario escribio sus comandos aca durante media hora
+    # creyendo que corrian. Un proceso en primer plano se los traga enteros y
+    # la ventana no da ninguna senal de que eso esta pasando.
+    print("Escuchando. Escribile al bot EN TELEGRAM, en el telefono.")
+    print()
+    print("ESTA VENTANA QUEDA OCUPADA mientras el bot corre: lo que escribas")
+    print("aca NO se ejecuta. Para recuperarla, apreta Control-C.")
+    print()
     while True:
         try:
             novedades = telegram.recoger(espera=0 if args.una_vez else 25)
