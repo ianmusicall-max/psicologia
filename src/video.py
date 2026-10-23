@@ -645,9 +645,18 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
         lista += [parejo, silencio]
     # El demuxer concat pide todos los archivos con el mismo formato, que es
     # para lo que se pasaron todos a 48 kHz estéreo arriba.
+    #
+    # Y los pide con ruta ABSOLUTA. El concat resuelve cada `file` relativo a
+    # la carpeta de la propia lista, no al directorio desde el que se corre:
+    # con una ruta relativa el camino sale duplicado
+    # -`data/reels/x-voz/data/reels/x-voz/voz-00.wav`- y ffmpeg no encuentra
+    # nada. No se vio antes porque todas las pruebas usan carpetas temporales,
+    # que ya son absolutas; se vio al correrlo en GitHub con `--carpeta
+    # data/reels`.
     guion_concat = carpeta / "voz.txt"
-    guion_concat.write_text("".join("file '%s'\n" % x.as_posix() for x in lista),
-                            encoding="utf-8")
+    guion_concat.write_text(
+        "".join("file '%s'\n" % x.resolve().as_posix() for x in lista),
+        encoding="utf-8")
     entera = carpeta / "voz.m4a"
     _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "concat",
              "-safe", "0", "-i", str(guion_concat), "-c:a", "aac", "-b:a", "128k",

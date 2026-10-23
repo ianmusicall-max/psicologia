@@ -1825,6 +1825,36 @@ class TestLosTiemposDelReel(unittest.TestCase):
         marcas = video.tiempos_exactos([2.0, 5.0, 1.0])
         self.assertEqual(marcas, [(0.0, 2.0), (2.0, 7.0), (7.0, 8.0)])
 
+    def test_la_lista_de_la_voz_lleva_rutas_absolutas(self):
+        # El demuxer concat resuelve cada `file` relativo a la carpeta de la
+        # LISTA, no al directorio de trabajo. Con rutas relativas el camino
+        # sale duplicado y ffmpeg no abre nada. Pasó al correrlo en GitHub con
+        # `--carpeta data/reels`, y no se había visto porque todas las demás
+        # pruebas usan carpetas temporales, que ya son absolutas: el caso que
+        # de verdad corre era el único sin ejercitar.
+        import os
+        with tempfile.TemporaryDirectory() as d:
+            antes = os.getcwd()
+            os.chdir(d)
+            try:
+                def fingir(texto, ruta, voz):
+                    subprocess.run([video.ffmpeg(), "-y", "-hide_banner", "-loglevel",
+                                    "error", "-f", "lavfi", "-i",
+                                    "anullsrc=r=22050:cl=mono", "-t", "0.4", str(ruta)],
+                                   check=True)
+                    return ruta
+
+                # Relativa a propósito: es como la llama el flujo de GitHub.
+                entera, _ = video.voz_por_unidades(["uno", "dos"], Path("salida/voz"),
+                                                   decir_fn=fingir)
+                lista = (Path("salida/voz") / "voz.txt").read_text(encoding="utf-8")
+                self.assertTrue(entera.exists())
+            finally:
+                os.chdir(antes)
+        for linea in lista.splitlines():
+            ruta = linea[len("file '"):-1]
+            self.assertTrue(ruta.startswith("/"), ruta)
+
     def test_la_voz_por_unidades_mide_cada_una(self):
         with tempfile.TemporaryDirectory() as d:
             dichas = []

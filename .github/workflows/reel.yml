@@ -54,6 +54,17 @@ jobs:
       # falta: el turno que publica cada hora no arma videos.
       - run: pip install -r requirements-video.txt
 
+      # La voz es lo unico que se paga, y la maquina es nueva cada vez: sin
+      # esto, rehacer un reel -o cambiarle el fondo, o la musica- vuelve a
+      # pagar los mismos renglones. La llave lleva el numero de corrida para
+      # que cada una guarde lo suyo, y `restore-keys` recupera la ultima.
+      - name: Recuperar las voces ya pagadas
+        uses: actions/cache@v4
+        with:
+          path: data/voz_cache
+          key: voz-${{ github.run_id }}
+          restore-keys: voz-
+
       - name: Armar el reel
         run: |
           ARGS="--carpeta data/reels"
