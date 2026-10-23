@@ -2754,6 +2754,33 @@ class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
         self.assertTrue(video.ETIQUETA_INICIAL.startswith("["))
         self.assertTrue(video.ETIQUETA_INICIAL.endswith("]"))
 
+    def test_el_suspiro_va_a_veces_y_no_en_todas(self):
+        # El usuario lo escucho con la etiqueta en las diez oraciones y pidio
+        # «solo a veces y poco». A veces es esto; poco es que la etiqueta sea
+        # suave (`softly`) y no un suspiro entero.
+        o = ["Uno.", "Dos.", "Tres.", "Cuatro.", "Cinco.",
+             "Seis.", "Siete.", "Ocho.", "Nueve.", "Diez."]
+        con = video.oraciones_con_etiqueta(o, video.ETIQUETA_INICIAL)
+        puestas = [i for i, x in enumerate(con)
+                   if x.startswith(video.ETIQUETA_INICIAL)]
+        self.assertEqual(puestas, [0, 4, 8])
+        self.assertLess(len(puestas), len(o) / 2)
+        # La primera SIEMPRE: es la que fija el tono de todo lo demas.
+        self.assertIn(0, puestas)
+        self.assertIn("softly", video.ETIQUETA_INICIAL)
+
+    def test_el_texto_de_las_oraciones_no_se_toca(self):
+        # La etiqueta se antepone; lo que se lee sigue siendo lo traducido.
+        o = ["Uno.", "Dos.", "Tres."]
+        for original, salida in zip(o, video.oraciones_con_etiqueta(
+                o, video.ETIQUETA_INICIAL)):
+            self.assertTrue(salida.endswith(original))
+
+    def test_sin_etiqueta_o_con_cada_en_cero_no_cambia_nada(self):
+        o = ["Uno.", "Dos."]
+        self.assertEqual(video.oraciones_con_etiqueta(o, ""), o)
+        self.assertEqual(video.oraciones_con_etiqueta(o, "[sighs]", cada=0), o)
+
     def test_la_etiqueta_no_cambia_el_subtitulo_ni_los_tiempos(self):
         # Se agrega a lo que se LEE, no a lo que se MUESTRA: si entrara en el
         # subtitulo se veria «[sighs]» en pantalla, y si entrara en la cuenta

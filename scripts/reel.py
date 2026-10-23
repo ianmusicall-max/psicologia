@@ -138,11 +138,12 @@ def main(argv=None) -> int:
     ap.add_argument("--ingles", action="store_true",
                     help="la VOZ en ingles y los SUBTITULOS en espanol")
     ap.add_argument("--etiqueta", default=None, metavar="TAG",
-                    help="indicacion de actuacion entre corchetes, en cada "
-                         "oracion (por defecto %s). Vacio para ninguna"
+                    help="indicacion de actuacion entre corchetes (por "
+                         "defecto %s). Vacio para ninguna"
                          % video.ETIQUETA_INICIAL)
-    ap.add_argument("--etiqueta-solo-al-empezar", action="store_true",
-                    help="la etiqueta solo en la primera oracion")
+    ap.add_argument("--etiqueta-cada", type=int, default=video.ETIQUETA_CADA,
+                    metavar="N", help="cada cuantas oraciones se repite la "
+                                      "etiqueta (1 = todas, 0 = ninguna)")
     ap.add_argument("--musica", nargs="?", const="calma", default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
@@ -284,16 +285,14 @@ def main(argv=None) -> int:
         # leen en voz alta, asi que sumarlos achicaria el guion por una
         # duracion que no existe.
         etiqueta = video.ETIQUETA_INICIAL if args.etiqueta is None else args.etiqueta
-        if etiqueta and a_leer:
+        if etiqueta and a_leer and args.etiqueta_cada > 0:
             etiqueta = etiqueta.strip()
-            if args.etiqueta_solo_al_empezar:
-                a_leer = ["%s %s" % (etiqueta, a_leer[0])] + a_leer[1:]
-                donde = "al empezar"
-            else:
-                a_leer = ["%s %s" % (etiqueta, x) for x in a_leer]
-                donde = "en las %d oraciones" % len(a_leer)
+            a_leer = video.oraciones_con_etiqueta(a_leer, etiqueta,
+                                                  args.etiqueta_cada)
+            cuantas = sum(1 for x in a_leer if x.startswith(etiqueta))
             print()
-            print("Con %s %s." % (etiqueta, donde))
+            print("Con %s en %d de las %d oraciones."
+                  % (etiqueta, cuantas, len(a_leer)))
     if args.voz_ia:
         letras = sum(len(u) for u in a_leer)
         print()

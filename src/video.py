@@ -750,15 +750,36 @@ MODELO_ELEVEN = "eleven_v4"
 # ([suspirando], porque la interfaz está en español: a la API van en inglés,
 # que es como están documentadas).
 #
-# Va en TODAS las oraciones, que es lo que pidió el usuario: con una sola al
-# principio el tono se pierde a los pocos segundos, porque estas indicaciones
-# afectan sobre todo a lo que viene justo después. Se puede dejar solo en la
-# primera con `--etiqueta-solo-al-empezar`, por si repetida suena a alguien
-# con problemas para respirar: eso se decide oyéndolo.
+# «Suspira» a secas salió demasiado marcado: el usuario lo escuchó con la
+# etiqueta en las diez oraciones y pidió «solo a veces y poco». Lo de POCO se
+# arregla acá -es una indicación más suave, un suspiro contenido y no uno
+# entero- y lo de A VECES con `ETIQUETA_CADA`.
 #
-# Y se agrega DESPUÉS de traducir, nunca antes: si viajara con el texto, el
+# Se agrega DESPUÉS de traducir, nunca antes: si viajara con el texto, el
 # traductor la tomaría por palabras y devolvería «[sighing]» o la borraría.
-ETIQUETA_INICIAL = "[sighs]"
+ETIQUETA_INICIAL = "[sighs softly]"
+
+# Cada cuántas oraciones se repite. 1 sería en todas -lo que sonó de más- y
+# un número muy grande la deja solo en la primera, donde el tono se pierde a
+# los pocos segundos porque estas indicaciones afectan sobre todo a lo que
+# viene justo después.
+#
+# Con 4, un capítulo de diez oraciones lleva tres: la primera, la quinta y la
+# novena. Eso es «a veces».
+ETIQUETA_CADA = 4
+
+
+def oraciones_con_etiqueta(oraciones: Sequence[str], etiqueta: str,
+                           cada: int = ETIQUETA_CADA) -> List[str]:
+    """Las oraciones con la indicación de actuación puesta cada tantas.
+
+    Empieza siempre por la primera: es la que fija el tono de todo lo demás.
+    Con `cada` en 0 o sin etiqueta, devuelve las oraciones tal cual.
+    """
+    if not etiqueta or cada <= 0:
+        return list(oraciones)
+    return ["%s %s" % (etiqueta, o) if i % cada == 0 else o
+            for i, o in enumerate(oraciones)]
 
 # Eleven v4 NO tiene los controles de estilo ni de velocidad -lo dice su
 # documentación- así que mandarlos sería mandar algo que el modelo ignora o
