@@ -33,22 +33,26 @@ from src import config, frases, video  # noqa: E402
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
-def elegir_fondo(donde: str, semilla: str) -> Path:
-    """Un archivo, o uno de los de la carpeta.
+def elegir_fondo(donde: str, semilla: str) -> list:
+    """Los clips del fondo, en el orden en que se van a turnar.
 
-    De la carpeta se elige con una semilla que sale del id de la frase y no al
-    azar: asi volver a armar el mismo reel da el mismo video, y dos frases
-    seguidas no caen en el mismo clip.
+    Varios y no uno: la referencia que mando el usuario va cortando entre
+    clips cada pocos segundos, y es buena parte de por que no se hace larga.
+
+    El orden sale de una semilla que es el id de la frase y no del azar: asi
+    volver a armar el mismo reel da el mismo video -el que aprobaste es el que
+    sale- y dos frases seguidas no arrancan con el mismo clip.
     """
     ruta = Path(donde)
     if ruta.is_file():
-        return ruta
+        return [ruta]
     if not ruta.is_dir():
         raise SystemExit("No encuentro %s" % ruta)
     clips = sorted(x for x in ruta.iterdir() if x.suffix.lower() in CLIPS)
     if not clips:
         raise SystemExit("En %s no hay ningun video (%s)" % (ruta, ", ".join(CLIPS)))
-    return clips[random.Random(semilla).randrange(len(clips))]
+    random.Random(semilla).shuffle(clips)
+    return clips
 
 
 def main(argv=None) -> int:
@@ -79,7 +83,8 @@ def main(argv=None) -> int:
 
     print("%s · capitulo %d, %s" % (frase.id, tema.capitulo, tema.titulo))
     print("%d renglones, cuerpo %d, fondo %s"
-          % (len(unidades), cuerpo, fondo.name if fondo else "papel de la marca"))
+          % (len(unidades), cuerpo,
+             ", ".join(x.name for x in fondo[:3]) if fondo else "papel de la marca"))
     for u in unidades:
         print("   %s" % u)
 
@@ -103,7 +108,13 @@ def main(argv=None) -> int:
                 unidades, carpeta / ("%s-voz" % frase.id), args.voz_mac)
         except video.VideoError as e:
             print(e)
-            print("`say` solo existe en Mac. Sin voz el reel sale igual, mudo.")
+            hay = video.voces_en_espanol()
+            if hay:
+                print("Voces en espanol instaladas: %s" % ", ".join(hay))
+                print("Si la que pediste no esta: Ajustes del sistema -> "
+                      "Accesibilidad -> Contenido hablado -> Voz del sistema.")
+            else:
+                print("`say` solo existe en Mac. Sin voz el reel sale igual, mudo.")
             return 1
         marcas = video.tiempos_exactos(duraciones)
 

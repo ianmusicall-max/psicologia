@@ -755,12 +755,17 @@ class TestElBot(unittest.TestCase):
         self.assertIn("problemas", b.todo)
 
 
-def _chat_id():
+def _script(nombre, archivo):
+    """Carga un script de scripts/ como módulo, para probarlo sin correrlo."""
     import importlib.util
-    spec = importlib.util.spec_from_file_location("cid", ROOT / "scripts" / "chat_id.py")
+    spec = importlib.util.spec_from_file_location(nombre, ROOT / "scripts" / archivo)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def _chat_id():
+    return _script("cid", "chat_id.py")
 
 
 class TestElEnv(unittest.TestCase):
@@ -1897,6 +1902,101 @@ class TestElReelEntero(unittest.TestCase):
         # armarlo. Es la misma regla que el resto del repo.
         self.assertFalse(_llama_a(ROOT / "scripts" / "reel.py",
                                   {"publicar", "publicar_las_dos", "subir_foto"}))
+
+
+class TestElFondoDelReel(unittest.TestCase):
+    """Varios clips que se van turnando, como la referencia que mandó el
+    usuario: no es un video de fondo, son varios y va cortando."""
+
+    def test_los_clips_se_turnan_hasta_cubrir_el_guion(self):
+        uno, dos = Path("a.mp4"), Path("b.mp4")
+        self.assertEqual(video.escenas([uno, dos], 20.0, escena=7.0), [uno, dos, uno])
+        # Un guion más corto que una escena sigue siendo una escena: con cero
+        # el filtro de ffmpeg queda sin entradas y falla sin decir por qué.
+        self.assertEqual(video.escenas([uno], 2.0, escena=7.0), [uno])
+
+    def test_cada_tramo_es_una_entrada_y_la_voz_queda_despues_de_todas(self):
+        # Es el índice que ya rompió una vez: deducirlo del largo de la lista
+        # de argumentos da «matches no streams», que no dice cuál es el problema.
+        orden = video.comando(Path("/g.ass"), Path("/s.mp4"), 20.0,
+                              [Path("a.mp4"), Path("b.mp4")])
+        self.assertEqual(orden.count("-stream_loop"), 3)
+        self.assertIn("3:a", orden)
+        self.assertIn("concat=n=3:v=1:a=0[bg]", " ".join(orden))
+
+    def test_un_clip_mas_corto_que_su_tramo_no_deja_el_cuadro_en_negro(self):
+        orden = " ".join(video.comando(Path("/g.ass"), Path("/s.mp4"), 10.0,
+                                       [Path("corto.mp4")]))
+        self.assertIn("-stream_loop -1", orden)
+
+    def test_sobre_video_no_van_los_rotulos_y_sobre_el_papel_si(self):
+        # La referencia no tiene ni logo ni pie: es texto sobre la imagen. En
+        # el papel sí, porque si no es una hoja en blanco.
+        f = frases.por_id(TEMAS, "aut-01")
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(video, "marca", side_effect=AssertionError("rotuló")), \
+                mock.patch.object(video, "comando", return_value=["true"]), \
+                mock.patch.object(video.subprocess, "run",
+                                  return_value=mock.Mock(returncode=0)), \
+                mock.patch.object(Path, "exists", return_value=True):
+            video.armar(f, PAGINA, titulo="T", fondo=[Path("a.mp4")], carpeta=Path(d))
+
+    def test_el_orden_de_los_clips_no_cambia_entre_corridas(self):
+        # El reel que aprobaste es el que sale: con el orden al azar, volver a
+        # armarlo daría otro video.
+        reel = _script("reel", "reel.py")
+        with tempfile.TemporaryDirectory() as d:
+            for n in ("uno", "dos", "tres"):
+                (Path(d) / ("%s.mp4" % n)).write_bytes(b"x")
+            una = reel.elegir_fondo(d, "aut-01")
+            otra = reel.elegir_fondo(d, "aut-01")
+            distinta = reel.elegir_fondo(d, "rup-01")
+        self.assertEqual(una, otra)
+        self.assertEqual(sorted(x.name for x in una), ["dos.mp4", "tres.mp4", "uno.mp4"])
+        self.assertNotEqual(una, distinta)
+
+
+class TestLaVozDeLaMac(unittest.TestCase):
+
+    def test_le_pide_a_say_un_wave_y_no_el_aiff_de_fabrica(self):
+        # Un AIFF con datos little-endian lo escriben algunos macOS y después
+        # ffmpeg no lo abre. El error aparece recién al pegar la voz.
+        with mock.patch.object(video, "_correr") as correr:
+            video.decir("hola", Path("/tmp/v.wav"), "Paulina")
+        orden = correr.call_args[0][0]
+        self.assertEqual(orden[:3], ["say", "-v", "Paulina"])
+        self.assertIn("--file-format=WAVE", orden)
+        self.assertIn("hola", orden)
+
+    def test_sabe_decir_que_voces_en_espanol_hay(self):
+        # «Voice not found» se lee como si `say` estuviera roto, y casi siempre
+        # es que esa voz no se descargó todavía.
+        salida = ("Paulina            es_MX    # Hola.\n"
+                  "Alex               en_US    # Hi.\n"
+                  "Monica             es_ES    # Hola.\n")
+        with mock.patch.object(video.subprocess, "run",
+                               return_value=mock.Mock(stdout=salida)):
+            self.assertEqual(video.voces_en_espanol(), ["Paulina", "Monica"])
+
+
+class TestLosFondosQueSeBajan(unittest.TestCase):
+
+    def test_elige_el_archivo_vertical_y_no_el_apaisado(self):
+        fondos = _script("fondos", "fondos.py")
+        elegido = fondos._mejor([
+            {"width": 1920, "height": 1080, "link": "apaisado"},
+            {"width": 1080, "height": 1920, "link": "vertical"},
+            {"width": 240, "height": 426, "link": "diminuto"},
+        ])
+        self.assertEqual(elegido["link"], "vertical")
+
+    def test_sin_ningun_vertical_no_baja_nada(self):
+        fondos = _script("fondos", "fondos.py")
+        self.assertEqual(fondos._mejor([{"width": 1920, "height": 1080, "link": "x"}]), {})
+
+    def test_bajar_fondos_no_publica_ni_toca_el_banco(self):
+        self.assertFalse(_llama_a(ROOT / "scripts" / "fondos.py",
+                                  {"publicar", "publicar_las_dos", "anotar_publicada"}))
 
 
 if __name__ == "__main__":

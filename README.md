@@ -51,6 +51,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/publicar_turno.py` | publica si a esta hora le toca. Pensado para correr cada hora |
 | `scripts/parrilla.py` | el calendario de la rampa y hasta cuándo alcanza el banco. Solo lee |
 | `scripts/reel.py` | el reel vertical de una frase. Deja el mp4 en `data/reels`, no publica |
+| `scripts/fondos.py` | baja clips de naturaleza a `data/fondos`. Se corre una vez |
 | `scripts/medir.py` | qué rindió cada modelo, tema, eje y hora. Solo lee. El mismo texto que contesta el bot |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
@@ -179,15 +180,30 @@ El mismo texto en video vertical, con el renglón apareciendo a medida que se
 dice. Sale de la frase **y de su reflexión**: una frase sola son seis segundos.
 
 ```
-scripts/reel.py                    la que toca, sin voz, sobre el papel
-scripts/reel.py --id aut-01        esa
-scripts/reel.py --fondo data/fondos   sobre un clip (o una carpeta con varios)
-scripts/reel.py --voz mi-voz.m4a   tu voz leyendo el texto
-scripts/reel.py --voz-mac          la voz de la Mac, renglón por renglón
-scripts/reel.py --ver              qué haría, sin armar nada
+scripts/fondos.py                     baja clips de naturaleza (una sola vez)
+scripts/reel.py --fondo data/fondos --voz-mac    el reel como el de la referencia
+scripts/reel.py --ver                 qué haría, sin armar nada
+scripts/reel.py --id aut-01           esa frase
+scripts/reel.py --voz mi-voz.m4a      tu voz leyendo el texto
+scripts/reel.py                       sin fondo ni voz: sobre el papel, mudo
 ```
 
 Deja el mp4 en `data/reels`. **No publica**: subirlo es una decisión.
+
+**El fondo son varios clips que se van turnando**, uno cada siete segundos, no
+un video de fondo: es lo que hace la referencia y buena parte de por qué no se
+hace larga. Los clips salen de `data/fondos`, en un orden que depende del id de
+la frase y no del azar, así que volver a armar el mismo reel da el mismo video.
+
+Sobre video **no van el logo ni el pie**, como en la referencia: es el texto
+sobre la imagen y nada más. Sobre el papel sí van, porque si no es una hoja en
+blanco. El texto también cambia solo: amarillo con contorno sobre un clip —lo
+único que se lee pase lo que pase debajo—, tinta sobre el crema de la marca.
+
+`scripts/fondos.py` baja los clips de Pexels, que son de uso libre y no piden
+atribución. Necesita una clave gratuita (https://www.pexels.com/api/, un
+correo) en `PEXELS_API_KEY`. El camino a mano da lo mismo: buscar en inglés en
+https://www.pexels.com/videos/, filtrar Vertical y dejarlos en `data/fondos`.
 
 **Qué cuesta cada parte**, que es lo que decide cómo está hecho:
 

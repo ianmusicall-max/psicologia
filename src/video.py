@@ -388,9 +388,28 @@ def decir(texto: str, ruta: Path, voz: str = VOZ_MAC) -> Path:
     de gratis. Esto existe para poder sacar un reel hoy y para probar el
     formato sin tener que grabar nada.
     """
-    _correr(["say", "-v", voz, "-o", str(ruta), "--data-format=LEI16@22050", texto],
+    # `--file-format=WAVE` y no el AIFF por defecto: AIFF es big-endian por
+    # convención y pedirle datos LEI16 adentro es lo que hace que algunos
+    # macOS escriban un archivo que después ffmpeg no abre.
+    _correr(["say", "-v", voz, "-o", str(ruta), "--file-format=WAVE",
+             "--data-format=LEI16@22050", texto],
             "hablar con `say` (solo existe en Mac)")
     return ruta
+
+
+def voces_en_espanol() -> List[str]:
+    """Las voces en español instaladas. Para decir cuáles hay cuando falta una.
+
+    Una voz que no está da «Voice not found», que se lee como si `say`
+    estuviera roto. Casi siempre es que esa voz no se descargó todavía:
+    Ajustes del sistema → Accesibilidad → Contenido hablado → Voz del sistema.
+    """
+    try:
+        r = subprocess.run(["say", "-v", "?"], capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return []
+    return [linea.split()[0] for linea in (r.stdout or "").splitlines()
+            if "es_" in linea or "es-" in linea]
 
 
 def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
@@ -411,7 +430,10 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
              "-t", "%.2f" % PAUSA, str(silencio)], "armar el silencio")
     lista, duraciones = [], []
     for i, unidad in enumerate(unidades):
-        crudo = carpeta / ("voz-%02d.aiff" % i)
+        # Dos nombres y no uno: `say` escribe el crudo y ffmpeg lo pasa a 48
+        # kHz estéreo, y con el mismo nombre ffmpeg se niega a escribir sobre
+        # su propia entrada.
+        crudo = carpeta / ("voz-%02d-crudo.wav" % i)
         decir_fn(unidad, crudo, voz)
         parejo = carpeta / ("voz-%02d.wav" % i)
         _correr(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(crudo),
@@ -467,28 +489,54 @@ def _deriva(total: float) -> str:
             % (ANCHO, ALTO))
 
 
-def comando(subtitulos: Path, salida: Path, total: float, fondo: Path,
-            rotulos: Optional[Path] = None, voz: Optional[Path] = None) -> List[str]:
+# Cuánto dura cada clip antes de cortar al siguiente. Sale de mirar la
+# referencia: no es UN video de fondo sino varios que se van turnando, y es
+# buena parte de por qué no se hace largo. Con escenas mucho más cortas el
+# corte compite con el texto; mucho más largas y vuelve a ser un fondo fijo.
+ESCENA = 7.0
+
+
+def escenas(clips: Sequence[Path], total: float, escena: float = ESCENA) -> List[Path]:
+    """Qué clip va en cada tramo, turnándolos hasta cubrir el guion."""
+    cuantas = max(1, int(total / escena + 0.999))
+    return [Path(clips[i % len(clips)]) for i in range(cuantas)]
+
+
+def comando(subtitulos: Path, salida: Path, total: float, fondo,
+            rotulos: Optional[Path] = None, voz: Optional[Path] = None,
+            escena: float = ESCENA) -> List[str]:
     """El ffmpeg que arma el reel. Devuelve la lista, para poder mirarla sin correrla.
 
-    Tres capas y en este orden: el fondo que deriva, los rótulos de la página
-    QUIETOS encima, y los subtítulos quemados al final.
+    Las capas, en orden: el fondo -una imagen que deriva, o varios clips que se
+    van cortando-, los rótulos de la página QUIETOS encima si los hay, y los
+    subtítulos quemados al final.
     """
     entradas: List[str] = []
     cuantas = 0                        # el índice de cada entrada, contado y no deducido
-    es_imagen = Path(fondo).suffix.lower() in (".png", ".jpg", ".jpeg")
+    clips = [Path(x) for x in (fondo if isinstance(fondo, (list, tuple)) else [fondo])]
+    es_imagen = clips[0].suffix.lower() in (".png", ".jpg", ".jpeg")
     if es_imagen:
-        entradas += ["-loop", "1", "-i", str(fondo)]
+        entradas += ["-loop", "1", "-i", str(clips[0])]
         cadena = ("[0:v]scale=%d:%d:force_original_aspect_ratio=increase,%s,fps=%d,setsar=1[bg]"
                   % (int(ANCHO * SOBREMEDIDA), int(ALTO * SOBREMEDIDA), _deriva(total), FPS))
+        cuantas += 1
     else:
-        # El clip se repite si es más corto que el guion, y se oscurece un poco:
-        # sobre un video claro, hasta el amarillo con contorno cuesta.
-        entradas += ["-stream_loop", "-1", "-i", str(fondo)]
-        cadena = ("[0:v]scale=%d:%d:force_original_aspect_ratio=increase,crop=%d:%d,"
-                  "fps=%d,eq=brightness=-0.10:saturation=0.95,setsar=1[bg]"
-                  % (ANCHO, ALTO, ANCHO, ALTO, FPS))
-    cuantas += 1
+        # Cada tramo es una entrada propia, con `-stream_loop` para que un clip
+        # más corto que el tramo no deje el cuadro en negro. Se oscurece y se
+        # baja el color: sobre un clip claro, hasta el amarillo con contorno
+        # cuesta, y la referencia también tiene la imagen apagada.
+        trozos = escenas(clips, total, escena)
+        partes = []
+        for i, clip in enumerate(trozos):
+            entradas += ["-stream_loop", "-1", "-i", str(clip)]
+            partes.append(
+                "[%d:v]trim=duration=%.2f,setpts=PTS-STARTPTS,"
+                "scale=%d:%d:force_original_aspect_ratio=increase,crop=%d:%d,"
+                "fps=%d,eq=brightness=-0.16:saturation=0.90,setsar=1[e%d]"
+                % (i, escena, ANCHO, ALTO, ANCHO, ALTO, FPS, i))
+            cuantas += 1
+        cadena = ";".join(partes) + ";%sconcat=n=%d:v=1:a=0[bg]" % (
+            "".join("[e%d]" % i for i in range(len(trozos))), len(trozos))
     if rotulos:
         entradas += ["-loop", "1", "-i", str(rotulos)]
         cadena += ";[bg][%d:v]overlay=0:0[marcado]" % cuantas
@@ -516,13 +564,18 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo: Path,
 
 
 def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path] = None,
-          fondo: Optional[Path] = None, voz: Optional[Path] = None,
-          carpeta: Optional[Path] = None,
-          marcas: Optional[List[Tuple[float, float]]] = None) -> Path:
+          fondo=None, voz: Optional[Path] = None, carpeta: Optional[Path] = None,
+          marcas: Optional[List[Tuple[float, float]]] = None,
+          rotular: Optional[bool] = None) -> Path:
     """El reel entero. Devuelve el archivo.
 
-    Sin `fondo` dibuja el papel de la marca; sin `voz` sale mudo y el texto
-    dura lo que tardaría en leerse.
+    Sin `fondo` dibuja el papel de la marca; `fondo` puede ser un clip o una
+    lista de clips, que se van turnando. Sin `voz` sale mudo y el texto dura lo
+    que tardaría en leerse.
+
+    `rotular` pone el nombre de la página arriba y el capítulo abajo. Por
+    defecto va SOLO sobre el papel: ahí hacen falta -si no es una hoja en
+    blanco- y sobre video la referencia que pidió el usuario no los tiene.
     """
     carpeta = Path(carpeta or REELS)
     carpeta.mkdir(parents=True, exist_ok=True)
@@ -539,7 +592,10 @@ def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path]
     tema = "video" if fondo else "papel"
     if fondo is None:
         fondo = papel(pagina, carpeta / ("%s-fondo.png" % frase.id))
-    rotulos = marca(pagina, titulo, carpeta / ("%s-marca.png" % frase.id), tema)
+    if rotular is None:
+        rotular = tema == "papel"
+    rotulos = (marca(pagina, titulo, carpeta / ("%s-marca.png" % frase.id), tema)
+               if rotular else None)
     sub = carpeta / ("%s.ass" % frase.id)
     sub.write_text(ass(unidades, marcas, pagina, tema), encoding="utf-8")
     try:
