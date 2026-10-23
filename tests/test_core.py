@@ -743,6 +743,35 @@ class TestElWebhook(unittest.TestCase):
         self.assertIn("--borrar-webhook", dicho)
 
 
+class TestFaltaElEmpezar(unittest.TestCase):
+    """«chat not found» casi nunca es un chat id mal puesto: es que la persona
+    nunca abrió ESE bot. Un bot no puede empezar una conversación."""
+
+    def test_lo_reconoce(self):
+        self.assertTrue(telegram.falta_el_empezar(
+            telegram.TelegramError("Telegram dijo que no: Bad Request: chat not found")))
+
+    def test_no_confunde_otro_error(self):
+        self.assertFalse(telegram.falta_el_empezar(telegram.TelegramError("Unauthorized")))
+
+    def test_el_script_lo_explica_en_vez_de_repetir_el_error(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("bt", ROOT / "scripts" / "bot.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        with mock.patch.object(telegram, "configurado", return_value=True), \
+                mock.patch.object(telegram, "token", return_value="t"), \
+                mock.patch.object(telegram, "chat", return_value="55"), \
+                mock.patch.object(telegram, "quien_soy", return_value={"username": "psibot"}), \
+                mock.patch.object(bot, "menu",
+                                  side_effect=telegram.TelegramError("Bad Request: chat not found")), \
+                mock.patch("builtins.print") as imprimir:
+            self.assertEqual(mod.main(["--saludar"]), 1)
+        dicho = " ".join(str(c[0][0]) for c in imprimir.call_args_list if c[0])
+        self.assertIn("@psibot", dicho)
+        self.assertIn("EN TELEGRAM", dicho)
+
+
 class TestLosCaminosPorDefecto(unittest.TestCase):
     """Un `ruta: Path = CONSTANTE` en la firma se evalúa al importar, así que
     queda clavado y cambiar la constante no cambia nada: lo que corre sigue

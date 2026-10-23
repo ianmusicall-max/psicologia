@@ -48,11 +48,27 @@ def main(argv=None) -> int:
     pagina = config.cargar()
 
     if args.saludar:
-        bot.menu()
+        try:
+            bot.menu()
+        except telegram.TelegramError as e:
+            if not telegram.falta_el_empezar(e):
+                print("Telegram: %s" % e)
+                return 1
+            try:
+                nombre = "@%s" % telegram.quien_soy().get("username")
+            except telegram.TelegramError:
+                nombre = "tu bot"
+            print("Telegram no me deja escribirte todavia.")
+            print()
+            print("Un bot no puede empezar una conversacion: la tenes que empezar vos.")
+            print("Abri %s EN TELEGRAM (no en esta ventana), apreta Empezar y mandale" % nombre)
+            print("cualquier cosa. Despues corre esto de nuevo.")
+            return 1
         print("Menu enviado.")
         return 0
 
-    print("Escuchando. Escribile cualquier cosa al bot para que aparezca el menu.")
+    print("Escuchando. Escribile cualquier cosa al bot EN TELEGRAM (no en esta ventana).")
+    print("Cortalo con Control-C.")
     while True:
         try:
             novedades = telegram.recoger(espera=0 if args.una_vez else 25)
@@ -67,6 +83,13 @@ def main(argv=None) -> int:
             time.sleep(5)
             continue
         for u in novedades:
+            # Decir lo que llega: sin esto, una ventana callada se ve igual
+            # cuando el bot anda que cuando los mensajes no estan llegando.
+            mensaje = u.get("message") or {}
+            if mensaje.get("text"):
+                print("llego: %s" % mensaje["text"][:60])
+            elif u.get("callback_query"):
+                print("boton: %s" % (u["callback_query"].get("data") or ""))
             try:
                 bot.atender(u, pagina)
             except Exception as e:                # noqa: BLE001

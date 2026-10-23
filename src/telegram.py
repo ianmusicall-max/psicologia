@@ -101,6 +101,20 @@ def hay_conflicto_de_webhook(error: Exception) -> bool:
     return CONFLICTO in str(error).lower()
 
 
+# Telegram no deja que un bot le escriba a alguien que nunca le hablo: hasta
+# que la persona abre ESE bot y le manda algo, contesta «chat not found»,
+# que se lee como si el chat id estuviera mal. Casi nunca lo esta.
+SIN_CHAT = "chat not found"
+
+
+def falta_el_empezar(error: Exception) -> bool:
+    return SIN_CHAT in str(error).lower()
+
+
+def quien_soy() -> dict:
+    return _llamar("getMe") or {}
+
+
 def webhook() -> dict:
     """A dónde está apuntando el webhook, si hay uno. {} si no hay ninguno."""
     info = _llamar("getWebhookInfo") or {}
