@@ -46,6 +46,7 @@ cp .env.example .env     # y poner el id y el token de la página
 | `scripts/revisar_token.py` | si el token es de página o de usuario, de cuál, qué permisos y cuándo vence. Solo lee |
 | `scripts/token_permanente.py` | convierte el token en uno de página que no vence y lo deja en el `.env` |
 | `scripts/bot.py` | el bot de Telegram: muestra la frase que toca y la publica si aprietas el botón |
+| `scripts/revisar_instagram.py` | si la página está en condiciones de publicar en Instagram. Solo lee |
 
 Nada se publica solo: no hay timer ni cron. `--publicar` es el único camino
 hacia Facebook y lo aprieta una persona. Si algún día se automatiza, la
@@ -180,6 +181,22 @@ de Meta y pedir el del usuario.
 Un id de app y un id de página son dos números de dieciséis dígitos y se ven
 iguales. Usar uno por el otro hace que publicar falle con un error que no dice
 cuál de los dos está mal, así que `revisar_token.py` los separa antes.
+
+## Instagram
+
+**Todavía no se publica en Instagram**, y no es solo cuestión de permisos.
+`scripts/revisar_instagram.py` dice qué falta, en orden:
+
+1. Una cuenta de Instagram **profesional vinculada a la página**. Eso se hace
+   en la configuración de la página en Facebook, no desde acá.
+2. El token con `instagram_basic` e `instagram_content_publish`, que no hacen
+   falta para Facebook.
+3. Una **dirección pública** de donde bajar el flyer. Instagram no acepta que
+   le subas el archivo: lo baja de internet. Hoy los flyers viven en el disco
+   de la máquina que publica, así que no hay de dónde bajarlos.
+
+El tercero es el que decide: o el proyecto corre en un servidor que sirva las
+imágenes, o Instagram se hace a mano.
 
 ## Lo que falta
 

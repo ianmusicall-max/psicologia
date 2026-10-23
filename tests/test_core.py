@@ -14,7 +14,7 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import bot, config, diseno, entorno, facebook, frases, libro, telegram
+from src import bot, config, diseno, entorno, facebook, frases, instagram, libro, telegram
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -977,6 +977,56 @@ class TestElegirLaPagina(unittest.TestCase):
     def test_lo_pedido_le_gana_al_env(self):
         elegida, _ = self.elegir(self.PAGINAS, "Josdelcarpio", "1348366165029009")
         self.assertEqual(elegida["id"], "105045932147427")
+
+
+class TestInstagram(unittest.TestCase):
+    """Solo averigua si la cuenta está en condiciones. Nada de esto publica."""
+
+    def _pagina(self):
+        p = config.Pagina(nombre="X", page_id_env="T_ID", token_env="T_TOKEN")
+        return p, mock.patch.dict("os.environ", {"T_ID": "105", "T_TOKEN": "tok"})
+
+    def test_lee_la_cuenta_vinculada_preguntando_por_la_pagina(self):
+        # Se pregunta por la PÁGINA: el vínculo lo declara ella, y preguntar
+        # al revés necesita un id que todavía no se tiene.
+        p, env = self._pagina()
+        respuesta = {"name": "Josdelcarpio",
+                     "instagram_business_account": {"id": "77", "username": "jos"}}
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(200, respuesta)) as get:
+            cuenta = instagram.cuenta_vinculada(p)
+        self.assertTrue(get.call_args[0][0].endswith("/105"))
+        self.assertEqual(cuenta["id"], "77")
+        self.assertEqual(cuenta["usuario"], "jos")
+
+    def test_sin_cuenta_vinculada_no_inventa_una(self):
+        p, env = self._pagina()
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(200, {"name": "Josdelcarpio"})):
+            self.assertEqual(instagram.cuenta_vinculada(p)["id"], "")
+
+    def test_dice_cuales_permisos_faltan(self):
+        self.assertEqual(instagram.permisos_que_faltan(["pages_manage_posts"]),
+                         ["instagram_basic", "instagram_content_publish"])
+        self.assertEqual(instagram.permisos_que_faltan(
+            ["instagram_basic", "instagram_content_publish", "pages_manage_posts"]), [])
+
+    def test_no_poder_preguntar_no_es_lo_mismo_que_no_tener(self):
+        # [] es «no tiene ninguno» y None es «no pude averiguarlo». Confundirlos
+        # manda a regenerar un token que estaba bien.
+        p, env = self._pagina()
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(400, {"error": {"message": "x"}})):
+            self.assertIsNone(instagram.scopes_del_token(p, "app", "secreto"))
+        with env, mock.patch.object(facebook.requests, "get",
+                                    return_value=_Respuesta(200, {"data": {"scopes": []}})):
+            self.assertEqual(instagram.scopes_del_token(p, "app", "secreto"), [])
+
+    def test_el_comprobador_no_publica(self):
+        # Mismo criterio que con Facebook: se lee el AST y se exige que no
+        # llame a nada que escriba.
+        self.assertFalse(_llama_a(ROOT / "scripts" / "revisar_instagram.py",
+                                  {"publicar", "post"}))
 
 
 class TestLosScripts(unittest.TestCase):
