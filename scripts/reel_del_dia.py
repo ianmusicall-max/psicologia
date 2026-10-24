@@ -129,10 +129,46 @@ def publicar(ruta: Path, caption: str, titulo: str, descripcion: str,
                 enlace = youtube.enlace(r["id"])
                 if youtube.quedo_privado(r):
                     enlace += "  (quedo PRIVADO: auditoria de Google)"
+                if r.get("playlist_error"):
+                    # El video salio igual: esto es un aviso, no un fallo.
+                    enlace += "  (no entro en la lista: %s)" % r["playlist_error"]
                 salidas["youtube"] = enlace
         except Exception as e:                            # noqa: BLE001
             salidas["youtube"] = "error: %s" % e
     return salidas
+
+
+def probar(donde=PLATAFORMAS) -> dict:
+    """Pregunta si las tres credenciales andan, sin publicar ni gastar nada.
+
+    Existe porque el turno corre una vez por dia: sin esto, que falte un
+    secreto se descubre a las 18, con el reel ya armado y pago. Las tres
+    preguntas son de solo lectura y ninguna cuesta un centavo.
+    """
+    pagina = config.cargar()
+    estado = {}
+    if "facebook" in donde:
+        from src import facebook
+        r = facebook._leer("me", fields="id,name",
+                           access_token=pagina.fb_token or "")
+        estado["facebook"] = (r.get("name")
+                              or facebook.sin_token(
+                                  "error: %s" % ((r.get("error") or {}).get("message")
+                                                 or "sin token")))
+    if "instagram" in donde:
+        from src import instagram
+        c = instagram.cuenta_vinculada(pagina)
+        from src import facebook as _fb
+        estado["instagram"] = ("@%s" % c["usuario"] if c.get("usuario")
+                               else _fb.sin_token("error: %s"
+                                                  % (c.get("error") or "sin cuenta vinculada")))
+    if "youtube" in donde:
+        try:
+            youtube.acceso()
+            estado["youtube"] = "el permiso anda"
+        except Exception as e:                            # noqa: BLE001
+            estado["youtube"] = "error: %s" % e
+    return estado
 
 
 def aviso(ruta: Path, titulo: str, salidas: dict) -> str:
@@ -149,6 +185,8 @@ def main(argv=None) -> int:
     ap.add_argument("--video", help="publicar uno ya armado en vez de armar")
     ap.add_argument("--tema", help="el capitulo entero en vez de la frase que toca")
     ap.add_argument("--ver", action="store_true", help="no arma ni publica")
+    ap.add_argument("--probar", action="store_true",
+                    help="comprobar las credenciales de las tres. No publica")
     ap.add_argument("--otra-vez", action="store_true",
                     help="armar otro aunque hoy ya haya salido uno")
     for cual in PLATAFORMAS:
@@ -162,6 +200,20 @@ def main(argv=None) -> int:
     if not donde:
         print("No queda ninguna plataforma donde publicar.")
         return 2
+
+    if args.probar:
+        estado = probar(donde)
+        print("Las credenciales, una por una:")
+        for cual in PLATAFORMAS:
+            if cual in estado:
+                print("  %-10s %s" % (cual, estado[cual]))
+        mal = [c for c, v in estado.items() if v.startswith("error:")]
+        print()
+        print("Falta arreglar: %s" % ", ".join(mal) if mal
+              else "Las tres estan en condiciones.")
+        _avisar("Credenciales del reel:\n" +
+                "\n".join("%s: %s" % (c, estado[c]) for c in PLATAFORMAS if c in estado))
+        return 1 if mal else 0
 
     if args.ver:
         print("Armaria un reel con: %s" % " ".join(COMO))

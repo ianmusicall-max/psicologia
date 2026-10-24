@@ -43,12 +43,25 @@ def identificar(token, app_id=None, app_secret=None):
             "id": r.get("id"), "nombre": r.get("name")}
 
 
+def sin_token(texto: str) -> str:
+    """El mismo texto con el token tapado.
+
+    Hace falta porque un error de red de `requests` trae la URL ENTERA, y la
+    URL lleva `access_token=` con el token de la página. Ese texto termina en
+    el chat de Telegram, en el log y en las capturas de pantalla: la
+    credencial quedaría a la vista sin que nadie la haya pegado en ningún
+    lado. Se vio el 2026-10-24, comprobando las credenciales del reel.
+    """
+    import re
+    return re.sub(r"(access_token=)[^&\s)]+", r"\1OCULTO", str(texto))
+
+
 def _leer(camino, **params):
     """GET a la API, devolviendo siempre un dict (con "error" si algo falló)."""
     try:
         r = requests.get("%s/%s" % (GRAPH, camino), params=params, timeout=30)
     except requests.RequestException as e:
-        return {"error": {"message": "no se pudo llegar a Facebook: %s" % e}}
+        return {"error": {"message": sin_token("no se pudo llegar a Facebook: %s" % e)}}
     try:
         return r.json()
     except ValueError:
@@ -155,7 +168,7 @@ def publicar_reel(pagina: Pagina, video: Path, descripcion: str = "",
                                 "access_token": pagina.fb_token},
                           timeout=60)
     except requests.RequestException as e:
-        raise FacebookError("no pude abrir la subida del reel: %s" % e)
+        raise FacebookError(sin_token("no pude abrir la subida del reel: %s" % e))
     datos = _json_de(r)
     if r.status_code >= 400 or "error" in datos:
         raise FacebookError("Facebook contestó %s: %s"
@@ -173,7 +186,7 @@ def publicar_reel(pagina: Pagina, video: Path, descripcion: str = "",
                 "Authorization": "OAuth %s" % pagina.fb_token,
                 "offset": "0", "file_size": str(peso)})
     except requests.RequestException as e:
-        raise FacebookError("se cortó la subida del reel: %s" % e)
+        raise FacebookError(sin_token("se cortó la subida del reel: %s" % e))
     datos = _json_de(r)
     if r.status_code >= 400 or "error" in datos:
         raise FacebookError("Facebook rechazó el video: %s"
@@ -188,7 +201,7 @@ def publicar_reel(pagina: Pagina, video: Path, descripcion: str = "",
                                 "access_token": pagina.fb_token},
                           timeout=60)
     except requests.RequestException as e:
-        raise FacebookError("subió pero no pude publicarlo: %s" % e)
+        raise FacebookError(sin_token("subió pero no pude publicarlo: %s" % e))
     datos = _json_de(r)
     if r.status_code >= 400 or "error" in datos:
         raise FacebookError("subió pero Facebook no lo publicó: %s"

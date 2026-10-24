@@ -29,6 +29,11 @@ on:
         required: false
         type: boolean
         default: false
+      solo_probar:
+        description: "Solo comprobar las credenciales: no arma ni publica nada"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   # Para volver a subir data/reels_publicados.json. Sin esto, el segundo
@@ -86,6 +91,9 @@ jobs:
           fi
           if [ "${{ inputs.otra_vez }}" = "true" ]; then
             ARGS="$ARGS --otra-vez"
+          fi
+          if [ "${{ inputs.solo_probar }}" = "true" ]; then
+            ARGS="$ARGS --probar"
           fi
           python scripts/reel_del_dia.py $ARGS
 

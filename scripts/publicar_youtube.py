@@ -61,10 +61,24 @@ def main(argv=None) -> int:
     ap.add_argument("--ver", action="store_true", help="no sube nada")
     ap.add_argument("--otra-vez", action="store_true",
                     help="subirlo aunque ya este en YouTube")
+    ap.add_argument("--agregar", metavar="VIDEO_ID",
+                    help="solo meter en la lista un video que ya esta subido")
     ap.add_argument("--telegram", action="store_true", help="manda el enlace al chat")
     args = ap.parse_args(argv)
 
     load_dotenv(ROOT / ".env")
+
+    # Un video que ya esta arriba -los de antes de que la lista existiera-.
+    if args.agregar:
+        try:
+            lista = youtube.agregar_a_playlist(args.agregar)
+        except youtube.YoutubeError as e:
+            print("No pude agregarlo: %s" % e)
+            return 1
+        print("Agregado a «%s»: %s" % (youtube.PLAYLIST,
+                                       youtube.enlace_de_playlist(lista)))
+        return 0
+
     ruta = Path(args.archivo)
     if not ruta.is_file():
         print("No existe %s" % ruta)
@@ -139,6 +153,13 @@ def main(argv=None) -> int:
     except youtube.YoutubeError as e:
         print("No pude subirlo: %s" % e)
         return 1
+
+    if r.get("playlist"):
+        print("En la lista «%s»: %s" % (youtube.PLAYLIST,
+                                        youtube.enlace_de_playlist(r["playlist"])))
+    elif r.get("playlist_error"):
+        # El video SI salio: esto es un aviso, no un fallo.
+        print("Subio, pero no pude meterlo en la lista: %s" % r["playlist_error"])
 
     enlace = youtube.enlace(r["id"])
     # Se anota ANTES de avisar: si el aviso falla, lo que no puede perderse es

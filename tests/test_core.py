@@ -4062,5 +4062,189 @@ class TestInstagramDosPorDia(unittest.TestCase):
         self.assertNotIn("if pagina.instagram:", texto)
 
 
+class TestQueElTokenNoSalgaEnNingunError(unittest.TestCase):
+    """Un error de red de `requests` trae la URL entera, y la URL lleva el
+    token de la página. Ese texto termina en el chat, en el log y en las
+    capturas: la credencial queda a la vista sin que nadie la haya pegado."""
+
+    def test_el_token_se_tapa(self):
+        sucio = ("no se pudo llegar: url /v21.0/me?fields=id&"
+                 "access_token=EAAPj0secreto123 (Caused by ...)")
+        limpio = facebook.sin_token(sucio)
+        self.assertNotIn("EAAPj0secreto123", limpio)
+        self.assertIn("access_token=OCULTO", limpio)
+        # Lo demás del error se conserva: sin eso no se sabe qué falló.
+        self.assertIn("Caused by", limpio)
+
+    def test_un_error_sin_token_queda_igual(self):
+        self.assertEqual(facebook.sin_token("se cayó la red"), "se cayó la red")
+
+    def test_el_error_de_red_de_la_api_ya_viene_tapado(self):
+        with mock.patch.object(facebook.requests, "get",
+                               side_effect=facebook.requests.RequestException(
+                                   "url?access_token=EAAsecreto")):
+            r = facebook._leer("me", access_token="EAAsecreto")
+        self.assertNotIn("EAAsecreto", r["error"]["message"])
+
+    def test_los_errores_del_reel_tambien(self):
+        import ast
+        arbol = ast.parse((ROOT / "src" / "facebook.py").read_text(encoding="utf-8"))
+        crudos = []
+        for nodo in ast.walk(arbol):
+            # Un `raise FacebookError(...)` que interpola una excepción de red
+            # sin pasar por `sin_token` es el que filtra.
+            if (isinstance(nodo, ast.Raise) and isinstance(nodo.exc, ast.Call)
+                    and getattr(nodo.exc.func, "id", "") == "FacebookError"):
+                texto = ast.dump(nodo.exc)
+                if "'e'" in texto and "sin_token" not in texto:
+                    crudos.append(ast.unparse(nodo)[:80])
+        self.assertEqual(crudos, [], "esos errores pueden llevar el token")
+
+
+class TestComprobarLasCredencialesSinPublicar(unittest.TestCase):
+    """El turno corre una vez por dia: sin esto, que falte un secreto se
+    descubre a las 18, con el reel ya armado y pago."""
+
+    def test_pregunta_por_las_tres_y_no_publica_nada(self):
+        from src import instagram, youtube
+        rdd = _script("rdd2", "reel_del_dia.py")
+        with mock.patch.object(facebook, "_leer",
+                               return_value={"id": "1", "name": "La página"}), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"usuario": "lapagina"}), \
+                mock.patch.object(youtube, "acceso", return_value="tok"), \
+                mock.patch.object(facebook, "publicar_reel") as fb, \
+                mock.patch.object(instagram, "publicar_reel") as ig, \
+                mock.patch.object(youtube, "publicar_short") as yt:
+            estado = rdd.probar()
+        self.assertEqual(estado["facebook"], "La página")
+        self.assertEqual(estado["instagram"], "@lapagina")
+        self.assertIn("anda", estado["youtube"])
+        for fn in (fb, ig, yt):
+            fn.assert_not_called()
+
+    def test_dice_cual_falta_sin_tumbar_a_las_otras(self):
+        from src import instagram, youtube
+        rdd = _script("rdd3", "reel_del_dia.py")
+        with mock.patch.object(facebook, "_leer",
+                               return_value={"id": "1", "name": "La página"}), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"usuario": "lapagina"}), \
+                mock.patch.object(youtube, "acceso",
+                                  side_effect=youtube.YoutubeError("falta YT_CLIENT_ID")):
+            estado = rdd.probar()
+        self.assertTrue(estado["youtube"].startswith("error:"))
+        self.assertEqual(estado["facebook"], "La página")
+
+    def test_el_flujo_lo_puede_disparar(self):
+        flujo = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(encoding="utf-8")
+        self.assertIn("solo_probar", flujo)
+        self.assertIn("--probar", flujo)
+
+
+class TestLaListaDeReproduccion(unittest.TestCase):
+    """Todos los videos van a «Lo que nadie te explicó». Pedido 2026-10-24."""
+
+    def setUp(self):
+        from src import youtube
+        self.yt = youtube
+
+    def test_el_permiso_de_subir_no_alcanza_y_por_eso_se_piden_dos(self):
+        # `playlistItems.insert` no lo acepta con el de subir, y el más
+        # angosto que sí lo acepta es el de administrar el canal.
+        self.assertEqual(len(self.yt.PERMISOS), 2)
+        self.assertIn(self.yt.PERMISO, self.yt.PERMISOS)
+        enlace = self.yt.enlace_de_permiso("cid", "http://127.0.0.1:8731")
+        for permiso in self.yt.PERMISOS:
+            self.assertIn(permiso.replace(":", "%3A").replace("/", "%2F"), enlace)
+
+    def test_la_busca_por_nombre_y_no_guarda_el_id(self):
+        # Un id guardado y una lista renombrada en el panel se desincronizan
+        # sin que nada falle: el video se iría a una lista que ya no existe.
+        llamadas = []
+
+        def api(metodo, camino, token, params=None, cuerpo=None, espera=30):
+            llamadas.append((metodo, camino))
+            return {"items": [{"id": "PL1", "snippet": {"title": self.yt.PLAYLIST}}]}
+
+        with mock.patch.object(self.yt, "_api", side_effect=api):
+            self.assertEqual(self.yt.buscar_playlist(self.yt.PLAYLIST, "tok"), "PL1")
+        self.assertEqual(llamadas, [("GET", "playlists")])
+
+    def test_si_no_existe_la_crea(self):
+        hechas = []
+
+        def api(metodo, camino, token, params=None, cuerpo=None, espera=30):
+            hechas.append((metodo, camino, cuerpo))
+            if camino == "playlists" and metodo == "GET":
+                return {"items": []}
+            return {"id": "PLnueva"}
+
+        with mock.patch.object(self.yt, "_api", side_effect=api):
+            lista = self.yt.agregar_a_playlist("VID", self.yt.PLAYLIST, "tok")
+        self.assertEqual(lista, "PLnueva")
+        creada = [c for m, c, cu in hechas if m == "POST" and c == "playlists"]
+        self.assertEqual(creada, ["playlists"])
+        # Pública: una lista privada no la ve nadie.
+        cuerpo = [cu for m, c, cu in hechas if m == "POST" and c == "playlists"][0]
+        self.assertEqual(cuerpo["status"]["privacyStatus"], "public")
+
+    def test_el_video_entra_en_la_lista_al_subirlo(self):
+        # «Todos» no puede depender de que cada script se acuerde, así que lo
+        # hace la subida.
+        abrir = _Respuesta(200, {})
+        abrir.headers = {"Location": "https://subida/aca"}
+        subido = _Respuesta(200, {"id": "VID", "status": {"privacyStatus": "public"}})
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(self.yt, "acceso", return_value="tok"), \
+                mock.patch.object(self.yt.requests, "post", return_value=abrir), \
+                mock.patch.object(self.yt.requests, "put", return_value=subido), \
+                mock.patch.object(self.yt, "agregar_a_playlist",
+                                  return_value="PL1") as agregar:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            r = self.yt.publicar_short(v, "T", "D")
+        agregar.assert_called_once()
+        self.assertEqual(agregar.call_args[0][1], self.yt.PLAYLIST)
+        self.assertEqual(r["playlist"], "PL1")
+
+    def test_si_la_lista_falla_el_video_igual_queda_publicado(self):
+        # Perder el video por una lista sería cambiar un problema chico por
+        # uno grande.
+        abrir = _Respuesta(200, {})
+        abrir.headers = {"Location": "https://subida/aca"}
+        subido = _Respuesta(200, {"id": "VID", "status": {"privacyStatus": "public"}})
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(self.yt, "acceso", return_value="tok"), \
+                mock.patch.object(self.yt.requests, "post", return_value=abrir), \
+                mock.patch.object(self.yt.requests, "put", return_value=subido), \
+                mock.patch.object(self.yt, "agregar_a_playlist",
+                                  side_effect=self.yt.YoutubeError("sin permiso")):
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            r = self.yt.publicar_short(v, "T", "D")
+        self.assertEqual(r["id"], "VID")
+        self.assertIn("sin permiso", r["playlist_error"])
+
+    def test_un_video_ya_subido_se_puede_agregar(self):
+        pub = _script("pub5", "publicar_youtube.py")
+        with mock.patch.object(self.yt, "agregar_a_playlist",
+                               return_value="PL1") as agregar:
+            salida = pub.main(["--agregar", "VIDEOVIEJO"])
+        self.assertEqual(salida, 0)
+        self.assertEqual(agregar.call_args[0][0], "VIDEOVIEJO")
+
+    def test_el_nombre_esta_en_un_solo_lugar(self):
+        # Dos copias del nombre y el día que se renombre, media cadena manda
+        # los videos a una lista nueva y vacía.
+        import ast
+        cuantas = 0
+        for archivo in list((ROOT / "src").glob("*.py")) + list((ROOT / "scripts").glob("*.py")):
+            for nodo in ast.walk(ast.parse(archivo.read_text(encoding="utf-8"))):
+                if isinstance(nodo, ast.Constant) and nodo.value == self.yt.PLAYLIST:
+                    cuantas += 1
+        self.assertEqual(cuantas, 1, "el nombre de la lista está escrito más de una vez")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -172,6 +172,10 @@ def main(argv=None) -> int:
     print("Ya se puede subir:")
     print("  python3 scripts/publicar_youtube.py data/reels/<archivo>.mp4")
     print()
+    print("Pide DOS permisos: subir videos y administrar el canal. El segundo")
+    print("es solo para meter el video en la lista «%s»:" % youtube.PLAYLIST)
+    print("subir no alcanza para eso.")
+    print()
     print("Si la app quedo en modo «Prueba», este permiso se vence en 7 dias.")
     print("Para que no se venza: pantalla de consentimiento -> Publicar app.")
     return 0

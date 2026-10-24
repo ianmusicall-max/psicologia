@@ -35,11 +35,25 @@ SUBIDA = "https://www.googleapis.com/upload/youtube/v3/videos"
 TOKEN = "https://oauth2.googleapis.com/token"
 AUTORIZAR = "https://accounts.google.com/o/oauth2/v2/auth"
 
-# El único permiso que hace falta para subir. NO se pide `youtube.readonly`
-# aunque serviría para releer el estado después: es otro permiso sensible, o
-# sea otro casillero en la pantalla de consentimiento, y la ficha que devuelve
-# la propia subida ya dice en qué estado quedó.
+# Los permisos. El primero es el de subir. El segundo hace falta SOLO para
+# meter el video en la lista de reproducción: `playlistItems.insert` no lo
+# acepta con el de subir, y el más angosto que sí lo acepta es este.
+#
+# NO se pide `youtube.readonly` aunque serviría para releer el estado
+# después: la ficha que devuelve la propia subida ya dice en qué estado quedó.
 PERMISO = "https://www.googleapis.com/auth/youtube.upload"
+PERMISO_LISTAS = "https://www.googleapis.com/auth/youtube"
+PERMISOS = (PERMISO, PERMISO_LISTAS)
+
+# La lista donde van todos los videos. La eligió el usuario el 2026-10-24.
+# Si no existe se crea sola: un nombre escrito en el código y una lista creada
+# a mano en el panel se desincronizan el día que alguien la renombre.
+PLAYLIST = "Lo que nadie te explicó"
+
+# La descripción de la lista. El nombre dice quién es la página y no se busca
+# en YouTube; estas palabras sí, y es lo que YouTube indexa de una lista.
+PLAYLIST_DESCRIPCION = ("Psicología en claro: emociones, ansiedad, autoestima, "
+                        "vínculos, límites y duelo. Un video corto por día.")
 
 CLIENTE, SECRETO, REFRESCO = "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN"
 
@@ -170,7 +184,8 @@ def ficha(titulo: str, descripcion: str, etiquetas: Sequence[str] = (),
 
 def publicar_short(ruta: Path, titulo: str, descripcion: str,
                    etiquetas: Sequence[str] = (), privacidad: str = "public",
-                   token: Optional[str] = None, espera: int = ESPERA) -> Dict:
+                   token: Optional[str] = None, espera: int = ESPERA,
+                   playlist: Optional[str] = PLAYLIST) -> Dict:
     """Sube el mp4 y devuelve lo que YouTube contestó.
 
     La ficha se revisa ANTES de abrir la sesión de subida: un título largo
@@ -216,7 +231,82 @@ def publicar_short(ruta: Path, titulo: str, descripcion: str,
         raise YoutubeError(_error_de(datos, r))
     if not datos.get("id"):
         raise YoutubeError("subió pero YouTube no devolvió el id del video")
+
+    # La lista va acá dentro y no en cada script: «todos los videos a la
+    # lista» no puede depender de que cada uno se acuerde. Y si falla NO se
+    # levanta: el video ya está publicado, y perderlo por una lista sería
+    # cambiar un problema chico por uno grande.
+    if playlist:
+        try:
+            datos["playlist"] = agregar_a_playlist(datos["id"], playlist, token)
+        except YoutubeError as e:
+            datos["playlist_error"] = str(e)
     return datos
+
+
+def _api(metodo: str, camino: str, token: str, params=None, cuerpo=None,
+         espera: int = 30) -> Dict:
+    """Una llamada a la API, con el error ya desenrollado."""
+    try:
+        r = requests.request(metodo, "%s/%s" % (API, camino), timeout=espera,
+                             params=params or {},
+                             headers={"Authorization": "Bearer %s" % token,
+                                      "Content-Type": "application/json"},
+                             data=json.dumps(cuerpo).encode("utf-8") if cuerpo else None)
+    except requests.RequestException as e:
+        raise YoutubeError("no pude hablar con YouTube: %s" % e)
+    datos = _como_json(r)
+    if r.status_code >= 400:
+        raise YoutubeError(_error_de(datos, r))
+    return datos
+
+
+def buscar_playlist(nombre: str, token: str) -> str:
+    """El id de la lista con ese nombre, o "" si no está.
+
+    Se busca por NOMBRE y no se guarda el id en ningún lado a propósito: un id
+    guardado y una lista borrada o renombrada en el panel se desincronizan sin
+    que nada falle, y el video se iría a una lista que ya no existe. Cuesta
+    1 punto de cuota contra los 1.600 de la subida.
+    """
+    pagina = None
+    while True:
+        params = {"part": "snippet", "mine": "true", "maxResults": 50}
+        if pagina:
+            params["pageToken"] = pagina
+        datos = _api("GET", "playlists", token, params)
+        for x in datos.get("items") or []:
+            if ((x.get("snippet") or {}).get("title") or "").strip() == nombre.strip():
+                return str(x.get("id") or "")
+        pagina = datos.get("nextPageToken")
+        if not pagina:
+            return ""
+
+
+def crear_playlist(nombre: str, token: str, descripcion: str = PLAYLIST_DESCRIPCION) -> str:
+    """Crea la lista y devuelve su id. Pública: una lista privada no la ve nadie."""
+    datos = _api("POST", "playlists", token, {"part": "snippet,status"},
+                 {"snippet": {"title": nombre, "description": descripcion},
+                  "status": {"privacyStatus": "public"}})
+    ident = str(datos.get("id") or "")
+    if not ident:
+        raise YoutubeError("YouTube no devolvió el id de la lista")
+    return ident
+
+
+def agregar_a_playlist(video_id: str, nombre: str = PLAYLIST,
+                       token: Optional[str] = None) -> str:
+    """Mete el video en la lista, creándola si no existe. Devuelve el id."""
+    token = token or acceso()
+    lista = buscar_playlist(nombre, token) or crear_playlist(nombre, token)
+    _api("POST", "playlistItems", token, {"part": "snippet"},
+         {"snippet": {"playlistId": lista,
+                      "resourceId": {"kind": "youtube#video", "videoId": video_id}}})
+    return lista
+
+
+def enlace_de_playlist(lista: str) -> str:
+    return "https://www.youtube.com/playlist?list=%s" % lista
 
 
 def enlace(video_id: str) -> str:
@@ -257,7 +347,7 @@ def enlace_de_permiso(cliente: str, redireccion: str) -> str:
     from urllib.parse import urlencode
     return "%s?%s" % (AUTORIZAR, urlencode({
         "client_id": cliente, "redirect_uri": redireccion,
-        "response_type": "code", "scope": PERMISO,
+        "response_type": "code", "scope": " ".join(PERMISOS),
         "access_type": "offline", "prompt": "consent"}))
 
 
