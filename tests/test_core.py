@@ -2858,6 +2858,96 @@ class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
             self.assertIsNone(traducir.guardada(["Uno.", "Dos."], cache=cache))
 
 
+class TestPublicarUnReelEnInstagram(unittest.TestCase):
+    """Un video no se puede publicar con el truco de la foto: Instagram pide
+    una direccion publica al mp4. La salida es subir los bytes."""
+
+    def test_el_mp4_no_va_a_graph_sino_al_host_de_subida(self):
+        # Es la diferencia con todo lo demas del proyecto: los bytes van a
+        # otra direccion de Meta. Mandarlos a graph.facebook.com devuelve un
+        # error que no dice que el host es el problema.
+        self.assertIn("rupload.facebook.com", instagram.SUBIDA)
+        self.assertNotIn("rupload", instagram.GRAPH)
+
+    def test_publicar_un_reel_son_tres_pasos_en_orden(self):
+        # Contenedor, bytes, publicar. Publicar antes de mandar los bytes
+        # devuelve un error que no dice que falta el archivo.
+        pasos = []
+
+        def pedir(camino, **datos):
+            pasos.append(camino.split("/")[-1])
+            if camino.endswith("/media"):
+                self.assertEqual(datos["media_type"], "REELS")
+                self.assertEqual(datos["upload_type"], "resumable")
+                return {"id": "c1"}
+            return {"id": "post1"}
+
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x" * 100)
+            with mock.patch.object(instagram, "_pedir", side_effect=pedir), \
+                    mock.patch.object(instagram, "subir_los_bytes",
+                                      side_effect=lambda *a: pasos.append("bytes")), \
+                    mock.patch.object(instagram, "_esperar_listo"), \
+                    mock.patch.object(instagram, "cuenta_vinculada",
+                                      return_value={"id": "ig1"}):
+                ident = instagram.publicar_reel(PAGINA, "texto", mp4)
+        self.assertEqual(pasos, ["media", "bytes", "media_publish"])
+        self.assertEqual(ident, "post1")
+
+    def test_el_reel_tambien_va_al_perfil_y_no_solo_a_la_pestania(self):
+        # Un reel que no aparece en el perfil lo ve mucha menos gente.
+        visto = {}
+
+        def pedir(camino, **datos):
+            visto.update(datos)
+            return {"id": "c1"}
+
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(instagram, "_pedir", side_effect=pedir), \
+                    mock.patch.object(instagram, "subir_los_bytes"), \
+                    mock.patch.object(instagram, "_esperar_listo"), \
+                    mock.patch.object(instagram, "cuenta_vinculada",
+                                      return_value={"id": "ig1"}):
+                instagram.publicar_reel(PAGINA, "t", mp4)
+        self.assertEqual(visto.get("share_to_feed"), "true")
+
+    def test_un_video_que_no_esta_no_llega_a_pedirle_nada_a_meta(self):
+        with self.assertRaises(instagram.InstagramError):
+            instagram.subir_los_bytes("c1", Path("/no/existe/x.mp4"), "tok")
+
+    def test_el_reel_no_se_anota_como_frase_publicada(self):
+        # Es contenido APARTE del post diario de esa frase: si se anotara, la
+        # frase quedaria como publicada y su flyer no saldria nunca.
+        self.assertFalse(_llama_a(ROOT / "scripts" / "publicar_reel.py",
+                                  {"anotar_publicada"}))
+
+    def test_el_largo_se_comprueba_antes_de_subir(self):
+        # Instagram rechaza el contenedor DESPUES de recibir el archivo
+        # entero, y el error no dice que el problema es el largo.
+        publicar = _cargar_script("publicar_reel")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "due-01.mp4"
+            mp4.write_bytes(b"x" * 100)
+            with mock.patch.object(video, "duracion", return_value=200.0), \
+                    mock.patch.object(instagram, "publicar_reel",
+                                      side_effect=AssertionError("subio")):
+                salida = publicar.main([str(mp4)])
+        self.assertEqual(salida, 1)
+
+    def test_con_ver_no_publica(self):
+        publicar = _cargar_script("publicar_reel")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "due-01.mp4"
+            mp4.write_bytes(b"x" * 100)
+            with mock.patch.object(video, "duracion", return_value=80.0), \
+                    mock.patch.object(instagram, "publicar_reel",
+                                      side_effect=AssertionError("publico")):
+                self.assertEqual(publicar.main([str(mp4), "--ver"]), 0)
+
+
 class TestLaMusicaDelRepo(unittest.TestCase):
     """Es propia y suena a piano. Las dos cosas importan: una pista con
     derechos le hace perder alcance a TODA la cuenta, y la que habia no

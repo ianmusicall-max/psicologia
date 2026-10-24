@@ -137,6 +137,95 @@ def publicar(pagina: Pagina, caption: str, url_imagen: str,
     return str(publicado)
 
 
+# ---------------------------------------------------------------------------
+# Los reels.
+#
+# Un video NO se puede publicar con el truco de la foto. Para una imagen,
+# Instagram baja el archivo de la direccion que Facebook ya sirve; para un
+# video pide una direccion publica al mp4, y Facebook no devuelve ninguna que
+# Instagram pueda leer. Hacia falta alojar el archivo en algun lado.
+#
+# La salida es la subida POR PARTES (`upload_type=resumable`): se crea el
+# contenedor, se mandan los bytes a un host aparte y recien despues se
+# publica. Asi el mp4 no tiene que estar en ningun lado publico, que es lo
+# que hace que esto se pueda hacer desde la Mac sin subir nada.
+#
+# Esta disponible por el camino de Facebook Login -token de PAGINA sobre
+# graph.facebook.com-, que es justo el que esta pagina ya usa para todo lo
+# demas. Por el camino de Instagram Login solo se acepta la direccion
+# publica.
+# ---------------------------------------------------------------------------
+
+# Los bytes NO van a graph.facebook.com: van a este host. Es el unico lugar
+# del proyecto donde se habla con otra direccion de Meta.
+SUBIDA = "https://rupload.facebook.com/ig-api-upload/v21.0"
+
+# Un reel se procesa mucho mas que una foto: son 90 segundos de video.
+ESPERA_REEL = 300
+
+# Lo que Meta admite de un reel por la API. El tope de peso importa poco -los
+# nuestros andan por los 2 MB- pero el de duracion es el mismo que ya cuida
+# `video.TOPE_SEGUNDOS`, y conviene que este escrito de los dos lados.
+PESO_MAXIMO = 300 * 1024 * 1024
+
+
+def subir_los_bytes(contenedor: str, video: Path, token: str) -> None:
+    """Le manda el mp4 a Meta, en una sola pieza.
+
+    En una pieza y no en partes porque un reel nuestro pesa un par de megas:
+    partirlo seria maquinaria para un problema que no tenemos. El protocolo lo
+    permite igual, y por eso van `offset` y `file_size`.
+    """
+    video = Path(video)
+    if not video.is_file():
+        raise InstagramError("no encuentro el video %s" % video)
+    pesa = video.stat().st_size
+    if pesa > PESO_MAXIMO:
+        raise InstagramError("el reel pesa %.0f MB y el tope de Instagram son %d"
+                             % (pesa / 1e6, PESO_MAXIMO // (1024 * 1024)))
+    try:
+        with open(video, "rb") as f:
+            r = requests.post(
+                "%s/%s" % (SUBIDA, contenedor), data=f, timeout=600,
+                headers={"Authorization": "OAuth %s" % token,
+                         "offset": "0",
+                         "file_size": str(pesa),
+                         "Content-Type": "application/octet-stream"})
+    except requests.RequestException as e:
+        raise InstagramError("no se pudo subir el video: %s" % e)
+    if r.status_code >= 400:
+        raise InstagramError("Instagram rechazo el video (%d): %s"
+                             % (r.status_code, r.text[:300]))
+
+
+def publicar_reel(pagina: Pagina, caption: str, video: Path,
+                  cuenta: Optional[str] = None, espera: int = ESPERA_REEL,
+                  paso: int = PASO, compartir: bool = True) -> str:
+    """Publica ese mp4 como reel y devuelve el id.
+
+    `compartir` lo deja ademas en el feed del perfil, no solo en la pestania
+    de reels: un reel que no aparece en el perfil lo ve mucha menos gente.
+    """
+    video = Path(video)
+    ig = cuenta or cuenta_vinculada(pagina).get("id")
+    if not ig:
+        raise InstagramError("La página no tiene ninguna cuenta de Instagram vinculada")
+    token = pagina.fb_token or ""
+    contenedor = _pedir("%s/media" % ig, media_type="REELS",
+                        upload_type="resumable", caption=caption,
+                        share_to_feed="true" if compartir else "false",
+                        access_token=token).get("id")
+    if not contenedor:
+        raise InstagramError("Instagram no devolvió el contenedor")
+    subir_los_bytes(str(contenedor), video, token)
+    _esperar_listo(str(contenedor), token, espera, paso)
+    publicado = _pedir("%s/media_publish" % ig, creation_id=contenedor,
+                       access_token=token).get("id")
+    if not publicado:
+        raise InstagramError("Instagram no devolvió el id del reel")
+    return str(publicado)
+
+
 def publicar_las_dos(pagina: Pagina, caption: str, imagen: Path,
                      espera: int = ESPERA, paso: int = PASO) -> dict:
     """Publica en Facebook y después en Instagram, con la foto ya subida.
