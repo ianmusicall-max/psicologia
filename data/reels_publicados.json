@@ -3,9 +3,9 @@
   "video": "ultimo.mp4",
   "titulo": "Lo que se pierde y lo que se queda",
   "salidas": {
-   "instagram": "error: Instagram rechazo el video (400): {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}"
+   "instagram": "https://www.instagram.com/reel/18072835880763292"
   },
   "publicado": true,
-  "cuando": "2026-10-24T11:13:09"
+  "cuando": "2026-10-24T11:37:13"
  }
 }
