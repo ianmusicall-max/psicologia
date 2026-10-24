@@ -40,20 +40,25 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, frases, traducir, video  # noqa: E402
+from src import config, fondos, frases, traducir, video  # noqa: E402
 
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
-def elegir_fondo(donde: str, semilla: str) -> list:
+def elegir_fondo(donde: str, semilla: str, tema: str = "") -> list:
     """Los clips del fondo, en el orden en que se van a turnar.
 
     Varios y no uno: la referencia que mando el usuario va cortando entre
     clips cada pocos segundos, y es buena parte de por que no se hace larga.
 
-    El orden sale de una semilla que es el id de la frase y no del azar: asi
-    volver a armar el mismo reel da el mismo video -el que aprobaste es el que
-    sale- y dos frases seguidas no arrancan con el mismo clip.
+    **Los que mejor le van al capitulo van primero** (`src/fondos.py`): el
+    reel cambia de clip cada pocos segundos, asi que los primeros son los que
+    mas se ven. Un capitulo de duelo arranca con la lluvia y uno de cambio con
+    el mar.
+
+    El desempate sale de una semilla que es el id de la frase y no del azar:
+    asi volver a armar el mismo reel da el mismo video -el que aprobaste es el
+    que sale- y dos frases seguidas no arrancan con el mismo clip.
     """
     ruta = Path(donde)
     if ruta.is_file():
@@ -63,8 +68,7 @@ def elegir_fondo(donde: str, semilla: str) -> list:
     clips = sorted(x for x in ruta.iterdir() if x.suffix.lower() in CLIPS)
     if not clips:
         raise SystemExit("En %s no hay ningun video (%s)" % (ruta, ", ".join(CLIPS)))
-    random.Random(semilla).shuffle(clips)
-    return clips
+    return fondos.ordenar(clips, tema, semilla)
 
 
 # Lo que puede ser una pista. Varias y no solo `.m4a` porque la musica que
@@ -205,7 +209,9 @@ def main(argv=None) -> int:
             return 2
         tema = frases.tema_de(temas, frase)
         unidades = video.guion(frase)
-    fondo = elegir_fondo(args.fondo, frase.id) if args.fondo else None
+    # `tema.tema` y no `tema.titulo`: la clave del capitulo es la que figura
+    # en `fondos.QUE_BUSCA`.
+    fondo = elegir_fondo(args.fondo, frase.id, tema.tema) if args.fondo else None
     cuerpo, _ = video.reparto(unidades)
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,

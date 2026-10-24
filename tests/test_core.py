@@ -22,7 +22,7 @@ from unittest import mock
 from PIL import Image, ImageDraw
 
 from src import (bot, config, diseno, entorno, facebook, frases, instagram, libro,
-                 medir, parrilla, telegram, traducir, video)
+                 fondos, medir, parrilla, telegram, traducir, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -2955,6 +2955,73 @@ class TestPublicarUnReelEnInstagram(unittest.TestCase):
                     mock.patch.object(instagram, "publicar_reel",
                                       side_effect=AssertionError("publico")):
                 self.assertEqual(publicar.main([str(mp4), "--ver"]), 0)
+
+
+class TestElFondoQueLeVaAlCapitulo(unittest.TestCase):
+    """Los clips se eligen por lo que SE VE en ellos. El reel cambia de clip
+    cada pocos segundos, asi que los primeros son los que mas se ven."""
+
+    CLIPS = [Path("lluvia-arbol-gris.mp4"), Path("bosque-niebla-ventanal.mp4"),
+             Path("lluvia-ciudad-vidrio.mp4"), Path("mar-ventana-barco.mp4")]
+
+    def test_el_catalogo_del_repo_se_lee_y_cubre_los_clips_que_hay(self):
+        cat = fondos.catalogo()
+        self.assertTrue(cat, "no se pudo leer data/fondos/catalogo.yaml")
+        carpeta = ROOT / "data" / "fondos"
+        hay = {x.name for x in carpeta.glob("*.mp4")}
+        # Un clip sin catalogar se usa igual, pero los que estan en el repo
+        # hoy estan todos: si alguno falta, es que se subio y nadie lo miro.
+        self.assertEqual(hay - set(cat), set(), "clips sin catalogar")
+        # Y al reves: una entrada que apunta a un archivo que no esta es un
+        # catalogo que quedo viejo.
+        self.assertEqual(set(cat) - hay, set(), "entradas sin archivo")
+
+    def test_cada_capitulo_del_banco_puede_pedir_etiquetas(self):
+        # No hace falta que TODOS tengan, pero el que tiene una linea escrita
+        # tiene que corresponder a un capitulo que existe: una clave mal
+        # escrita no se usaria nunca y nada avisaria.
+        claves = {t.tema for t in TEMAS}
+        sobran = set(fondos.QUE_BUSCA) - claves
+        # `tristeza` no es un capitulo del banco; se deja por si se agrega.
+        self.assertEqual(sobran, {"tristeza"}, sobran)
+
+    def test_el_duelo_arranca_con_lluvia_y_el_cambio_con_mar(self):
+        duelo = fondos.ordenar(self.CLIPS, "duelo", "due-01")
+        cambio = fondos.ordenar(self.CLIPS, "cambio", "cam-01")
+        self.assertIn("lluvia", duelo[0].stem)
+        self.assertIn("mar", cambio[0].stem)
+
+    def test_ninguno_se_descarta_por_no_coincidir(self):
+        # Quedarse sin fondo por no encontrar la etiqueta exacta seria peor
+        # que usar un paisaje cualquiera: son todos de la misma familia.
+        for tema in ("duelo", "dinero", "inventado", ""):
+            self.assertEqual(len(fondos.ordenar(self.CLIPS, tema, "x")),
+                             len(self.CLIPS), tema)
+
+    def test_el_orden_no_cambia_entre_corridas(self):
+        # El reel que aprobaste es el que sale.
+        uno = fondos.ordenar(self.CLIPS, "duelo", "due-01")
+        otro = fondos.ordenar(self.CLIPS, "duelo", "due-01")
+        self.assertEqual(uno, otro)
+
+    def test_dos_frases_distintas_no_arrancan_siempre_igual(self):
+        # Con un tema sin etiquetas, lo unico que ordena es la semilla.
+        ordenes = {tuple(c.stem for c in fondos.ordenar(self.CLIPS, "", "f%d" % i))
+                   for i in range(8)}
+        self.assertGreater(len(ordenes), 1)
+
+    def test_un_apaisado_pierde_frente_a_un_vertical_equivalente(self):
+        # El reel es vertical: de uno apaisado se usa una franja del centro.
+        cat = {"v.mp4": {"etiquetas": ["mar"]},
+               "h.mp4": {"etiquetas": ["mar"], "apaisado": True}}
+        self.assertGreater(fondos.puntaje("v.mp4", ["mar"], cat),
+                           fondos.puntaje("h.mp4", ["mar"], cat))
+
+    def test_sin_catalogo_el_reel_se_arma_igual(self):
+        # El catalogo ayuda a elegir mejor; no es un requisito.
+        self.assertEqual(fondos.catalogo(Path("/no/existe.yaml")), {})
+        self.assertEqual(len(fondos.ordenar(self.CLIPS, "duelo", "x", cat={})),
+                         len(self.CLIPS))
 
 
 class TestLaMusicaDelRepo(unittest.TestCase):

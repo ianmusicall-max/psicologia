@@ -1,0 +1,33 @@
+# Que hay en cada clip, para poder elegir el que acompaña al tema del reel.
+#
+# Las etiquetas describen lo que SE VE y lo que se siente, no el tema del
+# banco: un mismo clip sirve para varios capitulos, y atarlo a uno solo
+# desperdicia la mitad del archivo.
+#
+# Un clip que no este listado se puede usar igual, solo que sin etiquetas: va
+# al monton del que se elige cuando ninguno coincide. Asi se pueden subir
+# clips nuevos sin tener que tocar este archivo el mismo dia.
+#
+# Para agregar uno: el nombre del archivo y sus etiquetas. El nombre es
+# descriptivo a proposito -`lluvia-arbol-gris` y no `7681527`- porque es lo
+# primero que se lee al mirar la carpeta y al leer el log de una corrida.
+
+lluvia-arbol-gris.mp4:
+  que_es: Lluvia sobre un vidrio, un arbol pelado y cielo gris
+  etiquetas: [lluvia, ventana, gris, invierno, melancolia, quietud]
+
+bosque-niebla-ventanal.mp4:
+  que_es: Ventanal a un bosque con niebla, interior oscuro
+  etiquetas: [bosque, niebla, ventana, verde, interior, distancia]
+  # HORIZONTAL (3840x2160). El reel es vertical, asi que de este se usa una
+  # franja del centro y se pierden los costados. Entra igual, pero si hay uno
+  # vertical que sirva, mejor ese.
+  apaisado: true
+
+lluvia-ciudad-vidrio.mp4:
+  que_es: Lluvia sobre un vidrio con la ciudad borrosa detras
+  etiquetas: [lluvia, ventana, ciudad, gris, soledad, encierro]
+
+mar-ventana-barco.mp4:
+  que_es: Ventana de un barco, el mar y la costa a lo lejos
+  etiquetas: [mar, ventana, viaje, azul, horizonte, partida]

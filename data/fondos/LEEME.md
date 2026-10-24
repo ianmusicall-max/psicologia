@@ -25,6 +25,24 @@ Esta carpeta es la unica de `data/` que se versiona a proposito (ver el
 `.gitignore`). Son unos megas cada uno, no cambian nunca, y es lo unico que
 hace que el reel salga sobre paisajes y no sobre el papel de la marca.
 
+## Como se elige cual va en cada reel
+
+Los clips se eligen por lo que SE VE en ellos. `catalogo.yaml` dice que hay en
+cada uno -lluvia, mar, niebla- y `src/fondos.py` dice que busca cada capitulo:
+uno de duelo arranca con la lluvia, uno de cambio con el mar.
+
+Importa que los primeros sean los que mejor van, porque el reel cambia de clip
+cada cuatro segundos y los primeros son los que mas se ven.
+
+**Un clip sin catalogar se usa igual**, solo que sin preferencia. Asi se puede
+subir uno nuevo sin tener que tocar el catalogo el mismo dia. Cuando lo
+agregues, avisame y lo miro: necesito VER el clip para saber que etiquetas
+ponerle.
+
+El nombre del archivo es descriptivo a proposito -`lluvia-arbol-gris` y no
+`7681527`- porque es lo primero que se lee al mirar la carpeta y al leer el
+log de una corrida.
+
 ## Que clips sirven
 
 - **Verticales.** El reel es 1080x1920. Uno horizontal entra igual pero se
