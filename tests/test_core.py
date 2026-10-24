@@ -3213,9 +3213,12 @@ class TestElReelDesdeGithub(unittest.TestCase):
     def test_guardar_el_reel_pisa_siempre_el_mismo_archivo(self):
         # Un mp4 por cada reel armado dejaria el repositorio inmanejable en
         # una semana: son 13 MB cada uno.
+        # Se mira que el nombre sea FIJO, no cuantas veces aparece: contar
+        # ocurrencias se rompe con solo agregar un comentario.
         texto = self.FLUJO.read_text(encoding="utf-8")
-        self.assertIn("data/reels/ultimo.mp4", texto)
-        self.assertEqual(texto.count("data/reels/ultimo.mp4"), 2)
+        self.assertIn("cp \"$ULTIMO\" data/reels/ultimo.mp4", texto)
+        for variable in ("github.run_id", "github.run_number", "date +"):
+            self.assertNotIn("data/reels/%s" % variable, texto)
 
     def test_el_reel_guardado_puede_versionarse(self):
         # `data/*` esta excluido entero, asi que sin la excepcion el `git add`
