@@ -164,8 +164,20 @@ def probar(donde=PLATAFORMAS) -> dict:
                                                   % (c.get("error") or "sin cuenta vinculada")))
     if "youtube" in donde:
         try:
-            youtube.acceso()
-            estado["youtube"] = "el permiso anda"
+            permisos = youtube.permisos_del_token()
+            # Una lista vacia es «no se pudo saber», no «faltan todos»: si
+            # Google dejara de devolver los permisos, decir que faltan
+            # mandaria a renovar un token que esta bien.
+            falta = [p for p in youtube.PERMISOS
+                     if permisos and p not in permisos]
+            if falta:
+                estado["youtube"] = (
+                    "error: el permiso no alcanza para la lista «%s». Corre "
+                    "scripts/youtube_token.py y actualiza YT_REFRESH_TOKEN"
+                    % youtube.PLAYLIST)
+            else:
+                estado["youtube"] = ("el permiso anda%s"
+                                     % (" y llega a la lista" if permisos else ""))
         except Exception as e:                            # noqa: BLE001
             estado["youtube"] = "error: %s" % e
     return estado

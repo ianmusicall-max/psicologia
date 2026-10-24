@@ -120,6 +120,25 @@ def acceso(espera: int = 30) -> str:
     propósito: dura una hora, así que un archivo con uno viejo sería una
     credencial tirada que además no sirve.
     """
+    return _refrescar(espera)[0]
+
+
+def permisos_del_token(espera: int = 30) -> List[str]:
+    """Qué permisos trae el token guardado.
+
+    Hace falta porque un token que anda no es un token que alcance: el de
+    subir no deja meter el video en la lista, y la diferencia solo se ve
+    cuando el video ya está publicado y fuera de la lista.
+
+    Google devuelve `scope` al refrescar. Si algún día no lo devolviera, esto
+    da [] y quien pregunte NO debe leer eso como «faltan todos»: es «no se
+    pudo saber».
+    """
+    return _refrescar(espera)[1]
+
+
+def _refrescar(espera: int = 30):
+    """(token de acceso, permisos que trae)."""
     falta = faltan()
     if falta:
         raise YoutubeError("falta %s en el .env. Corré scripts/youtube_token.py"
@@ -137,7 +156,7 @@ def acceso(espera: int = 30) -> str:
     if not token:
         raise YoutubeError(_pista(datos.get("error_description")
                                  or datos.get("error") or r.text[:300]))
-    return token
+    return token, (datos.get("scope") or "").split()
 
 
 def _como_json(r) -> Dict:

@@ -4112,7 +4112,8 @@ class TestComprobarLasCredencialesSinPublicar(unittest.TestCase):
                                return_value={"id": "1", "name": "La página"}), \
                 mock.patch.object(instagram, "cuenta_vinculada",
                                   return_value={"usuario": "lapagina"}), \
-                mock.patch.object(youtube, "acceso", return_value="tok"), \
+                mock.patch.object(youtube, "permisos_del_token",
+                                  return_value=list(youtube.PERMISOS)), \
                 mock.patch.object(facebook, "publicar_reel") as fb, \
                 mock.patch.object(instagram, "publicar_reel") as ig, \
                 mock.patch.object(youtube, "publicar_short") as yt:
@@ -4130,7 +4131,7 @@ class TestComprobarLasCredencialesSinPublicar(unittest.TestCase):
                                return_value={"id": "1", "name": "La página"}), \
                 mock.patch.object(instagram, "cuenta_vinculada",
                                   return_value={"usuario": "lapagina"}), \
-                mock.patch.object(youtube, "acceso",
+                mock.patch.object(youtube, "permisos_del_token",
                                   side_effect=youtube.YoutubeError("falta YT_CLIENT_ID")):
             estado = rdd.probar()
         self.assertTrue(estado["youtube"].startswith("error:"))
@@ -4244,6 +4245,58 @@ class TestLaListaDeReproduccion(unittest.TestCase):
                 if isinstance(nodo, ast.Constant) and nodo.value == self.yt.PLAYLIST:
                     cuantas += 1
         self.assertEqual(cuantas, 1, "el nombre de la lista está escrito más de una vez")
+
+
+class TestQueElPermisoAlcanceParaLaLista(unittest.TestCase):
+    """Un token que anda no es un token que alcance: el de subir no deja meter
+    el video en la lista, y la diferencia solo se ve cuando el video ya está
+    publicado y fuera de la lista."""
+
+    def _respuesta(self, scope):
+        datos = {"access_token": "tok"}
+        if scope is not None:
+            datos["scope"] = scope
+        return _Respuesta(200, datos)
+
+    def _claves(self):
+        from src import youtube
+        return mock.patch.dict(os.environ, {
+            youtube.CLIENTE: "cid", youtube.SECRETO: "sec",
+            youtube.REFRESCO: "ref"})
+
+    def test_dice_que_permisos_trae(self):
+        from src import youtube
+        with self._claves(), mock.patch.object(
+                youtube.requests, "post",
+                return_value=self._respuesta(" ".join(youtube.PERMISOS))):
+            self.assertEqual(youtube.permisos_del_token(), list(youtube.PERMISOS))
+
+    def test_el_que_solo_puede_subir_se_nota(self):
+        from src import youtube
+        rdd = _script("rdd4", "reel_del_dia.py")
+        with self._claves(), mock.patch.object(
+                youtube, "permisos_del_token", return_value=[youtube.PERMISO]):
+            estado = rdd.probar(["youtube"])
+        self.assertTrue(estado["youtube"].startswith("error:"))
+        self.assertIn("youtube_token.py", estado["youtube"])
+
+    def test_sin_scope_no_se_acusa_de_nada(self):
+        # Si Google dejara de devolver los permisos, decir que faltan mandaría
+        # a renovar un token que está bien.
+        from src import youtube
+        rdd = _script("rdd5", "reel_del_dia.py")
+        with self._claves(), mock.patch.object(youtube, "permisos_del_token",
+                                               return_value=[]):
+            estado = rdd.probar(["youtube"])
+        self.assertFalse(estado["youtube"].startswith("error:"))
+
+    def test_acceso_sigue_devolviendo_el_token_y_nada_mas(self):
+        # Lo usan todos los que suben: si devolviera la tupla, mandarían una
+        # lista como cabecera de autorización.
+        from src import youtube
+        with self._claves(), mock.patch.object(youtube.requests, "post",
+                                               return_value=self._respuesta("x")):
+            self.assertEqual(youtube.acceso(), "tok")
 
 
 if __name__ == "__main__":
