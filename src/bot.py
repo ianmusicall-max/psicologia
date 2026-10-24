@@ -505,10 +505,22 @@ def aprobar_el_reel(arg: str) -> None:
         telegram.enviar("Ese botón no lo entiendo.")
         return
     diario.anotar_decision(llave, respuesta)
-    telegram.enviar("Aprobado. Lo publica el que armó el reel: los enlaces te "
-                    "llegan acá en un rato."
-                    if respuesta == "ok" else
-                    "Descartado: el reel no sale a ningún lado. Queda guardado.")
+    if respuesta == "no":
+        telegram.enviar("Descartado: el reel no sale a ningún lado. "
+                        "Queda guardado.")
+        return
+    # Telegram entrega cada botón UNA sola vez, y este bot acaba de
+    # quedárselo. Si el reel lo armó el turno de GitHub, allá no hay forma de
+    # enterarse: la respuesta quedó escrita en ESTA máquina. Decirlo es lo
+    # único honesto, y además tiene arreglo -el botón sigue en el chat-.
+    if diario.corriendo():
+        telegram.enviar("Aprobado. Lo publica el que armó el reel: los "
+                        "enlaces te llegan acá en un rato.")
+        return
+    telegram.enviar("Anotado, pero acá no hay ninguna corrida esperando. Si "
+                    "este reel lo armó el turno de las 18 en GitHub, el botón "
+                    "se lo quedó este bot y el turno no se va a enterar: "
+                    "cortá el bot y apretá Publicar otra vez.")
 
 
 def saltar(frase_id: str, hoy: Optional[date] = None) -> None:

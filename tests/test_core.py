@@ -4576,6 +4576,23 @@ class TestNadaSaleSinQueLoApruebes(unittest.TestCase):
         # cualquier botón que el bot no reconociera.
         corre.assert_not_called()
 
+    def test_si_el_bot_se_queda_el_boton_de_un_reel_ajeno_lo_dice(self):
+        # Telegram entrega cada botón una sola vez. Si el reel lo armó el
+        # turno de GitHub, la respuesta queda escrita en la Mac y el turno no
+        # se entera nunca: un «Aprobado» a secas ahí sería una promesa falsa.
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(diario, "DECISION", Path(d) / "dec.json"), \
+                    mock.patch.object(diario, "corriendo", return_value=False), \
+                    mock.patch.object(bot.telegram, "enviar") as dice:
+                bot.aprobar_el_reel("ok:k9")
+            self.assertIn("no se va a enterar", dice.call_args[0][0])
+            with mock.patch.object(diario, "DECISION", Path(d) / "dec.json"), \
+                    mock.patch.object(diario, "corriendo", return_value=True), \
+                    mock.patch.object(bot.telegram, "enviar") as dice:
+                bot.aprobar_el_reel("ok:k9")
+            self.assertIn("Aprobado", dice.call_args[0][0])
+
     def test_el_turno_pide_permiso_salvo_que_le_digas_que_no(self):
         import yaml as _yaml
         d = _yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
