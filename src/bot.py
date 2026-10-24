@@ -37,10 +37,14 @@ from .config import Pagina
 # conviene enterarse antes de que el banco se termine, no el día que pasa.
 AVISAR_DIAS = 7
 
+# Lo que dice tiene que ser verdad, y desde que el turno de GitHub publica las
+# frases cada hora esto decia justo lo contrario: que las frases no salían
+# solas y que el video sí. Hoy es al revés, y el video es el único que
+# pregunta (pedido del 2026-10-24).
 BIENVENIDA = ("Soy el bot de la página. ¿Qué hago?\n\n"
-              "Las frases no salen solas: la que apruebes con Publicar y "
-              "nada más. La única que sí publica por su cuenta es «Armar y "
-              "publicar video», que es para lo que está.")
+              "Las frases salen solas, cada una en su hora de la parrilla. El "
+              "video es el único que te pregunta: se arma, te llega acá y "
+              "sale recién cuando aprietes Publicar.")
 
 
 def _de_mi(update: dict) -> bool:
@@ -330,7 +334,7 @@ def como_va_el_libro(pagina: Optional[Pagina] = None) -> str:
 
 
 def video(pagina: Optional[Pagina] = None) -> str:
-    """Arma el reel del día y lo publica en Facebook, Instagram y YouTube.
+    """Arma el reel del día y te lo manda para que lo apruebes.
 
     Es el MISMO camino que el turno de las 18 (`scripts/reel_del_dia.py`), no
     una copia: si cada uno hiciera lo suyo, el día que esto cambie se arregla
@@ -347,9 +351,13 @@ def video(pagina: Optional[Pagina] = None) -> str:
     if ya:
         donde = "\n".join("  %s: %s" % (c, d)
                           for c, d in (ya.get("salidas") or {}).items())
-        return ("Hoy ya salió el video: %s\n%s\n\nSi querés otro igual, se "
-                "dispara desde Actions con «Armar otro aunque hoy ya haya "
-                "salido»." % (ya.get("titulo") or "?", donde))
+        # Un reel que armaste y no aprobaste tambien queda anotado, y decir
+        # que «ya salió» seria mentir: no salió a ningún lado.
+        cabeza = ("Hoy ya salió el video: %s" if ya.get("publicado", True)
+                  else "Hoy ya armé un video y no salió: %s")
+        return ((cabeza % (ya.get("titulo") or "?")) + "\n%s\n\nSi querés "
+                "otro, se dispara desde Actions con «Armar otro aunque hoy ya "
+                "haya salido»." % donde)
     if diario.corriendo():
         return "Ya hay uno armándose. Tarda unos minutos; te aviso cuando esté."
 
@@ -357,16 +365,15 @@ def video(pagina: Optional[Pagina] = None) -> str:
     subprocess.Popen([sys.executable, str(guion)], cwd=str(guion.parent.parent),
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                      start_new_session=True)
-    return ("Voy a armar el video y publicarlo en Facebook, Instagram y "
-            "YouTube. Tarda unos minutos: te llega el video y después los "
-            "tres enlaces.")
+    return ("Voy a armar el video. Tarda unos minutos: te llega acá con dos "
+            "botones y no sale a ningún lado hasta que aprietes Publicar.")
 
 
 # clave: (etiqueta del botón, cómo se nombra en una frase, qué contesta, tarda)
 # El orden es el del menú: primero la que se usa todos los días.
 TAREAS = {
     "siguiente": ("Ver la que toca", "la que toca", mostrar_siguiente, False),
-    "video": ("Armar y publicar video", "el video del día", video, False),
+    "video": ("Armar el video", "el video del día", video, False),
     "hoy": ("Qué sale hoy", "la parrilla de hoy", hoy, False),
     "estado": ("Qué queda", "lo que queda", estado, False),
     "historial": ("Ya salieron", "las últimas que salieron", historial, False),
@@ -482,6 +489,28 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
     return post_id
 
 
+def aprobar_el_reel(arg: str) -> None:
+    """Anota tu respuesta al reel. NO publica, y eso es a propósito.
+
+    El que publica es el que armó el reel -el turno de las 18 en GitHub, o el
+    proceso que largó el botón del menú-, porque es el único que tiene el mp4.
+    Este bot puede estar en otra máquina, así que lo único que hace es dejar
+    la respuesta donde el que espera la lee (`diario.anotar_decision`).
+
+    Hace falta porque Telegram entrega cada botón UNA sola vez: si el bot está
+    corriendo, el callback se lo lleva él y el que espera no lo ve nunca.
+    """
+    respuesta, _, llave = (arg or "").partition(":")
+    if not llave or respuesta not in ("ok", "no"):
+        telegram.enviar("Ese botón no lo entiendo.")
+        return
+    diario.anotar_decision(llave, respuesta)
+    telegram.enviar("Aprobado. Lo publica el que armó el reel: los enlaces te "
+                    "llegan acá en un rato."
+                    if respuesta == "ok" else
+                    "Descartado: el reel no sale a ningún lado. Queda guardado.")
+
+
 def saltar(frase_id: str, hoy: Optional[date] = None) -> None:
     """La descarta sin publicarla: queda anotada para que no vuelva a tocar.
 
@@ -509,6 +538,8 @@ def atender(update: dict, pagina: Pagina, publicar_fn: Optional[Callable] = None
         if accion == "publicar":
             frase_id, _, estilo = arg.partition(":")
             publicar(pagina, frase_id, publicar_fn, estilo=estilo or None)
+        elif accion == "reel":
+            aprobar_el_reel(arg)
         elif accion == "saltar":
             saltar(arg)
             mostrar_siguiente(pagina)

@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
-"""Arma el reel del dia y lo publica en Facebook, Instagram y YouTube.
+"""Arma el reel del dia, te lo manda para que lo apruebes, y lo publica.
 
-    reel_del_dia.py                  arma uno y lo publica en las tres
+    reel_del_dia.py                  arma uno, te lo manda y espera tu boton
     reel_del_dia.py --ver            dice que haria, sin armar ni publicar
     reel_del_dia.py --video X.mp4    publica uno que ya esta armado
     reel_del_dia.py --sin-youtube    saltea una plataforma
+    reel_del_dia.py --sin-aprobar    publica sin preguntarte (como era antes)
+
+**NADA SE PUBLICA SIN QUE LO APRUEBES.** El reel se arma, llega al chat con
+dos botones y recien sale cuando apretas Publicar. Lo pidio el usuario el
+2026-10-24: «antes de publicar el reel muestramelo en el bot y yo lo
+aprobare». Las frases siguen saliendo solas, que es otra decision y no se
+toco.
+
+Si no contestas, el reel NO sale y queda armado: publicarlo mas tarde no
+vuelve a pagar la voz.
 
 Es UN solo camino con dos disparadores: el turno de las 18 y el boton del bot.
 Si cada uno hiciera lo suyo, el dia que esto cambie se arregla uno y el otro
@@ -90,6 +100,33 @@ def textos_de(ruta: Path):
     pagina = config.cargar()
     return (frases.caption(frase, tema, pagina), ficha["titulo"],
             ficha.get("descripcion") or "", ficha.get("etiquetas") or [])
+
+
+def pedir_permiso(ruta: Path, caption: str, titulo: str, donde=PLATAFORMAS,
+                  espera: int = diario.ESPERA_APROBACION,
+                  paso: int = diario.PASO_APROBACION) -> str:
+    """Manda el video al chat con los dos botones y espera. "ok", "no" o "".
+
+    El pie lleva el caption ENTERO -es lo que se va a publicar, y aprobar algo
+    que no se ve no es aprobar- y la pregunta va ARRIBA, porque Telegram
+    recorta el pie de un video a 1024 caracteres y lo que se corta es el
+    final.
+    """
+    from src import telegram
+    llave = diario.llave(ruta)
+    pie = ("¿Publico este reel en %s?\n\n«%s»\n\n%s"
+           % (_y(list(donde)), titulo, caption))
+    telegram.enviar_video(ruta, pie, botones=[[
+        ("Publicar", "reel:ok:%s" % llave),
+        ("Descartar", "reel:no:%s" % llave)]])
+    return diario.esperar_decision(llave, espera, paso)
+
+
+def _y(cosas: list) -> str:
+    """facebook, instagram y youtube."""
+    if len(cosas) <= 1:
+        return "".join(cosas)
+    return "%s y %s" % (", ".join(cosas[:-1]), cosas[-1])
 
 
 def publicar(ruta: Path, caption: str, titulo: str, descripcion: str,
@@ -201,6 +238,8 @@ def main(argv=None) -> int:
                     help="comprobar las credenciales de las tres. No publica")
     ap.add_argument("--otra-vez", action="store_true",
                     help="armar otro aunque hoy ya haya salido uno")
+    ap.add_argument("--sin-aprobar", action="store_true",
+                    help="publicar sin pedirte permiso (como era antes)")
     for cual in PLATAFORMAS:
         ap.add_argument("--sin-%s" % cual, action="store_true",
                         help="no publicar en %s" % cual)
@@ -232,6 +271,9 @@ def main(argv=None) -> int:
         print("Fondo: %s" % ("los clips de data/fondos" if hay_clips()
                              else "el papel de la marca (no hay clips)"))
         print("Lo publicaria en: %s" % ", ".join(donde))
+        print("Antes te lo mandaria al chat para que lo apruebes."
+              if not args.sin_aprobar else
+              "Lo publicaria sin pedirte permiso (--sin-aprobar).")
         print("Con --ver no hice nada.")
         return 0
 
@@ -278,6 +320,33 @@ def _trabajar(args, donde) -> int:
         print("No pude armar el texto: %s" % e)
         _avisar("El reel se armo pero no pude armar su texto: %s" % e)
         return 1
+
+    # Entre armar y publicar: el reel ya existe y todavia no salio a ningun
+    # lado. Es el unico momento en que se puede descartar sin borrar nada.
+    if not args.sin_aprobar:
+        try:
+            permiso = pedir_permiso(ruta, caption, titulo, donde)
+        except Exception as e:                            # noqa: BLE001
+            # Sin poder preguntarte, no se publica: es lo que se pidio. Y no
+            # se avisa por el mismo camino que acaba de fallar.
+            print("No pude pedirte permiso, asi que no publique nada: %s" % e)
+            return 1
+        if permiso != "ok":
+            texto = (("Descartado: el reel «%s» no sale a ningun lado."
+                      % titulo) if permiso == "no" else
+                     ("No me contestaste, asi que el reel «%s» no salio."
+                      % titulo))
+            texto += ("\nQuedo armado en %s: se publica desde Actions con "
+                      "video: %s, y la voz no se vuelve a pagar."
+                      % (ruta, ruta))
+            # Se anota aunque no haya salido: el segundo intento del turno no
+            # tiene que armar otro -y pagar la voz- por algo que ya miraste.
+            diario.anotar(ruta, titulo,
+                          {"aprobacion": "descartado" if permiso == "no"
+                           else "sin respuesta"}, publicado=False)
+            print(texto)
+            _avisar(texto)
+            return 0
 
     salidas = publicar(ruta, caption, titulo, descripcion, etiquetas, donde)
     # Se anota ANTES de avisar: si el aviso falla, lo que no puede perderse es

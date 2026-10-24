@@ -1,4 +1,5 @@
-"""La memoria del reel del dia: que salio hoy y si hay una corrida en curso.
+"""La memoria del reel del dia: que salio hoy, si hay una corrida en curso y
+que contestaste cuando se te pidio permiso.
 
 Vive en `src/` y no dentro del script porque lo preguntan DOS: el script que
 arma y publica, y el boton del bot, que necesita saber si ya hay una corrida
@@ -24,6 +25,16 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SALIDOS = ROOT / "data" / "reels_publicados.json"
 CANDADO = ROOT / "data" / "reel_del_dia.lock"
+# Lo que contestaste, cuando la respuesta llega por el bot y no por Telegram.
+# Ver `esperar_decision`: son DOS puertas para la misma respuesta.
+DECISION = ROOT / "data" / "reel_decision.json"
+
+# Cuanto se espera tu respuesta antes de dejar el reel sin publicar, y cada
+# cuanto se vuelve a preguntar. Dos horas porque el turno es a las 18 y la
+# respuesta puede tardar lo que tarde una cena; el tope de una corrida de
+# GitHub son seis, asi que esto entra con margen.
+ESPERA_APROBACION = 2 * 60 * 60
+PASO_APROBACION = 10
 
 # A partir de cuanto un candado es basura y no una corrida. Un reel tarda unos
 # minutos; media hora es que el proceso murio sin soltarlo -lo mato la maquina,
@@ -55,17 +66,23 @@ def ya_salio_hoy(dia: Optional[date] = None,
 
 
 def anotar(ruta: Path, titulo: str, salidas: dict, dia: Optional[date] = None,
-           registro: Optional[Path] = None) -> Path:
+           registro: Optional[Path] = None, publicado: bool = True) -> Path:
     """Anota el reel del dia. RELEE antes de escribir, como los demas.
 
     Dos corridas pueden solaparse -el boton y el turno- y el que guarde ultimo
     con una copia vieja en la mano le borraria al otro el dia que acaba de
     anotar, que es justo lo que evita armar dos.
+
+    `publicado=False` es el reel que se armo y NO salio -lo descartaste o no
+    contestaste-. Se anota igual, y eso es a proposito: el segundo intento del
+    turno no tiene que armar otro y pagar la voz de nuevo por algo que ya
+    miraste. Para que salga uno nuevo hay que pedirlo con `--otra-vez`.
     """
     ruta_r = Path(registro or SALIDOS)
     datos = _leer(ruta_r)
     datos[(dia or date.today()).isoformat()] = {
         "video": Path(ruta).name, "titulo": titulo, "salidas": salidas,
+        "publicado": bool(publicado),
         "cuando": datetime.now().isoformat(timespec="seconds")}
     ruta_r.parent.mkdir(parents=True, exist_ok=True)
     tmp = ruta_r.with_suffix(".parcial")
@@ -73,6 +90,142 @@ def anotar(ruta: Path, titulo: str, salidas: dict, dia: Optional[date] = None,
                    encoding="utf-8")
     tmp.replace(ruta_r)
     return ruta_r
+
+
+# ---------------------------------------------------------------------------
+# La aprobacion del reel. Pedido el 2026-10-24: «antes de publicar el reel
+# muestramelo en el bot y yo lo aprobare».
+#
+# **El que espera es el que armo el reel**, y no el bot: es el unico que tiene
+# el mp4 a mano. El turno de las 18 corre en GitHub y el boton del bot corre
+# en la Mac, asi que la espera tiene que funcionar en los dos lados.
+#
+# De ahi que la respuesta se busque por DOS puertas:
+#
+# 1. **Telegram**, preguntando sin confirmar (`telegram.mirar`). Es la que usa
+#    el turno de GitHub, donde no hay ningun bot escuchando.
+# 2. **El archivo**, que escribe el bot cuando el boton le llega a el. Si el
+#    bot esta corriendo en la Mac, el callback se lo lleva el -Telegram lo
+#    entrega una sola vez- y el turno nunca lo veria.
+#
+# La llave distingue un reel de otro: sin eso, un «Publicar» de ayer que
+# quedo en la cola publicaria el de hoy sin que nadie lo haya mirado.
+# ---------------------------------------------------------------------------
+
+
+def llave(ruta: Path, cuando: Optional[datetime] = None) -> str:
+    """Una llave corta y distinta para cada pedido de permiso.
+
+    Corta porque viaja en `callback_data`, que no admite mas de 64 bytes, y
+    ahi tambien va el prefijo y la respuesta.
+    """
+    import hashlib
+    sello = (cuando or datetime.now()).isoformat(timespec="seconds")
+    return hashlib.sha1(("%s|%s" % (Path(ruta).name, sello)).encode()).hexdigest()[:10]
+
+
+def anotar_decision(llave_: str, respuesta: str,
+                    archivo: Optional[Path] = None) -> Path:
+    """Guarda tu respuesta. La escribe el bot; la lee el que esta esperando."""
+    ruta = Path(archivo or DECISION)
+    datos = {}
+    if ruta.is_file():
+        try:
+            datos = json.loads(ruta.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            datos = {}
+    if not isinstance(datos, dict):
+        datos = {}
+    datos[llave_] = {"respuesta": respuesta,
+                     "cuando": datetime.now().isoformat(timespec="seconds")}
+    # Solo hace falta la ultima: sin tope, el archivo crece para siempre.
+    if len(datos) > 20:
+        datos = dict(sorted(datos.items(),
+                            key=lambda kv: kv[1].get("cuando") or "")[-20:])
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    tmp = ruta.with_suffix(".parcial")
+    tmp.write_text(json.dumps(datos, ensure_ascii=False, indent=1),
+                   encoding="utf-8")
+    tmp.replace(ruta)
+    return ruta
+
+
+def decision_guardada(llave_: str, archivo: Optional[Path] = None) -> str:
+    """Tu respuesta a ese pedido, o "" si todavia no contestaste."""
+    ruta = Path(archivo or DECISION)
+    if not ruta.is_file():
+        return ""
+    try:
+        datos = json.loads(ruta.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return ""
+    if not isinstance(datos, dict):
+        return ""
+    return ((datos.get(llave_) or {}).get("respuesta") or "") if llave_ else ""
+
+
+def decision_en(novedades, llave_: str) -> str:
+    """La respuesta que venga en lo que mando Telegram, o "".
+
+    Mira el `callback_data` del boton: `reel:ok:<llave>` o `reel:no:<llave>`.
+    """
+    for u in novedades or []:
+        boton = (u or {}).get("callback_query") or {}
+        dato = boton.get("data") or ""
+        partes = dato.split(":")
+        if len(partes) == 3 and partes[0] == "reel" and partes[2] == llave_:
+            return partes[1]
+    return ""
+
+
+def latir(candado: Optional[Path] = None) -> None:
+    """Le refresca la fecha al candado: la corrida sigue viva.
+
+    `corriendo` descarta un candado de mas de `VIEJO` -un proceso que murio
+    sin soltarlo- y esperar tu respuesta puede tardar horas. Sin esto, a la
+    media hora el boton del bot creeria que no hay nada andando y largaria un
+    segundo reel, con su voz pagada de nuevo.
+    """
+    ruta = Path(candado or CANDADO)
+    if ruta.is_file():
+        ruta.touch()
+
+
+def esperar_decision(llave_: str, espera: int = ESPERA_APROBACION,
+                     paso: int = PASO_APROBACION,
+                     archivo: Optional[Path] = None,
+                     mirar=None, dormir=None,
+                     candado: Optional[Path] = None) -> str:
+    """Espera tu «Publicar» o tu «Descartar». Devuelve "ok", "no" o "".
+
+    El "" es que no contestaste en el plazo, y NO es lo mismo que «no»: el
+    reel queda armado y guardado, asi que se puede publicar despues sin
+    volver a pagar la voz.
+
+    Nunca revienta por Telegram: si la cola no se puede leer -se cayo la red,
+    el token quedo viejo- se sigue esperando por el archivo. Quedarse sin
+    publicar porque fallo UNA de las dos puertas seria perder el reel del dia
+    por algo que la otra puerta contesta igual.
+    """
+    import time
+    from src import telegram
+    mirar = mirar or telegram.mirar
+    dormir = dormir or time.sleep
+    hasta = time.time() + espera
+    while True:
+        guardada = decision_guardada(llave_, archivo)
+        if guardada:
+            return guardada
+        try:
+            r = decision_en(mirar(), llave_)
+        except Exception:                                 # noqa: BLE001
+            r = ""
+        if r:
+            return r
+        if time.time() >= hasta:
+            return ""
+        latir(candado)
+        dormir(paso)
 
 
 def _vive(pid: int) -> bool:

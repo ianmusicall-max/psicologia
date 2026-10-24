@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import re
+import time
 import shutil
 import subprocess
 import tempfile
@@ -4317,8 +4318,10 @@ class TestPublicarUnReelQueYaEstaArmado(unittest.TestCase):
             mp4 = Path(d) / "ultimo.mp4"
             mp4.write_bytes(b"v")
             youtube.guardar_ficha(mp4, "T", "D", ["#x"], frase=frase.id)
+            # `sin_aprobar` porque lo que se prueba acá es que no se arme
+            # nada: la aprobación tiene su propia clase de pruebas.
             args = argparse.Namespace(video=str(mp4), tema=None,
-                                      carpeta=str(Path(d)))
+                                      carpeta=str(Path(d)), sin_aprobar=True)
             with mock.patch.object(rdd, "armar") as armar, \
                     mock.patch.object(rdd, "publicar",
                                       return_value={"facebook": "f",
@@ -4333,6 +4336,20 @@ class TestPublicarUnReelQueYaEstaArmado(unittest.TestCase):
         # Se anota igual: lo publicado es el reel de hoy, y el turno de las 18
         # no tiene que mandar otro encima.
         anotar.assert_called_once()
+
+    def test_el_formulario_tiene_una_entrada_por_plataforma(self):
+        # Sin la de Facebook, reponer Instagram publicaba un segundo reel en
+        # Facebook. La lista sale de PLATAFORMAS: el dia que entre una cuarta,
+        # esto se pone en rojo y hay que agregarle su entrada.
+        import yaml as _yaml
+        rdd = _script("rddplat", "reel_del_dia.py")
+        d = _yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+        entradas = d[True]["workflow_dispatch"]["inputs"]
+        paso = [s for s in d["jobs"]["reel"]["steps"]
+                if "reel_del_dia.py" in (s.get("run") or "")][0]
+        for cual in rdd.PLATAFORMAS:
+            self.assertIn("sin_%s" % cual, entradas)
+            self.assertIn("--sin-%s" % cual, paso["run"])
 
     def test_el_formulario_de_actions_lo_puede_pedir(self):
         import yaml as _yaml
@@ -4367,6 +4384,220 @@ class TestPublicarUnReelQueYaEstaArmado(unittest.TestCase):
         caption, titulo, _descripcion, _etiquetas = rdd.textos_de(mp4)
         self.assertTrue(titulo)
         self.assertTrue(caption)
+
+
+class TestNadaSaleSinQueLoApruebes(unittest.TestCase):
+    """El reel se arma, llega al chat con dos botones y sale recién cuando
+    aprietas Publicar. Pedido 2026-10-24: «antes de publicar el reel
+    muestramelo en el bot y yo lo aprobare». Las frases NO cambiaron."""
+
+    FLUJO = ROOT / ".github" / "workflows" / "reel-diario.yml"
+
+    def _args(self, **extra):
+        base = dict(video="", tema=None, carpeta="", sin_aprobar=False)
+        base.update(extra)
+        return argparse.Namespace(**base)
+
+    def _reel(self, d):
+        """Un mp4 con su ficha, para que `textos_de` sepa de qué frase es."""
+        from src import youtube
+        mp4 = Path(d) / "ultimo.mp4"
+        mp4.write_bytes(b"v")
+        frase = frases.todas(frases.leer())[0]
+        youtube.guardar_ficha(mp4, "T", "D", ["#x"], frase=frase.id)
+        return mp4
+
+    def _correr(self, permiso, **extra):
+        """Corre el turno con esa respuesta tuya. Devuelve (publicar, anotar)."""
+        rdd = _script("rddap", "reel_del_dia.py")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = self._reel(d)
+            with mock.patch.object(rdd, "pedir_permiso",
+                                   return_value=permiso) as pide, \
+                    mock.patch.object(rdd, "publicar",
+                                      return_value={"facebook": "f"}) as pub, \
+                    mock.patch.object(rdd.diario, "anotar") as anotar, \
+                    mock.patch.object(rdd, "_avisar"):
+                rdd._trabajar(self._args(video=str(mp4), **extra),
+                              ["facebook", "instagram"])
+        return pide, pub, anotar
+
+    def test_con_tu_ok_recien_ahi_se_publica(self):
+        pide, pub, anotar = self._correr("ok")
+        pide.assert_called_once()
+        pub.assert_called_once()
+        self.assertTrue(anotar.call_args[1].get("publicado", True))
+
+    def test_descartado_no_sale_a_ningun_lado(self):
+        _pide, pub, anotar = self._correr("no")
+        pub.assert_not_called()
+        # Se anota igual: el segundo intento del turno no tiene que armar otro
+        # y pagar la voz de nuevo por algo que ya miraste.
+        self.assertFalse(anotar.call_args[1]["publicado"])
+        self.assertEqual(anotar.call_args[0][2], {"aprobacion": "descartado"})
+
+    def test_si_no_contestas_tampoco_sale(self):
+        _pide, pub, anotar = self._correr("")
+        pub.assert_not_called()
+        self.assertEqual(anotar.call_args[0][2], {"aprobacion": "sin respuesta"})
+
+    def test_sin_aprobar_publica_derecho(self):
+        # La forma vieja sigue estando, para una corrida a mano.
+        pide, pub, _anotar = self._correr("ok", sin_aprobar=True)
+        pide.assert_not_called()
+        pub.assert_called_once()
+
+    def test_si_no_se_te_puede_preguntar_no_se_publica(self):
+        # Sin Telegram no hay aprobación posible, y sin aprobación no sale:
+        # publicar «porque no pude preguntar» es justo lo que se pidió evitar.
+        rdd = _script("rddap2", "reel_del_dia.py")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = self._reel(d)
+            with mock.patch.object(rdd, "pedir_permiso",
+                                   side_effect=RuntimeError("sin token")), \
+                    mock.patch.object(rdd, "publicar") as pub:
+                salida = rdd._trabajar(self._args(video=str(mp4)), ["facebook"])
+        pub.assert_not_called()
+        self.assertEqual(salida, 1)
+
+    def test_el_video_llega_con_los_dos_botones_y_con_su_caption(self):
+        from src import telegram
+        rdd = _script("rddap3", "reel_del_dia.py")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = self._reel(d)
+            with mock.patch.object(telegram, "enviar_video") as manda, \
+                    mock.patch.object(rdd.diario, "esperar_decision",
+                                      return_value="ok"):
+                rdd.pedir_permiso(mp4, "el caption de verdad", "El título",
+                                  ["facebook", "youtube"])
+        pie = manda.call_args[0][1]
+        self.assertIn("el caption de verdad", pie)
+        # La pregunta va ARRIBA: Telegram recorta el pie a 1024 y corta el final.
+        self.assertTrue(pie.startswith("¿Publico este reel en facebook y youtube?"))
+        botones = manda.call_args[1]["botones"]
+        datos = [d for _texto, d in botones[0]]
+        self.assertEqual([x.split(":")[1] for x in datos], ["ok", "no"])
+        # La misma llave en los dos: es la que dice de qué reel se habla.
+        self.assertEqual(len({x.split(":")[2] for x in datos}), 1)
+
+    def test_la_llave_entra_en_un_boton_de_telegram(self):
+        # `callback_data` no admite más de 64 bytes, y ahí va todo.
+        from src import diario
+        dato = "reel:ok:%s" % diario.llave(Path("ultimo.mp4"))
+        self.assertLessEqual(len(dato.encode("utf-8")), 64)
+
+    def test_la_respuesta_entra_por_las_dos_puertas(self):
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            archivo = Path(d) / "dec.json"
+            # 1) por Telegram, que es la del turno de GitHub
+            self.assertEqual(
+                diario.esperar_decision(
+                    "abc", espera=5, archivo=archivo,
+                    mirar=lambda: [{"callback_query": {"data": "reel:ok:abc"}}],
+                    dormir=lambda s: None), "ok")
+            # 2) por el archivo, que es la del bot de la Mac
+            diario.anotar_decision("abc", "no", archivo)
+            self.assertEqual(
+                diario.esperar_decision("abc", espera=5, archivo=archivo,
+                                        mirar=lambda: [], dormir=lambda s: None),
+                "no")
+
+    def test_un_boton_de_otro_reel_no_cuenta(self):
+        # Sin la llave, un «Publicar» de ayer que quedó en la cola publicaría
+        # el reel de hoy sin que nadie lo haya mirado.
+        from src import diario
+        self.assertEqual(
+            diario.decision_en([{"callback_query": {"data": "reel:ok:deayer"}}],
+                               "dehoy"), "")
+
+    def test_telegram_caido_no_deja_el_reel_sin_poder_aprobarse(self):
+        # Si la cola no se puede leer se sigue esperando por el archivo:
+        # perder el reel del día porque falló UNA de las dos puertas sería
+        # perderlo por algo que la otra contesta igual.
+        from src import diario
+        def revienta():
+            raise RuntimeError("se cayó la red")
+        with tempfile.TemporaryDirectory() as d:
+            archivo = Path(d) / "dec.json"
+            diario.anotar_decision("abc", "ok", archivo)
+            self.assertEqual(
+                diario.esperar_decision("abc", espera=5, archivo=archivo,
+                                        mirar=revienta,
+                                        dormir=lambda s: None), "ok")
+
+    def test_mirar_no_se_queda_con_los_mensajes_del_bot(self):
+        # Telegram entrega cada mensaje UNA sola vez a quien lo confirma. Si el
+        # turno que espera confirmara, el bot de la Mac perdería todo lo que
+        # llegue mientras el turno espera.
+        from src import telegram
+        with tempfile.TemporaryDirectory() as d:
+            marca = Path(d) / "offset.json"
+            with mock.patch.object(telegram, "_llamar",
+                                   return_value=[{"update_id": 99}]) as llamar, \
+                    mock.patch.object(telegram, "_guardar_offset") as guarda:
+                telegram.mirar()
+            guarda.assert_not_called()
+            self.assertEqual(llamar.call_args[1]["offset"], 0)
+            self.assertFalse(marca.exists())
+
+    def test_la_espera_mantiene_vivo_el_candado(self):
+        # Esperar tu respuesta puede tardar horas, y `corriendo` descarta un
+        # candado de más de media hora: sin el latido, el botón del bot
+        # largaría un segundo reel en el medio de la espera.
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            candado = Path(d) / "x.lock"
+            candado.write_text("1", encoding="utf-8")
+            viejo = time.time() - 3600
+            os.utime(candado, (viejo, viejo))
+            diario.esperar_decision("nadie", espera=0.0001, paso=0,
+                                    archivo=Path(d) / "dec.json",
+                                    mirar=lambda: [], dormir=lambda s: None,
+                                    candado=candado)
+            diario.latir(candado)
+            self.assertGreater(candado.stat().st_mtime, viejo + 60)
+
+    def test_el_bot_anota_tu_respuesta_y_no_publica_el_mismo(self):
+        # El que publica es el que armó el reel: es el único que tiene el mp4.
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            archivo = Path(d) / "dec.json"
+            with mock.patch.object(diario, "DECISION", archivo), \
+                    mock.patch.object(bot.telegram, "chat", return_value="55"), \
+                    mock.patch.object(bot.telegram, "enviar"), \
+                    mock.patch.object(bot.telegram, "responder_boton"), \
+                    mock.patch.object(bot, "correr") as corre, \
+                    mock.patch.object(bot, "publicar") as publica:
+                bot.atender(_update(data="reel:ok:k1"), PAGINA)
+            self.assertEqual(diario.decision_guardada("k1", archivo), "ok")
+        publica.assert_not_called()
+        # Y no cae en el camino de las tareas del menú, que es donde caía
+        # cualquier botón que el bot no reconociera.
+        corre.assert_not_called()
+
+    def test_el_turno_pide_permiso_salvo_que_le_digas_que_no(self):
+        import yaml as _yaml
+        d = _yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+        self.assertIn("sin_aprobar", d[True]["workflow_dispatch"]["inputs"])
+        paso = [s for s in d["jobs"]["reel"]["steps"]
+                if "reel_del_dia.py" in (s.get("run") or "")][0]
+        # La bandera aparece SOLO dentro del `if` de la entrada: si estuviera
+        # suelta, el turno de las 18 publicaría sin preguntar.
+        for linea in paso["run"].splitlines():
+            if "--sin-aprobar" in linea:
+                self.assertIn("inputs.sin_aprobar", linea)
+        # Y el paso tiene que poder esperar más que la espera del script.
+        from src import diario
+        self.assertGreater(paso["timeout-minutes"] * 60,
+                           diario.ESPERA_APROBACION)
+
+    def test_la_bienvenida_no_miente_sobre_lo_que_sale_solo(self):
+        # Decía que las frases NO salían solas y que el video sí, y desde que
+        # el turno de GitHub publica cada hora es exactamente al revés.
+        self.assertIn("solas", bot.BIENVENIDA)
+        self.assertNotIn("no salen solas", bot.BIENVENIDA)
+        self.assertIn("Publicar", bot.BIENVENIDA)
 
 
 if __name__ == "__main__":

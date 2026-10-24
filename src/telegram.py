@@ -132,17 +132,27 @@ def enviar_foto(ruta: Path, pie: str = "", botones=None, destino: Optional[str] 
 TOPE_ARCHIVO = 50 * 1024 * 1024
 
 
-def enviar_video(ruta: Path, pie: str = "", destino: Optional[str] = None) -> dict:
-    """Manda un mp4 al chat. Es como se mira un reel sin bajar nada."""
+def enviar_video(ruta: Path, pie: str = "", botones=None,
+                 destino: Optional[str] = None) -> dict:
+    """Manda un mp4 al chat. Es como se mira un reel sin bajar nada.
+
+    Los botones van en el mismo mensaje del video, no en uno aparte: lo que se
+    aprueba es ESE video, y un teclado suelto debajo se puede confundir con el
+    del mensaje anterior.
+    """
     ruta = Path(ruta)
     pesa = ruta.stat().st_size
     if pesa > TOPE_ARCHIVO:
         raise TelegramError(
             "el video pesa %.0f MB y un bot no puede mandar mas de %d"
             % (pesa / 1e6, TOPE_ARCHIVO // (1024 * 1024)))
+    extra = {}
+    teclado = _teclado(botones)
+    if teclado:
+        extra["reply_markup"] = teclado
     return _llamar("sendVideo", archivo=ruta, campo="video",
                    chat_id=destino or chat(), caption=pie[:1024],
-                   supports_streaming=True)
+                   supports_streaming=True, **extra)
 
 
 def enviar_audio(ruta: Path, pie: str = "", destino: Optional[str] = None) -> dict:
@@ -238,3 +248,19 @@ def recoger(espera: int = 25, ruta: Optional[Path] = None) -> List[dict]:
     if novedades:
         _guardar_offset(max(u["update_id"] for u in novedades) + 1, ruta)
     return novedades
+
+
+def mirar(cuantas: int = 100) -> List[dict]:
+    """Lo que hay en la cola, SIN confirmarlo: queda ahi para el bot.
+
+    Es el contrario de `recoger`, y la diferencia es la que importa: Telegram
+    entrega cada mensaje una sola vez a quien confirma haberlo recibido. El
+    turno que espera una aprobacion no puede confirmar nada, porque entonces
+    el bot de la Mac -que es el que atiende los botones del menu- perderia
+    todo lo que llegue mientras el turno espera.
+
+    Por eso tampoco hay espera larga aca: sin confirmar, la cola vuelve igual
+    en cada pregunta, asi que `getUpdates` contesta al instante y el que
+    espera tiene que dormir entre una pregunta y la otra.
+    """
+    return _llamar("getUpdates", offset=0, limit=cuantas, timeout=0) or []
