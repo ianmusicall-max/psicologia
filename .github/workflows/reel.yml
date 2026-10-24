@@ -217,9 +217,22 @@ jobs:
           fi
           mkdir -p data/reels
           cp "$ULTIMO" data/reels/ultimo.mp4
+          # La ficha viaja con el: dice de que frase es el reel y trae el
+          # titulo y la descripcion de YouTube ya armados. Sin ella,
+          # `ultimo.mp4` es un video sin nombre y no se puede subir.
+          # Con `if` y no con `[ -f ] &&`: GitHub corre esto con `bash -e`,
+          # asi que un `&&` que da falso MATA el paso. El commit del reel se
+          # perderia por una ficha que falta.
+          FICHA="${ULTIMO%.mp4}.youtube.json"
+          if [ -f "$FICHA" ]; then
+            cp "$FICHA" data/reels/ultimo.youtube.json
+          fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f data/reels/ultimo.mp4
+          if [ -f data/reels/ultimo.youtube.json ]; then
+            git add -f data/reels/ultimo.youtube.json
+          fi
           git commit -m "Reel armado: $(basename "$ULTIMO")" || exit 0
           # Otro turno pudo haber subido el estado mientras esto corria.
           git pull --rebase origin "${{ github.ref_name }}"

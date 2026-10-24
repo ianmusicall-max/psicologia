@@ -31,6 +31,9 @@ data/fondos/originales/
 # mp4 por cada reel que se arme dejaria el repositorio inmanejable.
 !data/reels/
 !data/reels/ultimo.mp4
+# Y su ficha: de un archivo que siempre se llama igual no se puede
+# saber de que frase es, y sin eso no hay como subirlo a YouTube.
+!data/reels/ultimo.youtube.json
 
 .DS_Store
 

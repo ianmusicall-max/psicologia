@@ -3134,7 +3134,7 @@ class TestLosScriptsLeenElEnv(unittest.TestCase):
         # en el .env, porque nadie lo había cargado. El síntoma culpa al
         # usuario de no haber puesto algo que sí puso.
         claves = ("OPENAI_API_KEY", "PEXELS_API_KEY", "PSI_FB_PAGE_TOKEN",
-                  "TELEGRAM_TOKEN")
+                  "TELEGRAM_TOKEN", "YT_CLIENT_ID", "YT_REFRESH_TOKEN")
         for archivo in sorted((ROOT / "scripts").glob("*.py")):
             texto = archivo.read_text(encoding="utf-8")
             necesita = any(c in texto for c in claves) or "--voz-ia" in texto
@@ -3527,6 +3527,219 @@ class TestElTextoParaYoutube(unittest.TestCase):
         # Sin esto el texto habria que escribirlo a mano cada vez, que es
         # justamente lo que hace que un paso se saltee.
         self.assertTrue(_llama_a(ROOT / "scripts" / "reel.py", {"para_youtube"}))
+
+
+class TestSubirAYoutube(unittest.TestCase):
+    """El reel ya sirve tal cual; esto solo lo sube y dice como quedo."""
+
+    def setUp(self):
+        from src import youtube
+        self.yt = youtube
+        for c in (youtube.CLIENTE, youtube.SECRETO, youtube.REFRESCO):
+            os.environ.pop(c, None)
+
+    def _claves(self):
+        return mock.patch.dict(os.environ, {
+            self.yt.CLIENTE: "cid", self.yt.SECRETO: "sec",
+            self.yt.REFRESCO: "ref"})
+
+    def test_sin_claves_dice_cuales_faltan_y_que_correr(self):
+        self.assertEqual(self.yt.faltan(),
+                         [self.yt.CLIENTE, self.yt.SECRETO, self.yt.REFRESCO])
+        self.assertFalse(self.yt.configurado())
+        with self.assertRaises(self.yt.YoutubeError) as e:
+            self.yt.acceso()
+        self.assertIn("youtube_token.py", str(e.exception))
+
+    def test_un_titulo_largo_rebota_sin_mandar_un_solo_byte(self):
+        # El tope de YouTube son 100. Si rebotara despues de abrir la subida,
+        # se habria mandado el video entero para nada.
+        with self._claves(), \
+                mock.patch.object(self.yt.requests, "post") as post, \
+                tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            with self.assertRaises(self.yt.YoutubeError) as e:
+                self.yt.publicar_short(v, "A" * 101, "d")
+        self.assertIn("101", str(e.exception))
+        post.assert_not_called()
+
+    def test_la_ficha_declara_lo_de_los_ninos_y_limpia_las_etiquetas(self):
+        # Sin `selfDeclaredMadeForKids` YouTube rechaza la subida con un error
+        # que habla de otra cosa.
+        f = self.yt.ficha("T", "D", ["#psicología", "#Shorts"])
+        self.assertIs(f["status"]["selfDeclaredMadeForKids"], False)
+        self.assertEqual(f["snippet"]["tags"], ["psicología", "Shorts"])
+        self.assertEqual(f["snippet"]["categoryId"], self.yt.CATEGORIA)
+
+    def test_un_video_que_quedo_privado_se_nota(self):
+        # Es LA razon por la que esto existe: la subida sale bien igual, asi
+        # que un video que no ve nadie se veria igual que uno publicado.
+        quedo = {"status": {"privacyStatus": "private", "uploadStatus": "uploaded"}}
+        self.assertTrue(self.yt.quedo_privado(quedo, "public"))
+        self.assertIn("private", self.yt.como_quedo(quedo))
+        # Y si se pidio privado, que quede privado no es ninguna novedad.
+        self.assertFalse(self.yt.quedo_privado(quedo, "private"))
+        self.assertFalse(self.yt.quedo_privado(
+            {"status": {"privacyStatus": "public"}}, "public"))
+
+    def test_el_permiso_vencido_dice_que_hacer(self):
+        # Es el error que se va a ver seguro: con la app en modo Prueba, Google
+        # vence el permiso cada 7 dias y el error no nombra el plazo.
+        pista = self.yt._pista("invalid_grant")
+        self.assertIn("7", pista)
+        self.assertIn("youtube_token.py", pista)
+
+        r = _Respuesta(400, {"error": "invalid_grant"})
+        with self._claves(), mock.patch.object(self.yt.requests, "post",
+                                               return_value=r):
+            with self.assertRaises(self.yt.YoutubeError) as e:
+                self.yt.acceso()
+        self.assertIn("7", str(e.exception))
+
+    def test_sube_los_bytes_a_donde_dijo_google(self):
+        abrir = _Respuesta(200, {})
+        abrir.headers = {"Location": "https://subida/aca"}
+        subido = _Respuesta(200, {"id": "VID", "status": {"privacyStatus": "public"}})
+        with tempfile.TemporaryDirectory() as d, self._claves(), \
+                mock.patch.object(self.yt, "acceso", return_value="tok"), \
+                mock.patch.object(self.yt.requests, "post", return_value=abrir), \
+                mock.patch.object(self.yt.requests, "put", return_value=subido) as put:
+            v = Path(d) / "due-01.mp4"
+            v.write_bytes(b"el video")
+            r = self.yt.publicar_short(v, "T", "D", ["#a"])
+        self.assertEqual(r["id"], "VID")
+        self.assertEqual(put.call_args[0][0], "https://subida/aca")
+        self.assertEqual(put.call_args[1]["headers"]["Content-Length"], "8")
+        self.assertEqual(self.yt.enlace("VID"), "https://youtube.com/shorts/VID")
+
+    def test_sin_la_direccion_de_subida_no_manda_nada(self):
+        # Un 200 sin `Location` dejaria el PUT contra una direccion vacia.
+        abrir = _Respuesta(200, {})
+        abrir.headers = {}
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(self.yt, "acceso", return_value="tok"), \
+                mock.patch.object(self.yt.requests, "post", return_value=abrir), \
+                mock.patch.object(self.yt.requests, "put") as put:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"v")
+            with self.assertRaises(self.yt.YoutubeError):
+                self.yt.publicar_short(v, "T", "D")
+        put.assert_not_called()
+
+
+class TestLaFichaQueViajaConElReel(unittest.TestCase):
+    """`ultimo.mp4` se pisa a si mismo, asi que su nombre no dice de que es."""
+
+    def test_guarda_el_texto_ya_armado_y_lo_vuelve_a_leer(self):
+        from src import youtube
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "due-01.mp4"
+            v.write_bytes(b"video")
+            youtube.guardar_ficha(v, "T", "D", ["#a"], frase="due-01")
+            self.assertEqual(youtube.ruta_de_ficha(v).name, "due-01.youtube.json")
+            self.assertEqual(youtube.ficha_guardada(v)["titulo"], "T")
+            self.assertEqual(youtube.ficha_guardada(v)["frase"], "due-01")
+
+    def test_una_ficha_rota_o_ausente_no_revienta(self):
+        # El que sube tiene otra forma de armar el texto -el id en el nombre
+        # del archivo- asi que perder la subida por un json a medias es peor.
+        from src import youtube
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            self.assertEqual(youtube.ficha_guardada(v), {})
+            youtube.ruta_de_ficha(v).write_text("{a medias", encoding="utf-8")
+            self.assertEqual(youtube.ficha_guardada(v), {})
+
+    def test_el_comando_del_reel_la_deja(self):
+        self.assertTrue(_llama_a(ROOT / "scripts" / "reel.py", {"guardar_ficha"}))
+
+    def test_el_turno_de_github_se_la_lleva_con_el_mp4(self):
+        # Sin ella, el reel que queda en el repositorio es un video sin nombre
+        # y no hay forma de subirlo.
+        flujo = (ROOT / ".github" / "workflows" / "reel.yml").read_text(encoding="utf-8")
+        self.assertIn("ultimo.youtube.json", flujo)
+        # Con `if` y no con `[ -f ] &&`: GitHub corre los pasos con `bash -e`,
+        # asi que un `&&` que da falso mata el paso y se pierde el commit.
+        self.assertNotIn("] && cp", flujo)
+        self.assertNotIn("] && git add", flujo)
+        r = subprocess.run(["git", "check-ignore", "data/reels/ultimo.youtube.json"],
+                           cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1, "la ficha no se puede versionar")
+
+
+class TestLosComandosDeYoutube(unittest.TestCase):
+
+    def test_ninguno_de_los_dos_publica_en_facebook_ni_toca_el_banco(self):
+        for cual in ("youtube_token.py", "publicar_youtube.py"):
+            self.assertFalse(_llama_a(ROOT / "scripts" / cual,
+                                      {"publicar", "publicar_las_dos",
+                                       "anotar_publicada"}), cual)
+
+    def test_pedir_el_permiso_no_sube_nada(self):
+        self.assertFalse(_llama_a(ROOT / "scripts" / "youtube_token.py",
+                                  {"publicar_short"}))
+
+    def test_solo_se_guarda_el_permiso_de_refresco(self):
+        # El de acceso dura una hora: guardarlo seria dejar una credencial
+        # tirada que ademas no sirve.
+        from src import youtube
+        ytok = _script("ytok", "youtube_token.py")
+        guardado = {}
+
+        class _Httpd:
+            server_address = ("127.0.0.1", 8731)
+            timeout = 0
+
+            def handle_request(self):
+                ytok._LLEGO["codigo"] = "elcodigo"
+
+            def server_close(self):
+                pass
+
+        with mock.patch.dict(os.environ, {youtube.CLIENTE: "cid",
+                                          youtube.SECRETO: "sec"}), \
+                mock.patch.object(ytok, "servidor", return_value=_Httpd()), \
+                mock.patch.object(ytok.webbrowser, "open", return_value=True), \
+                mock.patch.object(ytok.youtube, "canjear",
+                                  return_value={"refresh_token": "elrefresco",
+                                                "access_token": "elacceso"}), \
+                mock.patch.object(ytok.entorno, "guardar",
+                                  side_effect=lambda v, *a, **k: guardado.update(v)):
+            salida = ytok.main([])
+        self.assertEqual(salida, 0)
+        self.assertEqual(guardado, {youtube.REFRESCO: "elrefresco"})
+
+    def test_sin_el_id_y_sin_el_secreto_explica_de_donde_salen(self):
+        ytok = _script("ytok2", "youtube_token.py")
+        from src import youtube
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop(youtube.CLIENTE, None)
+            os.environ.pop(youtube.SECRETO, None)
+            with mock.patch.object(ytok, "servidor") as srv:
+                salida = ytok.main([])
+        self.assertEqual(salida, 1)
+        srv.assert_not_called()
+
+    def test_el_que_sube_lee_la_ficha_de_al_lado(self):
+        from src import youtube
+        pub = _script("pub", "publicar_youtube.py")
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "ultimo.mp4"
+            v.write_bytes(b"video")
+            youtube.guardar_ficha(v, "El titulo de la ficha", "La descripcion",
+                                  ["#psicología"], frase="due-01")
+            salida = pub.main([str(v), "--ver"])
+        self.assertEqual(salida, 0)
+
+    def test_un_video_sin_ficha_y_sin_frase_no_sube_nada_a_ciegas(self):
+        # Subir con un titulo inventado seria peor: queda publicado.
+        pub = _script("pub2", "publicar_youtube.py")
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "noexisteesafrase.mp4"
+            v.write_bytes(b"video")
+            self.assertEqual(pub.main([str(v), "--ver"]), 2)
 
 
 if __name__ == "__main__":

@@ -380,6 +380,14 @@ def main(argv=None) -> int:
     # y ahi son DOS campos y no uno como en Instagram.
     titulo_yt, descripcion_yt = frases.para_youtube(
         frase, tema, pagina, capitulo=bool(args.tema))
+    etiquetas_yt = frases.hashtags(tema, pagina)
+    # Al lado del mp4, porque en el repositorio el reel se guarda siempre con
+    # el mismo nombre (`ultimo.mp4`) y de ahi no se puede saber de que frase
+    # es. La ficha lo dice, y guarda el texto ya armado: lo que se sube es lo
+    # que se vio, aunque la frase se edite en el banco en el medio.
+    from src import youtube
+    youtube.guardar_ficha(ruta, titulo_yt, descripcion_yt, etiquetas_yt,
+                          frase=frase.id)
     print()
     print("Para YouTube:")
     print("  titulo: %s" % titulo_yt)
