@@ -21,6 +21,11 @@ on:
         required: false
         type: boolean
         default: false
+      canal:
+        description: "Decir cual es el canal de YouTube y su direccion"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   # Solo para `rama`: empujar la rama publica del reel. El resto de la
@@ -41,6 +46,10 @@ jobs:
       # el script lo dice y sigue: el resto de la revision no los necesita.
       FB_APP_ID: ${{ secrets.FB_APP_ID }}
       FB_APP_SECRET: ${{ secrets.FB_APP_SECRET }}
+      # Solo para `canal`: preguntar cual es el canal. Es de solo lectura.
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,3 +68,7 @@ jobs:
       - name: Y el hospedaje del reel
         if: inputs.rama
         run: python scripts/probar_la_rama.py
+
+      - name: Cual es el canal de YouTube
+        if: inputs.canal
+        run: python scripts/mi_canal.py
