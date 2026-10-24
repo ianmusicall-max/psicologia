@@ -51,6 +51,10 @@ on:
         description: "Voz en INGLES y subtitulos en espanol"
         type: boolean
         default: true
+      guardar:
+        description: "Dejar el mp4 en data/reels/ultimo.mp4 del repositorio"
+        type: boolean
+        default: false
       probar_voces:
         description: "Solo mandar muestras de voz al chat para elegir (no arma reel)"
         type: boolean
@@ -65,7 +69,8 @@ on:
         default: ""
 
 permissions:
-  contents: read
+  # Escritura porque con `guardar` el reel se deja commiteado en el repo.
+  contents: write
 
 jobs:
   reel:
@@ -195,6 +200,30 @@ jobs:
         with:
           path: data/voz_cache
           key: voz-${{ github.run_id }}
+
+      # Deja el mp4 EN el repositorio. Hace falta porque el servidor de
+      # artefactos de GitHub no se alcanza desde donde se escribe el codigo:
+      # el reel se armaba bien y no habia forma de mirarlo desde aca.
+      #
+      # Siempre el MISMO nombre, que se pisa a si mismo: un mp4 por cada reel
+      # armado dejaria el repositorio inmanejable en una semana.
+      - name: Dejar el reel en el repositorio
+        if: ${{ inputs.guardar && !inputs.probar_voces && !inputs.listar_eleven }}
+        run: |
+          ULTIMO=$(ls -t data/reels/*.mp4 2>/dev/null | head -1)
+          if [ -z "$ULTIMO" ]; then
+            echo "No hay ningun mp4 que guardar."
+            exit 0
+          fi
+          mkdir -p data/reels
+          cp "$ULTIMO" data/reels/ultimo.mp4
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f data/reels/ultimo.mp4
+          git commit -m "Reel armado: $(basename "$ULTIMO")" || exit 0
+          # Otro turno pudo haber subido el estado mientras esto corria.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
 
       # Queda para bajar aunque Telegram falle o el video pase de 50 MB, que
       # es el tope de un bot. Sin esto, un reel que no se pudo mandar se

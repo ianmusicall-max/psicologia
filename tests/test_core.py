@@ -3206,8 +3206,28 @@ class TestElReelDesdeGithub(unittest.TestCase):
         disparos = self._flujo().get("on") or self._flujo().get(True)
         self.assertEqual(list(disparos), ["workflow_dispatch"])
         self.assertEqual(sorted(disparos["workflow_dispatch"]["inputs"]),
-                         ["color", "colores", "ingles", "listar_eleven",
-                          "musica", "probar_voces", "tema", "voz", "voz_eleven"])
+                         ["color", "colores", "guardar", "ingles",
+                          "listar_eleven", "musica", "probar_voces", "tema",
+                          "voz", "voz_eleven"])
+
+    def test_guardar_el_reel_pisa_siempre_el_mismo_archivo(self):
+        # Un mp4 por cada reel armado dejaria el repositorio inmanejable en
+        # una semana: son 13 MB cada uno.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("data/reels/ultimo.mp4", texto)
+        self.assertEqual(texto.count("data/reels/ultimo.mp4"), 2)
+
+    def test_el_reel_guardado_puede_versionarse(self):
+        # `data/*` esta excluido entero, asi que sin la excepcion el `git add`
+        # no agrega nada y el paso termina bien sin haber guardado nada.
+        ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("!data/reels/ultimo.mp4", ignore)
+
+    def test_guardar_no_corre_en_los_modos_que_no_arman_reel(self):
+        pasos = {s.get("name"): s for s in self._flujo()["jobs"]["reel"]["steps"]}
+        condicion = pasos["Dejar el reel en el repositorio"]["if"]
+        self.assertIn("!inputs.probar_voces", condicion)
+        self.assertIn("!inputs.listar_eleven", condicion)
 
     def test_probar_voces_no_arma_ningun_reel(self):
         # Es el modo para elegir voz por oído. Si además armara el reel,

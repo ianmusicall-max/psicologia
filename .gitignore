@@ -23,6 +23,11 @@ data/*
 # salga sobre paisajes y no sobre el papel.
 !data/fondos/
 !data/fondos/*
+# El ultimo reel armado, para poder mirarlo sin bajarlo de la pestania
+# Actions. Es UN archivo que se pisa a si mismo y no una carpeta entera: un
+# mp4 por cada reel que se arme dejaria el repositorio inmanejable.
+!data/reels/
+!data/reels/ultimo.mp4
 
 .DS_Store
 
