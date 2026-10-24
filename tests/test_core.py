@@ -4914,5 +4914,43 @@ class TestLaRamaDelReelDelDia(unittest.TestCase):
         self.assertEqual(d["permissions"]["contents"], "write")
 
 
+class TestTiktokSoloABorradores(unittest.TestCase):
+    """El modulo esta escrito y NO esta enganchado a nada: ningun camino lo
+    llama todavia. Lo que estas pruebas fijan son las dos decisiones que no
+    se pueden perder si algun dia se engancha."""
+
+    def test_no_existe_el_camino_de_publicar_derecho(self):
+        # Publicar en el perfil pide la auditoria de TikTok. Que ese endpoint
+        # no este escrito en el archivo es parte del diseño: no se puede
+        # llamar por error.
+        from src import tiktok
+        self.assertIn("inbox/video/init", tiktok.INICIAR)
+        # Se miran las direcciones de verdad y no el texto del archivo: el
+        # comentario NOMBRA el endpoint prohibido para explicar que no se usa,
+        # y un buscador de palabras acusaria a esa explicacion.
+        direcciones = [v for v in vars(tiktok).values()
+                       if isinstance(v, str) and v.startswith("http")]
+        self.assertTrue(direcciones)
+        for d in direcciones:
+            self.assertNotIn("post/publish/video/init", d)
+
+    def test_el_desafio_de_pkce_va_en_hexadecimal(self):
+        # TikTok lo pide en hex, no en base64url como casi todos los demas.
+        # Mandarlo en base64 da un error que habla del codigo y no del desafio.
+        from src import tiktok
+        verificador, desafio = tiktok.pkce()
+        self.assertEqual(len(desafio), 64)
+        int(desafio, 16)
+        import hashlib
+        self.assertEqual(desafio,
+                         hashlib.sha256(verificador.encode("ascii")).hexdigest())
+
+    def test_nombra_solo_el_secreto_que_falta(self):
+        from src import tiktok
+        with mock.patch.dict(os.environ, {"TT_CLIENT_KEY": "x"}, clear=True):
+            self.assertEqual(tiktok.faltan(),
+                             ["TT_CLIENT_SECRET", "TT_REFRESH_TOKEN"])
+
+
 if __name__ == "__main__":
     unittest.main()
