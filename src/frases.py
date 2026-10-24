@@ -421,3 +421,42 @@ def caption(frase: Frase, tema: Tema, pagina: Pagina) -> str:
         partes.append(pagina.pie_sensible)
     partes.append(" ".join(hashtags(tema, pagina)))
     return "\n\n".join(p for p in partes if p)
+
+
+# Para YouTube.
+# ---------------------------------------------------------------------------
+
+# YouTube corta el título a 100 caracteres. Una frase más larga NO se recorta:
+# el título pasa a ser el del capítulo. Un título cortado a la mitad es peor
+# que uno más general, y 66 de las frases del banco pasan de 100.
+TITULO_YOUTUBE = 100
+
+# Vertical y de menos de tres minutos es lo que de verdad hace que YouTube lo
+# tome como Short; el hashtag no lo decide, pero es lo que la gente busca y no
+# cuesta nada ponerlo.
+CORTO = "#Shorts"
+
+
+def para_youtube(frase: Frase, tema: Tema, pagina: Pagina, capitulo: bool = False):
+    """El título y la descripción del Short, listos para pegar.
+
+    No es el caption de Instagram con otra cara: allá hay UN campo y acá son
+    dos, y el título es lo que se lee en la lista de videos. Así que arriba va
+    lo que el video dice -la frase- y la reflexión baja a la descripción.
+
+    La frase SÍ va en la descripción, al contrario que en el caption: en
+    Instagram ya está en el flyer, grande, antes de que alguien lea; en
+    YouTube la descripción se abre aparte y quien la abre no tiene el video a
+    la vista.
+    """
+    titulo = tema.titulo if capitulo else frase.texto.strip()
+    if len(titulo) > TITULO_YOUTUBE:
+        titulo = tema.titulo
+    partes = []
+    if not capitulo:
+        partes.append(frase.texto.strip())
+    partes.append(tema.tesis if capitulo else frase.reflexion)
+    if tema.es_sensible(frase) and pagina.pie_sensible:
+        partes.append(pagina.pie_sensible)
+    partes.append(" ".join(hashtags(tema, pagina) + [CORTO]))
+    return titulo, "\n\n".join(p for p in partes if p)

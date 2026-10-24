@@ -374,6 +374,18 @@ def main(argv=None) -> int:
         return 1
     print()
     print(ruta)
+
+    # El reel ya sirve para YouTube tal cual -1080x1920 y menos de tres
+    # minutos es un Short- asi que lo unico que falta para subirlo es el texto,
+    # y ahi son DOS campos y no uno como en Instagram.
+    titulo_yt, descripcion_yt = frases.para_youtube(
+        frase, tema, pagina, capitulo=bool(args.tema))
+    print()
+    print("Para YouTube:")
+    print("  titulo: %s" % titulo_yt)
+    for linea in descripcion_yt.splitlines():
+        print("  %s" % (linea or ""))
+
     if args.telegram:
         from src import telegram
         pie = "%s · %s%s" % (frase.id, tema.titulo,
@@ -384,6 +396,15 @@ def main(argv=None) -> int:
         except telegram.TelegramError as e:
             # El reel ya esta armado: que no se pueda mandar no lo pierde.
             print("No pude mandarlo al chat: %s" % e)
+        # En un mensaje APARTE y no en el pie del video: de un pie Telegram no
+        # deja copiar un trozo, y aca hay que pegar dos cosas en dos campos.
+        # Y en su propio try, para que un texto que no sale no se vea como un
+        # video que no salio.
+        try:
+            telegram.enviar("Para YouTube\n\nTITULO\n%s\n\nDESCRIPCION\n%s"
+                            % (titulo_yt, descripcion_yt))
+        except telegram.TelegramError as e:
+            print("No pude mandar el texto de YouTube: %s" % e)
     return 0
 
 

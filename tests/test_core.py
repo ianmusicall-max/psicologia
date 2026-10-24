@@ -3462,5 +3462,72 @@ class TestLosOriginalesDeLosFondos(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
 
 
+class TestElTextoParaYoutube(unittest.TestCase):
+    """El reel sirve para YouTube tal cual; lo que falta es el texto."""
+
+    def _pagina(self):
+        return config.cargar()
+
+    def test_el_titulo_de_cualquier_frase_del_banco_entra_en_youtube(self):
+        # YouTube corta a 100. Si una sola se pasara, ese Short saldria con el
+        # titulo cortado a la mitad y no se veria hasta tenerlo publicado.
+        pagina = self._pagina()
+        for tema in frases.leer():
+            for frase in tema.frases:
+                titulo, _ = frases.para_youtube(frase, tema, pagina)
+                self.assertLessEqual(len(titulo), frases.TITULO_YOUTUBE,
+                                     "%s: %r" % (frase.id, titulo))
+
+    def test_una_frase_larga_titula_con_el_capitulo_y_no_se_corta(self):
+        tema = frases.leer()[0]
+        larga = frases.Frase(id="x-99", texto="A " * 70, principio="p",
+                             fuente="f", reflexion="r", tema=tema.tema)
+        titulo, descripcion = frases.para_youtube(larga, tema, self._pagina())
+        self.assertEqual(titulo, tema.titulo)
+        self.assertIn(larga.texto.strip(), descripcion)
+
+    def test_la_frase_si_va_en_la_descripcion(self):
+        # Al contrario que en el caption de Instagram: alla la frase ya esta en
+        # el flyer, y aca la descripcion se abre aparte, sin el video a la vista.
+        tema = frases.leer()[0]
+        frase = tema.frases[0]
+        pagina = self._pagina()
+        _, descripcion = frases.para_youtube(frase, tema, pagina)
+        self.assertIn(frase.texto.strip(), descripcion)
+        self.assertNotIn(frase.texto.strip(), frases.caption(frase, tema, pagina))
+
+    def test_el_reel_de_un_capitulo_titula_con_el_capitulo(self):
+        # Cubre las frases del capitulo entero: titularlo con la primera diria
+        # de que habla una parte.
+        tema = frases.leer()[0]
+        titulo, descripcion = frases.para_youtube(tema.frases[0], tema,
+                                                  self._pagina(), capitulo=True)
+        self.assertEqual(titulo, tema.titulo)
+        self.assertIn(tema.tesis, descripcion)
+
+    def test_lleva_el_hashtag_de_shorts_y_los_cinco_de_siempre(self):
+        tema = frases.leer()[0]
+        pagina = self._pagina()
+        _, descripcion = frases.para_youtube(tema.frases[0], tema, pagina)
+        self.assertIn(frases.CORTO, descripcion)
+        for h in frases.hashtags(tema, pagina):
+            self.assertIn(h, descripcion)
+
+    def test_un_tema_sensible_se_lleva_su_pie(self):
+        pagina = self._pagina()
+        sensibles = [t for t in frases.leer()
+                     if any(t.es_sensible(f) for f in t.frases)]
+        self.assertTrue(sensibles, "el banco no tiene ningun tema sensible")
+        tema = sensibles[0]
+        frase = next(f for f in tema.frases if tema.es_sensible(f))
+        _, descripcion = frases.para_youtube(frase, tema, pagina)
+        self.assertIn(pagina.pie_sensible, descripcion)
+
+    def test_el_comando_del_reel_arma_ese_texto(self):
+        # Sin esto el texto habria que escribirlo a mano cada vez, que es
+        # justamente lo que hace que un paso se saltee.
+        self.assertTrue(_llama_a(ROOT / "scripts" / "reel.py", {"para_youtube"}))
+
+
 if __name__ == "__main__":
     unittest.main()
