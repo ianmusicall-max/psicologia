@@ -2356,6 +2356,15 @@ class TestLosFondosQueSeBajan(unittest.TestCase):
                                        pedir=lambda *a: self.fail("pidio audio"))
             self.assertEqual(salida.read_bytes(), b"audio")
 
+    def test_una_prueba_no_ensucia_el_registro_de_gasto(self):
+        # Paso de verdad: el archivo acabo con 22 pedidos de la voz `vid1`, que
+        # es la de los tests, y la primera vez que se quiso contar el gasto el
+        # numero no servia para nada.
+        antes = video.REGISTRO.read_text(encoding="utf-8") if video.REGISTRO.exists() else ""
+        video._anotar(100, 5.0, "voz-de-mentira", "modelo-de-mentira")
+        ahora = video.REGISTRO.read_text(encoding="utf-8") if video.REGISTRO.exists() else ""
+        self.assertEqual(antes, ahora)
+
     def test_el_registro_dice_de_que_proveedor_es_cada_pedido(self):
         # Son dos facturas distintas: un registro que las mezcla no sirve para
         # cotejar ninguna de las dos.

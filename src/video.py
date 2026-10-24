@@ -29,6 +29,7 @@ from __future__ import annotations
 import itertools
 import re
 import subprocess
+import sys
 from pathlib import Path
 from typing import List, Optional, Sequence, Tuple
 
@@ -662,6 +663,9 @@ def filtro_de_color(color: Optional[str]) -> str:
 # escrito no se lleve la cuenta por delante, que ya pasó con las imágenes.
 TOPE_CARACTERES = 6000
 REGISTRO = ROOT / "data" / "voz.jsonl"
+# El mismo camino, pero sin que una prueba lo pueda cambiar. Sirve para saber
+# si `REGISTRO` es el archivo de verdad o uno temporal: ver `_anotar`.
+_REGISTRO_REAL = REGISTRO
 CACHE_VOZ = ROOT / "data" / "voz_cache"
 
 
@@ -688,6 +692,18 @@ def _anotar(caracteres: int, segundos: float, voz: str, modelo: str,
     import json
     from datetime import datetime
     try:
+        # Una prueba que pida una voz de mentira NO puede ensuciar el registro
+        # de gasto de verdad: el informe diria que se gasto lo que no, y el
+        # numero dejaria de servir para cotejar con la factura. Paso: el
+        # archivo acabo con 22 pedidos de una voz llamada `vid1`, que es la de
+        # los tests, y la primera vez que se quiso contar el gasto no se pudo.
+        #
+        # La condicion mira el ARCHIVO y no solo si corre una prueba: una que
+        # apunta `REGISTRO` a un temporal esta comprobando justamente que esto
+        # anote, y tiene que poder. Lo que se corta es escribir en el de
+        # verdad desde una prueba.
+        if "unittest" in sys.modules and REGISTRO == _REGISTRO_REAL:
+            return
         REGISTRO.parent.mkdir(parents=True, exist_ok=True)
         with open(REGISTRO, "a", encoding="utf-8") as f:
             f.write(json.dumps({"cuando": datetime.now().isoformat(timespec="seconds"),
