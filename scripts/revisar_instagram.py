@@ -29,18 +29,25 @@ from dotenv import load_dotenv  # noqa: E402
 from src import config, instagram  # noqa: E402
 
 
-# Lo que Instagram pide para publicar un REEL por API, que es mas que para
-# publicar una foto. Esta escrito aca y no en el codigo que publica porque no
-# se puede comprobar: la API no dice el tipo de cuenta. Se mira en la app.
+# Lo que hace falta para que un REEL salga por API, y como se supo, porque
+# costo una tarde y la primera respuesta estaba equivocada.
 #
-# Viene del 2026-10-24: la foto de cada frase sale sin problema en esta misma
-# cuenta y con este mismo token, y el reel se rechaza con un
-# «ProcessingFailedError» que no nombra ninguna de estas cosas.
+# El 2026-10-24 el reel se rechazaba con un «ProcessingFailedError» mientras
+# la foto de cada frase salia sin problema en la MISMA cuenta y con el MISMO
+# token. La primera hipotesis fue el TIPO DE CUENTA -Empresa contra Creador-
+# y era FALSA. Lo que fallaba era el mecanismo: la foto no se le sube a
+# Instagram, se la baja el de una direccion publica, y el reel se le estaba
+# subiendo byte a byte. Dandole la direccion del mp4, el mismo reel entro en
+# la misma cuenta sin tocar una sola cosa del perfil.
+#
+# Queda escrito con ese detalle a proposito. «Cambia la cuenta a Empresa» es
+# el consejo que uno encuentra en cualquier foro, y cambiarla no es gratis:
+# en Instagram una cuenta de Empresa pierde parte de la biblioteca de musica,
+# y en TikTok una cuenta de Empresa queda fuera del programa que paga.
+# Mandar a cambiarla por un problema que era otro se paga caro.
 REELS_PIDEN = (
-    "que la cuenta sea de EMPRESA y no de Creador: en la app de Instagram, "
-    "Configuracion -> Tipo de cuenta y herramientas. Los reels por API piden "
-    "Empresa; las fotos salen con las dos, que es por lo que las frases si "
-    "estan saliendo",
+    "que el mp4 se le pase por DIRECCION publica y no subiendole los bytes: "
+    "es lo unico que de verdad fallaba, y ya esta arreglado",
     "que la cuenta NO sea privada",
     "que no tenga restricciones de contenido abiertas (un aviso de derechos "
     "de autor sin resolver alcanza para que un reel se rechace)",
