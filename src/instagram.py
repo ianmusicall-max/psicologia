@@ -67,6 +67,38 @@ def cuenta_vinculada(pagina: Pagina) -> Dict[str, str]:
             "usuario": cuenta.get("username") or "", "nombre": cuenta.get("name") or ""}
 
 
+# Lo que el nodo de la cuenta admite como campos. Pedir uno que no existe
+# hace fallar la llamada ENTERA con un error que habla de otra cosa, asi que
+# esta lista es cerrada a proposito.
+CAMPOS_CUENTA = ("id", "ig_id", "username", "name", "biography", "website",
+                 "followers_count", "follows_count", "media_count",
+                 "profile_picture_url")
+
+
+def ficha_de_la_cuenta(pagina: Pagina, cuenta: Optional[str] = None) -> Dict:
+    """Todo lo que Meta cuenta de la cuenta vinculada, y su cupo de publicado.
+
+    SOLO LEE. Existe porque un reel rechazado con «ProcessingFailedError» no
+    dice nada de la cuenta, y lo primero que hay que saber es si la cuenta
+    esta en condiciones de publicar por API: `content_publishing_limit`
+    contesta eso con un numero -el cupo de 24 horas- y falla si no lo esta.
+
+    **El tipo de cuenta no se puede preguntar.** La API no lo expone, y es
+    justo la diferencia que importa para los reels: `instagram_business_account`
+    viene con id tanto para una cuenta de Empresa como para una de Creador.
+    Eso se mira en la app, y por eso el consejo del script manda ahi.
+    """
+    ig = cuenta or cuenta_vinculada(pagina).get("id")
+    if not ig:
+        return {"error": "la pagina no tiene ninguna cuenta profesional vinculada"}
+    token = pagina.fb_token or ""
+    return {"cuenta": facebook._leer(str(ig), fields=",".join(CAMPOS_CUENTA),
+                                     access_token=token),
+            "cupo": facebook._leer("%s/content_publishing_limit" % ig,
+                                   fields="config,quota_usage",
+                                   access_token=token)}
+
+
 def permisos_que_faltan(scopes: List[str]) -> List[str]:
     return [p for p in PERMISOS if p not in scopes]
 

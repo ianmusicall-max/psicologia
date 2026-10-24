@@ -1,0 +1,44 @@
+# Pregunta como esta Instagram, desde donde Facebook se alcanza.
+#
+# Existe por el 2026-10-24: el reel se rechaza con un «ProcessingFailedError»
+# que no nombra ninguna causa, y la foto de cada frase sale sin problema en la
+# MISMA cuenta y con el MISMO token. Para saber que mirar hay que preguntarle
+# a Meta, y desde donde se escribe el codigo graph.facebook.com no se alcanza.
+#
+# SOLO LEE. No publica nada: hay una prueba que lo exige.
+name: Revisar
+
+on:
+  workflow_dispatch:
+    inputs:
+      telegram:
+        description: "Mandar la respuesta al chat"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Lima
+      PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
+      PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # Los de la app sirven para mirar los permisos del token. Si no estan,
+      # el script lo dice y sigue: el resto de la revision no los necesita.
+      FB_APP_ID: ${{ secrets.FB_APP_ID }}
+      FB_APP_SECRET: ${{ secrets.FB_APP_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Como esta Instagram
+        run: |
+          ARGS=()
+          if [ "${{ inputs.telegram }}" = "true" ]; then ARGS+=(--telegram); fi
+          python scripts/revisar_instagram.py "${ARGS[@]}"

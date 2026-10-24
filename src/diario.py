@@ -66,7 +66,8 @@ def ya_salio_hoy(dia: Optional[date] = None,
 
 
 def anotar(ruta: Path, titulo: str, salidas: dict, dia: Optional[date] = None,
-           registro: Optional[Path] = None, publicado: bool = True) -> Path:
+           registro: Optional[Path] = None,
+           publicado: Optional[bool] = None) -> Path:
     """Anota el reel del dia. RELEE antes de escribir, como los demas.
 
     Dos corridas pueden solaparse -el boton y el turno- y el que guarde ultimo
@@ -77,11 +78,26 @@ def anotar(ruta: Path, titulo: str, salidas: dict, dia: Optional[date] = None,
     contestaste-. Se anota igual, y eso es a proposito: el segundo intento del
     turno no tiene que armar otro y pagar la voz de nuevo por algo que ya
     miraste. Para que salga uno nuevo hay que pedirlo con `--otra-vez`.
+
+    **Las salidas se JUNTAN con las del dia, no lo pisan**: reponer una
+    plataforma que fallo es una corrida aparte, y la primera version borraba
+    del registro el enlace de las que ya habian salido. Paso de verdad el
+    2026-10-24: al reintentar Instagram se perdio el enlace del reel de
+    Facebook, que era el unico lugar donde estaba anotado.
+
+    Sin `publicado`, se deduce: salio algo si alguna plataforma devolvio algo
+    que no es un error. Decir «publicado» de una corrida donde todas fallaron
+    haria que el bot conteste «hoy ya salio el video» de uno que no salio.
     """
     ruta_r = Path(registro or SALIDOS)
     datos = _leer(ruta_r)
-    datos[(dia or date.today()).isoformat()] = {
-        "video": Path(ruta).name, "titulo": titulo, "salidas": salidas,
+    clave = (dia or date.today()).isoformat()
+    juntas = dict(((datos.get(clave) or {}).get("salidas") or {}))
+    juntas.update(salidas or {})
+    if publicado is None:
+        publicado = any(not str(v).startswith("error:") for v in juntas.values())
+    datos[clave] = {
+        "video": Path(ruta).name, "titulo": titulo, "salidas": juntas,
         "publicado": bool(publicado),
         "cuando": datetime.now().isoformat(timespec="seconds")}
     ruta_r.parent.mkdir(parents=True, exist_ok=True)

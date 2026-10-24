@@ -4609,6 +4609,32 @@ class TestNadaSaleSinQueLoApruebes(unittest.TestCase):
         self.assertGreater(paso["timeout-minutes"] * 60,
                            diario.ESPERA_APROBACION)
 
+    def test_revisar_instagram_solo_lee(self):
+        # Es un diagnostico: si publicara, pedir un diagnostico sacaria un
+        # post. Se lee el AST en vez del texto porque el archivo NOMBRA
+        # `publicar_reel` en su explicacion de por que falla un reel.
+        import ast as _ast
+        guion = ROOT / "scripts" / "revisar_instagram.py"
+        arbol = _ast.parse(guion.read_text(encoding="utf-8"))
+        llamadas = {_ast.unparse(n.func) for n in _ast.walk(arbol)
+                    if isinstance(n, _ast.Call)}
+        for prohibida in ("instagram.publicar", "instagram.publicar_reel",
+                          "facebook.publish", "instagram.subir_los_bytes"):
+            self.assertNotIn(prohibida, llamadas)
+        flujo = (ROOT / ".github" / "workflows" / "revisar.yml").read_text(encoding="utf-8")
+        self.assertIn("revisar_instagram.py", flujo)
+
+    def test_la_ficha_de_la_cuenta_no_pide_campos_que_no_existen(self):
+        # Un campo inventado hace fallar la llamada ENTERA con un error que
+        # habla de otra cosa, y este camino existe justamente para diagnosticar.
+        from src import instagram
+        pedidos = []
+        with mock.patch.object(instagram.facebook, "_leer",
+                               side_effect=lambda nodo, **kw: pedidos.append(kw.get("fields")) or {}):
+            instagram.ficha_de_la_cuenta(PAGINA, cuenta="123")
+        self.assertEqual(pedidos[0], ",".join(instagram.CAMPOS_CUENTA))
+        self.assertEqual(pedidos[1], "config,quota_usage")
+
     def test_la_bienvenida_no_miente_sobre_lo_que_sale_solo(self):
         # Decía que las frases NO salían solas y que el video sí, y desde que
         # el turno de GitHub publica cada hora es exactamente al revés.

@@ -2,6 +2,7 @@
 """Dice si la pagina esta en condiciones de publicar en Instagram.
 
     revisar_instagram.py
+    revisar_instagram.py --telegram    manda la respuesta al chat
 
 Comprueba las tres cosas, en orden, y dice cual falta:
 
@@ -28,8 +29,49 @@ from dotenv import load_dotenv  # noqa: E402
 from src import config, instagram  # noqa: E402
 
 
+# Lo que Instagram pide para publicar un REEL por API, que es mas que para
+# publicar una foto. Esta escrito aca y no en el codigo que publica porque no
+# se puede comprobar: la API no dice el tipo de cuenta. Se mira en la app.
+#
+# Viene del 2026-10-24: la foto de cada frase sale sin problema en esta misma
+# cuenta y con este mismo token, y el reel se rechaza con un
+# «ProcessingFailedError» que no nombra ninguna de estas cosas.
+REELS_PIDEN = (
+    "que la cuenta sea de EMPRESA y no de Creador: en la app de Instagram, "
+    "Configuracion -> Tipo de cuenta y herramientas. Los reels por API piden "
+    "Empresa; las fotos salen con las dos, que es por lo que las frases si "
+    "estan saliendo",
+    "que la cuenta NO sea privada",
+    "que no tenga restricciones de contenido abiertas (un aviso de derechos "
+    "de autor sin resolver alcanza para que un reel se rechace)",
+)
+
+
 def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--telegram", action="store_true",
+                    help="mandar la respuesta al chat")
+    args = ap.parse_args(argv or [])
     load_dotenv(ROOT / ".env")
+    # El texto se arma UNA vez y se usa dos: en pantalla y en el chat. Con dos
+    # copias de los mismos prints, el dia que una cambie el otro mensaje dice
+    # otra cosa, y el del telefono es el que se lee.
+    import contextlib
+    import io
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        codigo = _revisar()
+    texto = buf.getvalue()
+    print(texto, end="")
+    if args.telegram:
+        from src import telegram
+        telegram.enviar("Instagram, cómo está:\n\n" + texto)
+    return codigo
+
+
+def _revisar() -> int:
     pagina = config.cargar()
     if not (pagina.fb_page_id and pagina.fb_token):
         print("Faltan %s y %s en el .env." % (pagina.page_id_env, pagina.token_env))
@@ -67,6 +109,38 @@ def main(argv=None) -> int:
                 print("Permisos: estan los dos (%s)" % ", ".join(instagram.PERMISOS))
 
     print("Imagen: %s" % instagram.DE_DONDE_SALE_LA_IMAGEN)
+
+    # La cuenta y su cupo. El cupo es la prueba de que la API de publicado
+    # esta habilitada para esta cuenta: si no lo estuviera, esto falla.
+    if cuenta.get("id"):
+        print()
+        ficha = instagram.ficha_de_la_cuenta(pagina, cuenta["id"])
+        datos = ficha.get("cuenta") or {}
+        if "error" in datos:
+            print("La cuenta: no pude preguntar (%s)"
+                  % (datos["error"] or {}).get("message"))
+        else:
+            print("La cuenta: @%s · %s seguidores · %s publicaciones"
+                  % (datos.get("username") or "?",
+                     datos.get("followers_count", "?"),
+                     datos.get("media_count", "?")))
+        cupo = (ficha.get("cupo") or {}).get("data")
+        if cupo:
+            c = cupo[0] or {}
+            print("Cupo de publicado: %s de %s en 24 h"
+                  % (c.get("quota_usage", "?"),
+                     (c.get("config") or {}).get("quota_total", "?")))
+            print("  (que conteste un numero es la prueba de que la API de "
+                  "publicado esta habilitada para esta cuenta)")
+        else:
+            print("Cupo de publicado: NO pude saberlo. Es la senal mas fuerte "
+                  "de que la API de publicado no esta habilitada en esta cuenta.")
+
+    print()
+    print("Para un REEL, Instagram pide ademas, y esto NO se puede preguntar "
+          "por API:")
+    for i, x in enumerate(REELS_PIDEN, 1):
+        print("  %d. %s" % (i, x))
 
     print()
     if not falta:
