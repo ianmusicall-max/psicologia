@@ -53,6 +53,19 @@ CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 PLATAFORMAS = ("facebook", "instagram", "youtube")
 
+# De donde se baja Instagram el mp4. Son direcciones del repositorio -que es
+# publico- y sirven el archivo ORIGINAL: una sola compresion, la que hace
+# Instagram. Pedirselo a Facebook, que ya tiene el reel publicado, seria mas
+# corto y seria PEOR: esa copia ya esta re-comprimida por Meta.
+#
+# jsDelivr primero porque sirve el .mp4 con su tipo (`video/mp4`); raw lo
+# sirve como `application/octet-stream` con `nosniff`, y quien lo baja puede
+# negarse a tratarlo como video. Es el MISMO archivo por las dos.
+FUENTES = (
+    "https://cdn.jsdelivr.net/gh/%(repo)s@%(sha)s/%(ruta)s",
+    "https://raw.githubusercontent.com/%(repo)s/%(sha)s/%(ruta)s",
+)
+
 
 def hay_clips(carpeta: Path = FONDOS) -> bool:
     """Si hay VIDEOS, no si hay archivos.
@@ -63,6 +76,67 @@ def hay_clips(carpeta: Path = FONDOS) -> bool:
     """
     return any(x.is_file() and x.suffix.lower() in CLIPS
                for x in carpeta.iterdir()) if carpeta.is_dir() else False
+
+
+def esta_en_el_commit(relativa: str, sha: str) -> bool:
+    """Si ese archivo esta versionado EN ese commit.
+
+    Hace falta porque el disco y el repositorio no son lo mismo: el reel
+    recien armado existe pero no esta versionado, y su direccion publica
+    contestaria 404. Un 404 no es mejor que no tener direccion.
+    """
+    import subprocess
+    try:
+        r = subprocess.run(["git", "cat-file", "-e", "%s:%s" % (sha, relativa)],
+                           cwd=str(ROOT), capture_output=True)
+    except OSError:
+        return False
+    return r.returncode == 0
+
+
+def direcciones_publicas(ruta: Path) -> list:
+    """Las direcciones desde las que Instagram puede bajar ESE mp4, o [].
+
+    Vacio cuando no se sabe de que repositorio y commit se habla -una corrida
+    en la Mac- o cuando el archivo no esta versionado ahi. En ese caso queda
+    el camino de subir los bytes, que es el que habia.
+    """
+    import os
+    repo = os.environ.get("GITHUB_REPOSITORY") or ""
+    sha = os.environ.get("GITHUB_SHA") or ""
+    if not (repo and sha):
+        return []
+    try:
+        relativa = Path(ruta).resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return []
+    if not esta_en_el_commit(relativa, sha):
+        return []
+    return [f % {"repo": repo, "sha": sha, "ruta": relativa} for f in FUENTES]
+
+
+def a_instagram(pagina, ruta: Path, caption: str) -> str:
+    """Publica el reel en Instagram. Devuelve el enlace o «error: ...».
+
+    **Primero por direccion publica**, que es el camino que ya funciona para
+    las fotos de las frases: Instagram se baja el archivo. Recien si no hay
+    direccion -o si ninguna anda- se le suben los bytes, que es lo que el
+    2026-10-24 se rechazo dos veces con un 400 que no nombraba ninguna causa.
+    """
+    from src import instagram
+    errores = []
+    for url in direcciones_publicas(ruta):
+        try:
+            ident = instagram.publicar_reel_por_url(pagina, caption, url)
+            return "https://www.instagram.com/reel/%s" % ident
+        except Exception as e:                            # noqa: BLE001
+            errores.append("%s dijo %s" % (url.split("/")[2], e))
+    try:
+        ident = instagram.publicar_reel(pagina, caption, ruta)
+        return "https://www.instagram.com/reel/%s" % ident
+    except Exception as e:                                # noqa: BLE001
+        errores.append("subiendo los bytes: %s" % e)
+    return "error: %s" % " · ".join(errores)
 
 
 def armar(tema: str = "", carpeta: Path = None) -> Path:
@@ -148,12 +222,7 @@ def publicar(ruta: Path, caption: str, titulo: str, descripcion: str,
             salidas["facebook"] = "error: %s" % e
 
     if "instagram" in donde:
-        from src import instagram
-        try:
-            ident = instagram.publicar_reel(pagina, caption, ruta)
-            salidas["instagram"] = "https://www.instagram.com/reel/%s" % ident
-        except Exception as e:                            # noqa: BLE001
-            salidas["instagram"] = "error: %s" % e
+        salidas["instagram"] = a_instagram(pagina, ruta, caption)
 
     if "youtube" in donde:
         try:

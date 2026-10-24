@@ -4643,5 +4643,112 @@ class TestNadaSaleSinQueLoApruebes(unittest.TestCase):
         self.assertIn("Publicar", bot.BIENVENIDA)
 
 
+class TestInstagramSeBajaElReel(unittest.TestCase):
+    """Instagram se baja el mp4 de una direccion publica, igual que ya se baja
+    la foto de cada frase. Pedido 2026-10-24, despues de que la subida de los
+    bytes se rechazara dos veces con un 400 sin causa."""
+
+    def _rdd(self):
+        return _script("rddig", "reel_del_dia.py")
+
+    def test_el_archivo_que_se_baja_es_el_ORIGINAL(self):
+        # La copia que Facebook ya tiene publicada seria mas corta de conseguir
+        # y PEOR: esta re-comprimida por Meta e Instagram la comprimiria otra
+        # vez. El usuario lo pidio en buena calidad.
+        rdd = self._rdd()
+        with mock.patch.dict(os.environ, {"GITHUB_REPOSITORY": "o/r",
+                                          "GITHUB_SHA": "abc123"}), \
+                mock.patch.object(rdd, "esta_en_el_commit", return_value=True):
+            urls = rdd.direcciones_publicas(ROOT / "data" / "reels" / "ultimo.mp4")
+        self.assertTrue(urls)
+        for u in urls:
+            self.assertIn("data/reels/ultimo.mp4", u)
+            self.assertIn("abc123", u)
+            self.assertNotIn("fbcdn", u)
+        # La que sirve el tipo correcto va primera.
+        self.assertIn("jsdelivr", urls[0])
+
+    def test_sin_repositorio_no_se_inventa_ninguna_direccion(self):
+        # Una corrida en la Mac: ahi no hay direccion publica y queda el camino
+        # de los bytes, que es el que habia.
+        rdd = self._rdd()
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(rdd.direcciones_publicas(Path("x.mp4")), [])
+
+    def test_un_reel_sin_versionar_no_tiene_direccion(self):
+        # El reel recien armado existe en el disco y NO en el commit: su
+        # direccion contestaria 404, y un 404 no es mejor que no tener.
+        rdd = self._rdd()
+        with mock.patch.dict(os.environ, {"GITHUB_REPOSITORY": "o/r",
+                                          "GITHUB_SHA": "abc123"}), \
+                mock.patch.object(rdd, "esta_en_el_commit", return_value=False):
+            self.assertEqual(
+                rdd.direcciones_publicas(ROOT / "data" / "reels" / "ultimo.mp4"), [])
+
+    def test_con_direccion_no_se_suben_los_bytes(self):
+        from src import instagram
+        rdd = self._rdd()
+        with mock.patch.object(rdd, "direcciones_publicas",
+                               return_value=["https://x/u.mp4"]), \
+                mock.patch.object(instagram, "publicar_reel_por_url",
+                                  return_value="99") as por_url, \
+                mock.patch.object(instagram, "publicar_reel") as bytes_:
+            salida = rdd.a_instagram(PAGINA, Path("x.mp4"), "cap")
+        self.assertEqual(salida, "https://www.instagram.com/reel/99")
+        por_url.assert_called_once()
+        bytes_.assert_not_called()
+
+    def test_si_ninguna_direccion_anda_se_prueba_subiendo_los_bytes(self):
+        # Que el camino nuevo falle no puede dejar al reel sin el que habia.
+        from src import instagram
+        rdd = self._rdd()
+        with mock.patch.object(rdd, "direcciones_publicas",
+                               return_value=["https://x/u.mp4"]), \
+                mock.patch.object(instagram, "publicar_reel_por_url",
+                                  side_effect=RuntimeError("no se pudo bajar")), \
+                mock.patch.object(instagram, "publicar_reel",
+                                  return_value="77") as bytes_:
+            salida = rdd.a_instagram(PAGINA, Path("x.mp4"), "cap")
+        self.assertEqual(salida, "https://www.instagram.com/reel/77")
+        bytes_.assert_called_once()
+
+    def test_si_fallan_los_dos_el_error_dice_los_dos(self):
+        from src import instagram
+        rdd = self._rdd()
+        with mock.patch.object(rdd, "direcciones_publicas",
+                               return_value=["https://cdn.jsdelivr.net/u.mp4"]), \
+                mock.patch.object(instagram, "publicar_reel_por_url",
+                                  side_effect=RuntimeError("no se pudo bajar")), \
+                mock.patch.object(instagram, "publicar_reel",
+                                  side_effect=RuntimeError("400")):
+            salida = rdd.a_instagram(PAGINA, Path("x.mp4"), "cap")
+        self.assertTrue(salida.startswith("error:"))
+        self.assertIn("cdn.jsdelivr.net", salida)
+        self.assertIn("bytes", salida)
+
+    def test_el_contenedor_pide_el_video_por_direccion_y_no_reanudable(self):
+        # `upload_type=resumable` y `video_url` son los DOS caminos y se
+        # excluyen: mandar los dos es pedirle a Meta que elija.
+        from src import instagram
+        pedidos = []
+        with mock.patch.object(instagram, "_pedir",
+                               side_effect=lambda nodo, **kw: pedidos.append((nodo, kw)) or {"id": "1"}), \
+                mock.patch.object(instagram, "_esperar_listo"), \
+                mock.patch.object(instagram, "cuenta_vinculada",
+                                  return_value={"id": "IG"}), \
+                mock.patch.object(instagram, "subir_los_bytes") as bytes_:
+            instagram.publicar_reel_por_url(PAGINA, "cap", "https://x/u.mp4")
+        creacion = pedidos[0][1]
+        self.assertEqual(creacion["video_url"], "https://x/u.mp4")
+        self.assertEqual(creacion["media_type"], "REELS")
+        self.assertNotIn("upload_type", creacion)
+        bytes_.assert_not_called()
+
+    def test_sin_direccion_no_llama_a_instagram(self):
+        from src import instagram
+        with self.assertRaises(instagram.InstagramError):
+            instagram.publicar_reel_por_url(PAGINA, "cap", "")
+
+
 if __name__ == "__main__":
     unittest.main()

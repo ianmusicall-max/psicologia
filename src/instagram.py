@@ -230,6 +230,50 @@ def subir_los_bytes(contenedor: str, video: Path, token: str) -> None:
                              % (r.status_code, r.text[:300]))
 
 
+def publicar_reel_por_url(pagina: Pagina, caption: str, url: str,
+                          cuenta: Optional[str] = None,
+                          espera: int = ESPERA_REEL, paso: int = PASO,
+                          compartir: bool = True) -> str:
+    """Publica el reel que esta en esa direccion publica. Devuelve el id.
+
+    Es el MISMO camino que ya usan las fotos de las frases -Instagram se baja
+    el archivo de una direccion- y por eso existe: el 2026-10-24 la subida de
+    los bytes (`publicar_reel`) se rechazo dos veces con un
+    «400 ProcessingFailedError» mientras las fotos de esa misma cuenta y con
+    ese mismo token salian sin problema. Lo que fallaba no era el permiso ni la
+    cuenta: era el mecanismo.
+
+    **La direccion tiene que servir el mp4 ORIGINAL**, no una copia que otro
+    servicio haya vuelto a comprimir. Pedirselo a Facebook -que ya tiene el
+    reel publicado- seria mas comodo y mas barato, pero esa copia esta
+    re-comprimida por Meta e Instagram la comprimiria otra vez: dos
+    compresiones encima del original. Lo pidio el usuario asi: en buena
+    calidad.
+
+    Que falle se nota MEJOR que en la subida de bytes: aca el motivo llega en
+    `status` cuando Instagram termina de mirar el archivo, con texto, en vez
+    de un 400 que no nombra ninguna causa.
+    """
+    if not url:
+        raise InstagramError("sin direccion publica no hay nada que publicar")
+    ig = cuenta or cuenta_vinculada(pagina).get("id")
+    if not ig:
+        raise InstagramError("La página no tiene ninguna cuenta de Instagram vinculada")
+    token = pagina.fb_token or ""
+    contenedor = _pedir("%s/media" % ig, media_type="REELS", video_url=url,
+                        caption=caption,
+                        share_to_feed="true" if compartir else "false",
+                        access_token=token).get("id")
+    if not contenedor:
+        raise InstagramError("Instagram no devolvió el contenedor")
+    _esperar_listo(str(contenedor), token, espera, paso)
+    publicado = _pedir("%s/media_publish" % ig, creation_id=contenedor,
+                       access_token=token).get("id")
+    if not publicado:
+        raise InstagramError("Instagram no devolvió el id del reel")
+    return str(publicado)
+
+
 def publicar_reel(pagina: Pagina, caption: str, video: Path,
                   cuenta: Optional[str] = None, espera: int = ESPERA_REEL,
                   paso: int = PASO, compartir: bool = True) -> str:
