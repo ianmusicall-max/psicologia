@@ -20,12 +20,15 @@ Son tres llamadas:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 
 import requests
+
+ROOT = Path(__file__).resolve().parent.parent
 
 API = "https://www.googleapis.com/youtube/v3"
 SUBIDA = "https://www.googleapis.com/upload/youtube/v3/videos"
@@ -320,3 +323,72 @@ def ficha_guardada(video: Path) -> Dict:
     except (ValueError, OSError):
         return {}
     return datos if isinstance(datos, dict) and datos.get("titulo") else {}
+
+
+# Lo que ya se subio.
+# ---------------------------------------------------------------------------
+#
+# YouTube NO se da cuenta de que un video es el mismo: subirlo dos veces deja
+# dos Shorts iguales en el canal. Paso el primer dia, con el mismo mp4 subido
+# dos veces por correr el comando dos veces.
+#
+# Y cuesta: cada subida son 1.600 de los 10.000 puntos de cuota diaria, o sea
+# unas SEIS por dia. Una repetida se lleva un sexto del dia.
+#
+# La llave es la huella del ARCHIVO y no su nombre: `ultimo.mp4` se pisa a si
+# mismo, asi que el mismo nombre son videos distintos de un dia a otro, y el
+# mismo video puede estar con dos nombres (`due-01.mp4` y `ultimo.mp4`).
+SUBIDOS = ROOT / "data" / "youtube_subidos.json"
+
+
+def huella(ruta: Path) -> str:
+    """La huella del archivo, leido de a pedazos.
+
+    De a un mega y no de una: un reel pesa unos 13 MB hoy, pero un Short de
+    tres minutos puede pesar diez veces eso y no hay por que tenerlo entero en
+    memoria para sacarle una huella.
+    """
+    h = hashlib.sha1()
+    with open(ruta, "rb") as f:
+        for trozo in iter(lambda: f.read(1 << 20), b""):
+            h.update(trozo)
+    return h.hexdigest()
+
+
+def _leer_subidos(registro: Optional[Path] = None) -> Dict:
+    ruta = Path(registro or SUBIDOS)
+    if not ruta.is_file():
+        return {}
+    try:
+        datos = json.loads(ruta.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return {}
+    return datos if isinstance(datos, dict) else {}
+
+
+def ya_subido(ruta: Path, registro: Optional[Path] = None) -> Dict:
+    """Lo que se sepa de ese video si ya se subio, o {} si es la primera vez."""
+    return _leer_subidos(registro).get(huella(ruta)) or {}
+
+
+def anotar_subido(ruta: Path, video_id: str, titulo: str = "",
+                  cuando: str = "", registro: Optional[Path] = None) -> Path:
+    """Anota que ese archivo ya esta en YouTube.
+
+    RELEE antes de escribir: el archivo lo puede haber tocado otra corrida en
+    el medio -una subida tarda lo que tarda la conexion- y el que guarde ultimo
+    con una copia vieja en la mano le borraria al otro lo que acaba de anotar.
+    Lo que se perderia es justo lo que evita subir dos veces lo mismo.
+    """
+    from datetime import datetime
+    ruta_r = Path(registro or SUBIDOS)
+    datos = _leer_subidos(ruta_r)
+    datos[huella(ruta)] = {"id": video_id, "titulo": titulo,
+                           "archivo": Path(ruta).name,
+                           "cuando": cuando or datetime.now().isoformat(timespec="seconds")}
+    ruta_r.parent.mkdir(parents=True, exist_ok=True)
+    tmp = ruta_r.with_suffix(".parcial")
+    tmp.write_text(json.dumps(datos, ensure_ascii=False, indent=1),
+                   encoding="utf-8")
+    tmp.replace(ruta_r)
+    return ruta_r

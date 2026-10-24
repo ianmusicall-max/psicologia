@@ -59,6 +59,8 @@ def main(argv=None) -> int:
     ap.add_argument("--privado", action="store_true",
                     help="lo sube sin que lo vea nadie")
     ap.add_argument("--ver", action="store_true", help="no sube nada")
+    ap.add_argument("--otra-vez", action="store_true",
+                    help="subirlo aunque ya este en YouTube")
     ap.add_argument("--telegram", action="store_true", help="manda el enlace al chat")
     args = ap.parse_args(argv)
 
@@ -108,6 +110,20 @@ def main(argv=None) -> int:
         print("Con --ver no subi nada.")
         return 0
 
+    # YouTube no se da cuenta de que es el mismo video: dos corridas dejan dos
+    # Shorts iguales en el canal, y cada subida gasta un sexto de la cuota del
+    # dia. Paso el primer dia que esto se uso.
+    if not args.otra_vez:
+        antes = youtube.ya_subido(ruta)
+        if antes:
+            print()
+            print("Este mismo video ya lo subiste el %s:" % (antes.get("cuando") or "?"))
+            print("  %s" % youtube.enlace(antes.get("id", "")))
+            print()
+            print("No lo subo de nuevo. Si de verdad lo querés repetido,")
+            print("agregale --otra-vez.")
+            return 0
+
     falta = youtube.faltan()
     if falta:
         print()
@@ -125,6 +141,9 @@ def main(argv=None) -> int:
         return 1
 
     enlace = youtube.enlace(r["id"])
+    # Se anota ANTES de avisar: si el aviso falla, lo que no puede perderse es
+    # la marca de que ya esta subido.
+    youtube.anotar_subido(ruta, r["id"], titulo)
     print("Subido: %s" % enlace)
     print("Estado: %s" % youtube.como_quedo(r))
 

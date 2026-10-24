@@ -3742,5 +3742,86 @@ class TestLosComandosDeYoutube(unittest.TestCase):
             self.assertEqual(pub.main([str(v), "--ver"]), 2)
 
 
+class TestNoSubirDosVecesLoMismo(unittest.TestCase):
+    """YouTube no se da cuenta de que es el mismo video: deja dos Shorts.
+
+    Paso el primer dia que esto se uso: el mismo mp4 subido dos veces por
+    correr el comando dos veces. Y cada subida son 1.600 de los 10.000 puntos
+    de cuota del dia, o sea unas seis por dia.
+    """
+
+    def _video(self, carpeta: Path, nombre="due-01.mp4", datos=b"el video"):
+        v = Path(carpeta) / nombre
+        v.write_bytes(datos)
+        return v
+
+    def test_la_huella_es_del_archivo_y_no_del_nombre(self):
+        # `ultimo.mp4` se pisa a si mismo, asi que el mismo NOMBRE son videos
+        # distintos de un dia a otro; y el mismo video anda con dos nombres.
+        from src import youtube
+        with tempfile.TemporaryDirectory() as d:
+            uno = self._video(Path(d), "due-01.mp4")
+            copia = self._video(Path(d), "ultimo.mp4")
+            otro = self._video(Path(d), "aut-01.mp4", b"otro video")
+            self.assertEqual(youtube.huella(uno), youtube.huella(copia))
+            self.assertNotEqual(youtube.huella(uno), youtube.huella(otro))
+
+    def test_el_mismo_video_no_se_sube_dos_veces(self):
+        from src import youtube
+        pub = _script("pub3", "publicar_youtube.py")
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(youtube, "SUBIDOS", Path(d) / "reg.json"), \
+                mock.patch.object(youtube, "faltan", return_value=[]), \
+                mock.patch.object(youtube, "publicar_short",
+                                  return_value={"id": "VID",
+                                                "status": {"privacyStatus": "public"}}) as sube:
+            v = self._video(Path(d))
+            youtube.guardar_ficha(v, "T", "D", ["#a"], frase="due-01")
+            self.assertEqual(pub.main([str(v)]), 0)
+            self.assertEqual(sube.call_count, 1)
+            # La segunda no gasta cuota y dice donde esta el que ya subio.
+            self.assertEqual(pub.main([str(v)]), 0)
+            self.assertEqual(sube.call_count, 1)
+
+    def test_con_otra_vez_lo_sube_igual(self):
+        # Puede hacer falta: un video que YouTube rechazo y se corrigio, o uno
+        # que se borro del canal a mano.
+        from src import youtube
+        pub = _script("pub4", "publicar_youtube.py")
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(youtube, "SUBIDOS", Path(d) / "reg.json"), \
+                mock.patch.object(youtube, "faltan", return_value=[]), \
+                mock.patch.object(youtube, "publicar_short",
+                                  return_value={"id": "VID", "status": {}}) as sube:
+            v = self._video(Path(d))
+            youtube.guardar_ficha(v, "T", "D", ["#a"], frase="due-01")
+            pub.main([str(v)])
+            pub.main([str(v), "--otra-vez"])
+            self.assertEqual(sube.call_count, 2)
+
+    def test_el_registro_relee_antes_de_escribir(self):
+        # Una subida tarda lo que tarda la conexion, asi que otra corrida pudo
+        # anotar en el medio. El que guarde ultimo con una copia vieja en la
+        # mano le borraria al otro justo lo que evita subir dos veces.
+        from src import youtube
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "reg.json"
+            uno = self._video(Path(d), "uno.mp4", b"uno")
+            dos = self._video(Path(d), "dos.mp4", b"dos")
+            youtube.anotar_subido(uno, "UNO", registro=reg)
+            youtube.anotar_subido(dos, "DOS", registro=reg)
+            self.assertEqual(youtube.ya_subido(uno, reg)["id"], "UNO")
+            self.assertEqual(youtube.ya_subido(dos, reg)["id"], "DOS")
+
+    def test_un_registro_roto_no_frena_la_subida(self):
+        # Perder una subida por un json a medias seria peor que subir repetido.
+        from src import youtube
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "reg.json"
+            reg.write_text("{a medias", encoding="utf-8")
+            v = self._video(Path(d))
+            self.assertEqual(youtube.ya_subido(v, reg), {})
+
+
 if __name__ == "__main__":
     unittest.main()
