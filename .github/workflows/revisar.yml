@@ -16,12 +16,23 @@ on:
         required: false
         type: boolean
         default: true
+      rama:
+        description: "Probar tambien el hospedaje del reel (empuja la rama publica)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  # Solo para `rama`: empujar la rama publica del reel. El resto de la
+  # revision no escribe nada.
+  contents: write
 
 jobs:
   revisar:
     runs-on: ubuntu-latest
     env:
       TZ: America/Lima
+      GITHUB_TOKEN: ${{ github.token }}
       PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
       PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -42,3 +53,9 @@ jobs:
           ARGS=()
           if [ "${{ inputs.telegram }}" = "true" ]; then ARGS+=(--telegram); fi
           python scripts/revisar_instagram.py "${ARGS[@]}"
+
+      # El hospedaje del reel, que es la unica parte del turno diario que no
+      # se puede probar sin gastar un reel. NO publica en ninguna red.
+      - name: Y el hospedaje del reel
+        if: inputs.rama
+        run: python scripts/probar_la_rama.py

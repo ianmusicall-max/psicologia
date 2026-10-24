@@ -4882,6 +4882,20 @@ class TestLaRamaDelReelDelDia(unittest.TestCase):
             self.assertTrue(rdd.anda("https://x/u.mp4", intentos=5, espera=0))
         self.assertEqual(respuestas, [])
 
+    def test_el_probador_no_publica_en_ninguna_red(self):
+        # Es un probador del hospedaje: si publicara, probar costaria un post.
+        import ast as _ast
+        guion = ROOT / "scripts" / "probar_la_rama.py"
+        arbol = _ast.parse(guion.read_text(encoding="utf-8"))
+        llamadas = {_ast.unparse(n.func) for n in _ast.walk(arbol)
+                    if isinstance(n, _ast.Call)}
+        for prohibida in ("reel.publicar", "reel.a_instagram", "reel.armar",
+                          "reel.main", "reel.pedir_permiso"):
+            self.assertNotIn(prohibida, llamadas)
+        # Y lo que SI hace: empujar la rama y mirar si contesta.
+        self.assertIn("reel.subir_a_la_rama", llamadas)
+        self.assertIn("reel.anda", llamadas)
+
     def test_el_turno_le_pasa_el_token(self):
         import yaml as _yaml
         d = _yaml.safe_load((ROOT / ".github" / "workflows"

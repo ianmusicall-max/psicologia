@@ -242,6 +242,7 @@ def a_instagram(pagina, ruta: Path, caption: str) -> str:
     for url in publicar_el_archivo(ruta):
         try:
             ident = instagram.publicar_reel_por_url(pagina, caption, url)
+            print("Instagram se lo bajo de %s" % url.split("/")[2])
             return "https://www.instagram.com/reel/%s" % ident
         except Exception as e:                            # noqa: BLE001
             errores.append("%s dijo %s" % (url.split("/")[2], e))
