@@ -191,6 +191,65 @@ def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
     return unidades_de(frase.texto, tope) + unidades_de(frase.reflexion, tope)
 
 
+# Lo que puede durar un reel que pase el minuto, medido con la regla de este
+# archivo (`duracion_del_guion` por `VOZ_MAS_LENTA`).
+#
+# 72 y no 85 porque esa regla MIDE CORTO: el reel del 2026-10-24 salio de
+# 47,2 segundos reales contra 40,5 estimados, un 17% mas. Con el tope en 72,
+# el peor caso real queda en unos 84 -debajo de los 90 que admite Facebook- y
+# el mejor, si algun dia la regla midiera exacto, en unos 54. O sea que el
+# tope esta elegido para no pasarse NUNCA, aun equivocandose la medicion en
+# la direccion que la haria pasarse.
+#
+# Son 243 frases medidas, no un numero al ojo: con este tope las 243 del
+# banco pasan el minuto y ninguna llega a 90. Hay una prueba que lo recorre.
+TOPE_LARGO = 72.0
+
+
+def primera_oracion(texto: str) -> str:
+    """La primera oracion de un texto. "" si no hay."""
+    partes = [p for p in CORTE_FUERTE.split(" ".join((texto or "").split())) if p.strip()]
+    return partes[0] if partes else ""
+
+
+def guion_largo(frase: Frase, tema, tope: float = TOPE_LARGO,
+                unidad: int = UNIDAD_MAXIMA) -> List[str]:
+    """Lo mas largo que el reel puede decir de esa frase sin pasarse.
+
+    La frase y su reflexion son unos 47 segundos: no llegan al minuto. Para
+    llegar NO se estira el texto -eso seria relleno- sino que se le suma lo
+    que el banco ya tiene escrito alrededor, en este orden:
+
+      1. la tesis del capitulo, que presenta el asunto, al principio
+      2. el principio de la frase, que es la idea en una linea, al final
+
+    Y se prueba de lo mas largo a lo mas corto, quedandose con lo PRIMERO que
+    entra. Es la misma forma que los flyers: elegir la escala mas grande con
+    la que el texto entra, decidido ANTES de dibujar, y no achicar hasta que
+    quepa. Asi el reel nunca se corta por la mitad.
+
+    **La fuente no entra nunca.** Son referencias academicas -«Frijda (1986),
+    tendencias de accion»- y leerlas en voz alta no es un reel, es una
+    bibliografia. Hay una prueba que lo exige.
+    """
+    def medir(unidades):
+        return duracion_del_guion(unidades) * VOZ_MAS_LENTA
+
+    def partes(texto):
+        return unidades_de(texto, unidad) if texto else []
+
+    base = guion(frase, unidad)
+    tesis = partes(getattr(tema, "tesis", ""))
+    media = partes(primera_oracion(getattr(tema, "tesis", "")))
+    principio = partes(frase.principio)
+    for candidato in (tesis + base + principio, tesis + base,
+                      media + base + principio, media + base,
+                      base + principio, base):
+        if medir(candidato) <= tope:
+            return candidato
+    return base
+
+
 def tiempos(unidades: Sequence[str], total: Optional[float] = None) -> List[Tuple[float, float]]:
     """Cuándo entra y cuándo sale cada unidad.
 

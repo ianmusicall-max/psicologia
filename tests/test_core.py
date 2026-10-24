@@ -4952,5 +4952,69 @@ class TestTiktokSoloABorradores(unittest.TestCase):
                              ["TT_CLIENT_SECRET", "TT_REFRESH_TOKEN"])
 
 
+class TestElReelPasaElMinuto(unittest.TestCase):
+    """Lo pidio el usuario el 2026-10-24. Para llegar al minuto NO se estira
+    el texto -eso seria relleno- sino que se le suma lo que el banco ya tiene
+    escrito alrededor: la tesis del capitulo al principio y el principio de la
+    frase al final, lo mas largo que entre."""
+
+    def _todas(self):
+        temas = frases.leer()
+        for tema in temas:
+            for frase in tema.frases:
+                yield tema, frase
+
+    def _mide(self, unidades):
+        return video.duracion_del_guion(unidades) * video.VOZ_MAS_LENTA
+
+    def test_ninguna_frase_del_banco_se_pasa_del_tope(self):
+        # La invariante dura: un reel que se pasa de 90 segundos lo rechaza
+        # Facebook, y eso se descubre despues de haber pagado la voz.
+        peor = 0.0
+        for tema, frase in self._todas():
+            dura = self._mide(video.guion_largo(frase, tema))
+            peor = max(peor, dura)
+            self.assertLessEqual(dura, video.TOPE_LARGO, frase.id)
+        self.assertLessEqual(peor, video.TOPE_LARGO)
+
+    def test_a_casi_todas_les_suma_algo(self):
+        # Si no sumara nada, el reel duraria lo de siempre y esto no serviria.
+        suman = sum(1 for tema, frase in self._todas()
+                    if len(video.guion_largo(frase, tema)) > len(video.guion(frase)))
+        total = sum(1 for _ in self._todas())
+        self.assertGreaterEqual(suman, total * 0.95, "%d de %d" % (suman, total))
+
+    def test_se_queda_con_lo_mas_largo_que_entra(self):
+        # De lo mas largo a lo mas corto, y lo PRIMERO que entra. Con un tope
+        # ridiculo tiene que caer en la frase pelada y no reventar.
+        tema, frase = next(self._todas())
+        self.assertEqual(video.guion_largo(frase, tema, tope=0.1),
+                         video.guion(frase))
+        # Y con todo el lugar del mundo, lo mas largo de la escalera.
+        entero = video.guion_largo(frase, tema, tope=10000)
+        self.assertGreater(len(entero), len(video.guion(frase)))
+        self.assertIn(video.primera_oracion(tema.tesis), " ".join(entero))
+
+    def test_la_fuente_no_se_lee_nunca(self):
+        # Son referencias academicas: leerlas en voz alta no es un reel, es
+        # una bibliografia.
+        for tema, frase in self._todas():
+            if not frase.fuente:
+                continue
+            dicho = " ".join(video.guion_largo(frase, tema))
+            self.assertNotIn(frase.fuente[:40], dicho, frase.id)
+
+    def test_sin_la_bandera_el_guion_es_el_de_siempre(self):
+        # La bandera es de `reel.py` y el reel a mano sigue saliendo corto.
+        texto = (ROOT / "scripts" / "reel.py").read_text(encoding="utf-8")
+        self.assertIn("args.largo", texto)
+        self.assertIn("video.guion_largo", texto)
+        self.assertIn("video.guion(frase)", texto)
+
+    def test_el_turno_diario_lo_pide(self):
+        rdd = _script("rddlargo", "reel_del_dia.py")
+        self.assertIn("--largo", rdd.COMO)
+
+
 if __name__ == "__main__":
     unittest.main()

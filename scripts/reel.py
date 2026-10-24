@@ -159,6 +159,9 @@ def main(argv=None) -> int:
                     help="como suena la voz: nada, calida, cine, honda")
     ap.add_argument("--ingles", action="store_true",
                     help="la VOZ en ingles y los SUBTITULOS en espanol")
+    ap.add_argument("--largo", action="store_true",
+                    help="pasar el minuto sumando la tesis del capitulo y el "
+                         "principio de la frase")
     ap.add_argument("--etiqueta", default=None, metavar="TAG",
                     help="indicacion de actuacion entre corchetes (por "
                          "defecto %s). Vacio para ninguna"
@@ -215,7 +218,11 @@ def main(argv=None) -> int:
             print("No encuentro esa frase." if args.id else "Ya salieron todas.")
             return 2
         tema = frases.tema_de(temas, frase)
-        unidades = video.guion(frase)
+        # Con `--largo`, el reel suma lo que el banco ya tiene escrito
+        # alrededor de la frase hasta pasar el minuto. Sin la bandera, sale
+        # como salio siempre: la frase y su reflexion.
+        unidades = (video.guion_largo(frase, tema) if args.largo
+                    else video.guion(frase))
     # `tema.tema` y no `tema.titulo`: la clave del capitulo es la que figura
     # en `fondos.QUE_BUSCA`.
     fondo = elegir_fondo(args.fondo, frase.id, tema.tema) if args.fondo else None

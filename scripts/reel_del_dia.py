@@ -45,7 +45,11 @@ from src import config, diario, frases, video, youtube  # noqa: E402
 
 # Como se arma el reel del dia. Son los mismos argumentos que se venian
 # pasando a mano desde la pestania Actions, escritos una sola vez.
-COMO = ["--voz-eleven", video.VOZ_ELEVEN, "--ingles", "--musica"]
+# `--largo` desde el 2026-10-24, a pedido del usuario: el reel pasa el minuto
+# sumando la tesis del capitulo y el principio de la frase, que es texto que
+# el banco ya tiene escrito y validado. Cuesta mas voz -de unos 47 segundos a
+# unos 77- y es lo unico que se paga por renglon.
+COMO = ["--voz-eleven", video.VOZ_ELEVEN, "--ingles", "--musica", "--largo"]
 
 # Los clips de fondo, si los hay. Sin ellos el reel sale sobre el papel de la
 # marca, que no depende de nada: un fondo que falta no puede perder el turno.
