@@ -4688,7 +4688,7 @@ class TestInstagramSeBajaElReel(unittest.TestCase):
     def test_con_direccion_no_se_suben_los_bytes(self):
         from src import instagram
         rdd = self._rdd()
-        with mock.patch.object(rdd, "direcciones_publicas",
+        with mock.patch.object(rdd, "publicar_el_archivo",
                                return_value=["https://x/u.mp4"]), \
                 mock.patch.object(instagram, "publicar_reel_por_url",
                                   return_value="99") as por_url, \
@@ -4702,7 +4702,7 @@ class TestInstagramSeBajaElReel(unittest.TestCase):
         # Que el camino nuevo falle no puede dejar al reel sin el que habia.
         from src import instagram
         rdd = self._rdd()
-        with mock.patch.object(rdd, "direcciones_publicas",
+        with mock.patch.object(rdd, "publicar_el_archivo",
                                return_value=["https://x/u.mp4"]), \
                 mock.patch.object(instagram, "publicar_reel_por_url",
                                   side_effect=RuntimeError("no se pudo bajar")), \
@@ -4715,7 +4715,7 @@ class TestInstagramSeBajaElReel(unittest.TestCase):
     def test_si_fallan_los_dos_el_error_dice_los_dos(self):
         from src import instagram
         rdd = self._rdd()
-        with mock.patch.object(rdd, "direcciones_publicas",
+        with mock.patch.object(rdd, "publicar_el_archivo",
                                return_value=["https://cdn.jsdelivr.net/u.mp4"]), \
                 mock.patch.object(instagram, "publicar_reel_por_url",
                                   side_effect=RuntimeError("no se pudo bajar")), \
@@ -4748,6 +4748,148 @@ class TestInstagramSeBajaElReel(unittest.TestCase):
         from src import instagram
         with self.assertRaises(instagram.InstagramError):
             instagram.publicar_reel_por_url(PAGINA, "cap", "")
+
+
+class TestLaRamaDelReelDelDia(unittest.TestCase):
+    """El reel que el turno acaba de armar no esta versionado, asi que no
+    tiene direccion publica. Se deja en su propia rama, que se reemplaza
+    entera cada dia. Elegido por el usuario el 2026-10-24 sobre la otra
+    opcion -versionarlo en la rama de trabajo- justamente por el peso."""
+
+    def _rdd(self):
+        return _script("rddrama", "reel_del_dia.py")
+
+    def _remoto(self, d):
+        bare = Path(d) / "remoto.git"
+        subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True)
+        return bare
+
+    def _rama(self, bare, *args):
+        r = subprocess.run(["git", "-C", str(bare)] + list(args),
+                           capture_output=True, text=True)
+        return (r.stdout or "").strip()
+
+    def test_la_rama_queda_con_un_commit_y_un_archivo(self):
+        rdd = self._rdd()
+        with tempfile.TemporaryDirectory() as d:
+            bare = self._remoto(d)
+            mp4 = Path(d) / "ultimo.mp4"
+            mp4.write_bytes(b"el reel de hoy")
+            sha = rdd.subir_a_la_rama(mp4, remoto=str(bare))
+            self.assertTrue(sha)
+            rama = "refs/heads/%s" % rdd.RAMA_PUBLICA
+            self.assertEqual(
+                self._rama(bare, "ls-tree", "--name-only", "-r", rama),
+                rdd.NOMBRE_PUBLICO)
+            self.assertEqual(
+                self._rama(bare, "show", "%s:%s" % (rama, rdd.NOMBRE_PUBLICO)),
+                "el reel de hoy")
+
+    def test_el_dia_siguiente_la_reemplaza_y_no_la_suma(self):
+        # Es LA razon de hacerlo asi: versionar el reel en la rama de trabajo
+        # sumaria unos 13 MB por dia al historial, y eso no se deshace.
+        rdd = self._rdd()
+        with tempfile.TemporaryDirectory() as d:
+            bare = self._remoto(d)
+            mp4 = Path(d) / "ultimo.mp4"
+            rama = "refs/heads/%s" % rdd.RAMA_PUBLICA
+            mp4.write_bytes(b"dia uno")
+            primero = rdd.subir_a_la_rama(mp4, remoto=str(bare))
+            mp4.write_bytes(b"dia dos")
+            segundo = rdd.subir_a_la_rama(mp4, remoto=str(bare))
+            self.assertNotEqual(primero, segundo)
+            self.assertEqual(
+                len(self._rama(bare, "log", "--oneline", rama).splitlines()), 1)
+            self.assertEqual(
+                self._rama(bare, "show", "%s:%s" % (rama, rdd.NOMBRE_PUBLICO)),
+                "dia dos")
+
+    def test_la_direccion_lleva_el_commit_y_no_el_nombre_de_la_rama(self):
+        # El CDN cachea las ramas por horas: con el nombre serviria el reel de
+        # ayer. El commit es distinto cada dia aunque el archivo se llame igual.
+        rdd = self._rdd()
+        with mock.patch.dict(os.environ, {"GITHUB_REPOSITORY": "o/r"}):
+            urls = rdd.direcciones_de("sha-de-hoy", rdd.NOMBRE_PUBLICO)
+        self.assertTrue(urls)
+        for u in urls:
+            self.assertIn("sha-de-hoy", u)
+            self.assertNotIn(rdd.RAMA_PUBLICA, u)
+
+    def test_sin_credenciales_no_se_empuja_nada(self):
+        # Una corrida en la Mac: queda el camino de los bytes.
+        rdd = self._rdd()
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "x.mp4"
+            mp4.write_bytes(b"v")
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertEqual(rdd.subir_a_la_rama(mp4), "")
+
+    def test_el_token_no_sale_en_el_error(self):
+        # El token viaja en la direccion del remoto, y el mensaje de git la
+        # trae. Un error que lo imprima lo deja en el log del turno, que es
+        # publico.
+        rdd = self._rdd()
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "x.mp4"
+            mp4.write_bytes(b"v")
+            dicho = []
+            with mock.patch.dict(os.environ, {"GITHUB_REPOSITORY": "o/r",
+                                              "GITHUB_TOKEN": "ghp_secretisimo"}), \
+                    mock.patch("builtins.print", lambda *a, **k: dicho.append(" ".join(map(str, a)))):
+                # Sin red, el push falla y git nombra la direccion entera.
+                salida = rdd.subir_a_la_rama(mp4)
+            self.assertEqual(salida, "")
+            self.assertTrue(dicho)
+            self.assertNotIn("ghp_secretisimo", " ".join(dicho))
+
+    def test_un_reel_ya_versionado_no_se_vuelve_a_publicar(self):
+        # Reponer un reel guardado no tiene que empujar nada ni costar una
+        # llamada: ya tiene direccion.
+        rdd = self._rdd()
+        with mock.patch.object(rdd, "direcciones_publicas",
+                               return_value=["https://ya/esta.mp4"]), \
+                mock.patch.object(rdd, "subir_a_la_rama") as empuja, \
+                mock.patch.object(rdd, "anda", return_value=True):
+            urls = rdd.publicar_el_archivo(Path("x.mp4"))
+        self.assertEqual(urls, ["https://ya/esta.mp4"])
+        empuja.assert_not_called()
+
+    def test_solo_se_le_dan_a_instagram_las_direcciones_que_contestan(self):
+        # Entre el push y el CDN hay unos segundos: sin esta espera, Instagram
+        # pediria el archivo antes de que exista.
+        rdd = self._rdd()
+        with mock.patch.object(rdd, "direcciones_publicas", return_value=[]), \
+                mock.patch.object(rdd, "subir_a_la_rama", return_value="sha1"), \
+                mock.patch.dict(os.environ, {"GITHUB_REPOSITORY": "o/r"}), \
+                mock.patch.object(rdd, "anda",
+                                  side_effect=lambda u, **k: "jsdelivr" in u):
+            urls = rdd.publicar_el_archivo(Path("x.mp4"))
+        self.assertEqual(len(urls), 1)
+        self.assertIn("jsdelivr", urls[0])
+
+    def test_anda_reintenta_antes_de_descartar_una_direccion(self):
+        rdd = self._rdd()
+        import requests as _rq
+        respuestas = [404, 404, 200]
+
+        class R:
+            def __init__(self, c):
+                self.status_code = c
+
+        with mock.patch.object(_rq, "head",
+                               side_effect=lambda u, **k: R(respuestas.pop(0))), \
+                mock.patch("time.sleep", lambda s: None):
+            self.assertTrue(rdd.anda("https://x/u.mp4", intentos=5, espera=0))
+        self.assertEqual(respuestas, [])
+
+    def test_el_turno_le_pasa_el_token(self):
+        import yaml as _yaml
+        d = _yaml.safe_load((ROOT / ".github" / "workflows"
+                             / "reel-diario.yml").read_text(encoding="utf-8"))
+        trabajo = d["jobs"]["reel"]
+        self.assertIn("GITHUB_TOKEN", trabajo["env"])
+        # Y el permiso de escribir, que es lo que deja empujar la rama.
+        self.assertEqual(d["permissions"]["contents"], "write")
 
 
 if __name__ == "__main__":

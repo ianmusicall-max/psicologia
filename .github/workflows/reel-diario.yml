@@ -87,6 +87,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: America/Lima
+      # Para dejar el mp4 del dia en su propia rama, que es de donde Instagram
+      # se lo baja. Alcanza el token del propio turno: `contents: write` esta
+      # declarado arriba y la rama es de este mismo repositorio.
+      GITHUB_TOKEN: ${{ github.token }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

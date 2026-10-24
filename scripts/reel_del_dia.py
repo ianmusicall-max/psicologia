@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -66,6 +67,20 @@ FUENTES = (
     "https://raw.githubusercontent.com/%(repo)s/%(sha)s/%(ruta)s",
 )
 
+# El reel del dia NO esta versionado -lo acaba de armar el turno- asi que no
+# tiene direccion publica. Se publica en su propia rama, que se REEMPLAZA
+# entera en cada turno: una historia huerfana nueva y un push forzado.
+#
+# Asi no engorda: versionar el reel en la rama de trabajo sumaria unos 13 MB
+# por dia al historial -unos 400 MB al mes- y eso no se deshace despues. Aca
+# el commit viejo queda sin referencia y GitHub lo recoge.
+#
+# La direccion lleva el COMMIT y no el nombre de la rama, por dos razones: el
+# CDN cachea las ramas por horas -serviria el reel de ayer- y el commit es
+# distinto cada dia aunque el archivo se llame igual.
+RAMA_PUBLICA = "reel-publico"
+NOMBRE_PUBLICO = "reel.mp4"
+
 
 def hay_clips(carpeta: Path = FONDOS) -> bool:
     """Si hay VIDEOS, no si hay archivos.
@@ -94,17 +109,25 @@ def esta_en_el_commit(relativa: str, sha: str) -> bool:
     return r.returncode == 0
 
 
-def direcciones_publicas(ruta: Path) -> list:
-    """Las direcciones desde las que Instagram puede bajar ESE mp4, o [].
-
-    Vacio cuando no se sabe de que repositorio y commit se habla -una corrida
-    en la Mac- o cuando el archivo no esta versionado ahi. En ese caso queda
-    el camino de subir los bytes, que es el que habia.
-    """
+def direcciones_de(sha: str, relativa: str) -> list:
+    """Las direcciones de ese archivo en ese commit. Sin tocar nada."""
     import os
     repo = os.environ.get("GITHUB_REPOSITORY") or ""
+    if not (repo and sha and relativa):
+        return []
+    return [f % {"repo": repo, "sha": sha, "ruta": relativa} for f in FUENTES]
+
+
+def direcciones_publicas(ruta: Path) -> list:
+    """Las direcciones del mp4 SI ya esta versionado en este commit, o [].
+
+    SOLO LEE. Vacio cuando no se sabe de que repositorio y commit se habla
+    -una corrida en la Mac- o cuando el archivo no esta ahi, que es el caso
+    normal del reel que el turno acaba de armar.
+    """
+    import os
     sha = os.environ.get("GITHUB_SHA") or ""
-    if not (repo and sha):
+    if not sha:
         return []
     try:
         relativa = Path(ruta).resolve().relative_to(ROOT).as_posix()
@@ -112,7 +135,98 @@ def direcciones_publicas(ruta: Path) -> list:
         return []
     if not esta_en_el_commit(relativa, sha):
         return []
-    return [f % {"repo": repo, "sha": sha, "ruta": relativa} for f in FUENTES]
+    return direcciones_de(sha, relativa)
+
+
+def subir_a_la_rama(ruta: Path, remoto: str = "") -> str:
+    """Deja ese mp4 SOLO, en su propia rama, y devuelve el commit. "" si no.
+
+    Se arma un repositorio nuevo en una carpeta temporal y se empuja forzado:
+    asi la rama queda con un commit y un archivo, y la rama de trabajo no se
+    toca. Hacerlo con `--orphan` sobre la copia de trabajo del turno le
+    borraria los archivos del medio de una corrida.
+
+    El token NUNCA se imprime: viaja en la direccion del remoto y, si git
+    falla, su mensaje puede traerla. Se tapa antes de levantar el error.
+    """
+    import os
+    import shutil
+    import subprocess
+    import tempfile
+    repo = os.environ.get("GITHUB_REPOSITORY") or ""
+    token = os.environ.get("GITHUB_TOKEN") or ""
+    if not remoto and not (repo and token):
+        return ""
+    ruta = Path(ruta)
+    if not ruta.is_file():
+        return ""
+    # El `remoto` explicito es para poder probar el camino entero contra un
+    # repositorio de mentira: lo que puede romperse aca son los comandos de
+    # git, y en produccion la unica forma de probarlos es gastar un reel.
+    remoto = remoto or ("https://x-access-token:%s@github.com/%s.git"
+                        % (token, repo))
+    carpeta = tempfile.mkdtemp(prefix="reel-publico-")
+    try:
+        def git(*args):
+            r = subprocess.run(("git",) + args, cwd=carpeta,
+                               capture_output=True, text=True)
+            if r.returncode != 0:
+                salida = ((r.stderr or "") + (r.stdout or "")).replace(token, "OCULTO")
+                raise RuntimeError("git %s: %s" % (args[0], salida.strip()[:300]))
+            return (r.stdout or "").strip()
+
+        git("init", "-q")
+        git("config", "user.name", "Turno automatico")
+        git("config", "user.email", "noreply@users.noreply.github.com")
+        shutil.copy2(ruta, Path(carpeta) / NOMBRE_PUBLICO)
+        git("add", "-f", NOMBRE_PUBLICO)
+        git("commit", "-q", "-m", "Reel del %s" % date.today().isoformat())
+        git("push", "--force", "--quiet", remoto,
+            "HEAD:refs/heads/%s" % RAMA_PUBLICA)
+        return git("rev-parse", "HEAD")
+    except (RuntimeError, OSError) as e:
+        print("No pude publicar el archivo en la rama %s: %s" % (RAMA_PUBLICA, e))
+        return ""
+    finally:
+        shutil.rmtree(carpeta, ignore_errors=True)
+
+
+def anda(url: str, intentos: int = 6, espera: int = 5) -> bool:
+    """Si esa direccion ya entrega el archivo.
+
+    Se pregunta ANTES de darsela a Instagram porque entre el push y el CDN
+    hay unos segundos: sin esta espera, Instagram pediria el archivo antes de
+    que exista y el reel se perderia por una carrera de tiempos. Y de paso,
+    una direccion que no contesta se descarta sola.
+    """
+    import time
+    import requests
+    for i in range(intentos):
+        try:
+            r = requests.head(url, timeout=20, allow_redirects=True)
+            if r.status_code == 200:
+                return True
+        except requests.RequestException:
+            pass
+        if i + 1 < intentos:
+            time.sleep(espera)
+    return False
+
+
+def publicar_el_archivo(ruta: Path) -> list:
+    """Las direcciones desde las que Instagram puede bajar ESE mp4, o [].
+
+    Si ya esta versionado en este commit, no se publica nada: es el caso de
+    reponer un reel guardado y no cuesta ni una llamada. Si no -el reel que el
+    turno acaba de armar- se deja en su propia rama.
+
+    Solo se devuelven las que de verdad contestan.
+    """
+    urls = direcciones_publicas(ruta)
+    if not urls:
+        sha = subir_a_la_rama(ruta)
+        urls = direcciones_de(sha, NOMBRE_PUBLICO) if sha else []
+    return [u for u in urls if anda(u)]
 
 
 def a_instagram(pagina, ruta: Path, caption: str) -> str:
@@ -125,7 +239,7 @@ def a_instagram(pagina, ruta: Path, caption: str) -> str:
     """
     from src import instagram
     errores = []
-    for url in direcciones_publicas(ruta):
+    for url in publicar_el_archivo(ruta):
         try:
             ident = instagram.publicar_reel_por_url(pagina, caption, url)
             return "https://www.instagram.com/reel/%s" % ident
