@@ -22,6 +22,18 @@ pagina:
   # `scripts/revisar_instagram.py` dice si esta todo.
   instagram: true
 
+  # En cuales de las horas de la parrilla. Vacio serian las ocho, que es como
+  # estuvo hasta el 2026-10-24.
+  #
+  # Dos y no ocho porque en Instagram la foto estatica casi no viaja: el
+  # alcance lo reparte por reels, y ocho fotos por dia hacen que la cuenta se
+  # lea como cuenta de fotos. En Facebook siguen saliendo las ocho, que ahi
+  # si monetizan y el feed todavia muestra fotos.
+  #
+  # Las 12 y las 20: separadas entre si y lejos de las 18, que es la hora del
+  # reel. Dos cosas de la pagina pegadas compiten entre ellas.
+  instagram_horas: [12, 20]
+
   # La parrilla completa. De aca se eligen las horas de cada dia, repartidas
   # parejo: con cuatro posts no salen las primeras cuatro -toda la manana y
   # la tarde vacia- sino cuatro a lo largo del dia.

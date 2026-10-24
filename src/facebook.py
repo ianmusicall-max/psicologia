@@ -110,3 +110,98 @@ def url_de_la_foto(pagina: Pagina, foto_id: str) -> Optional[str]:
     if not imagenes:
         return None
     return max(imagenes, key=lambda x: int(x.get("width") or 0))["source"]
+
+
+# Los reels de la página.
+# ---------------------------------------------------------------------------
+#
+# Son TRES llamadas y no una, al revés que una foto: se abre una sesión, se
+# mandan los bytes a otro servidor (`rupload`) y recién entonces se publica.
+# Es la misma forma que usa Instagram, y por una buena razón: un video pesa
+# demasiado para que una sola llamada aguante una conexión que se corta.
+#
+# Por qué existe esto y no estaba: los reels se subían a Instagram y a YouTube,
+# y a Facebook iban solo las frases. En el programa de monetización de Meta,
+# los reels son el grueso de lo que se paga, así que faltaba justo en la única
+# plataforma donde la página cobra.
+REELS = "https://graph.facebook.com/v21.0"
+SUBIDA_REELS = "https://rupload.facebook.com/video-upload/v21.0"
+
+# Cuánto se espera a que Facebook termine de procesar el video. No es el
+# tiempo de la subida -eso lo manda la conexión- sino el de después.
+ESPERA_REEL = 300
+
+
+def publicar_reel(pagina: Pagina, video: Path, descripcion: str = "",
+                  espera: int = ESPERA_REEL) -> str:
+    """Publica el reel en la página y devuelve su id.
+
+    `video_state=PUBLISHED` lo deja visible de una. Con `DRAFT` quedaría
+    guardado sin salir, que es lo que hay que cambiar el día que se quiera
+    aprobar desde el teléfono antes de que salga.
+    """
+    video = Path(video)
+    if not video.is_file():
+        raise FacebookError("no existe el video %s" % video)
+    if not pagina.fb_page_id or not pagina.fb_token:
+        raise FacebookError("Faltan %s y %s en el .env"
+                            % (pagina.page_id_env, pagina.token_env))
+    peso = video.stat().st_size
+
+    # 1. Abrir la sesión. Devuelve a dónde subir y con qué id.
+    try:
+        r = requests.post("%s/%s/video_reels" % (REELS, pagina.fb_page_id),
+                          data={"upload_phase": "start",
+                                "access_token": pagina.fb_token},
+                          timeout=60)
+    except requests.RequestException as e:
+        raise FacebookError("no pude abrir la subida del reel: %s" % e)
+    datos = _json_de(r)
+    if r.status_code >= 400 or "error" in datos:
+        raise FacebookError("Facebook contestó %s: %s"
+                            % (r.status_code, datos.get("error") or r.text[:300]))
+    video_id = str(datos.get("video_id") or "")
+    donde = datos.get("upload_url") or "%s/%s" % (SUBIDA_REELS, video_id)
+    if not video_id:
+        raise FacebookError("Facebook no devolvió el id del video: %s" % datos)
+
+    # 2. Los bytes. El token va en la cabecera y no como parámetro: este
+    # servidor es otro y no lee la query, cosa que su error no dice.
+    try:
+        with video.open("rb") as f:
+            r = requests.post(donde, timeout=espera, data=f, headers={
+                "Authorization": "OAuth %s" % pagina.fb_token,
+                "offset": "0", "file_size": str(peso)})
+    except requests.RequestException as e:
+        raise FacebookError("se cortó la subida del reel: %s" % e)
+    datos = _json_de(r)
+    if r.status_code >= 400 or "error" in datos:
+        raise FacebookError("Facebook rechazó el video: %s"
+                            % (datos.get("error") or r.text[:300]))
+
+    # 3. Publicarlo. Hasta acá el video existe y no lo ve nadie.
+    try:
+        r = requests.post("%s/%s/video_reels" % (REELS, pagina.fb_page_id),
+                          data={"upload_phase": "finish", "video_id": video_id,
+                                "video_state": "PUBLISHED",
+                                "description": descripcion,
+                                "access_token": pagina.fb_token},
+                          timeout=60)
+    except requests.RequestException as e:
+        raise FacebookError("subió pero no pude publicarlo: %s" % e)
+    datos = _json_de(r)
+    if r.status_code >= 400 or "error" in datos:
+        raise FacebookError("subió pero Facebook no lo publicó: %s"
+                            % (datos.get("error") or r.text[:300]))
+    return video_id
+
+
+def enlace_de_reel(video_id: str) -> str:
+    return "https://www.facebook.com/reel/%s" % video_id
+
+
+def _json_de(r) -> dict:
+    try:
+        return r.json() or {}
+    except ValueError:
+        return {}

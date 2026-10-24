@@ -1,0 +1,116 @@
+# Un reel por dia, a las 18:00 de Lima, en Facebook, Instagram y YouTube.
+#
+# Lo pidio el usuario el 2026-10-24. El reel se arma y se publica solo: no hay
+# aprobacion en el medio, igual que los posts de frases, que salen por su
+# turno desde que existe la pagina.
+#
+# El mismo camino lo corre el boton del bot. Si cada uno hiciera lo suyo, el
+# dia que esto cambie se arregla uno y el otro se queda con la forma vieja.
+name: Reel del dia
+
+on:
+  schedule:
+    # 23:07 y 23:37 UTC son las 18:07 y 18:37 de Lima. NINGUNA en punto y DOS
+    # intentos, por lo mismo que el turno de las frases: GitHub demora o
+    # saltea los horarios, y la carga es maxima en el minuto 0.
+    #
+    # El segundo intento no cuesta nada: `reel_del_dia.py` mira si hoy ya
+    # salio uno y se va sin armar nada. Sin esa guarda serian DOS reels por
+    # dia y la voz pagada dos veces.
+    - cron: "7,37 23 * * *"
+  workflow_dispatch:
+    inputs:
+      tema:
+        description: "Capitulo entero (nombre o numero). Vacio: la frase que toca"
+        required: false
+        type: string
+      otra_vez:
+        description: "Armar otro aunque hoy ya haya salido"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  # Para volver a subir data/reels_publicados.json. Sin esto, el segundo
+  # intento no se entera de que el primero ya publico.
+  contents: write
+
+concurrency:
+  group: reel-del-dia
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Lima
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
+      PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
+      # Los tres de YouTube. Si faltan, el reel sale igual en Facebook y en
+      # Instagram y el aviso dice que YouTube no pudo: una plataforma sin
+      # credencial no puede llevarse a las otras dos.
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+    steps:
+      # CON los clips de fondo, al reves que el turno de las frases: este si
+      # los usa, y es una vez por dia.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements-video.txt
+
+      # La voz es lo unico que se paga por renglon. Separado en recuperar y
+      # guardar con `if: always()`: con `actions/cache` de una pieza, un fallo
+      # despues de pedir las voces las paga y no las guarda.
+      - name: Recuperar las voces ya pagadas
+        uses: actions/cache/restore@v4
+        with:
+          path: data/voz_cache
+          key: voz-${{ github.run_id }}
+          restore-keys: voz-
+
+      - name: Armar el reel y publicarlo en las tres
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.tema }}" ]; then
+            ARGS="$ARGS --tema ${{ inputs.tema }}"
+          fi
+          if [ "${{ inputs.otra_vez }}" = "true" ]; then
+            ARGS="$ARGS --otra-vez"
+          fi
+          python scripts/reel_del_dia.py $ARGS
+
+      - name: Guardar las voces
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/voz_cache
+          key: voz-${{ github.run_id }}
+
+      # Lo que hace que el segundo intento no arme otro reel.
+      - name: Guardar lo que salio
+        if: always()
+        run: |
+          git config user.name "Turno automatico"
+          git config user.email "noreply@users.noreply.github.com"
+          if [ ! -f data/reels_publicados.json ]; then
+            echo "Todavia no salio ningun reel."
+            exit 0
+          fi
+          git add -f data/reels_publicados.json
+          if git diff --staged --quiet; then
+            echo "Nada que guardar."
+            exit 0
+          fi
+          git commit -m "Reel del dia: $(date +'%Y-%m-%d')"
+          git pull --rebase --autostash
+          git push

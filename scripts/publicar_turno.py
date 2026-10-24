@@ -80,7 +80,9 @@ def main(argv=None) -> int:
         return 0
 
     ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo)
-    if pagina.instagram:
+    # Por HORA y no solo por el interruptor: desde el 2026-10-24 a Instagram
+    # van dos de los ocho posts del dia.
+    if pagina.instagram_en(ahora.hour):
         from src import instagram  # noqa: E402
         salida = instagram.publicar_las_dos(pagina, texto, ruta)
     else:

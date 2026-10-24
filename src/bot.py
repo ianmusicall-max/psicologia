@@ -30,7 +30,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Callable, Optional
 
-from . import diseno, facebook, frases, libro, medir, parrilla, telegram
+from . import diario, diseno, facebook, frases, libro, medir, parrilla, telegram
 from .config import Pagina
 
 # Con menos de esto se avisa: escribir un capítulo nuevo lleva su tiempo y
@@ -38,9 +38,9 @@ from .config import Pagina
 AVISAR_DIAS = 7
 
 BIENVENIDA = ("Soy el bot de la página. ¿Qué hago?\n\n"
-              "Ninguna de estas publica nada: muestran, cuentan y comprueban. "
-              "Lo único que sale a Facebook es la frase que apruebes con "
-              "Publicar.")
+              "Las frases no salen solas: la que apruebes con Publicar y "
+              "nada más. La única que sí publica por su cuenta es «Armar y "
+              "publicar video», que es para lo que está.")
 
 
 def _de_mi(update: dict) -> bool:
@@ -329,10 +329,44 @@ def como_va_el_libro(pagina: Optional[Pagina] = None) -> str:
     return "\n".join(lineas)
 
 
+def video(pagina: Optional[Pagina] = None) -> str:
+    """Arma el reel del día y lo publica en Facebook, Instagram y YouTube.
+
+    Es el MISMO camino que el turno de las 18 (`scripts/reel_del_dia.py`), no
+    una copia: si cada uno hiciera lo suyo, el día que esto cambie se arregla
+    uno y el otro se queda con la forma vieja.
+
+    Se lanza aparte y no se espera: armar un reel tarda varios minutos y el
+    bot tiene que seguir contestando. `start_new_session` lo desprende, así
+    que cortar el bot no se lleva el video a medio armar.
+    """
+    import subprocess
+    import sys
+
+    ya = diario.ya_salio_hoy()
+    if ya:
+        donde = "\n".join("  %s: %s" % (c, d)
+                          for c, d in (ya.get("salidas") or {}).items())
+        return ("Hoy ya salió el video: %s\n%s\n\nSi querés otro igual, se "
+                "dispara desde Actions con «Armar otro aunque hoy ya haya "
+                "salido»." % (ya.get("titulo") or "?", donde))
+    if diario.corriendo():
+        return "Ya hay uno armándose. Tarda unos minutos; te aviso cuando esté."
+
+    guion = Path(__file__).resolve().parent.parent / "scripts" / "reel_del_dia.py"
+    subprocess.Popen([sys.executable, str(guion)], cwd=str(guion.parent.parent),
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                     start_new_session=True)
+    return ("Voy a armar el video y publicarlo en Facebook, Instagram y "
+            "YouTube. Tarda unos minutos: te llega el video y después los "
+            "tres enlaces.")
+
+
 # clave: (etiqueta del botón, cómo se nombra en una frase, qué contesta, tarda)
 # El orden es el del menú: primero la que se usa todos los días.
 TAREAS = {
     "siguiente": ("Ver la que toca", "la que toca", mostrar_siguiente, False),
+    "video": ("Armar y publicar video", "el video del día", video, False),
     "hoy": ("Qué sale hoy", "la parrilla de hoy", hoy, False),
     "estado": ("Qué queda", "lo que queda", estado, False),
     "historial": ("Ya salieron", "las últimas que salieron", historial, False),
@@ -378,9 +412,14 @@ def correr(clave: str, pagina: Pagina) -> None:
         telegram.enviar(salida)
 
 
-def _como_publica(pagina: Pagina) -> Callable:
-    """Facebook solo, o Facebook e Instagram si la página lo pide."""
-    if pagina.instagram:
+def _como_publica(pagina: Pagina, hora: Optional[int] = None) -> Callable:
+    """Facebook solo, o Facebook e Instagram si a esa hora le toca.
+
+    La hora importa desde que a Instagram van dos de los ocho posts: sin
+    mirarla, el botón publicaría en Instagram una frase que el turno de esa
+    hora no habría publicado ahí.
+    """
+    if pagina.instagram_en(datetime.now().hour if hora is None else hora):
         from . import instagram
         return instagram.publicar_las_dos
     return facebook.publicar
@@ -395,8 +434,8 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
     queda atado a esa función para siempre y cambiar `facebook.publicar`
     después no cambia nada. Es el mismo error que el de las rutas clavadas.
     """
-    publicar_fn = publicar_fn or _como_publica(pagina)
     ahora = ahora or datetime.now()
+    publicar_fn = publicar_fn or _como_publica(pagina, ahora.hour)
     temas, ya = _banco()
     if frase_id in ya:
         telegram.enviar("%s ya había salido el %s." % (frase_id, ya[frase_id]["dia"]))

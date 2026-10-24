@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 import unicodedata
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from unittest import mock
 
@@ -784,6 +784,9 @@ class TestElBot(unittest.TestCase):
     def test_con_instagram_prendido_el_bot_publica_en_las_dos(self):
         pagina = config.cargar()
         pagina.instagram = True
+        # A toda hora: lo que se prueba es que publica en las dos, no en
+        # cuales horas. El reparto de dos por dia tiene sus propias pruebas.
+        pagina.instagram_horas = []
         with _Bot() as b, mock.patch.object(instagram, "publicar_las_dos",
                                             return_value={"post_id": "105_1", "instagram": "ig1",
                                                           "error_instagram": ""}) as fn:
@@ -795,6 +798,7 @@ class TestElBot(unittest.TestCase):
     def test_si_instagram_falla_el_bot_igual_anota_la_frase(self):
         pagina = config.cargar()
         pagina.instagram = True
+        pagina.instagram_horas = []
         with _Bot() as b, mock.patch.object(instagram, "publicar_las_dos",
                                             return_value={"post_id": "105_1", "instagram": "",
                                                           "error_instagram": "sin permiso"}):
@@ -1465,19 +1469,29 @@ class TestLaMedicion(unittest.TestCase):
 
 class TestLosScripts(unittest.TestCase):
 
-    def test_los_tres_caminos_que_publican_son_estos_y_no_mas(self):
-        # Son tres, y conviene tenerlos contados porque uno cambió la postura
-        # del proyecto:
+    def test_los_caminos_que_publican_son_estos_y_no_mas(self):
+        # Son cuatro, y conviene tenerlos contados porque dos cambiaron la
+        # postura del proyecto:
         #   frase_del_dia.py --publicar   lo corre una persona
         #   el botón Publicar del bot     vive en src/bot.py, con sus pruebas
         #   publicar_turno.py             SIN APROBACIÓN, a la hora que toca
+        #   reel_del_dia.py               SIN APROBACIÓN, a las 18
         # El tercero entró para la prueba de ocho por día: ocho aprobaciones
-        # diarias en el teléfono no son un sistema que alguien use. Cualquier
-        # script nuevo que publique tiene que venir a cambiar esta lista y a
-        # leer por qué. Se mira el AST y no el texto: varios docstrings nombran
-        # la palabra para explicar que NO lo hacen.
+        # diarias en el teléfono no son un sistema que alguien use. El cuarto
+        # lo pidió el usuario el 2026-10-24 -un reel diario en las tres
+        # plataformas- y publica video, no frases: el banco no lo toca.
+        # Cualquier script nuevo que publique tiene que venir a cambiar esta
+        # lista y a leer por qué. Se mira el AST y no el texto: varios
+        # docstrings nombran la palabra para explicar que NO lo hacen.
         publican = sorted(p.name for p in (ROOT / "scripts").glob("*.py") if _llama_a(p, {"publicar"}))
-        self.assertEqual(publican, ["frase_del_dia.py", "publicar_turno.py"])
+        self.assertEqual(publican, ["frase_del_dia.py", "publicar_turno.py",
+                                    "reel_del_dia.py"])
+
+    def test_el_reel_del_dia_no_toca_el_banco_de_frases(self):
+        # Publica video. Si anotara una frase como publicada, esa frase no
+        # saldría nunca como post y el banco se gastaría sin que nadie la vea.
+        self.assertFalse(_llama_a(ROOT / "scripts" / "reel_del_dia.py",
+                                  {"anotar_publicada"}))
 
     def test_frase_del_dia_sin_banderas_no_dibuja_ni_publica(self):
         import importlib.util
@@ -3821,6 +3835,231 @@ class TestNoSubirDosVecesLoMismo(unittest.TestCase):
             reg.write_text("{a medias", encoding="utf-8")
             v = self._video(Path(d))
             self.assertEqual(youtube.ya_subido(v, reg), {})
+
+
+class TestElReelEnLasTresPlataformas(unittest.TestCase):
+    """Un reel por dia en Facebook, Instagram y YouTube. Pedido 2026-10-24."""
+
+    def _script_del_dia(self):
+        return _script("rdd", "reel_del_dia.py")
+
+    def test_una_plataforma_que_falla_no_se_lleva_a_las_demas(self):
+        # Es LA razon por la que cada una va en su propio intento: un token
+        # vencido de Facebook no puede dejar el reel sin subir a YouTube.
+        from src import facebook, instagram, youtube
+        rdd = self._script_del_dia()
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(facebook, "publicar_reel",
+                                  side_effect=facebook.FacebookError("token vencido")), \
+                mock.patch.object(instagram, "publicar_reel", return_value="IG1"), \
+                mock.patch.object(youtube, "SUBIDOS", Path(d) / "reg.json"), \
+                mock.patch.object(youtube, "publicar_short",
+                                  return_value={"id": "YT1", "status": {"privacyStatus": "public"}}):
+            v = Path(d) / "due-01.mp4"
+            v.write_bytes(b"video")
+            salidas = rdd.publicar(v, "caption", "T", "D", ["#a"])
+        self.assertTrue(salidas["facebook"].startswith("error:"))
+        self.assertIn("token vencido", salidas["facebook"])
+        self.assertIn("IG1", salidas["instagram"])
+        self.assertIn("YT1", salidas["youtube"])
+
+    def test_el_aviso_nombra_las_tres(self):
+        rdd = self._script_del_dia()
+        texto = rdd.aviso(Path("x.mp4"), "El título",
+                          {"facebook": "f", "instagram": "i", "youtube": "y"})
+        for cual in ("Facebook", "Instagram", "Youtube"):
+            self.assertIn(cual, texto)
+
+    def test_el_texto_sale_de_la_ficha_y_del_banco(self):
+        from src import youtube
+        rdd = self._script_del_dia()
+        tema = frases.leer()[0]
+        frase = tema.frases[0]
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            youtube.guardar_ficha(v, "El titulo", "La descripcion", ["#a"],
+                                  frase=frase.id)
+            caption, titulo, descripcion, etiquetas = rdd.textos_de(v)
+        self.assertEqual(titulo, "El titulo")
+        self.assertEqual(caption, frases.caption(tema.frases[0], tema, config.cargar()))
+
+    def test_sin_ficha_no_inventa_el_texto(self):
+        # Sin saber de que frase es el video, el caption seria de otra.
+        rdd = self._script_del_dia()
+        with tempfile.TemporaryDirectory() as d:
+            v = Path(d) / "x.mp4"
+            v.write_bytes(b"video")
+            with self.assertRaises(Exception):
+                rdd.textos_de(v)
+
+    def test_un_leeme_en_la_carpeta_no_cuenta_como_clip(self):
+        # Con «la carpeta no esta vacia» alcanzaba un LEEME.md para que el
+        # reel abortara con «no hay ningun video».
+        rdd = self._script_del_dia()
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "LEEME.md").write_text("hola", encoding="utf-8")
+            self.assertFalse(rdd.hay_clips(Path(d)))
+            (Path(d) / "x.mp4").write_bytes(b"v")
+            self.assertTrue(rdd.hay_clips(Path(d)))
+
+    def test_el_turno_corre_el_mismo_camino_que_el_boton(self):
+        # Si cada uno hiciera lo suyo, el dia que esto cambie se arregla uno y
+        # el otro se queda con la forma vieja.
+        flujo = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(encoding="utf-8")
+        self.assertIn("scripts/reel_del_dia.py", flujo)
+        self.assertIn("reel_del_dia.py", (ROOT / "src" / "bot.py").read_text(encoding="utf-8"))
+
+    def test_el_turno_es_a_las_seis_de_la_tarde_de_lima(self):
+        # El cron de GitHub es UTC y Lima es UTC-5: 23:xx UTC son las 18:xx.
+        # Y NINGUNO en punto, que es cuando GitHub va mas cargado.
+        import yaml as _yaml
+        flujo = _yaml.safe_load(
+            (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(encoding="utf-8"))
+        crones = [c["cron"] for c in flujo[True]["schedule"]]
+        self.assertEqual(crones, ["7,37 23 * * *"])
+        self.assertIn("TZ: America/Lima", (ROOT / ".github" / "workflows"
+                                           / "reel-diario.yml").read_text(encoding="utf-8"))
+
+
+class TestQueNoSalganDosReelsElMismoDia(unittest.TestCase):
+
+    def test_el_segundo_intento_del_turno_no_arma_otro(self):
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "r.json"
+            self.assertEqual(diario.ya_salio_hoy(registro=reg), {})
+            diario.anotar(Path("x.mp4"), "T", {"youtube": "u"}, registro=reg)
+            self.assertEqual(diario.ya_salio_hoy(registro=reg)["titulo"], "T")
+
+    def test_manana_es_otro_dia(self):
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "r.json"
+            diario.anotar(Path("x.mp4"), "T", {}, registro=reg)
+            manana = date.today() + timedelta(days=1)
+            self.assertEqual(diario.ya_salio_hoy(manana, reg), {})
+
+    def test_dos_toques_del_boton_no_arman_dos(self):
+        # El primero todavia no termino, asi que la guarda del dia no sabe
+        # nada: hace falta el candado de la corrida.
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d) / "l.lock"
+            self.assertTrue(diario.tomar(c))
+            self.assertTrue(diario.corriendo(c))
+            self.assertFalse(diario.tomar(c))
+            diario.soltar(c)
+            self.assertTrue(diario.tomar(c))
+
+    def test_un_candado_de_un_proceso_muerto_no_deja_el_boton_muerto(self):
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d) / "l.lock"
+            c.write_text("999999", encoding="utf-8")   # un pid que no existe
+            self.assertFalse(diario.corriendo(c))
+            self.assertTrue(diario.tomar(c))
+
+    def test_un_candado_viejo_tampoco(self):
+        from src import diario
+        import os as _os
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d) / "l.lock"
+            c.write_text(str(_os.getpid()), encoding="utf-8")   # vivo, pero
+            viejo = datetime.now().timestamp() - diario.VIEJO - 60
+            _os.utime(c, (viejo, viejo))
+            self.assertFalse(diario.corriendo(c))
+
+    def test_el_registro_relee_antes_de_escribir(self):
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "r.json"
+            ayer = date.today() - timedelta(days=1)
+            diario.anotar(Path("a.mp4"), "Ayer", {}, dia=ayer, registro=reg)
+            diario.anotar(Path("b.mp4"), "Hoy", {}, registro=reg)
+            self.assertEqual(diario.ya_salio_hoy(ayer, reg)["titulo"], "Ayer")
+            self.assertEqual(diario.ya_salio_hoy(registro=reg)["titulo"], "Hoy")
+
+
+class TestElBotonDelVideo(unittest.TestCase):
+
+    def test_esta_en_el_menu(self):
+        self.assertIn("video", bot.TAREAS)
+        self.assertIn("video", bot.TAREAS["video"][0].lower())
+
+    def test_el_menu_ya_no_dice_que_nada_publica(self):
+        # Un bot que miente sobre lo que hace es peor que uno que no explica.
+        self.assertNotIn("Ninguna de estas publica nada", bot.BIENVENIDA)
+        self.assertIn("video", bot.BIENVENIDA.lower())
+
+    def test_si_hoy_ya_salio_no_larga_otro(self):
+        from src import diario
+        with mock.patch.object(diario, "ya_salio_hoy",
+                               return_value={"titulo": "El de hoy",
+                                             "salidas": {"youtube": "u"}}), \
+                mock.patch("subprocess.Popen") as popen:
+            salida = bot.video()
+        popen.assert_not_called()
+        self.assertIn("El de hoy", salida)
+
+    def test_si_ya_hay_uno_armandose_no_larga_otro(self):
+        from src import diario
+        with mock.patch.object(diario, "ya_salio_hoy", return_value={}), \
+                mock.patch.object(diario, "corriendo", return_value=True), \
+                mock.patch("subprocess.Popen") as popen:
+            salida = bot.video()
+        popen.assert_not_called()
+        self.assertIn("armándose", salida)
+
+    def test_lo_larga_aparte_para_no_dejar_al_bot_mudo(self):
+        # Armar un reel tarda varios minutos: esperarlo deja al bot sin
+        # contestar, y cortarlo se llevaria el video a medio armar.
+        from src import diario
+        with mock.patch.object(diario, "ya_salio_hoy", return_value={}), \
+                mock.patch.object(diario, "corriendo", return_value=False), \
+                mock.patch("subprocess.Popen") as popen:
+            salida = bot.video()
+        popen.assert_called_once()
+        self.assertTrue(popen.call_args[1].get("start_new_session"))
+        self.assertIn("reel_del_dia.py", " ".join(popen.call_args[0][0]))
+        self.assertIn("minutos", salida)
+
+
+class TestInstagramDosPorDia(unittest.TestCase):
+    """Lo pidio el usuario el 2026-10-24: ocho en Facebook, dos en Instagram."""
+
+    def test_la_pagina_declara_dos_horas_y_no_las_ocho(self):
+        pagina = config.cargar()
+        self.assertEqual(len(pagina.instagram_horas), 2)
+        for h in pagina.instagram_horas:
+            self.assertIn(h, pagina.horas, "una hora de Instagram que no existe")
+
+    def test_en_las_demas_horas_el_flyer_va_solo_a_facebook(self):
+        pagina = config.cargar()
+        con_ig = [h for h in pagina.horas if pagina.instagram_en(h)]
+        self.assertEqual(con_ig, list(pagina.instagram_horas))
+
+    def test_sin_horas_declaradas_sigue_yendo_a_todas(self):
+        # Una pagina que enciende Instagram y no declara horas no puede
+        # quedarse sin publicar ahi.
+        p = config.Pagina(nombre="X", instagram=True)
+        self.assertTrue(p.instagram_en(3))
+        self.assertFalse(config.Pagina(nombre="X", instagram=False).instagram_en(3))
+
+    def test_el_boton_del_bot_usa_la_misma_regla(self):
+        # Sin mirar la hora, el boton publicaria en Instagram una frase que el
+        # turno de esa hora no habria publicado ahi.
+        from src import instagram
+        pagina = config.cargar()
+        con = pagina.instagram_horas[0]
+        sin = [h for h in pagina.horas if h not in pagina.instagram_horas][0]
+        self.assertIs(bot._como_publica(pagina, con), instagram.publicar_las_dos)
+        self.assertIs(bot._como_publica(pagina, sin), facebook.publicar)
+
+    def test_el_turno_pregunta_por_la_hora(self):
+        texto = (ROOT / "scripts" / "publicar_turno.py").read_text(encoding="utf-8")
+        self.assertIn("instagram_en(", texto)
+        self.assertNotIn("if pagina.instagram:", texto)
 
 
 if __name__ == "__main__":

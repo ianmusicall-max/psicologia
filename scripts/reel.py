@@ -38,6 +38,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+# Donde quedo el ultimo reel que armo `main`, para quien lo llame desde Python
+# -hoy `reel_del_dia.py`, que despues lo publica en las tres plataformas-.
+# `main` devuelve un codigo de salida porque es un comando, asi que el camino
+# no puede viajar por ahi; y buscar «el mp4 mas nuevo de la carpeta» elegiria
+# mal el dia que dos corridas se pisen.
+ULTIMO = None
+
 from dotenv import load_dotenv  # noqa: E402
 
 from src import config, fondos, frases, traducir, video  # noqa: E402
@@ -372,6 +379,8 @@ def main(argv=None) -> int:
     except video.VideoError as e:
         print(e)
         return 1
+    global ULTIMO
+    ULTIMO = ruta
     print()
     print(ruta)
 
