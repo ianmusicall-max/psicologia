@@ -98,7 +98,12 @@ def main(argv=None) -> int:
     cliente = os.environ.get(youtube.CLIENTE)
     secreto = os.environ.get(youtube.SECRETO)
     if not cliente or not secreto:
-        print("Falta %s y/o %s en el .env." % (youtube.CLIENTE, youtube.SECRETO))
+        # CUAL falta, no «uno de los dos»: son dos pasos distintos en la
+        # consola de Google, y con los dos nombres en el mensaje hay que ir a
+        # mirar el .env para saber cual de los dos se escribio.
+        print("Falta %s en el .env."
+              % " y ".join(c for c in (youtube.CLIENTE, youtube.SECRETO)
+                            if not os.environ.get(c)))
         print()
         print("Salen de console.cloud.google.com:")
         print("  1. Crea un proyecto (o usa uno que tengas).")
