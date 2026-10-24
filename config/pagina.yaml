@@ -25,14 +25,22 @@ pagina:
   # En cuales de las horas de la parrilla. Vacio serian las ocho, que es como
   # estuvo hasta el 2026-10-24.
   #
-  # Dos y no ocho porque en Instagram la foto estatica casi no viaja: el
-  # alcance lo reparte por reels, y ocho fotos por dia hacen que la cuenta se
-  # lea como cuenta de fotos. En Facebook siguen saliendo las ocho, que ahi
-  # si monetizan y el feed todavia muestra fotos.
+  # UNA, y la eligio el usuario el mismo dia despues de mirar sus numeros: en
+  # su grilla el reel marca 113 vistas y los flyers 2. En Instagram la foto
+  # estatica casi no viaja -el alcance lo reparte por reels- asi que la frase
+  # escrita no esta ahi por alcance: esta porque es la que hace que el perfil
+  # se lea como un libro. El que llega por el reel entra, ve los capitulos y
+  # entiende de que va la cuenta.
   #
-  # Las 12 y las 20: separadas entre si y lejos de las 18, que es la hora del
-  # reel. Dos cosas de la pagina pegadas compiten entre ellas.
-  instagram_horas: [12, 20]
+  # Por eso una y no cero: con la grilla llena de videos, la promesa de la
+  # biografia no se prueba en ningun lado.
+  #
+  # Las 12, que es el mediodia y queda lejos de las 18 -la hora del reel-.
+  # Dos cosas de la pagina pegadas compiten entre ellas.
+  #
+  # En Facebook siguen saliendo las ocho, que ahi si monetizan y el feed
+  # todavia muestra fotos.
+  instagram_horas: [12]
 
   # La parrilla completa. De aca se eligen las horas de cada dia, repartidas
   # parejo: con cuatro posts no salen las primeras cuatro -toda la manana y

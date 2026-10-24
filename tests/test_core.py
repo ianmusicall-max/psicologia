@@ -4028,13 +4028,21 @@ class TestElBotonDelVideo(unittest.TestCase):
 
 
 class TestInstagramDosPorDia(unittest.TestCase):
-    """Lo pidio el usuario el 2026-10-24: ocho en Facebook, dos en Instagram."""
+    """Lo pidio el usuario el 2026-10-24: ocho frases en Facebook y UNA en
+    Instagram, mas el reel. Empezo en dos y la bajo el mismo dia mirando sus
+    numeros: en su grilla el reel marca 113 vistas y los flyers 2."""
 
-    def test_la_pagina_declara_dos_horas_y_no_las_ocho(self):
+    def test_la_pagina_declara_una_hora_y_no_las_ocho(self):
         pagina = config.cargar()
-        self.assertEqual(len(pagina.instagram_horas), 2)
+        self.assertEqual(len(pagina.instagram_horas), 1)
         for h in pagina.instagram_horas:
             self.assertIn(h, pagina.horas, "una hora de Instagram que no existe")
+
+    def test_pero_no_es_cero(self):
+        # La frase escrita no esta por alcance: esta porque es la que hace que
+        # el perfil se lea como un libro. Con la grilla llena de videos, la
+        # promesa de la biografia no se prueba en ningun lado.
+        self.assertTrue(config.cargar().instagram_horas)
 
     def test_en_las_demas_horas_el_flyer_va_solo_a_facebook(self):
         pagina = config.cargar()
