@@ -45,9 +45,15 @@ def pesan(archivos) -> float:
 
 
 def clips_de(carpeta: Path):
+    """Los clips de la carpeta, sin entrar en `originales`.
+
+    Sin esa exclusion, una segunda corrida volveria a achicar los originales
+    que la primera guardo, y cada pasada perderia un poco mas de imagen.
+    """
     if not carpeta.is_dir():
         return []
-    return sorted(x for x in carpeta.iterdir() if x.suffix.lower() in CLIPS)
+    return sorted(x for x in carpeta.iterdir()
+                  if x.is_file() and x.suffix.lower() in CLIPS)
 
 
 def medida(ruta: Path):
@@ -67,6 +73,12 @@ def medida(ruta: Path):
     return (int(m.group(1)), int(m.group(2))) if m else None
 
 
+# Donde van a parar los originales. NO se reemplazan: el usuario los quiere
+# para subirlos a YouTube, y un original tirado no vuelve. Esta carpeta queda
+# fuera del repositorio -son los archivos pesados- asi que viven en su Mac,
+# que es donde los necesita.
+ORIGINALES = "originales"
+
 # Cuanto se guarda de cada clip. El reel cambia de clip cada `video.ESCENA`
 # segundos -hoy 4- asi que de un clip de un minuto se ven cuatro. Guardar el
 # resto es peso puro, y es de donde salen los archivos de 44 MB.
@@ -75,10 +87,16 @@ def medida(ruta: Path):
 # vea el mismo tramo.
 SEGUNDOS = 8
 
-# `slow` comprime un poco mejor y tarda MUCHO mas: en la Mac del usuario un
-# clip 4K largo paso de los cinco minutos y se corto por tiempo. Con el
-# recorte de arriba, lo que se gana comprimiendo mejor ya no compensa.
-PRESET = "veryfast"
+# Con el recorte a 8 segundos, comprimir bien ya casi no cuesta tiempo: lo
+# que habia hecho fallar a `slow` era un 4K de un minuto entero, no la
+# compresion en si. `medium` y CRF 20 dan practicamente la misma imagen que
+# el original a la medida del reel.
+#
+# 20 y no 24 porque el usuario pidio no perder calidad: la diferencia de peso
+# entre uno y otro son un par de megas y el archivo igual queda diez veces
+# mas chico que el original.
+PRESET = "medium"
+CALIDAD = 20
 
 
 def achicar(ruta: Path) -> Path:
@@ -101,7 +119,7 @@ def achicar(ruta: Path) -> Path:
             # el sobrante, asi no quedan franjas negras ni se deforma.
             "-vf", ("scale=%d:%d:force_original_aspect_ratio=increase,"
                     "crop=%d:%d" % (ANCHO, ALTO, ANCHO, ALTO)),
-            "-c:v", "libx264", "-preset", PRESET, "-crf", "24",
+            "-c:v", "libx264", "-preset", PRESET, "-crf", str(CALIDAD),
             "-pix_fmt", "yuv420p",
             "-an",                  # el reel nunca usa el audio del clip
             str(tmp)], "achicar el clip", espera=600)
@@ -111,10 +129,14 @@ def achicar(ruta: Path) -> Path:
         if tmp.exists():
             tmp.unlink()
         raise
+    # El original se GUARDA, no se pisa. Es lo que pidio el usuario -los
+    # quiere para YouTube- y ademas es como se trabaja con video: la copia de
+    # trabajo se puede rehacer, el original no.
+    guardados = ruta.parent / ORIGINALES
+    guardados.mkdir(parents=True, exist_ok=True)
     destino = ruta.with_suffix(".mp4")
+    ruta.replace(guardados / ruta.name)
     tmp.replace(destino)
-    if ruta != destino and ruta.exists():
-        ruta.unlink()
     return destino
 
 
@@ -175,6 +197,9 @@ def main(argv=None) -> int:
     print()
     print("De %.0f MB a %.0f MB (%.0f%% menos)."
           % (antes, despues, 100 * (1 - despues / antes) if antes else 0))
+    print()
+    print("Los originales quedaron en %s/, sin tocar." % (carpeta / ORIGINALES))
+    print("Esa carpeta NO se sube al repositorio: es tu copia para YouTube.")
     return 0
 
 

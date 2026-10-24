@@ -23,6 +23,9 @@ data/*
 # salga sobre paisajes y no sobre el papel.
 !data/fondos/
 !data/fondos/*
+# Menos los originales. Son la copia pesada que el usuario guarda para
+# YouTube; al repositorio van las de trabajo, que es lo unico que el reel usa.
+data/fondos/originales/
 # El ultimo reel armado, para poder mirarlo sin bajarlo de la pestania
 # Actions. Es UN archivo que se pisa a si mismo y no una carpeta entera: un
 # mp4 por cada reel que se arme dejaria el repositorio inmanejable.

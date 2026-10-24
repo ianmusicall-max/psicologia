@@ -3415,5 +3415,52 @@ class TestMandarUnVideoAlChat(unittest.TestCase):
         self.assertNotIn("campo", llamar.call_args[1])
 
 
+class TestLosOriginalesDeLosFondos(unittest.TestCase):
+    """El clip pesado no se pierde al achicarlo: el usuario los sube a YouTube."""
+
+    def _achicar(self, carpeta: Path):
+        """Corre `achicar` con un ffmpeg de juguete que escribe el temporal."""
+        ach = _script("ach", "achicar_fondos.py")
+
+        def correr(orden, que, espera=300):
+            Path(orden[-1]).write_bytes(b"achicado")
+
+        with mock.patch.object(video, "_correr", side_effect=correr):
+            return ach, ach.achicar(carpeta / "uno.mov")
+
+    def test_el_original_queda_guardado_y_no_se_borra(self):
+        with tempfile.TemporaryDirectory() as d:
+            carpeta = Path(d)
+            (carpeta / "uno.mov").write_bytes(b"el original pesado")
+            ach, destino = self._achicar(carpeta)
+            guardado = carpeta / ach.ORIGINALES / "uno.mov"
+            self.assertTrue(guardado.exists(), "el original se perdio")
+            self.assertEqual(guardado.read_bytes(), b"el original pesado")
+            self.assertEqual(destino, carpeta / "uno.mp4")
+            self.assertEqual(destino.read_bytes(), b"achicado")
+
+    def test_una_segunda_corrida_no_vuelve_a_achicar_el_original(self):
+        # Si `clips_de` entrara en `originales`, cada pasada le sacaria otra
+        # vez calidad al mismo archivo y el master quedaria peor que la copia.
+        with tempfile.TemporaryDirectory() as d:
+            carpeta = Path(d)
+            (carpeta / "uno.mov").write_bytes(b"el original pesado")
+            ach, _ = self._achicar(carpeta)
+            self.assertEqual([c.name for c in ach.clips_de(carpeta)], ["uno.mp4"])
+
+    def test_los_originales_no_se_suben_al_repositorio(self):
+        # Son los archivos de 44 MB: al repo va la copia de trabajo, que es la
+        # unica que el reel usa. El master vive en su Mac.
+        r = subprocess.run(["git", "check-ignore", "-v",
+                            "data/fondos/originales/x.mp4"],
+                           cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+    def test_la_copia_de_trabajo_si_se_sube(self):
+        r = subprocess.run(["git", "check-ignore", "data/fondos/x.mp4"],
+                           cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1, r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
