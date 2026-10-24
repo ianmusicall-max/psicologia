@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import argparse
 import ast
 import dataclasses
 import json
@@ -4297,6 +4298,75 @@ class TestQueElPermisoAlcanceParaLaLista(unittest.TestCase):
         with self._claves(), mock.patch.object(youtube.requests, "post",
                                                return_value=self._respuesta("x")):
             self.assertEqual(youtube.acceso(), "tok")
+
+
+class TestPublicarUnReelQueYaEstaArmado(unittest.TestCase):
+    """Un mp4 que ya existe se publica sin volver a armarlo. Pedido 2026-10-24:
+    el reel que ya estaba en YouTube tenia que salir en Facebook y en
+    Instagram, y armar otro habria pagado la voz de nuevo para el mismo
+    video."""
+
+    FLUJO = ROOT / ".github" / "workflows" / "reel-diario.yml"
+
+    def test_con_video_no_se_arma_nada_y_youtube_se_puede_saltear(self):
+        from src import youtube
+        rdd = _script("rddya", "reel_del_dia.py")
+        temas = frases.leer()
+        frase = frases.todas(temas)[0]
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "ultimo.mp4"
+            mp4.write_bytes(b"v")
+            youtube.guardar_ficha(mp4, "T", "D", ["#x"], frase=frase.id)
+            args = argparse.Namespace(video=str(mp4), tema=None,
+                                      carpeta=str(Path(d)))
+            with mock.patch.object(rdd, "armar") as armar, \
+                    mock.patch.object(rdd, "publicar",
+                                      return_value={"facebook": "f",
+                                                    "instagram": "i"}) as pub, \
+                    mock.patch.object(rdd.diario, "anotar") as anotar, \
+                    mock.patch.object(rdd, "_avisar"):
+                self.assertEqual(rdd._trabajar(args, ["facebook", "instagram"]), 0)
+        armar.assert_not_called()
+        self.assertEqual(pub.call_args[0][0], mp4)
+        self.assertEqual(pub.call_args[1].get("donde") or pub.call_args[0][5],
+                         ["facebook", "instagram"])
+        # Se anota igual: lo publicado es el reel de hoy, y el turno de las 18
+        # no tiene que mandar otro encima.
+        anotar.assert_called_once()
+
+    def test_el_formulario_de_actions_lo_puede_pedir(self):
+        import yaml as _yaml
+        d = _yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+        entradas = d[True]["workflow_dispatch"]["inputs"]
+        self.assertIn("video", entradas)
+        self.assertIn("sin_youtube", entradas)
+        paso = [s for s in d["jobs"]["reel"]["steps"]
+                if "--video" in (s.get("run") or "")]
+        self.assertEqual(len(paso), 1)
+        self.assertIn("--sin-youtube", paso[0]["run"])
+
+    def test_lo_que_se_escribe_en_el_formulario_no_se_corre_como_comando(self):
+        # Interpolado dentro del script, un valor con `;` o con comillas se
+        # ejecuta. Los de texto viajan por env y se pasan entre comillas.
+        import yaml as _yaml
+        d = _yaml.safe_load(self.FLUJO.read_text(encoding="utf-8"))
+        paso = [s for s in d["jobs"]["reel"]["steps"]
+                if "reel_del_dia.py" in (s.get("run") or "")][0]
+        for cual in ("tema", "video"):
+            self.assertNotIn("inputs.%s }}" % cual, paso["run"])
+            self.assertIn(cual.upper(), paso["env"])
+
+    def test_la_ficha_del_reel_del_repositorio_dice_una_frase_del_banco(self):
+        # El mp4 versionado se llama siempre `ultimo.mp4`: de ahi no se puede
+        # saber de que frase es, y sin eso el caption seria de otra. Si alguien
+        # saca esa frase del banco, esto se pone en rojo aca y no al publicar.
+        mp4 = ROOT / "data" / "reels" / "ultimo.mp4"
+        if not mp4.is_file():
+            self.skipTest("no hay reel guardado en el repositorio")
+        rdd = _script("rddficha", "reel_del_dia.py")
+        caption, titulo, _descripcion, _etiquetas = rdd.textos_de(mp4)
+        self.assertTrue(titulo)
+        self.assertTrue(caption)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,11 @@
 #
 # El mismo camino lo corre el boton del bot. Si cada uno hiciera lo suyo, el
 # dia que esto cambie se arregla uno y el otro se queda con la forma vieja.
+#
+# A mano sirve tambien para publicar un reel que YA esta armado (`video`) y,
+# si ese video ya esta en YouTube, para saltear esa plataforma
+# (`sin_youtube`). El texto NO se inventa: sale de la ficha que quedo al lado
+# del mp4, que dice de que frase es.
 name: Reel del dia
 
 on:
@@ -31,6 +36,15 @@ on:
         default: false
       solo_probar:
         description: "Solo comprobar las credenciales: no arma ni publica nada"
+        required: false
+        type: boolean
+        default: false
+      video:
+        description: "Publicar un mp4 que YA esta armado (ej: data/reels/ultimo.mp4). Vacio: armar uno"
+        required: false
+        type: string
+      sin_youtube:
+        description: "No subir a YouTube. Para un video que ya esta alla"
         required: false
         type: boolean
         default: false
@@ -84,18 +98,20 @@ jobs:
           restore-keys: voz-
 
       - name: Armar el reel y publicarlo en las tres
+        env:
+          # Lo que se escribe en el formulario viaja por env y NO interpolado
+          # dentro del script: un valor con un `;` o con comillas se correria
+          # como comando. Y de paso un nombre con espacios llega entero.
+          TEMA: ${{ inputs.tema }}
+          VIDEO: ${{ inputs.video }}
         run: |
-          ARGS=""
-          if [ -n "${{ inputs.tema }}" ]; then
-            ARGS="$ARGS --tema ${{ inputs.tema }}"
-          fi
-          if [ "${{ inputs.otra_vez }}" = "true" ]; then
-            ARGS="$ARGS --otra-vez"
-          fi
-          if [ "${{ inputs.solo_probar }}" = "true" ]; then
-            ARGS="$ARGS --probar"
-          fi
-          python scripts/reel_del_dia.py $ARGS
+          ARGS=()
+          if [ -n "$TEMA" ]; then ARGS+=(--tema "$TEMA"); fi
+          if [ -n "$VIDEO" ]; then ARGS+=(--video "$VIDEO"); fi
+          if [ "${{ inputs.otra_vez }}" = "true" ]; then ARGS+=(--otra-vez); fi
+          if [ "${{ inputs.sin_youtube }}" = "true" ]; then ARGS+=(--sin-youtube); fi
+          if [ "${{ inputs.solo_probar }}" = "true" ]; then ARGS+=(--probar); fi
+          python scripts/reel_del_dia.py "${ARGS[@]}"
 
       - name: Guardar las voces
         if: always()
