@@ -119,11 +119,11 @@ persona-paraguas-calle.mp4:
   # cara mirando a camara se lleva la atencion que tiene que ir a la frase. De
   # espaldas, en cambio, el que mira se pone en ese lugar.
   #
-  # Aca decia «el UNICO con una persona» y dejo de ser cierto el 2026-10-25:
-  # en `ventanal-cruce-ciudad` hay una multitud, en `volante-lluvia-parabrisas`
-  # una mano y en `ventanilla-lluvia-otono` alguien en bicicleta al fondo, los
-  # tres chicos y de paso. La regla nunca fue que no haya gente sino que no
-  # haya una cara mirando a camara.
+  # Aca decia «el UNICO con una persona» y dejo de ser cierto: hay clips con
+  # una mano apoyada, con alguien de paso al fondo y con una multitud cruzando,
+  # todos chicos y ninguno protagonista. Se saco la lista a proposito, porque
+  # habia que venir a alargarla cada vez que entra un clip. La regla nunca fue
+  # que no haya gente sino que no haya una cara mirando a camara.
 
 lluvia-sobre-el-agua.mp4:
   que_es: Gotas de lluvia cayendo sobre agua turquesa, en circulos
@@ -187,3 +187,24 @@ ventanal-cruce-ciudad.mp4:
   # a cuatro segundos lo que queda es «una ciudad desde arriba, con lluvia».
   # Por eso mismo no sirve para los capitulos de quietud, y si para los de
   # ansiedad, redes y soledad en medio de la gente.
+
+avenida-noche-torres.mp4:
+  que_es: Una avenida de noche vista desde arriba entre dos torres, con el transito y las ventanas encendidas
+  etiquetas: [ciudad, noche, avenida, torres, luces, altura, oscuro, soledad, encierro, cotidiano]
+  # Camara QUIETA: el encuadre es el mismo en el segundo 2 y en el 12. Lo que
+  # se mueve son los autos, asi que no compite con el texto.
+  #
+  # Es de los cuatro mas oscuros de la carpeta -brillo medio 47 de 255 en los
+  # primeros cuatro segundos, contra 156 del mas claro-, o sea que el texto
+  # blanco se lee de sobra. Medido, no estimado.
+
+ventanilla-nieve-azul.mp4:
+  que_es: Desde adentro de un bus, gotas en el vidrio y un paisaje nevado con edificios grises al anochecer
+  etiquetas: [ventana, nieve, invierno, azul, frio, interior, viaje, gotas, melancolia, distancia]
+  # Son 6,5 segundos, el mas corto de la carpeta (el que le sigue tiene 8,8).
+  # No importa: el reel usa los PRIMEROS cuatro segundos de cada clip y repite
+  # el que sea mas corto que el tramo (`trim=duration` con `-stream_loop -1`
+  # en `video.comando`). Queda anotado para que nadie lo mire dos veces.
+  #
+  # Hay una mano apoyada en el marco, abajo a la derecha, y nada mas: es un
+  # clip de mirar por la ventanilla, no de alguien.
