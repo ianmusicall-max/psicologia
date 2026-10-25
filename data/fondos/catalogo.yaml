@@ -145,3 +145,13 @@ esquina-otono-noche.mp4:
   etiquetas: [ciudad, otono, noche, lluvia, naranja, farol, esquina, soledad, cotidiano]
   # Tiene un cartel de transito y un semaforo peatonal, chicos. A cuatro
   # segundos y con el brillo bajado no se leen.
+
+carretera-noche-lluvia.mp4:
+  que_es: Carretera mojada de noche, casi negra, con los faroles reflejados y luces rojas al fondo
+  etiquetas: [ruta, noche, lluvia, asfalto, reflejo, oscuro, soledad, viaje]
+
+torre-antena-niebla.mp4:
+  que_es: La antena de una torre entre la niebla de noche, con las luces rojas encendidas
+  etiquetas: [ciudad, torre, noche, niebla, luces, rojo, altura, soledad]
+  # Viene en 1296x2304. Es la MISMA proporcion que el reel (9:16), asi que se
+  # achica entero y no se recorta nada: no hace falta tocarlo.
