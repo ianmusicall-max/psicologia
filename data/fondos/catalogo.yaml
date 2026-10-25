@@ -124,3 +124,14 @@ lluvia-sobre-el-agua.mp4:
   etiquetas: [lluvia, agua, turquesa, gotas, calma, abstracto, quietud, repeticion]
   # El mas parejo de la carpeta: sin horizonte ni formas que compitan, asi que
   # el texto se lee sobre cualquier parte del cuadro.
+
+calle-lluvia-toldo.mp4:
+  que_es: Una calle empedrada bajo la lluvia vista desde un toldo, con las luces reflejadas
+  etiquetas: [lluvia, calle, ciudad, toldo, empedrado, reflejo, espera, melancolia]
+  # Trae pista de audio. El reel nunca usa el audio del clip.
+
+gotas-ventana-atardecer.mp4:
+  que_es: Gotas de lluvia sobre un vidrio, con el atardecer dorado y una palmera borrosa detras
+  etiquetas: [lluvia, gotas, ventana, atardecer, dorado, borroso, interior, quietud]
+  # Pesa 30 MB: por la pagina de GitHub no entraria -el tope son 25- pero por
+  # git si. Es el mas pesado de la carpeta.
