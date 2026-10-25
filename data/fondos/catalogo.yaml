@@ -69,3 +69,10 @@ sol-entre-ramas.mp4:
 nubes-entre-pinos.mp4:
   que_es: Nubes pasando entre los pinos de una ladera, vista desde arriba
   etiquetas: [bosque, pinos, nubes, niebla, altura, verde, movimiento]
+
+valle-nubes-pueblo.mp4:
+  que_es: Nubes pasando sobre cumbres nevadas, con un valle verde y un pueblo abajo
+  etiquetas: [valle, nubes, montana, nieve, pueblo, cielo, azul, amplitud]
+  # Es un acelerado: las nubes se mueven rapido. Entra igual -el reel le baja
+  # el brillo un 16% a todo clip y le pone vineta, y el texto va con contorno
+  # y sombra- pero es el mas movido de la carpeta.
