@@ -31,6 +31,7 @@ tiempos palabra por palabra.
 from __future__ import annotations
 
 import argparse
+import json
 import random
 import sys
 from pathlib import Path
@@ -48,7 +49,7 @@ ULTIMO = None
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, fondos, frases, traducir, video  # noqa: E402
+from src import config, diario, fondos, frases, traducir, video  # noqa: E402
 
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
@@ -107,13 +108,41 @@ def musicas_del_repo(carpeta: Optional[Path] = None) -> List[Path]:
             if (carpeta / ("%s.m4a" % n)).is_file()]
 
 
-def elegir_musica(semilla: str, carpeta: Optional[Path] = None) -> Path:
-    """La pista que le toca a esta frase.
+def reels_que_salieron(registro: Optional[Path] = None) -> int:
+    """Cuántos reels se armaron hasta hoy, según `data/reels_publicados.json`.
 
-    La semilla es el id de la frase y NO el azar, igual que los clips de
-    fondo: volver a armar el mismo reel tiene que dar el mismo video, porque
-    el que aprobaste en Telegram es el que se publica. Con azar, el reel
-    aprobado y el publicado podrían sonar distinto.
+    Cuenta los armados y no los PUBLICADOS: un reel que descartaste igual
+    gastó su turno de canción, y si no contara, el siguiente repetiría la
+    suya. Sin el archivo son cero, que es lo cierto en un clon nuevo.
+    """
+    ruta = Path(registro or diario.SALIDOS)
+    if not ruta.is_file():
+        return 0
+    try:
+        datos = json.loads(ruta.read_text(encoding="utf-8") or "{}")
+    except (ValueError, OSError):
+        return 0
+    return len(datos) if isinstance(datos, dict) else 0
+
+
+def elegir_musica(registro: Optional[Path] = None,
+                  carpeta: Optional[Path] = None) -> Path:
+    """La pista que le toca al reel que se está armando.
+
+    **Va por el ORDEN en que salen los reels, no por la frase.** La primera
+    versión la elegía con un hash del id de la frase, y eso repartía parejo
+    pero dejaba repeticiones pegadas: contados los catorce reels que vienen,
+    dos caían con la misma canción que el día anterior. Un reel que suena
+    igual que el de ayer no se oye como «otra canción», que es justo lo que
+    se pidió.
+
+    Con el turno, el reel N se lleva la pista N de la lista, así que con
+    cuatro piezas no hay forma de que dos seguidos coincidan. Es además más
+    simple: no hay semilla ni azar que explicar.
+
+    Sigue siendo determinista el mismo día -el registro no cambia entre
+    armarlo y publicarlo- que es lo que importa: el reel que aprobaste en
+    Telegram tiene que ser el que sale.
 
     Si no hay ninguna generada, cae en la de siempre: quedarse sin música por
     no encontrar un archivo sería mucho peor que repetir una pista.
@@ -121,7 +150,7 @@ def elegir_musica(semilla: str, carpeta: Optional[Path] = None) -> Path:
     hay = musicas_del_repo(carpeta)
     if not hay:
         return Path(video.MUSICA)
-    return hay[random.Random("musica-%s" % semilla).randrange(len(hay))]
+    return hay[reels_que_salieron(registro) % len(hay)]
 
 
 def buscar_musica(cual: str) -> Path:
@@ -269,7 +298,7 @@ def main(argv=None) -> int:
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
                                       "  (el capitulo entero)" if args.tema else ""))
-    pista = (elegir_musica(frase.id) if args.musica == DEL_TURNO
+    pista = (elegir_musica() if args.musica == DEL_TURNO
              else buscar_musica(args.musica)) if args.musica else None
     if pista:
         print("musica: %s" % pista.name)

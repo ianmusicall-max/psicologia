@@ -5129,23 +5129,48 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         self.assertIn("--tema", vistos["argv"])
         self.assertNotIn("--id", vistos["argv"])
 
-    def test_cada_frase_tiene_su_cancion(self):
-        """Lo pidio el usuario el 2026-10-25: «varia la cancion».
+    def test_ningun_reel_repite_la_cancion_del_anterior(self):
+        """Lo pidio el usuario el 2026-10-25: «varia la cancion», y despues
+        «cambia las canciones para cada reel».
 
-        Hasta hoy todos los reels salian con `piano.m4a`.
+        La primera version la elegia con un hash del id de la frase. Repartia
+        parejo pero dejaba repeticiones PEGADAS: contados los catorce reels
+        que venian, dos caian con la misma del dia anterior, y un reel que
+        suena igual que el de ayer no se oye como otra cancion. Ahora va por
+        el turno, asi que no puede pasar.
         """
         r = _script("reelmusica", "reel.py")
         hay = r.musicas_del_repo()
         self.assertGreater(len(hay), 1, "hay una sola pista: no hay que variar")
-        # Determinista: el reel que aprobaste en Telegram es el que se
-        # publica, asi que volver a armarlo tiene que sonar igual.
-        self.assertEqual(r.elegir_musica("ans-02"), r.elegir_musica("ans-02"))
-        # Y reparte: si todas cayeran en la misma, la variedad seria de
-        # mentira. Se mira sobre el banco entero y no sobre tres ids.
-        temas = frases.leer()
-        salieron = {r.elegir_musica(f.id).stem
-                    for t in temas for f in t.frases}
-        self.assertEqual(salieron, {x.stem for x in hay})
+        with tempfile.TemporaryDirectory() as tmp:
+            registro = Path(tmp) / "reels.json"
+            datos, antes = {}, None
+            for i in range(len(hay) * 3):
+                registro.write_text(json.dumps(datos), encoding="utf-8")
+                ahora = r.elegir_musica(registro=registro)
+                # Determinista: el reel que aprobaste en Telegram es el que
+                # se publica, asi que preguntarlo dos veces el mismo dia
+                # tiene que dar lo mismo.
+                self.assertEqual(ahora, r.elegir_musica(registro=registro))
+                self.assertNotEqual(ahora, antes, "reel %d repite" % i)
+                antes = ahora
+                datos["dia-%d" % i] = {"video": "x.mp4"}
+        # Sin registro son cero reels, que es lo cierto en un clon nuevo.
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(r.reels_que_salieron(Path(tmp) / "no-esta.json"), 0)
+
+    def test_un_reel_descartado_igual_gasta_su_turno_de_cancion(self):
+        """Se cuentan los reels ARMADOS y no los publicados. Si contara solo
+        lo publicado, descartar uno dejaria al siguiente con la misma pista
+        que el que acabas de ver, que es justo lo que se vino a evitar."""
+        r = _script("reelmusica4", "reel.py")
+        with tempfile.TemporaryDirectory() as tmp:
+            registro = Path(tmp) / "reels.json"
+            registro.write_text(json.dumps({
+                "2026-10-24": {"video": "a.mp4", "publicado": True},
+                "2026-10-25": {"video": "b.mp4", "publicado": False},
+            }), encoding="utf-8")
+            self.assertEqual(r.reels_que_salieron(registro), 2)
 
     def test_la_lista_de_canciones_no_esta_escrita_dos_veces(self):
         """Las que rotan son las que declara `hacer_musica.PIEZAS` y ademas
