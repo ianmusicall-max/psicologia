@@ -35,6 +35,15 @@ on:
         description: "Capitulo entero (nombre o numero). Vacio: la frase que toca"
         required: false
         type: string
+      # Elegir la frase es, en la practica, elegir cuanto dura el reel: el
+      # guion sale de lo que el banco tiene escrito alrededor de ella, y las
+      # 243 dan entre 63 y 84 segundos reales. Pedir una del capitulo que
+      # igual tocaba no rompe la rotacion, que es por capitulo y no por
+      # frase.
+      frase:
+        description: "Que frase (ej: ans-07). Vacio: la que toca. Es como se elige el largo"
+        required: false
+        type: string
       otra_vez:
         description: "Armar otro aunque hoy ya haya salido"
         required: false
@@ -134,10 +143,12 @@ jobs:
           # dentro del script: un valor con un `;` o con comillas se correria
           # como comando. Y de paso un nombre con espacios llega entero.
           TEMA: ${{ inputs.tema }}
+          FRASE: ${{ inputs.frase }}
           VIDEO: ${{ inputs.video }}
         run: |
           ARGS=()
           if [ -n "$TEMA" ]; then ARGS+=(--tema "$TEMA"); fi
+          if [ -n "$FRASE" ]; then ARGS+=(--frase "$FRASE"); fi
           if [ -n "$VIDEO" ]; then ARGS+=(--video "$VIDEO"); fi
           if [ "${{ inputs.otra_vez }}" = "true" ]; then ARGS+=(--otra-vez); fi
           if [ "${{ inputs.sin_youtube }}" = "true" ]; then ARGS+=(--sin-youtube); fi

@@ -258,12 +258,28 @@ def a_instagram(pagina, ruta: Path, caption: str) -> str:
     return "error: %s" % " · ".join(errores)
 
 
-def armar(tema: str = "", carpeta: Path = None) -> Path:
-    """Arma el reel y devuelve donde quedo. Levanta si no se pudo."""
+def armar(tema: str = "", carpeta: Path = None, frase: str = "") -> Path:
+    """Arma el reel y devuelve donde quedo. Levanta si no se pudo.
+
+    Sin argumentos sale la frase que toca, que es como corre todos los dias.
+
+    `frase` es el id de UNA frase (`ans-07`) y sirve para elegir el largo: el
+    guion sale de lo que el banco tiene escrito alrededor de esa frase, asi
+    que cada una da un reel de un largo distinto -entre 63 y 84 segundos
+    reales, medido sobre las 243-. Pedir una de un capitulo que igual tocaba
+    no rompe la rotacion: `frases.siguiente` rota por CAPITULO, y adentro del
+    capitulo el orden da lo mismo porque van a salir todas.
+
+    `tema` es otra cosa: el capitulo ENTERO, varias frases en un reel.
+    """
     from scripts import reel  # noqa: F401  (se importa tarde: tarda)
     argv = list(COMO) + ["--carpeta", str(carpeta or video.REELS)]
     if tema:
         argv += ["--tema", tema]
+    elif frase:
+        # `elif` y no `if`: `reel.py` mira `--tema` primero y se olvida del
+        # `--id`, asi que mandar los dos haria que uno se ignore en silencio.
+        argv += ["--id", frase]
     if hay_clips():
         argv += ["--fondo", str(FONDOS)]
     reel.ULTIMO = None
@@ -421,6 +437,9 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--video", help="publicar uno ya armado en vez de armar")
     ap.add_argument("--tema", help="el capitulo entero en vez de la frase que toca")
+    ap.add_argument("--frase", metavar="ID",
+                    help="que frase (ans-07), en vez de la que toca. Es la "
+                         "forma de elegir cuanto dura el reel")
     ap.add_argument("--ver", action="store_true", help="no arma ni publica")
     ap.add_argument("--probar", action="store_true",
                     help="comprobar las credenciales de las tres. No publica")
@@ -496,7 +515,7 @@ def _trabajar(args, donde) -> int:
             return 1
     else:
         try:
-            ruta = armar(args.tema or "", Path(args.carpeta))
+            ruta = armar(args.tema or "", Path(args.carpeta), args.frase or "")
         except Exception as e:                            # noqa: BLE001
             print("No pude armar el reel: %s" % e)
             _avisar("No pude armar el reel del dia: %s" % e)

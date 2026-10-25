@@ -55,6 +55,18 @@ CUERPOS = (112, 104, 96, 88, 80, 72, 64)
 # como para no mirarlo.
 TOPE_SEGUNDOS = 90
 
+# Hasta donde se deja llegar al guion, hablado. NO es el tope de Facebook: es
+# el tope menos un margen, y el margen existe porque el ritmo real cambia con
+# el texto -la puntuacion, el largo de las frases-. Un reel calculado en 89
+# segundos que la voz dice en 91 no se puede publicar, y eso se descubre
+# DESPUES de haber pagado la voz, que es lo unico caro de armar un reel.
+#
+# El 5% es el mismo margen que la ruta del capitulo tiene desde el
+# 2026-10-23. Dicho como lo que de verdad importa: la cuenta tendria que
+# equivocarse un 4,7% para que el peor caso toque los 90, y hoy se equivoca
+# un 3% para el otro lado (ver `TOPE_LARGO`). Hay una prueba que lo fija.
+TOPE_CON_MARGEN = TOPE_SEGUNDOS * 0.95
+
 # Cuánto dura un renglón cuando NO hay voz: sin audio no hay nada que medir y
 # tiene que durar lo que tardaría en leerse.
 #
@@ -191,19 +203,41 @@ def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
     return unidades_de(frase.texto, tope) + unidades_de(frase.reflexion, tope)
 
 
-# Lo que puede durar un reel que pase el minuto, medido con la regla de este
-# archivo (`duracion_del_guion` por `VOZ_MAS_LENTA`).
+# Lo que puede durar un reel largo, medido con la regla de este archivo
+# (`duracion_del_guion` por `VOZ_MAS_LENTA`).
 #
-# 72 y no 85 porque esa regla MIDE CORTO: el reel del 2026-10-24 salio de
-# 47,2 segundos reales contra 40,5 estimados, un 17% mas. Con el tope en 72,
-# el peor caso real queda en unos 84 -debajo de los 90 que admite Facebook- y
-# el mejor, si algun dia la regla midiera exacto, en unos 54. O sea que el
-# tope esta elegido para no pasarse NUNCA, aun equivocandose la medicion en
-# la direccion que la haria pasarse.
+# **Estuvo en 72 por un numero equivocado, y se corrigio el 2026-10-25
+# midiendo contra el mp4 que esta en el repo.** Aca decia que la regla «MIDE
+# CORTO, un 17%», y de ahi salia el 72. No es asi: `data/reels/ultimo.mp4`
+# dura 47,2 segundos y la regla calcula 48,7 para el guion con el que se
+# armo, o sea que mide LARGO un 3%. El 17% venia de comparar contra un
+# calculo viejo, de antes de que `VOZ_MAS_LENTA` subiera a 1,75 el
+# 2026-10-23 -que es justamente el cambio que corrigio ese error-. Se estaba
+# descontando dos veces la misma correccion.
 #
-# Son 243 frases medidas, no un numero al ojo: con este tope las 243 del
-# banco pasan el minuto y ninguna llega a 90. Hay una prueba que lo recorre.
-TOPE_LARGO = 72.0
+# Lo que costaba: el reel del dia salia de 52 a 70 segundos reales (mediana
+# 63) cuando el usuario lo habia pedido de mas de un minuto, y pidiendolo de
+# 80 a 90 no habia forma de llegar.
+#
+# **86 y no 90, y el margen esta contado.** Con 86 el peor de las 243 frases
+# da 83 segundos reales. Si algun dia la voz tardara un 6% MAS de lo
+# calculado -hoy tarda un 3% MENOS- ese peor caso daria 88,6, todavia debajo
+# de los 90 que admiten Facebook e Instagram. Con 88 daria 90,5 y se caeria,
+# despues de haber pagado la voz.
+#
+# Son 243 frases medidas, no un numero al ojo: con este tope las 243 pasan el
+# minuto, 49 caen entre 80 y 90 y ninguna llega a 90. La mediana es 76: la
+# escalera se queda sin material antes que sin techo, asi que subirlo mas no
+# mueve la mediana, solo acerca el peor caso al limite.
+#
+# **Es el MISMO numero que `TOPE_CON_MARGEN`, y eso no es ahorro de lineas:
+# es la misma pregunta.** Las dos rutas -una frase con `--largo` y un
+# capitulo con `--tema`- terminan en el mismo `armar`, que mide la voz de
+# verdad y se niega arriba de 90. Tenerlo escrito dos veces es como se
+# descubre tarde que una de las dos copias quedo vieja, que es exactamente lo
+# que acaba de pasar: el capitulo tenia el margen bien desde el 23/10 y la
+# frase se quedo con un 72 sacado de una cuenta equivocada.
+TOPE_LARGO = TOPE_CON_MARGEN
 
 
 def primera_oracion(texto: str) -> str:
@@ -284,13 +318,6 @@ def duracion_del_guion(unidades: Sequence[str], total: Optional[float] = None) -
 # deje respirar las frases. Una voz apurada entraría de sobra y sonaría a
 # publicidad.
 VOZ_MAS_LENTA = 1.75
-
-# Hasta dónde se deja llegar al guion, hablado. NO es el tope de Facebook: es
-# el tope menos un margen, y el margen existe porque `VOZ_MAS_LENTA` sale de
-# UNA medición y el ritmo real cambia con el texto -la puntuación, el largo de
-# las frases-. Un capítulo calculado en 89 segundos que la voz dice en 91 no
-# se puede publicar, y eso se descubre después de haber pagado las 24 voces.
-TOPE_CON_MARGEN = TOPE_SEGUNDOS * 0.95
 
 # El mínimo que se busca cuando el reel es un capítulo: que pase el minuto
 # HABLADO, que es lo que se pidió. Está en segundos LEÍDOS porque es lo único

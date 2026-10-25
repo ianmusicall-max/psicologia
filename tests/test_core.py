@@ -5015,6 +5015,109 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         rdd = _script("rddlargo", "reel_del_dia.py")
         self.assertIn("--largo", rdd.COMO)
 
+    def test_la_regla_acierta_contra_el_reel_de_verdad(self):
+        """La unica prueba del archivo que mide un mp4 que de verdad salio.
+
+        Es la que agarra el error que costo el tope: hasta el 2026-10-25 el
+        comentario de `TOPE_LARGO` decia que la regla medía un 17% CORTO, y
+        de ahi salia un tope de 72 que dejaba los reels en 52-70 segundos
+        reales. Medido contra el archivo, mide un 3% LARGO. El 17% era una
+        correccion ya aplicada en `VOZ_MAS_LENTA` el 2026-10-23 y se estaba
+        descontando dos veces.
+
+        Por eso la prueba no compara numeros escritos entre si -eso es lo que
+        permitio que el error viviera- sino la cuenta contra el video.
+        """
+        reel = ROOT / "data" / "reels" / "ultimo.mp4"
+        self.assertTrue(reel.exists(), "falta el reel de referencia")
+        ficha = json.loads((reel.with_suffix("").with_suffix("")
+                            .with_name("ultimo.youtube.json"))
+                           .read_text(encoding="utf-8"))
+        temas = frases.leer()
+        frase = frases.por_id(temas, ficha["frase"])
+        self.assertIsNotNone(frase, ficha["frase"])
+        # Se armo con el guion corto, que es como salia el reel ese dia.
+        calculado = self._mide(video.guion(frase))
+        real = video.duracion(reel)
+        factor = real / calculado
+        # Un 10% para los dos lados: lo que se exige es que la regla no este
+        # equivocada EN SERIO, no clavar un decimal que cambia con el texto.
+        self.assertGreater(factor, 0.90, "la regla mide %.0f y la voz tardo %.0f"
+                           % (calculado, real))
+        self.assertLess(factor, 1.10, "la regla mide %.0f y la voz tardo %.0f"
+                        % (calculado, real))
+
+    def test_el_tope_no_se_puede_pasar_aunque_la_voz_tarde_mas(self):
+        """El margen del tope, con el numero puesto.
+
+        `armar` se niega arriba de 90 DESPUES de haber pagado la voz, asi que
+        el tope tiene que aguantar que la medicion se equivoque. Hoy la voz
+        tarda un 3% menos de lo calculado; esto exige que aun tardando un 6%
+        MAS, la peor de las 243 frases siga debajo de 90.
+        """
+        peor = max(self._mide(video.guion_largo(frase, tema))
+                   for tema, frase in self._todas())
+        self.assertLessEqual(peor, video.TOPE_LARGO)
+        # Cuanto tendria que equivocarse la cuenta para que el peor caso
+        # toque los 90. Hoy la voz tarda un 3% MENOS de lo calculado -medido
+        # contra el mp4, arriba- asi que este numero es el margen de verdad.
+        rompe = video.TOPE_SEGUNDOS / peor
+        self.assertGreater(rompe, 1.04,
+                           "con el tope en %.1f alcanza un error del %.1f%% "
+                           "para pasarse de 90" % (video.TOPE_LARGO,
+                                                   (rompe - 1) * 100))
+
+    def test_el_reel_largo_llega_a_los_ochenta(self):
+        """Lo pidio el usuario el 2026-10-25: entre 80 y 90 segundos.
+
+        No lo consiguen las 243 -la escalera se queda sin material antes que
+        sin techo, asi que la mediana es 76- pero si una de cada cinco, y
+        cada capitulo tiene alguna. Eso es lo que hace que se pueda pedir un
+        reel largo con `--frase` sin romper la rotacion, que es por capitulo.
+        """
+        por_capitulo, largas = {}, 0
+        for tema, frase in self._todas():
+            real = self._mide(video.guion_largo(frase, tema)) * 0.97
+            if 80 <= real <= 90:
+                largas += 1
+                por_capitulo.setdefault(tema.tema, []).append(frase.id)
+        self.assertGreaterEqual(largas, 40, largas)
+        # Y no se amontonan en dos capitulos: la mayoria tiene al menos una.
+        temas = {t.tema for t, _ in self._todas()}
+        self.assertGreaterEqual(len(por_capitulo), len(temas) * 0.5,
+                                sorted(por_capitulo))
+
+    def test_se_puede_pedir_una_frase_desde_el_turno_diario(self):
+        """`--frase` es como se elige el largo sin tocar el codigo."""
+        rdd = _script("rddfrase", "reel_del_dia.py")
+        vistos = {}
+
+        class _Reel:
+            ULTIMO = None
+
+            @staticmethod
+            def main(argv):
+                vistos["argv"] = list(argv)
+                _Reel.ULTIMO = "x.mp4"   # `armar` lo pone en None antes
+                return 0
+
+        with mock.patch.dict(sys.modules, {"scripts.reel": _Reel}):
+            rdd.armar(frase="ans-07")
+        self.assertIn("--id", vistos["argv"])
+        self.assertEqual(vistos["argv"][vistos["argv"].index("--id") + 1], "ans-07")
+        # Y con --tema gana el capitulo: mandar los dos haria que reel.py se
+        # olvide del --id en silencio.
+        with mock.patch.dict(sys.modules, {"scripts.reel": _Reel}):
+            rdd.armar(tema="ansiedad", frase="ans-07")
+        self.assertIn("--tema", vistos["argv"])
+        self.assertNotIn("--id", vistos["argv"])
+
+    def test_el_workflow_puede_pedir_la_frase(self):
+        texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(
+            encoding="utf-8")
+        self.assertIn("inputs.frase", texto)
+        self.assertIn("--frase", texto)
+
 
 if __name__ == "__main__":
     unittest.main()
