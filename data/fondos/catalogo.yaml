@@ -31,3 +31,15 @@ lluvia-ciudad-vidrio.mp4:
 mar-ventana-barco.mp4:
   que_es: Ventana de un barco, el mar y la costa a lo lejos
   etiquetas: [mar, ventana, viaje, azul, horizonte, partida]
+
+bosque-pinos-amanecer.mp4:
+  que_es: Pinos en una ladera, el sol bajo entre los troncos y un valle con bruma
+  etiquetas: [bosque, amanecer, sol, ladera, calidez, perspectiva, esperanza]
+
+bosque-niebla-sendero.mp4:
+  que_es: Sendero en un bosque con niebla espesa, suelo rojizo, luz gris
+  etiquetas: [bosque, niebla, sendero, gris, melancolia, camino, soledad]
+
+montana-nubes-altura.mp4:
+  que_es: Montana boscosa vista desde arriba, con las nubes por debajo
+  etiquetas: [montana, nubes, altura, cielo, azul, amplitud, distancia]
