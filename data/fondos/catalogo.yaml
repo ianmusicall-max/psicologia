@@ -115,9 +115,15 @@ ciudad-lluvia-semaforos.mp4:
 persona-paraguas-calle.mp4:
   que_es: Alguien de espaldas camina con paraguas por una calle empedrada mojada
   etiquetas: [persona, espaldas, paraguas, lluvia, calle, caminar, soledad, seguir]
-  # El UNICO con una persona, y de espaldas a proposito: una cara mirando a
-  # camara se lleva la atencion que tiene que ir a la frase. De espaldas, en
-  # cambio, el que mira se pone en ese lugar.
+  # El unico donde una persona es el SUJETO, y de espaldas a proposito: una
+  # cara mirando a camara se lleva la atencion que tiene que ir a la frase. De
+  # espaldas, en cambio, el que mira se pone en ese lugar.
+  #
+  # Aca decia «el UNICO con una persona» y dejo de ser cierto el 2026-10-25:
+  # en `ventanal-cruce-ciudad` hay una multitud, en `volante-lluvia-parabrisas`
+  # una mano y en `ventanilla-lluvia-otono` alguien en bicicleta al fondo, los
+  # tres chicos y de paso. La regla nunca fue que no haya gente sino que no
+  # haya una cara mirando a camara.
 
 lluvia-sobre-el-agua.mp4:
   que_es: Gotas de lluvia cayendo sobre agua turquesa, en circulos
@@ -155,3 +161,29 @@ torre-antena-niebla.mp4:
   etiquetas: [ciudad, torre, noche, niebla, luces, rojo, altura, soledad]
   # Viene en 1296x2304. Es la MISMA proporcion que el reel (9:16), asi que se
   # achica entero y no se recorta nada: no hace falta tocarlo.
+
+ventanilla-lluvia-otono.mp4:
+  que_es: Desde adentro de un auto parado, la calle mojada, un arbol de otono y un auto estacionado
+  etiquetas: [lluvia, ventana, interior, auto, otono, calle, gris, espera, encierro, quietud]
+  # El marco de la ventanilla ocupa los bordes del cuadro y deja el centro
+  # libre, asi que el texto cae justo en la parte limpia. Al fondo pasa
+  # alguien en bicicleta, chiquito.
+
+volante-lluvia-parabrisas.mp4:
+  que_es: Al volante bajo la lluvia, los limpiaparabrisas andando y un auto rojo adelante
+  etiquetas: [lluvia, interior, auto, ruta, viaje, avanzar, gris, encierro]
+  # Trae pista de audio. El reel nunca usa el audio del clip.
+  #
+  # Se ve una mano en el volante y el logo de la marca del auto en el centro,
+  # mas la pantalla de la radio encendida a la derecha. Nada de eso se lee a
+  # cuatro segundos y con el brillo bajado, pero el logo esta ahi: si alguna
+  # vez molesta, el recorte del reel es vertical y el volante queda abajo.
+
+ventanal-cruce-ciudad.mp4:
+  que_es: Desde un ventanal en alto, un cruce de ciudad bajo la lluvia con buses y gente
+  etiquetas: [ciudad, ventana, lluvia, altura, gris, multitud, mirar, distancia, encierro]
+  # El mas cargado de la carpeta: hay carteles de ciudad en otro idioma y
+  # mucha gente cruzando, todo chico y lejos. Es ruido de fondo, no detalle:
+  # a cuatro segundos lo que queda es «una ciudad desde arriba, con lluvia».
+  # Por eso mismo no sirve para los capitulos de quietud, y si para los de
+  # ansiedad, redes y soledad en medio de la gente.
