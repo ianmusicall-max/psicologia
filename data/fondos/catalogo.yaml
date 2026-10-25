@@ -76,3 +76,11 @@ valle-nubes-pueblo.mp4:
   # Es un acelerado: las nubes se mueven rapido. Entra igual -el reel le baja
   # el brillo un 16% a todo clip y le pone vineta, y el texto va con contorno
   # y sombra- pero es el mas movido de la carpeta.
+
+arbol-contraluz-rayos.mp4:
+  que_es: Un arbol a contraluz en un parque, con los rayos entrando en la bruma
+  etiquetas: [arbol, contraluz, rayos, amanecer, parque, sombra, calidez, quietud]
+
+castillo-niebla-amanecer.mp4:
+  que_es: La silueta de un castillo sobre una colina, con un mar de niebla debajo
+  etiquetas: [castillo, niebla, amanecer, azul, distancia, silueta, calma, lejania]
