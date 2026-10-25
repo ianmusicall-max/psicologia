@@ -105,3 +105,22 @@ balcon-ciudad-nublado.mp4:
 tranvia-verde-vacio.mp4:
   que_es: El interior vacio de un tranvia verde, con la ciudad por la ventanilla
   etiquetas: [tranvia, transporte, interior, verde, ciudad, vacio, viaje, soledad]
+
+ciudad-lluvia-semaforos.mp4:
+  que_es: Calle de ciudad bajo la lluvia vista tras un vidrio, con los semaforos en rojo
+  etiquetas: [lluvia, ciudad, semaforo, rojo, vidrio, reflejo, gris, espera]
+  # Tiene carteles de calle legibles al fondo, chicos y desenfocados. A cuatro
+  # segundos y con el brillo bajado no se leen, pero conviene saberlo.
+
+persona-paraguas-calle.mp4:
+  que_es: Alguien de espaldas camina con paraguas por una calle empedrada mojada
+  etiquetas: [persona, espaldas, paraguas, lluvia, calle, caminar, soledad, seguir]
+  # El UNICO con una persona, y de espaldas a proposito: una cara mirando a
+  # camara se lleva la atencion que tiene que ir a la frase. De espaldas, en
+  # cambio, el que mira se pone en ese lugar.
+
+lluvia-sobre-el-agua.mp4:
+  que_es: Gotas de lluvia cayendo sobre agua turquesa, en circulos
+  etiquetas: [lluvia, agua, turquesa, gotas, calma, abstracto, quietud, repeticion]
+  # El mas parejo de la carpeta: sin horizonte ni formas que compitan, asi que
+  # el texto se lee sobre cualquier parte del cuadro.
