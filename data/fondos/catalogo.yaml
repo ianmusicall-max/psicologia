@@ -208,3 +208,38 @@ ventanilla-nieve-azul.mp4:
   #
   # Hay una mano apoyada en el marco, abajo a la derecha, y nada mas: es un
   # clip de mirar por la ventanilla, no de alguien.
+
+calle-rieles-noche.mp4:
+  que_es: Una calle de ciudad mojada de noche, con rieles al costado y los faroles reflejados en el asfalto
+  etiquetas: [ciudad, noche, lluvia, calle, rieles, asfalto, reflejo, oscuro, soledad, espera]
+  # Camara quieta: el encuadre es el mismo en el segundo 1 y en el 3,5, y lo
+  # unico que pasa es un camion.
+  #
+  # **El mas oscuro de la carpeta**: brillo medio 20 de 255 en los cuatro
+  # segundos que se usan, por debajo de `carretera-noche-lluvia`, que tenia el
+  # record con 22. Medido, no estimado. El texto blanco se lee de sobra; lo
+  # que hay que saber es que es el limite -el reel ademas baja el brillo un
+  # 16%, asi que de aca para abajo la imagen deja de verse-.
+
+gato-ventana-gris.mp4:
+  que_es: Un gato de espaldas sentado frente a una puerta de vidrio, mirando un patio gris con lluvia
+  etiquetas: [gato, ventana, interior, gris, monocromo, mirar, espera, quietud, hogar, soledad]
+  # **El UNICO en blanco y negro**, y no «desaturado»: se comprobo pixel por
+  # pixel y la diferencia entre los tres canales de un mismo pixel es CERO.
+  # El resto de la carpeta va de 2,6 a 41,3 de saturacion media, asi que este
+  # queda afuera de ese rango. Entra igual -el reel le baja el color un 10% a
+  # todo- pero al lado de `lluvia-sobre-el-agua`, que es el turquesa, el salto
+  # se nota. Si un dia hay que elegir uno solo para un reel, que no se mezcle
+  # con los de color fuerte.
+  #
+  # El unico con un animal, y de espaldas, igual que el de la persona con
+  # paraguas y por el mismo motivo: nada mira a camara, asi que el que mira se
+  # pone en ese lugar. Es el clip de esperar algo que no llega.
+
+lluvia-farol-casa.mp4:
+  que_es: Lluvia fuerte de noche contra un farol y una casa amarilla con una ventana encendida
+  etiquetas: [lluvia, noche, farol, casa, ventana, hogar, vegetacion, oscuro, melancolia, quietud]
+  # De los pocos donde la lluvia se VE caer -hilos contra la luz del farol- y
+  # no es solo un vidrio mojado. Brillo medio 46: de los cuatro mas oscuros.
+  # La ventana encendida al fondo es lo unico claro del cuadro y queda abajo,
+  # asi que no pelea con el texto.
