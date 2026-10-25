@@ -135,3 +135,13 @@ gotas-ventana-atardecer.mp4:
   etiquetas: [lluvia, gotas, ventana, atardecer, dorado, borroso, interior, quietud]
   # Pesa 30 MB: por la pagina de GitHub no entraria -el tope son 25- pero por
   # git si. Es el mas pesado de la carpeta.
+
+ruta-mojada-anochecer.mp4:
+  que_es: Avanzando por una ruta mojada al anochecer, con las luces reflejadas en el asfalto
+  etiquetas: [lluvia, ruta, asfalto, anochecer, luces, reflejo, movimiento, avanzar]
+
+esquina-otono-noche.mp4:
+  que_es: Una esquina de ciudad en otono, de noche y con lluvia, las hojas naranjas bajo el farol
+  etiquetas: [ciudad, otono, noche, lluvia, naranja, farol, esquina, soledad, cotidiano]
+  # Tiene un cartel de transito y un semaforo peatonal, chicos. A cuatro
+  # segundos y con el brillo bajado no se leen.
