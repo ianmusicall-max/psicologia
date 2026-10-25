@@ -96,3 +96,12 @@ otono-rojizo-niebla.mp4:
 sierras-azules-amanecer.mp4:
   que_es: Sierras azules en capas al amanecer, con un rio de niebla en el valle
   etiquetas: [sierras, azul, amanecer, niebla, capas, distancia, amplitud, calma]
+
+balcon-ciudad-nublado.mp4:
+  que_es: Desde un balcon con baranda, las copas de los arboles y la ciudad al fondo
+  etiquetas: [ventana, balcon, ciudad, nublado, mirar, espera, distancia, encierro]
+  # Trae pista de audio, como la ladera. El reel nunca usa el audio del clip.
+
+tranvia-verde-vacio.mp4:
+  que_es: El interior vacio de un tranvia verde, con la ciudad por la ventanilla
+  etiquetas: [tranvia, transporte, interior, verde, ciudad, vacio, viaje, soledad]
