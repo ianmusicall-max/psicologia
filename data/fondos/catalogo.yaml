@@ -51,3 +51,13 @@ ruta-montana-nevada.mp4:
 colinas-otono-niebla.mp4:
   que_es: Colinas boscosas en otono vistas desde arriba, con niebla en el valle
   etiquetas: [bosque, otono, colinas, niebla, altura, rojizo, distancia, calma]
+
+ladera-bruma-anochecer.mp4:
+  que_es: Una ladera boscosa al anochecer, con la bruma pasando por encima
+  etiquetas: [ladera, bruma, anochecer, azul, oscuro, melancolia, quietud]
+  # Trae pista de audio. No molesta -el reel nunca usa el audio del clip- y
+  # son 150 KB: no vale la pena tocar el archivo por eso.
+
+cumbre-sobre-nubes.mp4:
+  que_es: Una cumbre asomando sobre un mar de nubes, con cielo azul
+  etiquetas: [montana, cumbre, nubes, altura, cielo, azul, amplitud, claridad]
