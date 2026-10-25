@@ -175,11 +175,26 @@ jobs:
             echo "Todavia no salio ningun reel."
             exit 0
           fi
-          git add -f data/reels_publicados.json
+          git add -f data/reels_publicados.json data/factor_voz.jsonl
           if git diff --staged --quiet; then
             echo "Nada que guardar."
             exit 0
           fi
           git commit -m "Reel del dia: $(date +'%Y-%m-%d')"
-          git pull --rebase --autostash
+          # El rebase se reintenta porque DOS corridas del mismo dia chocan en
+          # el mismo renglon del json y el conflicto deja la corrida en rojo
+          # DESPUES de haber publicado. Paso el 2026-10-25: el reel salio en
+          # las tres plataformas y su registro se perdio, asi que el repo
+          # creia que ese dia no habia salido nada.
+          #
+          # `-X theirs` durante el rebase se queda con LO QUE SE ESTA
+          # APLICANDO, que es este commit: el registro de la corrida que
+          # acaba de publicar. Lo que la otra corrida anoto se pierde para
+          # ese dia, y es lo correcto -la que publico es esta- pero no para
+          # los demas dias, que no estan en conflicto.
+          git pull --rebase --autostash -X theirs || {
+            echo "El rebase fallo igual; dejo el registro sin subir."
+            git rebase --abort || true
+            exit 0
+          }
           git push

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import statistics
 import dataclasses
 import json
 import os
@@ -2481,24 +2482,45 @@ class TestElReelDeUnCapitulo(unittest.TestCase):
                 self.assertGreater(real, 50, t.tema)
             else:
                 self.assertGreater(real, 60, t.tema)
-        # Son los capítulos cuyas reflexiones son las más largas del banco:
-        # cualquier par de sus partes se pasa del techo, así que lo que sale
-        # es una parte sola. `intimidad` se sumó el 2026-10-25, cuando el
-        # techo bajó de 85,5 a 82 para dejarle lugar a las pausas: su tesis y
-        # su frase más corta suman 82,7 y antes entraban por un pelo.
+        # Hoy NINGUNO queda corto. `ruptura` e `intimidad` lo estaban
+        # mientras el factor decía 1,75: el cálculo los creía 40% más largos
+        # de lo que son, así que cualquier par de sus partes "se pasaba" del
+        # techo y salía una sola. Con 1,25 entran los veintinueve.
         #
-        # Es el precio de la voz más pausada, y está acotado: los otros 27
-        # capítulos quedan entre 60 y 86 segundos reales, con mediana 85.
-        self.assertEqual(cortos, ["ruptura", "intimidad"])
+        # La lista NO está escrita a mano: se deduce del texto, así que el
+        # día que una reflexión crezca de verdad, esto lo dice.
+        self.assertEqual(cortos, [])
 
     def test_si_ninguna_frase_entra_con_la_tesis_la_tesis_se_va(self):
         # La tesis sola es un resumen sin un solo ejemplo. Entre la tesis y
         # una frase con su reflexión, lo que sostiene el reel es la frase.
-        t = [x for x in TEMAS if x.tema == "ruptura"][0]
+        #
+        # Hoy NINGÚN capítulo del banco llega a ese caso: con el factor
+        # corregido el 2026-10-25 -1,25 en vez de 1,75- entra la tesis y al
+        # menos una frase en los veintinueve, `ruptura` incluida, que era el
+        # que lo provocaba. Así que la regla se prueba con un capítulo
+        # armado para eso, y además se exige que el banco real no lo tenga:
+        # el día que una reflexión crezca hasta provocarlo, esta prueba lo
+        # dice en vez de taparlo.
+        for t in TEMAS:
+            junto = " ".join(video.guion_de_tema(t))
+            self.assertIn(" ".join(t.tesis.split())[:40], junto, t.tema)
+        # Un capítulo armado para el caso: la tesis sola entra (57 s) y la
+        # frase sola entra (57 s), pero las dos juntas no (114 contra 85,5).
+        tesis = "tesis " * 95
+        cuerpo = "cuerpo " * 95
+        t = dataclasses.replace(
+            TEMAS[0], tesis=tesis,
+            frases=[dataclasses.replace(TEMAS[0].frases[0],
+                                        texto=cuerpo, reflexion="")])
+        sola = self._hablado(video.unidades_de(tesis))
+        self.assertLess(sola, video.TOPE_CON_MARGEN, "la tesis sola no entra")
+        self.assertGreater(sola * 2, video.TOPE_CON_MARGEN, "entran las dos")
         junto = " ".join(video.guion_de_tema(t))
-        self.assertNotIn(" ".join(t.tesis.split())[:40], junto)
-        entraron = [f for f in t.frases if " ".join(f.texto.split()) in junto]
-        self.assertEqual(len(entraron), 1)
+        # Sale la frase y NO la tesis: una tesis sola es un resumen sin un
+        # solo ejemplo, y lo que sostiene el reel es la frase.
+        self.assertIn("cuerpo", junto)
+        self.assertNotIn("tesis", junto)
 
     def test_el_largo_no_depende_del_orden_de_las_frases(self):
         # Es lo que se gana eligiendo por combinación en vez de una detrás de
@@ -2512,8 +2534,45 @@ class TestElReelDeUnCapitulo(unittest.TestCase):
             self.assertAlmostEqual(self._hablado(video.guion_de_tema(alrevés)),
                                    derecho, delta=0.1, msg=nombre)
 
-    def test_lo_que_tarda_la_voz_sale_de_una_medicion(self):
-        self.assertAlmostEqual(video.VOZ_MAS_LENTA, 1.75)
+    def test_lo_que_tarda_la_voz_sale_de_las_mediciones_guardadas(self):
+        """El factor no se compara contra un número escrito al lado: se
+        compara contra lo que tardaron los reels que de verdad salieron,
+        anotado en `data/factor_voz.jsonl`.
+
+        Antes esta prueba decía `assertAlmostEqual(1.75)`, o sea que
+        comparaba la constante consigo misma. Por eso siguió en verde los
+        tres días en que el reel salía un 40% más corto de lo que el código
+        creía: lo único que habría puesto esto en rojo es alguien cambiando
+        el número, que es justamente lo que había que hacer.
+        """
+        medidos = []
+        archivo = ROOT / "data" / "factor_voz.jsonl"
+        if archivo.exists():
+            for linea in archivo.read_text(encoding="utf-8").splitlines():
+                if linea.strip():
+                    medidos.append(json.loads(linea))
+        self.assertTrue(medidos, "no hay ninguna medición guardada")
+        # El factor tiene que cubrir al peor medido: si predijera menos de lo
+        # que la voz tarda, el cálculo diría que entra y el reel se pasaría
+        # de 90 DESPUÉS de pagar la voz.
+        peor = max(m["factor"] for m in medidos)
+        self.assertGreaterEqual(video.VOZ_MAS_LENTA, peor,
+                                "la voz tardó %.3f y el código predice %.3f"
+                                % (peor, video.VOZ_MAS_LENTA))
+        # Y no tanto que sobre: con el doble de lo medido, cada reel saldría
+        # a la mitad de lo que podría durar. Es el error que tuvo 1,75.
+        self.assertLess(video.VOZ_MAS_LENTA, peor * 1.35,
+                        "el factor sobra: %.2f contra %.3f medido"
+                        % (video.VOZ_MAS_LENTA, peor))
+        # Las pausas están DENTRO del factor, porque se midió sobre el mp4
+        # terminado. Moverlas sin volver a medir deja la predicción vieja.
+        for m in medidos:
+            if "pausa" in m:
+                self.assertAlmostEqual(
+                    m["pausa"], video.PAUSA_CALIBRADA, places=3,
+                    msg="se midió con PAUSA=%s y hoy es %s" % (m["pausa"], video.PAUSA))
+        self.assertAlmostEqual(video.PAUSA, video.PAUSA_CALIBRADA, places=3,
+                               msg="cambió PAUSA sin volver a medir el factor")
         # El objetivo está en segundos leídos y el minuto es hablado: se
         # deriva uno del otro y no se escriben aparte, así que cambiar el
         # factor no deja al objetivo mintiendo.
@@ -5026,37 +5085,47 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         rdd = _script("rddlargo", "reel_del_dia.py")
         self.assertIn("--largo", rdd.COMO)
 
-    def test_la_regla_acierta_contra_el_reel_de_verdad(self):
-        """La unica prueba del archivo que mide un mp4 que de verdad salio.
+    def test_la_medicion_no_se_hace_contra_un_archivo_de_otro_idioma(self):
+        """La prueba que ANTES vivía acá estaba mal construida, y conviene
+        que quede escrito porque costó tres días y un reel de 52 segundos
+        donde se habían prometido 82.
 
-        Es la que agarra el error que costo el tope: hasta el 2026-10-25 el
-        comentario de `TOPE_LARGO` decia que la regla medía un 17% CORTO, y
-        de ahi salia un tope de 72 que dejaba los reels en 52-70 segundos
-        reales. Medido contra el archivo, mide un 3% LARGO. El 17% era una
-        correccion ya aplicada en `VOZ_MAS_LENTA` el 2026-10-23 y se estaba
-        descontando dos veces.
+        Medía `data/reels/ultimo.mp4` -47,2 s- contra la estimación del
+        guion en ESPAÑOL -48,7 s- y concluía que la regla acertaba al 3%.
+        Pero ese mp4 está hablado en INGLÉS: con `--ingles` la voz dice la
+        traducción, que es más compacta. O sea que comparaba dos cosas
+        distintas, y lo que parecía una verificación eran dos errores que se
+        cancelaban.
 
-        Por eso la prueba no compara numeros escritos entre si -eso es lo que
-        permitio que el error viviera- sino la cuenta contra el video.
+        Lo único comparable es lo que el propio `contar_lo_que_tardo` mide
+        en cada corrida: el texto que SE LEYÓ contra el audio que salió. Eso
+        ahora se guarda (`data/factor_voz.jsonl`) y lo revisa
+        `test_lo_que_tarda_la_voz_sale_de_las_mediciones_guardadas`.
+
+        Lo que queda acá es la guarda contra volver a hacerlo: nadie puede
+        comparar el guion en español contra ese mp4 y llamarlo verificación.
         """
         reel = ROOT / "data" / "reels" / "ultimo.mp4"
         self.assertTrue(reel.exists(), "falta el reel de referencia")
-        ficha = json.loads((reel.with_suffix("").with_suffix("")
-                            .with_name("ultimo.youtube.json"))
-                           .read_text(encoding="utf-8"))
-        temas = frases.leer()
-        frase = frases.por_id(temas, ficha["frase"])
-        self.assertIsNotNone(frase, ficha["frase"])
-        # Se armo con el guion corto, que es como salia el reel ese dia.
-        calculado = self._mide(video.guion(frase))
-        real = video.duracion(reel)
-        factor = real / calculado
-        # Un 10% para los dos lados: lo que se exige es que la regla no este
-        # equivocada EN SERIO, no clavar un decimal que cambia con el texto.
-        self.assertGreater(factor, 0.90, "la regla mide %.0f y la voz tardo %.0f"
-                           % (calculado, real))
-        self.assertLess(factor, 1.10, "la regla mide %.0f y la voz tardo %.0f"
-                        % (calculado, real))
+        # Se lee el AST y no el texto, que es la lección de siempre acá: esta
+        # misma prueba NOMBRA `ultimo.mp4` y `guion` para explicar el error,
+        # así que un buscador de palabras se acusaría a sí misma. Pasó al
+        # escribirla.
+        arbol = ast.parse((ROOT / "tests" / "test_core.py").read_text(
+            encoding="utf-8"))
+        culpables = []
+        for nodo in ast.walk(arbol):
+            if not isinstance(nodo, ast.FunctionDef):
+                continue
+            if nodo.name == "test_la_medicion_no_se_hace_contra_un_archivo_de_otro_idioma":
+                continue
+            fuente = ast.dump(nodo)
+            mide = "'ultimo.mp4'" in fuente and "'duracion'" in fuente
+            if mide and "'guion'" in fuente:
+                culpables.append(nodo.name)
+        self.assertEqual(culpables, [],
+                         "comparan el guion en español contra un mp4 hablado "
+                         "en inglés: %s" % culpables)
 
     def test_el_tope_no_se_puede_pasar_aunque_la_voz_tarde_mas(self):
         """El margen del tope, con el numero puesto.
@@ -5066,43 +5135,46 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         tarda un 3% menos de lo calculado; esto exige que aun tardando un 6%
         MAS, la peor de las 243 frases siga debajo de 90.
         """
-        peor_estimado = max(self._mide(video.guion_largo(frase, tema))
-                            for tema, frase in self._todas())
-        self.assertLessEqual(peor_estimado, video.TOPE_LARGO)
-        # Y el que importa: el largo REAL, con el silencio entre renglones
-        # adentro. Es lo que ata `PAUSA` al techo -subir una sin bajar el
-        # otro pone esto en rojo- y es justo lo que el tope no miraba cuando
-        # el silencio era de 0,28 por renglon.
         peor = max(video.segundos_reales(video.guion_largo(frase, tema))
                    for tema, frase in self._todas())
-        self.assertLess(peor, video.TOPE_SEGUNDOS - 3,
-                        "el peor caso daria %.1f s y el tope son %d"
-                        % (peor, video.TOPE_SEGUNDOS))
-        # Las dos partes pesan: si el silencio fuera despreciable, esta
-        # cuenta sobraria y el dia que alguien baje `PAUSA` conviene que se
-        # entere aca.
-        self.assertGreater(peor - peor_estimado * video.MIDE_LARGO, 3,
-                           "las pausas casi no suman: revisar PAUSA")
+        self.assertLessEqual(peor, video.TOPE_LARGO)
+        # Cuanto tendria que equivocarse la cuenta para que el peor caso
+        # toque los 90. El factor sale de UNA medicion, asi que el margen
+        # tiene que ser un numero y no un adjetivo.
+        rompe = video.TOPE_SEGUNDOS / peor
+        self.assertGreater(rompe, 1.04,
+                           "con el tope en %.1f alcanza un error del %.1f%% "
+                           "para pasarse de 90" % (video.TOPE_LARGO,
+                                                   (rompe - 1) * 100))
+        # Y el techo es el MISMO para las dos rutas: dos copias es como se
+        # descubre tarde que una quedo vieja.
+        self.assertAlmostEqual(video.TOPE_LARGO, video.TOPE_CON_MARGEN)
 
-    def test_el_reel_largo_llega_a_los_ochenta(self):
-        """Lo pidio el usuario el 2026-10-25: entre 80 y 90 segundos.
+    def test_una_frase_sola_no_llega_a_los_ochenta_y_el_capitulo_si(self):
+        """Lo que de verdad da cada ruta, medido con el factor corregido.
 
-        No lo consiguen las 243 -la escalera se queda sin material antes que
-        sin techo, asi que la mediana es 76- pero si una de cada cinco, y
-        cada capitulo tiene alguna. Eso es lo que hace que se pueda pedir un
-        reel largo con `--frase` sin romper la rotacion, que es por capitulo.
+        El usuario pidió el 2026-10-25 reels de 80 a 90 segundos. Con una
+        frase NO se llega: la escalera -tesis, frase, reflexión, principio-
+        se queda sin material antes que sin techo, así que la mediana es 61
+        y el techo del banco entero ronda los 75. Subir el tope no lo mueve.
+
+        Esta prueba existía diciendo lo contrario -«42 de las 243 entre 80 y
+        90»- porque el cálculo creía que la voz tardaba un 40% más de lo que
+        tarda. Queda escrito con el número para que nadie vuelva a prometer
+        un largo que el banco no tiene.
+
+        La ruta que SÍ llega es el capítulo, que suma frases enteras.
         """
-        por_capitulo, largas = {}, 0
-        for tema, frase in self._todas():
-            real = video.segundos_reales(video.guion_largo(frase, tema))
-            if 80 <= real <= 90:
-                largas += 1
-                por_capitulo.setdefault(tema.tema, []).append(frase.id)
-        self.assertGreaterEqual(largas, 40, largas)
-        # Y no se amontonan en dos capitulos: la mayoria tiene al menos una.
-        temas = {t.tema for t, _ in self._todas()}
-        self.assertGreaterEqual(len(por_capitulo), len(temas) * 0.5,
-                                sorted(por_capitulo))
+        unas = [video.segundos_reales(video.guion_largo(frase, tema))
+                for tema, frase in self._todas()]
+        self.assertLess(statistics.median(unas), 70, statistics.median(unas))
+        self.assertLess(max(unas), 85, max(unas))
+        caps = [video.segundos_reales(video.guion_de_tema(t))
+                for t in frases.leer()]
+        self.assertGreater(statistics.median(caps), 75, statistics.median(caps))
+        # Y ninguna de las dos puede pasarse: `armar` cobra la voz y después
+        # se niega arriba de 90.
+        self.assertLess(max(unas + caps), video.TOPE_SEGUNDOS)
 
     def test_se_puede_pedir_una_frase_desde_el_turno_diario(self):
         """`--frase` es como se elige el largo sin tocar el codigo."""

@@ -204,12 +204,49 @@ def contar_lo_que_tardo(unidades, duraciones) -> float:
     print("Calculado %.0f s, la voz tardo %.0f. El factor real es %.2f "
           "(en el codigo, %.2f)." % (leido * video.VOZ_MAS_LENTA, real,
                                      factor, video.VOZ_MAS_LENTA))
+    anotar_factor(leido, real, factor)
     if factor > video.VOZ_MAS_LENTA:
         # No es un detalle: con el factor corto, el calculo dice que entra y
         # la voz se pasa. Hay que subir la constante, no el margen.
         print("OJO: la voz tardo MAS de lo calculado. Subi "
               "video.VOZ_MAS_LENTA a %.2f o mas." % (factor + 0.03))
     return factor
+
+
+FACTORES = Path(video.ROOT) / "data" / "factor_voz.jsonl"
+
+
+def anotar_factor(leido: float, real: float, factor: float,
+                  archivo: Optional[Path] = None) -> None:
+    """Guarda lo que tardo la voz de verdad, un renglon por reel.
+
+    **Hasta el 2026-10-25 este numero solo se IMPRIMIA.** El log de una
+    corrida de GitHub se mira una vez y se olvida, asi que `VOZ_MAS_LENTA`
+    siguio en 1,75 mientras los reels salian un 40% mas cortos de lo que el
+    codigo creia, y el error se descubrio de casualidad leyendo un log por
+    otra cosa. Anotarlo cuesta un renglon y convierte «una corazonada con
+    suerte» en una serie que se puede promediar.
+
+    Se anota tambien `pausa`, porque el factor la trae adentro: comparar dos
+    corridas con pausas distintas seria comparar dos cosas.
+
+    Nunca revienta: el reel ya esta armado y pagado, y perderlo por no poder
+    escribir un renglon de telemetria seria absurdo.
+    """
+    import json
+    from datetime import datetime
+    ruta = Path(archivo or FACTORES)
+    try:
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        with ruta.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({
+                "cuando": datetime.now().isoformat(timespec="seconds"),
+                "leido": round(leido, 2), "real": round(real, 2),
+                "factor": round(factor, 3),
+                "en_el_codigo": video.VOZ_MAS_LENTA,
+                "pausa": video.PAUSA}, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
 
 
 def main(argv=None) -> int:

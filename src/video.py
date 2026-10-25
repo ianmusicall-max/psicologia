@@ -61,18 +61,16 @@ TOPE_SEGUNDOS = 90
 # segundos que la voz dice en 91 no se puede publicar, y eso se descubre
 # DESPUES de haber pagado la voz, que es lo unico caro de armar un reel.
 #
-# **Baja de 85,5 a 82 el 2026-10-25, al agrandar `PAUSA`.** El calculo de
-# este archivo mide el TEXTO, por caracteres, y no cuenta el silencio entre
-# renglones; ese silencio es tiempo real igual. Subir la pausa de 0,28 a 0,55
-# le agrega a un reel de veinte renglones unos 5,4 segundos que el calculo no
-# ve, asi que el techo tiene que devolverlos.
+# Ahora que `VOZ_MAS_LENTA` predice segundos REALES, esto es simplemente el
+# tope de Facebook e Instagram menos un 5%. El margen existe porque el factor
+# sale de UNA medicion y el ritmo cambia con el texto: un reel calculado en 89
+# que la voz diga en 91 no se puede publicar, y eso se descubre DESPUES de
+# haber pagado la voz, que es lo unico caro de armar un reel.
 #
-# El numero esta medido sobre las 243 frases del banco, no elegido al ojo:
-# con la pausa de hoy el peor caso da 86 segundos reales, cuatro debajo de
-# los 90 que admiten Facebook e Instagram, y la mediana queda en 80. Con el
-# techo en 85,5 el peor caso daria 90 justos. Hay una prueba que lo recorre y
-# que se pone en rojo si alguien sube la pausa sin bajar el techo.
-TOPE_CON_MARGEN = 82.0
+# Estuvo en 82 por unas horas el 2026-10-25, para "devolver" el tiempo de las
+# pausas que el calculo no veia. Ya no hace falta: el factor se midio sobre el
+# mp4 terminado, asi que las pausas estan adentro.
+TOPE_CON_MARGEN = TOPE_SEGUNDOS * 0.95
 
 # Cuánto dura un renglón cuando NO hay voz: sin audio no hay nada que medir y
 # tiene que durar lo que tardaría en leerse.
@@ -247,40 +245,23 @@ def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
 TOPE_LARGO = TOPE_CON_MARGEN
 
 
-# Cuanto se equivoca la regla de este archivo al medir lo HABLADO, sin contar
-# las pausas. Medido contra `data/reels/ultimo.mp4`, que esta en el repo: la
-# regla calcula 48,7 s para el guion con el que se armo y el archivo dura
-# 47,2. O sea que mide un 3% LARGO.
-#
-# **Es UNA medicion.** Por eso no se usa para corregir `VOZ_MAS_LENTA` -eso
-# seria reescribir la regla con un solo dato- sino para elegir los topes con
-# margen y para poder preguntar «cuanto va a durar esto de verdad» sin pagar
-# la voz. Hay una prueba que lo vuelve a medir contra el archivo.
-MIDE_LARGO = 0.97
-
-
 def segundos_reales(unidades: Sequence[str]) -> float:
-    """Lo que va a durar el reel de verdad, antes de pagar la voz.
+    """Lo que va a durar el reel, antes de pagar la voz.
 
-    Son DOS cosas y hasta el 2026-10-25 se contaba una sola:
+    Es la UNICA forma de preguntarlo, y es una multiplicacion: el factor se
+    midio sobre un mp4 terminado, asi que ya trae adentro las pausas entre
+    renglones y la cola.
 
-      1. lo hablado, que es la regla de este archivo corregida por
-         `MIDE_LARGO`;
-      2. el silencio entre renglones, que el calculo NO ve -su regla es por
-         caracteres- y que con `PAUSA` en 0,55 son unos 11 segundos de un
-         reel de veinte renglones.
-
-    Se cuenta solo lo que `PAUSA` AGREGO sobre `PAUSA_CALIBRADA`, porque la
-    pausa que habia cuando se midio el archivo ya esta adentro de
-    `MIDE_LARGO`. Sumarla entera seria contarla dos veces, que es exactamente
-    el error que tuvo el tope hasta hoy.
+    La version anterior sumaba las pausas aparte y corregia con otro factor.
+    Estaba mal de dos maneras: el factor salia de comparar la estimacion en
+    espanol contra un archivo hablado en ingles, y las pausas se cuentan por
+    ORACION dicha y no por renglon del subtitulo -que con `--ingles` no son
+    lo mismo, 8 contra 21 en el reel que lo descubrio-.
 
     Es una prediccion y no una promesa: quien decide es `armar`, que mide la
     voz ya sintetizada y se niega arriba de `TOPE_SEGUNDOS`.
     """
-    unidades = list(unidades)
-    hablado = duracion_del_guion(unidades) * VOZ_MAS_LENTA * MIDE_LARGO
-    return hablado + (PAUSA - PAUSA_CALIBRADA) * len(unidades)
+    return duracion_del_guion(unidades) * VOZ_MAS_LENTA
 
 
 def primera_oracion(texto: str) -> str:
@@ -359,8 +340,36 @@ def duracion_del_guion(unidades: Sequence[str], total: Optional[float] = None) -
 #
 # Tiene sentido que sea tanto: `INSTRUCCIONES` le pide ritmo pausado y que
 # deje respirar las frases. Una voz apurada entraría de sobra y sonaría a
-# publicidad.
-VOZ_MAS_LENTA = 1.75
+# Cuanto dura el reel DE VERDAD por cada segundo que mide `duracion_del_guion`
+# sobre el texto en espanol. O sea: `duracion_del_guion(unidades) * esto` son
+# segundos de video, pausas y cola incluidas.
+#
+# **Estuvo en 1,75 y el reel salia un 40% mas corto de lo que el codigo creia.**
+# Se vio el 2026-10-25 en el log de la corrida de `ans-01`, que es el primer
+# reel medido con esta configuracion:
+#
+#     leido(ES) 45,1 s  ->  el mp4 dura 52,0 s   =>  factor 1,153
+#     leido(EN) 42,3 s  ->  el mp4 dura 52,0 s   =>  factor 1,229
+#
+# Son dos lecturas de la MISMA medicion: el guion se elige midiendo el
+# espanol, pero la voz dice la traduccion al ingles, que es mas compacta. El
+# 1,25 cubre las dos con un poco de margen.
+#
+# **Por que el 1,75 sobrevivio tanto**: venia de medir la voz `onyx` de
+# OpenAI diciendo ESPANOL (58 s leidos, 100 dichos, el 2026-10-23), y despues
+# se cambio a ElevenLabs diciendo INGLES sin volver a medir. Y el 2026-10-25
+# se "verifico" contra `data/reels/ultimo.mp4` comparando la estimacion en
+# espanol contra un archivo hablado en ingles: dio 0,97 y se leyo como que la
+# regla acertaba. No acertaba; eran dos errores que se cancelaban.
+#
+# **Incluye las pausas** (`PAUSA`), porque se midio sobre el mp4 terminado. Si
+# `PAUSA` cambia, este numero hay que volver a medirlo: hay una prueba que ata
+# las dos cosas.
+#
+# `scripts/reel.py` lo recalcula en CADA corrida y lo anota en
+# `data/factor_voz.jsonl`. Con tres o cuatro reels se corrige con datos y no
+# con una medicion, que es como se llego al 1,75.
+VOZ_MAS_LENTA = 1.25
 
 # El mínimo que se busca cuando el reel es un capítulo: que pase el minuto
 # HABLADO, que es lo que se pidió. Está en segundos LEÍDOS porque es lo único
@@ -651,12 +660,11 @@ VOZ_MAC = "Juan"
 # ata: sube la pausa sin bajar el techo y se pone en rojo.
 PAUSA = 0.55
 
-# La pausa que estaba puesta cuando se calibró la regla de este archivo
-# contra un reel de verdad (`data/reels/ultimo.mp4`, el del 2026-10-24). No
-# es historia: es lo que permite saber cuánto tiempo REAL agrega haber
-# subido `PAUSA`, que es exactamente `(PAUSA - PAUSA_CALIBRADA)` por renglón.
-# Sin este número habría que volver a medir un reel cada vez.
-PAUSA_CALIBRADA = 0.28
+# La pausa que estaba puesta cuando se midio `VOZ_MAS_LENTA` contra un mp4
+# terminado. No es historia: ese factor trae las pausas adentro, asi que
+# cambiar `PAUSA` sin volver a medirlo deja la prediccion vieja. Hay una
+# prueba que exige que los dos se muevan juntos.
+PAUSA_CALIBRADA = 0.55
 
 
 def _correr(orden: List[str], que: str, espera: int = 300) -> None:
