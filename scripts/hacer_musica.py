@@ -66,6 +66,46 @@ ACORDES = (
 )
 COMPAS = 6.0              # segundos por acorde: lento
 
+# Las piezas que trae el repo. Lo pidio el usuario el 2026-10-25 -«varia la
+# cancion»- porque hasta hoy TODOS los reels salian con la misma.
+#
+# **Las cuatro son la misma familia a proposito.** Lo que cambia es el tono,
+# la vuelta armonica y cuanto dura cada acorde; lo que NO cambia es el piano,
+# el registro grave -debajo de la voz- y que ninguna resuelve. Si una sonara
+# de otro palo, el reel del martes se oiria de otra pagina, que es la misma
+# leccion que la paleta de los flyers.
+#
+# `tono` son semitonos respecto de La. Hacia abajo y no hacia arriba: subir
+# el tono mete la mano derecha en el rango de la voz (100-1000 Hz) y empieza
+# a competir con lo que se dice.
+PIEZAS = {
+    # La que ya existia, y queda igual: es contra la que se midio todo.
+    "piano": {
+        "acordes": ACORDES, "compas": COMPAS, "tono": 0,
+        "es": "La menor, i-VI-III-VII. La de siempre.",
+    },
+    # Mas grave y mas lenta: dos acordes nada mas, asi que casi no pasa nada.
+    # Es la de los capitulos de quedarse quieto.
+    "noche": {
+        "acordes": ((0, 3, 7, 12), (-2, 2, 5, 10)),
+        "compas": 7.5, "tono": -5,
+        "es": "Mi menor, i-VII. Dos acordes, muy lenta.",
+    },
+    # La unica que empieza por el acorde mayor: no es alegre -sigue sin
+    # resolver- pero abre en vez de cerrar.
+    "ventana": {
+        "acordes": ((-9, -5, 0, 3), (0, 3, 7, 12), (-2, 2, 7, 10), (-4, 0, 5, 8)),
+        "compas": 5.5, "tono": -3,
+        "es": "Fa# menor, III-i-VII-VI. Arranca por el mayor.",
+    },
+    # La mas oscura, y la mas lenta de todas. Va con duelo y con ruptura.
+    "hondo": {
+        "acordes": ((0, 3, 7, 10), (-5, -1, 2, 7), (-7, -4, 0, 5), (-2, 1, 5, 8)),
+        "compas": 8.0, "tono": -7,
+        "es": "Re menor, con septima. La mas oscura.",
+    },
+}
+
 # Cuanto se desafinan los armonicos. Un numero chico; con 0 suena a organo.
 INARMONICO = 0.0004
 ARMONICOS = 14
@@ -105,23 +145,31 @@ def _nota(frec: float, dura: float, fuerza: float, armonicos: int = ARMONICOS,
     return salida
 
 
-def componer(segundos: float):
+def componer(segundos: float, pieza: str = "piano"):
+    """La pista de una de las `PIEZAS`. Devuelve las muestras."""
     import array
+    if pieza not in PIEZAS:
+        raise SystemExit("No conozco la pieza %r. Hay: %s"
+                         % (pieza, ", ".join(sorted(PIEZAS))))
+    receta = PIEZAS[pieza]
+    acordes = receta["acordes"]
+    paso_compas = receta["compas"]
+    tono = receta["tono"]
     total = int(segundos * SR)
     pista = array.array("d", [0.0]) * total
     notas = {}
 
     def frecuencia(semitono):
-        return LA * (2 ** ((semitono + OCTAVA_ABAJO) / 12.0))
+        return LA * (2 ** ((semitono + tono + OCTAVA_ABAJO) / 12.0))
 
     t = 0.0
     compas = 0
     while t < segundos:
-        acorde = ACORDES[compas % len(ACORDES)]
+        acorde = acordes[compas % len(acordes)]
         # Arpegio: las notas entran de a una y se superponen, que es lo que
         # deja el sonido continuo sin tener que sostener un acorde entero.
         for j, semitono in enumerate(acorde):
-            cuando = t + j * (COMPAS / len(acorde))
+            cuando = t + j * (paso_compas / len(acorde))
             if cuando >= segundos:
                 break
             f = frecuencia(semitono)
@@ -140,7 +188,7 @@ def componer(segundos: float):
                 pista[desde + i] += v
         # La mano izquierda, al empezar el acorde. Sostiene mas que la
         # derecha, asi el cambio de acorde no deja un hueco.
-        f = LA * (2 ** ((acorde[0] + OCTAVA_GRAVE) / 12.0))
+        f = LA * (2 ** ((acorde[0] + tono + OCTAVA_GRAVE) / 12.0))
         largo = min(CAIDA_GRAVE * 2.6, segundos - t)
         if largo > 0.2:
             llave = ("grave", round(f, 2), round(largo, 2))
@@ -153,7 +201,7 @@ def componer(segundos: float):
                 if desde + i >= total:
                     break
                 pista[desde + i] += v
-        t += COMPAS
+        t += paso_compas
         compas += 1
     return pista
 
@@ -200,14 +248,34 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--segundos", type=float, default=95.0)
-    ap.add_argument("--salida", default=str(ROOT / "assets" / "musica" / "piano.m4a"))
+    ap.add_argument("--pieza", default="piano",
+                    help="cual: %s" % ", ".join(sorted(PIEZAS)))
+    ap.add_argument("--todas", action="store_true",
+                    help="genera las que falten en assets/musica")
+    ap.add_argument("--listar", action="store_true", help="dice cuales hay")
+    ap.add_argument("--salida", default=None)
     args = ap.parse_args(argv)
 
-    salida = Path(args.salida)
-    print("Componiendo %.0f s de piano..." % args.segundos)
-    pista = componer(args.segundos)
-    guardar(pista, salida, args.segundos)
-    print("%s  (%.1f MB)" % (salida, salida.stat().st_size / 1048576.0))
+    if args.listar:
+        for nombre in sorted(PIEZAS):
+            ruta = ROOT / "assets" / "musica" / ("%s.m4a" % nombre)
+            print("%-10s %-46s %s" % (nombre, PIEZAS[nombre]["es"],
+                                      "hecha" if ruta.exists() else "falta"))
+        return 0
+
+    cuales = sorted(PIEZAS) if args.todas else [args.pieza]
+    for nombre in cuales:
+        salida = Path(args.salida) if args.salida else (
+            ROOT / "assets" / "musica" / ("%s.m4a" % nombre))
+        # Con `--todas` no se rehace lo que ya esta: cada pieza tarda tanto
+        # como dura, asi que repetirlas seria media hora para nada.
+        if args.todas and salida.exists():
+            print("%s ya estaba" % salida.name)
+            continue
+        print("Componiendo %.0f s de %s (%s)..."
+              % (args.segundos, nombre, PIEZAS[nombre]["es"]))
+        guardar(componer(args.segundos, nombre), salida, args.segundos)
+        print("%s  (%.1f MB)" % (salida, salida.stat().st_size / 1048576.0))
     return 0
 
 

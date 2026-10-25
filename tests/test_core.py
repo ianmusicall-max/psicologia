@@ -2465,20 +2465,31 @@ class TestElReelDeUnCapitulo(unittest.TestCase):
         # todos menos uno. La excepción NO está escrita con su nombre: se
         # deduce del texto, así que el día que una reflexión crezca y otro
         # capítulo quede corto, este test lo dice en vez de taparlo.
+        #
+        # Se mide en segundos REALES y no en los estimados, y desde el
+        # 2026-10-25 eso cambia el resultado: con `PAUSA` en 0,55 el silencio
+        # entre renglones son unos once segundos de un reel de veinte, así
+        # que un capítulo que el cálculo deja en 50 dura más de un minuto.
+        # Medir sin las pausas dejaba afuera capítulos que sí llegan.
         cortos = []
         for t in TEMAS:
-            hablado = self._hablado(video.guion_de_tema(t))
+            real = video.segundos_reales(video.guion_de_tema(t))
             if self._no_puede_llegar_al_minuto(t):
                 cortos.append(t.tema)
                 # Una frase sola, pero entera: un reel de casi un minuto
                 # sigue siendo un reel.
-                self.assertGreater(hablado, 55, t.tema)
+                self.assertGreater(real, 50, t.tema)
             else:
-                self.assertGreater(hablado, 60, t.tema)
-        # Hoy es ruptura, cuyas reflexiones son las más largas del banco: su
-        # tesis son 43 segundos hablados y cada frase entre 49 y 58, así que
-        # cualquier par se pasa de 90.
-        self.assertEqual(cortos, ["ruptura"])
+                self.assertGreater(real, 60, t.tema)
+        # Son los capítulos cuyas reflexiones son las más largas del banco:
+        # cualquier par de sus partes se pasa del techo, así que lo que sale
+        # es una parte sola. `intimidad` se sumó el 2026-10-25, cuando el
+        # techo bajó de 85,5 a 82 para dejarle lugar a las pausas: su tesis y
+        # su frase más corta suman 82,7 y antes entraban por un pelo.
+        #
+        # Es el precio de la voz más pausada, y está acotado: los otros 27
+        # capítulos quedan entre 60 y 86 segundos reales, con mediana 85.
+        self.assertEqual(cortos, ["ruptura", "intimidad"])
 
     def test_si_ninguna_frase_entra_con_la_tesis_la_tesis_se_va(self):
         # La tesis sola es un resumen sin un solo ejemplo. Entre la tesis y
@@ -5055,17 +5066,23 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         tarda un 3% menos de lo calculado; esto exige que aun tardando un 6%
         MAS, la peor de las 243 frases siga debajo de 90.
         """
-        peor = max(self._mide(video.guion_largo(frase, tema))
+        peor_estimado = max(self._mide(video.guion_largo(frase, tema))
+                            for tema, frase in self._todas())
+        self.assertLessEqual(peor_estimado, video.TOPE_LARGO)
+        # Y el que importa: el largo REAL, con el silencio entre renglones
+        # adentro. Es lo que ata `PAUSA` al techo -subir una sin bajar el
+        # otro pone esto en rojo- y es justo lo que el tope no miraba cuando
+        # el silencio era de 0,28 por renglon.
+        peor = max(video.segundos_reales(video.guion_largo(frase, tema))
                    for tema, frase in self._todas())
-        self.assertLessEqual(peor, video.TOPE_LARGO)
-        # Cuanto tendria que equivocarse la cuenta para que el peor caso
-        # toque los 90. Hoy la voz tarda un 3% MENOS de lo calculado -medido
-        # contra el mp4, arriba- asi que este numero es el margen de verdad.
-        rompe = video.TOPE_SEGUNDOS / peor
-        self.assertGreater(rompe, 1.04,
-                           "con el tope en %.1f alcanza un error del %.1f%% "
-                           "para pasarse de 90" % (video.TOPE_LARGO,
-                                                   (rompe - 1) * 100))
+        self.assertLess(peor, video.TOPE_SEGUNDOS - 3,
+                        "el peor caso daria %.1f s y el tope son %d"
+                        % (peor, video.TOPE_SEGUNDOS))
+        # Las dos partes pesan: si el silencio fuera despreciable, esta
+        # cuenta sobraria y el dia que alguien baje `PAUSA` conviene que se
+        # entere aca.
+        self.assertGreater(peor - peor_estimado * video.MIDE_LARGO, 3,
+                           "las pausas casi no suman: revisar PAUSA")
 
     def test_el_reel_largo_llega_a_los_ochenta(self):
         """Lo pidio el usuario el 2026-10-25: entre 80 y 90 segundos.
@@ -5077,7 +5094,7 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         """
         por_capitulo, largas = {}, 0
         for tema, frase in self._todas():
-            real = self._mide(video.guion_largo(frase, tema)) * 0.97
+            real = video.segundos_reales(video.guion_largo(frase, tema))
             if 80 <= real <= 90:
                 largas += 1
                 por_capitulo.setdefault(tema.tema, []).append(frase.id)
@@ -5111,6 +5128,60 @@ class TestElReelPasaElMinuto(unittest.TestCase):
             rdd.armar(tema="ansiedad", frase="ans-07")
         self.assertIn("--tema", vistos["argv"])
         self.assertNotIn("--id", vistos["argv"])
+
+    def test_cada_frase_tiene_su_cancion(self):
+        """Lo pidio el usuario el 2026-10-25: «varia la cancion».
+
+        Hasta hoy todos los reels salian con `piano.m4a`.
+        """
+        r = _script("reelmusica", "reel.py")
+        hay = r.musicas_del_repo()
+        self.assertGreater(len(hay), 1, "hay una sola pista: no hay que variar")
+        # Determinista: el reel que aprobaste en Telegram es el que se
+        # publica, asi que volver a armarlo tiene que sonar igual.
+        self.assertEqual(r.elegir_musica("ans-02"), r.elegir_musica("ans-02"))
+        # Y reparte: si todas cayeran en la misma, la variedad seria de
+        # mentira. Se mira sobre el banco entero y no sobre tres ids.
+        temas = frases.leer()
+        salieron = {r.elegir_musica(f.id).stem
+                    for t in temas for f in t.frases}
+        self.assertEqual(salieron, {x.stem for x in hay})
+
+    def test_la_lista_de_canciones_no_esta_escrita_dos_veces(self):
+        """Las que rotan son las que declara `hacer_musica.PIEZAS` y ademas
+        existen en disco. Una segunda lista a mano se queda vieja el dia que
+        entre una pieza, que es como se descubrio tarde lo de
+        `facebook.permisos` en el otro proyecto."""
+        r = _script("reelmusica2", "reel.py")
+        hm = _script("hacermusica", "hacer_musica.py")
+        nombres = {x.stem for x in r.musicas_del_repo()}
+        self.assertTrue(nombres <= set(hm.PIEZAS), sorted(nombres))
+        # `calma.m4a` existe en la carpeta y NO rota: es el colchon grave que
+        # el piano vino a reemplazar -no tiene nada arriba de 1 kHz-. Si
+        # entrara, un reel de cada cinco sonaria a zumbido.
+        self.assertTrue((ROOT / "assets" / "musica" / "calma.m4a").exists())
+        self.assertNotIn("calma", nombres)
+
+    def test_las_piezas_declaradas_estan_generadas(self):
+        """Una pieza en la tabla y sin archivo no suena en ningun lado: es
+        codigo muerto que ademas miente sobre lo que hay."""
+        hm = _script("hacermusica2", "hacer_musica.py")
+        faltan = [n for n in hm.PIEZAS
+                  if not (ROOT / "assets" / "musica" / ("%s.m4a" % n)).exists()]
+        self.assertEqual(faltan, [], "correr hacer_musica.py --todas")
+
+    def test_las_piezas_son_distintas_entre_si(self):
+        """Mismo piano y mismo registro, pero distinto tono, distinta vuelta
+        armonica o distinto compas. Dos entradas iguales con otro nombre
+        darian variedad de mentira."""
+        hm = _script("hacermusica3", "hacer_musica.py")
+        firmas = {n: (tuple(map(tuple, r["acordes"])), r["compas"], r["tono"])
+                  for n, r in hm.PIEZAS.items()}
+        self.assertEqual(len(set(firmas.values())), len(firmas), firmas)
+        # Y todas por debajo de La: subir el tono mete la mano derecha en el
+        # rango de la voz y la musica empieza a competir con lo que se dice.
+        for n, r in hm.PIEZAS.items():
+            self.assertLessEqual(r["tono"], 0, n)
 
     def test_el_workflow_puede_pedir_la_frase(self):
         texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(

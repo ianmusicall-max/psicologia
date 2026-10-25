@@ -34,6 +34,7 @@ import argparse
 import random
 import sys
 from pathlib import Path
+from typing import List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -83,6 +84,44 @@ def elegir_fondo(donde: str, semilla: str, tema: str = "") -> list:
 # siempre mp3, y pedirle que la convierta antes de usarla es un paso de mas
 # para nada: ffmpeg las abre todas.
 MUSICAS = (".m4a", ".mp3", ".wav", ".aac", ".ogg", ".flac")
+
+
+# Qué pista va en cada reel. Lo pidió el usuario el 2026-10-25 -«varía la
+# canción»- porque hasta hoy todos los reels salían con la misma.
+#
+# **La lista NO se escribe acá**: son las piezas que declara
+# `hacer_musica.PIEZAS` y que además existen en disco. Así, agregar una es
+# agregarla a esa tabla y generarla, y no hay una segunda lista que se quede
+# vieja. De paso deja afuera `calma.m4a`, que es el colchón grave que el
+# piano vino a reemplazar: no tiene nada arriba de 1 kHz y por eso suena a
+# zumbido y no a música.
+# `--musica` sin nombre ya no quiere decir «piano» sino «la que le toca a
+# esta frase». Un nombre explicito -`--musica hondo`- sigue mandando.
+DEL_TURNO = "turno"
+
+
+def musicas_del_repo(carpeta: Optional[Path] = None) -> List[Path]:
+    from scripts.hacer_musica import PIEZAS
+    carpeta = Path(carpeta or Path(video.MUSICA).parent)
+    return [carpeta / ("%s.m4a" % n) for n in sorted(PIEZAS)
+            if (carpeta / ("%s.m4a" % n)).is_file()]
+
+
+def elegir_musica(semilla: str, carpeta: Optional[Path] = None) -> Path:
+    """La pista que le toca a esta frase.
+
+    La semilla es el id de la frase y NO el azar, igual que los clips de
+    fondo: volver a armar el mismo reel tiene que dar el mismo video, porque
+    el que aprobaste en Telegram es el que se publica. Con azar, el reel
+    aprobado y el publicado podrían sonar distinto.
+
+    Si no hay ninguna generada, cae en la de siempre: quedarse sin música por
+    no encontrar un archivo sería mucho peor que repetir una pista.
+    """
+    hay = musicas_del_repo(carpeta)
+    if not hay:
+        return Path(video.MUSICA)
+    return hay[random.Random("musica-%s" % semilla).randrange(len(hay))]
 
 
 def buscar_musica(cual: str) -> Path:
@@ -169,7 +208,7 @@ def main(argv=None) -> int:
     ap.add_argument("--etiqueta-cada", type=int, default=video.ETIQUETA_CADA,
                     metavar="N", help="cada cuantas oraciones se repite la "
                                       "etiqueta (1 = todas, 0 = ninguna)")
-    ap.add_argument("--musica", nargs="?", const="piano", default=None,
+    ap.add_argument("--musica", nargs="?", const=DEL_TURNO, default=None,
                     metavar="ARCHIVO",
                     help="musica de fondo; sin nombre usa la que trae el repo")
     ap.add_argument("--voz-ia", nargs="?", const=video.VOZ_IA, default=None,
@@ -230,8 +269,10 @@ def main(argv=None) -> int:
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
                                       "  (el capitulo entero)" if args.tema else ""))
-    if args.musica:
-        print("musica: %s" % buscar_musica(args.musica).name)
+    pista = (elegir_musica(frase.id) if args.musica == DEL_TURNO
+             else buscar_musica(args.musica)) if args.musica else None
+    if pista:
+        print("musica: %s" % pista.name)
     print("%d renglones, cuerpo %d, fondo %s"
           % (len(unidades), cuerpo,
              ", ".join(x.name for x in fondo[:3]) if fondo else "papel de la marca"))
@@ -382,7 +423,7 @@ def main(argv=None) -> int:
     try:
         ruta = video.armar(frase, pagina, titulo=tema.titulo, fondo=fondo, voz=voz,
                            carpeta=carpeta, marcas=marcas, unidades=unidades,
-                           musica=buscar_musica(args.musica) if args.musica else None)
+                           musica=pista)
     except video.VideoError as e:
         print(e)
         return 1
