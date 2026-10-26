@@ -194,9 +194,11 @@ avenida-noche-torres.mp4:
   # Camara QUIETA: el encuadre es el mismo en el segundo 2 y en el 12. Lo que
   # se mueve son los autos, asi que no compite con el texto.
   #
-  # Es de los cuatro mas oscuros de la carpeta -brillo medio 47 de 255 en los
-  # primeros cuatro segundos, contra 156 del mas claro-, o sea que el texto
-  # blanco se lee de sobra. Medido, no estimado.
+  # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 156 del
+  # mas claro: oscuro de sobra para que el texto blanco se lea. Medido, no
+  # estimado. (Decia "de los cuatro mas oscuros" y dejo de serlo el
+  # 2026-10-26, al entrar `nieve-cayendo-oscuro` con 39: hoy es el octavo.
+  # Lo que importaba nunca fue el puesto sino que el texto se lea.)
 
 ventanilla-nieve-azul.mp4:
   que_es: Desde adentro de un bus, gotas en el vidrio y un paisaje nevado con edificios grises al anochecer
@@ -240,7 +242,8 @@ lluvia-farol-casa.mp4:
   que_es: Lluvia fuerte de noche contra un farol y una casa amarilla con una ventana encendida
   etiquetas: [lluvia, noche, farol, casa, ventana, hogar, vegetacion, oscuro, melancolia, quietud]
   # De los pocos donde la lluvia se VE caer -hilos contra la luz del farol- y
-  # no es solo un vidrio mojado. Brillo medio 46: de los cuatro mas oscuros.
+  # no es solo un vidrio mojado. Brillo medio 46, de los mas oscuros de la
+  # carpeta -era "de los cuatro" hasta que entro la nieve el 2026-10-26-.
   # La ventana encendida al fondo es lo unico claro del cuadro y queda abajo,
   # asi que no pelea con el texto.
 
@@ -384,5 +387,57 @@ gotas-vidrio-sombrio.mp4:
   # blanco y un arbol reconocible, y es de los mas claros (brillo 113). Este
   # no tiene cielo, las gotas son mas grandes y esta bastante mas oscuro (88).
   #
-  # Pesa 30 MB y dura 44 s: el mas pesado y el mas largo de la carpeta. El
-  # reel usa los primeros 4 s, asi que son unos 27 MB que no se ven nunca.
+  # **El mas LARGO de la carpeta**: 44 s, contra 25 del que le sigue. Pesa
+  # 29,05 MB, que es el tercero -no el primero, como decia esta nota el
+  # 2026-10-25: `gotas-ventana-atardecer` pesa 29,82 y ya estaba-. El reel
+  # usa los primeros 4 s, asi que son unos 26 MB que no se ven nunca, y por
+  # eso es el que mas ganaria con un recorte.
+
+gotas-vidrio-ambar.mp4:
+  que_es: Gotas sobre un vidrio a oscuras, con un resplandor ambar detras
+  etiquetas: [lluvia, gotas, ventana, noche, ambar, oscuro, interior, soledad, encierro, quietud]
+  # APAISADO (1920x1080): queda el 32% del ancho, y no importa, porque es una
+  # textura y no una composicion -igual que `gotas-vidrio-sombrio`-.
+  apaisado: true
+  #
+  # Brillo 48: oscuro, con las gotas encendidas por una luz calida que no se
+  # ve. Es el unico de los de gotas que no es gris ni azul.
+
+nieve-cayendo-oscuro.mp4:
+  que_es: Nieve cayendo contra un fondo casi negro, apenas verdoso
+  etiquetas: [nieve, invierno, noche, oscuro, frio, caer, quietud, soledad]
+  apaisado: true
+  #
+  # **El unico donde la nieve CAE.** `ventanilla-nieve-azul` tiene nieve, pero
+  # como paisaje quieto al otro lado de un vidrio; aca el movimiento es la
+  # nieve misma.
+  #
+  # Brillo 39: el cuarto mas oscuro de la carpeta, detras de
+  # `cuarto-ventanal-noche` (18), `calle-rieles-noche` (20) y
+  # `carretera-noche-lluvia` (22). Casi no hay nada mas que el fondo y los
+  # copos, asi que el texto se lee sobre cualquier parte del cuadro.
+
+lluvia-ventana-valle.mp4:
+  que_es: Lluvia en una ventana, con un valle gris de arboles y dos luces rojas al fondo
+  etiquetas: [lluvia, gotas, ventana, valle, gris, verde, distancia, espera, melancolia]
+  apaisado: true
+  # Trae pista de audio. El reel nunca usa el audio del clip.
+  #
+  # Brillo 99: de los claros. La mitad de abajo es casi negra -la vegetacion
+  # cerca- y la de arriba es cielo gris, asi que el contraste cambia mucho
+  # entre arriba y abajo del cuadro. El texto va al medio y ahi esta bien.
+
+bosque-niebla-hojas.mp4:
+  que_es: Un bosque con niebla visto entre hojas oscuras en primer plano, azulado
+  etiquetas: [bosque, niebla, hojas, azul, verde, oscuro, distancia, quietud, melancolia]
+  apaisado: true
+  # Trae pista de audio. El reel nunca usa el audio del clip.
+  #
+  # Viene en 2560x1440 y queda el 32% del ancho. Aguanta porque la niebla y
+  # las hojas se repiten por todo el cuadro: no hay un sujeto que pueda quedar
+  # afuera del recorte.
+  #
+  # Pesa 29,80 MB: el segundo de la carpeta, a 16 KB de
+  # `gotas-ventana-atardecer` (29,82). Son 18 segundos de los que el reel usa
+  # 4. (Esta nota decia "el mas pesado, 31 MB" y eran las dos cosas mal: el
+  # numero salia de redondear `ls` y el puesto, de no haberlo mirado.)
