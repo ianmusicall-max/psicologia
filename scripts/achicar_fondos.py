@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Deja los clips de fondo en la medida del reel, para que no pesen de mas.
 
-    achicar_fondos.py --ver     dice cuanto pesan y cuanto quedarian
-    achicar_fondos.py           los achica (reemplaza los archivos)
+    achicar_fondos.py --ver        dice cuanto pesan y cuanto duran
+    achicar_fondos.py --recortar   deja en 6 s los que pasan, SIN recomprimir
+    achicar_fondos.py              los achica entero (reemplaza los archivos)
+
+`--recortar` es lo que se corre cuando entra un clip nuevo, y es la regla que
+puso el usuario el 2026-10-26: mas de 6 segundos se recorta a 6, y 6 o menos
+no se toca. Copia los paquetes tal cual (`-c copy`), asi que no pierde imagen
+y tarda un segundo.
 
 Por que hace falta: los clips de Pexels vienen en 4K (2160x3840) y el reel es
 1080x1920. Esa foto de mas no se ve en ningun lado -ffmpeg la achica igual al
@@ -12,8 +18,8 @@ Y el peso importa mas de lo que parece: estos clips viven en el repositorio,
 asi que CADA corrida de GitHub se los baja. El turno que publica corre cuatro
 veces por hora; con medio giga de clips eso es media hora de descarga por dia
 para algo que ese turno ni usa. (El 2026-10-26 el recorte a 6 s dejo la
-carpeta en 263 MB. Esto achica mas todavia, porque ademas reencoda a la
-medida del reel y saca el audio.)
+carpeta en 263 MB. Esto achica mas todavia -en un clip 4K de 17 s, de 22,5 MB
+a 2,5- porque ademas reencoda a la medida del reel y saca el audio.)
 
 Ademas:
 
@@ -111,20 +117,76 @@ def segundos(ruta: Path):
 # que es donde los necesita.
 ORIGINALES = "originales"
 
-# Cuanto se guarda de cada clip. El reel cambia de clip cada `video.ESCENA`
-# segundos -hoy 4- asi que de un clip de un minuto se ven cuatro. Guardar el
-# resto es peso puro, y es de donde salian los archivos de 44 MB.
+# EL TOPE DE LARGO, y es la regla que puso el usuario el 2026-10-26:
 #
-# SEIS, que lo pidio el usuario el 2026-10-26 y es el numero con el que la
-# carpeta quedo recortada ese dia (584 MB -> 263 MB, sin recomprimir).
+#     mas de 6 segundos  -> se recorta a 6
+#     6 o menos          -> NO SE TOCA, queda tal cual
 #
-# Decia "ocho y no cuatro para que un mismo clip pueda salir dos veces sin que
-# se vea el mismo tramo", y eso el reel NO lo hace: cada tramo es una entrada
-# propia con `trim=duration` desde el principio y sin `-ss` (`video.comando`),
-# asi que un clip repetido muestra los mismos cuatro segundos las dos veces.
-# Los dos de margen son para el dia que `video.ESCENA` suba de 4, no para
-# variar el tramo.
+# Primero pidio 6, despues 8, y al final 6. Lo que quedo firme en las tres
+# vueltas es la segunda linea: un clip que ya entra no se toca.
+#
+# Las dos mitades importan igual. El reel cambia de clip cada `video.ESCENA`
+# segundos -hoy 4- asi que de un clip de un minuto se ven cuatro y el resto es
+# peso puro: de ahi salian los archivos de 44 MB. Pero un clip que ya entra en
+# el tope no gana nada con que lo toquemos, y volver a escribirlo solo puede
+# empeorarlo: es un archivo mas en la historia de git para el mismo video.
+#
+# Por eso `recortar` no es un "recortar todo a 8": compara primero y devuelve
+# None cuando no hay nada que hacer. Hay una prueba que exige que un clip
+# corto quede BYTE POR BYTE igual.
+#
+# Antes el comentario de aca decia "ocho y no cuatro para que un mismo clip
+# pueda salir dos veces sin que se vea el mismo tramo", y eso el reel NO lo
+# hace: cada tramo es una entrada propia con `trim=duration` desde el
+# principio y sin `-ss` (`video.comando`), asi que un clip repetido muestra
+# los mismos cuatro segundos las dos veces. Los dos de margen son para el dia
+# que `video.ESCENA` suba, no para variar el tramo.
 SEGUNDOS = 6
+
+# El sobrante del ultimo paquete. `-t 6 -c copy` corta por paquete y no por
+# cuadro, asi que el archivo puede terminar unos milisegundos despues del
+# segundo 6 -el mas pasado de la carpeta esta en 6,13-. Sin esta tolerancia,
+# los 49 clips que ya se recortaron volverian a
+# recortarse en cada corrida -y cada pasada seria otro archivo en git-.
+COLA = 0.5
+
+def recortar(ruta: Path):
+    """Deja el clip en `SEGUNDOS` SIN recomprimir. Devuelve None si no hacia falta.
+
+    Esta es la regla del 2026-10-26 y es lo que se corre cuando entra un clip
+    nuevo. `-c copy` copia los paquetes tal cual: los cuadros que el reel usa
+    salen bit por bit iguales a los del original y tarda un segundo, contra el
+    minuto y la perdida de imagen que cuesta `achicar`.
+
+    Un clip que ya entra en el tope se devuelve con None y NO se abre siquiera:
+    "los que duran menos de 8 no los toques", y volver a escribirlo seria otro
+    archivo en la historia de git para el mismo video.
+
+    Escribe aparte y renombra, y el temporal no termina en `.mp4` a proposito:
+    con `.parcial.mp4` el archivo a medio hacer seguia contando como clip y el
+    reel lo habria usado de fondo. Paso de verdad.
+    """
+    dura = segundos(ruta)
+    if dura is None:
+        raise video.VideoError("no pude leer cuanto dura %s" % ruta.name)
+    if dura <= SEGUNDOS + COLA:
+        return None
+    tmp = ruta.with_suffix(".amedias")
+    try:
+        video._correr([
+            video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
+            "-i", str(ruta), "-t", str(SEGUNDOS), "-c", "copy",
+            # `-f mp4` porque el temporal no termina en .mp4 y ffmpeg deduce
+            # el formato de la extension: sin esto no arranca siquiera.
+            "-f", "mp4", str(tmp)], "recortar el clip", espera=300)
+    except video.VideoError:
+        if tmp.exists():
+            tmp.unlink()
+        raise
+    destino = ruta.with_suffix(".mp4")
+    tmp.replace(destino)
+    return destino
+
 
 # Con el recorte a 8 segundos, comprimir bien ya casi no cuesta tiempo: lo
 # que habia hecho fallar a `slow` era un 4K de un minuto entero, no la
@@ -161,7 +223,12 @@ def achicar(ruta: Path) -> Path:
             "-c:v", "libx264", "-preset", PRESET, "-crf", str(CALIDAD),
             "-pix_fmt", "yuv420p",
             "-an",                  # el reel nunca usa el audio del clip
-            str(tmp)], "achicar el clip", espera=600)
+            # Lo mismo que en `recortar`: el temporal no termina en .mp4.
+            # Esto FALTABA desde que se escribio la funcion y nadie lo vio,
+            # porque su prueba reemplaza `video._correr` por un doble y
+            # ffmpeg nunca llegaba a correr. El script entero habria fallado
+            # en el primer clip.
+            "-f", "mp4", str(tmp)], "achicar el clip", espera=600)
     except video.VideoError:
         # Un intento fallido no puede dejar basura: ese archivo a medio hacer
         # ocupa lugar y confunde la cuenta de la proxima corrida.
@@ -193,6 +260,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ver", action="store_true", help="no toca nada")
+    ap.add_argument("--recortar", action="store_true",
+                    help="solo recorta a %d s, sin recomprimir (la regla de "
+                         "los clips nuevos)" % SEGUNDOS)
     ap.add_argument("--carpeta", default=str(CARPETA))
     args = ap.parse_args(argv)
 
@@ -221,9 +291,33 @@ def main(argv=None) -> int:
         print()
         print("El reel es de %dx%d, cambia de clip cada %.0f s y no usa el "
               "audio." % (ANCHO, ALTO, video.ESCENA))
-        print("Se guardan %d s de cada uno; el resto es peso que no se ve."
-              % SEGUNDOS)
+        print("Nada pasa de %d s: lo que dura mas se recorta y lo que dura "
+              "menos queda tal cual." % SEGUNDOS)
+        print("Para recortar sin recomprimir: --recortar")
         print("Con --ver no toque nada.")
+        return 0
+
+    if args.recortar:
+        print()
+        tocados = 0
+        for c in clips:
+            try:
+                hecho = recortar(c)
+            except video.VideoError as e:
+                print("  %-42s no pude: %s" % (c.name[:42], e))
+                continue
+            if hecho is None:
+                print("  %-42s ya entra en %d s, no la toque"
+                      % (c.name[:42], SEGUNDOS))
+            else:
+                tocados += 1
+                print("  %-42s recortada a %d s" % (c.name[:42], SEGUNDOS))
+        despues = pesan(clips_de(carpeta))
+        print()
+        print("Recorte %d de %d clips. De %.0f MB a %.0f MB."
+              % (tocados, len(clips), antes, despues))
+        print("Sin recomprimir: los %.0f s que usa el reel quedaron intactos."
+              % video.ESCENA)
         return 0
 
     print()

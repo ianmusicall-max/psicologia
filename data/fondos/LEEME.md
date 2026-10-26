@@ -25,31 +25,38 @@ Esta carpeta es la unica de `data/` que se versiona a proposito (ver el
 `.gitignore`). Son unos megas cada uno, no cambian nunca, y es lo unico que
 hace que el reel salga sobre paisajes y no sobre el papel de la marca.
 
-## Los clips estan recortados a seis segundos
+## El largo: seis segundos
+
+    mas de 6 segundos  ->  se recorta a 6
+    6 o menos          ->  queda tal cual
 
 El reel usa los **primeros cuatro segundos** de cada clip y nada mas. No es
 que corte por tramos: cada tramo del reel es una entrada propia de ffmpeg con
 `trim=duration` y sin `-ss`, asi que si un clip sale dos veces en el mismo
-reel se ven los mismos cuatro segundos las dos veces. Del segundo seis en
-adelante no se ve nada nunca; los dos de margen son para el dia que
-`video.ESCENA` suba de cuatro.
+reel se ven los mismos cuatro segundos las dos veces. El margen es para el dia
+que `video.ESCENA` suba de cuatro.
 
-El 2026-10-26 se recortaron los 54 que habia y **la carpeta paso de 584 MB a
-263 MB**. El recorte fue sin recomprimir, asi que los cuatro segundos que se
-usan son bit por bit los del original.
+El recorte es **sin recomprimir**, asi que los cuatro segundos que se usan son
+bit por bit los del original y tarda un segundo:
 
-Un clip nuevo se recorta al entrar:
+    python3 scripts/achicar_fondos.py --recortar
+
+Saltea los que ya entran: un clip corto no se vuelve a escribir, porque seria
+otro archivo en la historia de git para el mismo video. A mano es lo mismo:
 
     ffmpeg -i tuyo.mp4 -t 6 -c copy data/fondos/nombre-descriptivo.mp4
 
-`-c copy` es la parte importante: copia los cuadros tal cual, sin volver a
-comprimir, asi que no se pierde nada de imagen y tarda un segundo. Hay una
-prueba que falla si algun clip de la carpeta pasa de seis segundos, para que
-la carpeta no vuelva a crecer sin que nadie se entere.
+El 2026-10-26 se recortaron los 54 que habia y **la carpeta paso de 584 MB a
+263 MB**. El mas largo mide 6,13 y no 6 justos porque `-c copy` corta por
+paquete y no por cuadro: el archivo termina unos milisegundos despues.
 
-Si alguna vez hace falta bajarla mas, `scripts/achicar_fondos.py` los deja
-ademas en 1080x1920 y sin audio -eso si recomprime- y guarda los originales
-en `data/fondos/originales/`, que no se sube.
+Hay pruebas para las dos mitades: una falla si algun clip pasa del tope, y
+otra si un clip corto se toca.
+
+Si alguna vez hace falta bajarla mas, el mismo script sin `--recortar` los
+deja ademas en 1080x1920 y sin audio -eso si recomprime, y en un clip 4K de
+17 s midio 22,5 MB -> 2,5 MB- y guarda los originales en
+`data/fondos/originales/`, que no se sube.
 
 ## Como se elige cual va en cada reel
 
@@ -75,10 +82,10 @@ log de una corrida.
   recorta por los costados y se pierde medio encuadre.
 - **De 900 px de ancho para arriba.** Mas chico se ve pixelado al agrandarlo.
 - **mp4, mov, m4v, webm o mkv.**
-- **El largo no importa: mandalos como vengan.** Al entrar se recortan a seis
-  segundos (ver abajo). Lo que NO pasa es que un clip largo se use por tramos:
-  el reel toma siempre los primeros cuatro segundos, aunque el mismo clip
-  salga dos veces en el mismo reel.
+- **El largo no importa: mandalos como vengan.** Si pasan de seis segundos se
+  recortan al entrar, y si no, quedan tal cual (ver abajo). Lo que NO pasa es
+  que un clip largo se use por tramos: el reel toma siempre los primeros
+  cuatro segundos, aunque el mismo clip salga dos veces en el mismo reel.
 - **Sin texto, sin logos y sin gente hablando a camara**: encima va el texto
   del reel y compiten.
 - **Movimiento lento.** Una rama con viento, agua, nubes. Un dron sobre una

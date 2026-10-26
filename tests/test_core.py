@@ -3549,27 +3549,24 @@ class TestLosOriginalesDeLosFondos(unittest.TestCase):
 
 
 class TestElRecorteDeLosFondos(unittest.TestCase):
-    """Los clips estan recortados a `SEGUNDOS`: el reel usa los primeros 4.
+    """La regla de largo de los clips, que puso el usuario el 2026-10-26:
 
-    El 2026-10-26 el usuario pidio recortarlos a 6 y la carpeta paso de 584 MB
-    a 263 MB. Sin un guardian, el recorte se deshace solo: la tanda siguiente
-    de clips entra de 15 o 20 segundos y nadie lo nota hasta mirar el peso.
+        mas de `SEGUNDOS` -> se recorta a `SEGUNDOS`, sin recomprimir
+        `SEGUNDOS` o menos -> no se toca
+
+    Sin un guardian la regla se deshace sola: la tanda siguiente de clips
+    entra de 15 o 20 segundos y nadie lo nota hasta mirar el peso de la
+    carpeta. Ese dia paso de 584 MB a 263 MB.
     """
 
-    def _clips(self):
-        return sorted((ROOT / "data" / "fondos").glob("*.mp4"))
+    def _ach(self):
+        return _script("ach", "achicar_fondos.py")
 
-    # El sobrante del ultimo paquete. `ffmpeg -t 6 -c copy` corta por paquete y
-    # no por cuadro, asi que el archivo puede terminar unos milisegundos
-    # despues del segundo 6; el mas pasado de la carpeta esta en 6,13. Medio
-    # segundo es la cola de un paquete, no el tramo de otro clip.
-    COLA = 0.5
-
-    def test_ningun_clip_de_fondo_pasa_del_recorte(self):
-        ach = _script("ach", "achicar_fondos.py")
-        clips = self._clips()
+    def test_ningun_clip_de_fondo_pasa_del_tope(self):
+        ach = self._ach()
+        clips = sorted((ROOT / "data" / "fondos").glob("*.mp4"))
         self.assertTrue(clips, "no hay ningun clip en data/fondos")
-        tope = ach.SEGUNDOS + self.COLA
+        tope = ach.SEGUNDOS + ach.COLA
         largos = []
         for c in clips:
             dura = ach.segundos(c)
@@ -3580,18 +3577,63 @@ class TestElRecorteDeLosFondos(unittest.TestCase):
         self.assertEqual(largos, [], "clips sin recortar a %d s: %s"
                          % (ach.SEGUNDOS, "; ".join(largos)))
 
+    def test_un_clip_corto_no_se_toca_ni_un_byte(self):
+        # La otra mitad de la regla, y la que se rompe sin hacer ruido: un
+        # recorte que vuelva a escribir el archivo da el mismo video, pero es
+        # otro archivo en la historia de git y otra oportunidad de perder algo.
+        ach = self._ach()
+        corto = ROOT / "data" / "fondos" / "espejo-luces-noche.mp4"
+        with tempfile.TemporaryDirectory() as d:
+            copia = Path(d) / "corto.mp4"
+            copia.write_bytes(corto.read_bytes())
+            antes = copia.read_bytes()
+            if ach.segundos(copia) is None:
+                self.skipTest("sin ffmpeg no se puede medir")
+            self.assertIsNone(ach.recortar(copia), "toco un clip que ya entraba")
+            self.assertEqual(copia.read_bytes(), antes, "reescribio el clip")
+
+    def test_el_temporal_le_dice_a_ffmpeg_que_formato_es(self):
+        # El temporal se llama `.amedias` a proposito -con `.parcial.mp4`
+        # contaba como clip y el reel lo usaba de fondo- pero entonces ffmpeg
+        # no puede deducir el formato de la extension y ni siquiera arranca:
+        # "Unable to choose an output format". A `achicar` le faltaba desde
+        # que se escribio y no lo vio nadie, porque esta misma clase de prueba
+        # reemplaza `video._correr` por un doble y ffmpeg nunca corria.
+        ach = self._ach()
+        ordenes = []
+
+        def correr(orden, que, espera=300):
+            ordenes.append(orden)
+            Path(orden[-1]).write_bytes(b"x")
+
+        with tempfile.TemporaryDirectory() as d:
+            uno = Path(d) / "uno.mp4"
+            uno.write_bytes(b"un clip")
+            with mock.patch.object(video, "_correr", side_effect=correr), \
+                 mock.patch.object(ach, "segundos", return_value=99.0):
+                ach.recortar(uno)
+            dos = Path(d) / "dos.mp4"
+            dos.write_bytes(b"otro clip")
+            with mock.patch.object(video, "_correr", side_effect=correr):
+                ach.achicar(dos)
+
+        self.assertEqual(len(ordenes), 2)
+        for orden in ordenes:
+            self.assertTrue(orden[-1].endswith(".amedias"), orden[-1])
+            self.assertIn("-f", orden, "ffmpeg no sabria que formato escribir")
+            self.assertEqual(orden[orden.index("-f") + 1], "mp4")
+
     def test_el_recorte_deja_margen_sobre_el_tramo_del_reel(self):
-        # Esta es la invariante de verdad, y no cuesta ninguna llamada: el reel
+        # La invariante de verdad, y no cuesta ninguna llamada: el reel
         # muestra `video.ESCENA` segundos de cada clip SIEMPRE desde el
-        # principio -cada tramo es una entrada propia con `trim=duration` y sin
-        # `-ss`-, asi que si el recorte quedara por debajo de `ESCENA` todos
+        # principio -cada tramo es una entrada propia con `trim=duration` y
+        # sin `-ss`-, asi que si el tope quedara por debajo de `ESCENA` todos
         # los clips se repetirian dentro de su propio tramo.
-        ach = _script("ach", "achicar_fondos.py")
-        self.assertGreater(ach.SEGUNDOS, video.ESCENA,
-                           "el recorte no cubre el tramo del reel")
+        self.assertGreater(self._ach().SEGUNDOS, video.ESCENA,
+                           "el tope no cubre el tramo del reel")
 
     def test_un_clip_repetido_muestra_el_mismo_tramo(self):
-        # Lo que justifica que seis alcance. Durante un tiempo el comentario de
+        # Lo que justifica el tope. Durante un tiempo el comentario de
         # `SEGUNDOS` decia que el margen era "para que un mismo clip pueda
         # salir dos veces sin que se vea el mismo tramo", y el reel no hace
         # eso: lo guarda esta prueba para que el numero no se vuelva a elegir

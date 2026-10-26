@@ -12,17 +12,24 @@
 # descriptivo a proposito -`lluvia-arbol-gris` y no `7681527`- porque es lo
 # primero que se lee al mirar la carpeta y al leer el log de una corrida.
 #
-# TODOS LOS CLIPS ESTAN RECORTADOS A 6 SEGUNDOS (2026-10-26, a pedido del
-# usuario). El reel usa los PRIMEROS CUATRO de cada uno, y siempre los mismos
-# aunque un clip salga dos veces en el mismo reel: cada tramo es una entrada
-# propia con `trim=duration` y SIN `-ss` (`video.comando`). O sea que del
-# segundo 6 en adelante no se ve nada nunca, y los dos de margen son para el
-# dia que `video.ESCENA` suba de 4.
+# EL LARGO DE LOS CLIPS, la regla que puso el usuario el 2026-10-26:
 #
-# El recorte fue SIN RECOMPRIMIR (`-c copy`): los cuatro segundos que se usan
-# salen bit por bit iguales a los del original -comprobado con framemd5 en los
-# 54-. La carpeta paso de 584 MB a 263 MB. Un clip nuevo se recorta al entrar,
-# y hay una prueba que lo exige.
+#     mas de 6 segundos  ->  se recorta a 6, sin recomprimir
+#     6 o menos          ->  NO SE TOCA, entra tal cual
+#
+# El reel usa los PRIMEROS CUATRO segundos de cada uno, y siempre los mismos
+# aunque un clip salga dos veces en el mismo reel: cada tramo es una entrada
+# propia con `trim=duration` y SIN `-ss` (`video.comando`). O sea que de ahi
+# en adelante no se ve nada nunca, y el margen es para el dia que
+# `video.ESCENA` suba de 4.
+#
+# El recorte es SIN RECOMPRIMIR (`-c copy`, en `achicar_fondos.recortar`): los
+# cuatro segundos que se usan salen bit por bit iguales a los del original. Un
+# clip que ya entra en el tope ni se abre. Hay pruebas para las dos mitades.
+#
+# Ese dia se recortaron los 54 que habia y la carpeta paso de 584 MB a
+# 263 MB. El mas largo mide 6,13: `-c copy` corta por paquete y no por cuadro,
+# asi que el archivo termina unos milisegundos despues del segundo 6.
 
 lluvia-arbol-gris.mp4:
   que_es: Lluvia sobre un vidrio, un arbol pelado y cielo gris
