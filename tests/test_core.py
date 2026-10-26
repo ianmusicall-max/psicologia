@@ -3850,6 +3850,67 @@ class TestQueCadaReelNoRepitaLoAnterior(unittest.TestCase):
             fondos.anotar([Path("a.mp4")], padre / "usados.json")
 
 
+class TestElCaptionDeUnTextoDeLaSemana(unittest.TestCase):
+    """Un reel que dice un texto de la semana tambien necesita su caption.
+
+    La corrida 40288520831 del 2026-10-26 armo el reel entero -voz pagada
+    incluida- y murio en el ultimo renglon antes de mandarlo a Telegram:
+    `textos_de` buscaba el id de la ficha SOLO en el banco de frases, y
+    `sem-01` no esta ahi. Costo una voz y una corrida.
+    """
+
+    def _reel_del_dia(self):
+        return _script("rdd", "reel_del_dia.py")
+
+    def test_el_caption_sale_de_la_tesis_del_capitulo(self):
+        rdd = self._reel_del_dia()
+        uno = semana.leer()[0]
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "sem.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(rdd.youtube, "ficha_guardada", return_value={
+                    "frase": uno.id, "titulo": "T", "descripcion": "D",
+                    "etiquetas": ["a"]}):
+                caption, titulo, _, _ = rdd.textos_de(mp4)
+        tema = next(t for t in frases.leer() if t.tema == uno.capitulo)
+        self.assertIn(" ".join(tema.tesis.split())[:40], " ".join(caption.split()))
+        self.assertEqual(titulo, "T")
+
+    def test_el_texto_del_reel_no_se_repite_en_el_caption(self):
+        # Mismo motivo que la frase en el caption de siempre: quien lo lee ya
+        # lo escucho, y repetirlo se come los dos renglones que Facebook
+        # muestra antes del «Ver mas».
+        uno = semana.leer()[0]
+        tema = next(t for t in frases.leer() if t.tema == uno.capitulo)
+        caption = frases.caption_de_tema(tema, config.cargar())
+        self.assertNotIn(uno.texto.split(".")[0], caption)
+
+    def test_una_ficha_que_no_es_de_nadie_se_queja_con_las_dos_fuentes(self):
+        rdd = self._reel_del_dia()
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "x.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(rdd.youtube, "ficha_guardada",
+                                   return_value={"frase": "no-existe", "titulo": "T"}):
+                with self.assertRaises(RuntimeError) as e:
+                    rdd.textos_de(mp4)
+        self.assertIn("banco", str(e.exception))
+        self.assertIn("semana", str(e.exception))
+
+    def test_una_frase_del_banco_sigue_saliendo_como_siempre(self):
+        # La guarda del otro lado: el arreglo no puede cambiar el caption de
+        # los reels de siempre, que son casi todos.
+        rdd = self._reel_del_dia()
+        frase = frases.leer()[0].frases[0]
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "x.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(rdd.youtube, "ficha_guardada", return_value={
+                    "frase": frase.id, "titulo": "T", "descripcion": "D"}):
+                caption, _, _, _ = rdd.textos_de(mp4)
+        self.assertIn(" ".join(frase.reflexion.split())[:40], " ".join(caption.split()))
+
+
 class TestElSilencioDondeCambiaLaIdea(unittest.TestCase):
     """«Dejando espacios», 2026-10-26: mas aire donde termina una idea."""
 

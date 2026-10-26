@@ -41,7 +41,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, diario, frases, video, youtube  # noqa: E402
+from src import config, diario, frases, semana, video, youtube  # noqa: E402
 
 # Como se arma el reel del dia. Son los mismos argumentos que se venian
 # pasando a mano desde la pestania Actions, escritos una sola vez.
@@ -311,21 +311,36 @@ def armar(tema: str = "", carpeta: Path = None, frase: str = "",
 def textos_de(ruta: Path):
     """El caption de Meta y el titulo y la descripcion de YouTube.
 
-    Salen de la ficha que dejo `reel.py` -que dice de que frase es el video- y
-    del banco. Si la ficha no esta, no se inventa nada: sin saber de que frase
-    es, el caption seria de otra.
+    Salen de la ficha que dejo `reel.py` -que dice de que es el video- y del
+    banco. Si la ficha no esta, no se inventa nada: sin saber de que es, el
+    caption seria de otro reel.
+
+    Son DOS casos y hay que mirar los dos. Si el id es de una frase, el
+    caption es su reflexion. Si es de un texto de la semana
+    (`textos/semana.yaml`), no hay frase y el caption sale de la tesis de su
+    capitulo. Mirar solo el banco costo la corrida 40288520831 del 2026-10-26:
+    el reel se armo entero -voz pagada incluida- y murio en este renglon.
     """
     ficha = youtube.ficha_guardada(ruta)
     if not ficha:
-        raise RuntimeError("no encuentro la ficha de %s: no se de que frase es"
+        raise RuntimeError("no encuentro la ficha de %s: no se de que es"
                            % ruta.name)
+    cual = ficha.get("frase") or ""
     temas = frases.leer()
-    frase = frases.por_id(temas, ficha.get("frase") or "")
-    if frase is None:
-        raise RuntimeError("la ficha dice %r y esa frase no esta en el banco"
-                           % ficha.get("frase"))
-    tema = frases.tema_de(temas, frase)
     pagina = config.cargar()
+    frase = frases.por_id(temas, cual)
+    if frase is None:
+        de_la_semana = semana.por_id(cual)
+        if de_la_semana is None:
+            raise RuntimeError("la ficha dice %r y eso no esta ni en el banco "
+                               "de frases ni en los textos de la semana" % cual)
+        tema = next((t for t in temas if t.tema == de_la_semana.capitulo), None)
+        if tema is None:
+            raise RuntimeError("el texto %s dice ser del capitulo %r y ese "
+                               "capitulo no esta" % (cual, de_la_semana.capitulo))
+        return (frases.caption_de_tema(tema, pagina), ficha["titulo"],
+                ficha.get("descripcion") or "", ficha.get("etiquetas") or [])
+    tema = frases.tema_de(temas, frase)
     return (frases.caption(frase, tema, pagina), ficha["titulo"],
             ficha.get("descripcion") or "", ficha.get("etiquetas") or [])
 

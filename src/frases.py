@@ -407,6 +407,27 @@ def hashtags(tema: Tema, pagina: Pagina) -> List[str]:
     return lista[:HASHTAGS]
 
 
+def caption_de_tema(tema: Tema, pagina: Pagina) -> str:
+    """El caption cuando el reel NO sale de una frase sino de un capitulo.
+
+    Es el caso de los textos de la semana (`textos/semana.yaml`): el video
+    dice un monologo entero, asi que no hay una reflexion que poner debajo.
+    Va la tesis del capitulo, que es lo que presenta el asunto.
+
+    Y no va el texto del reel, por lo mismo que la frase no va en el caption
+    de siempre: quien lee el caption ya lo escucho, y repetirlo se come los
+    dos renglones que Facebook muestra antes del «Ver mas».
+
+    El pie sensible se mira por TEMA y no por frase: sin una frase concreta,
+    lo que decide es el capitulo.
+    """
+    partes = [tema.tesis]
+    if getattr(tema, "sensible", False) and pagina.pie_sensible:
+        partes.append(pagina.pie_sensible)
+    partes.append(" ".join(hashtags(tema, pagina)))
+    return "\n\n".join(p for p in partes if p)
+
+
 def caption(frase: Frase, tema: Tema, pagina: Pagina) -> str:
     """La reflexión, el pie si el tema es sensible y los hashtags.
 
