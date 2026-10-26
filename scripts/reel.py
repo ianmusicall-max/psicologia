@@ -254,6 +254,9 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--id", help="que frase")
     ap.add_argument("--tema", help="el capitulo entero, por nombre o por numero")
+    ap.add_argument("--texto", nargs="?", const="hoy", metavar="ID",
+                    help="uno de los textos de la semana, en primera persona "
+                         "(`--texto` solo: el que le toca a hoy)")
     ap.add_argument("--objetivo", type=float, default=video.OBJETIVO,
                     metavar="SEG",
                     help="con --tema, el minimo que se busca (leido, no hablado); "
@@ -306,7 +309,31 @@ def main(argv=None) -> int:
     ya = frases.publicadas()
     carpeta = Path(args.carpeta)
 
-    if args.tema:
+    if args.texto:
+        # Un texto de la semana es un monologo de una pieza: se dice entero,
+        # no se le suma nada alrededor. El largo ya esta medido en el archivo
+        # y hay una prueba que lo cuida, asi que aca no se elige nada.
+        from src import semana
+        de_la_semana = (semana.del_dia() if args.texto == "hoy"
+                        else semana.por_id(args.texto))
+        if de_la_semana is None:
+            hay = ", ".join("%s (%s)" % (x.id, x.dia) for x in semana.leer())
+            print("No encuentro ese texto. Hay: %s" % (hay or "ninguno"))
+            return 2
+        tema = buscar_tema(temas, de_la_semana.capitulo)
+        if tema is None:
+            print("El texto %s dice ser del capitulo %r y ese capitulo no esta."
+                  % (de_la_semana.id, de_la_semana.capitulo))
+            return 2
+        # El resto del script necesita una frase -para la semilla del fondo,
+        # la ficha de YouTube y el pie de Telegram-. Se arma una con el id y
+        # el titulo del texto en vez de tomar una del banco: si tomara una,
+        # el reel diria una cosa y se anunciaria con otra.
+        frase = frases.Frase(id=de_la_semana.id, texto=de_la_semana.titulo,
+                             principio="", fuente="", reflexion="",
+                             tema=tema.tema, destacar=[], sensible=None)
+        unidades = video.unidades_de(de_la_semana.texto, video.UNIDAD_MAXIMA)
+    elif args.tema:
         tema = buscar_tema(temas, args.tema)
         if tema is None:
             print("No encuentro el tema %r. Hay: %s"
@@ -334,7 +361,8 @@ def main(argv=None) -> int:
     cuerpo, _ = video.reparto(unidades)
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
-                                      "  (el capitulo entero)" if args.tema else ""))
+                                      "  (el capitulo entero)" if args.tema else
+                                      "  (texto de la semana)" if args.texto else ""))
     pista = (elegir_musica() if args.musica == DEL_TURNO
              else buscar_musica(args.musica)) if args.musica else None
     if pista:
@@ -502,7 +530,7 @@ def main(argv=None) -> int:
     # minutos es un Short- asi que lo unico que falta para subirlo es el texto,
     # y ahi son DOS campos y no uno como en Instagram.
     titulo_yt, descripcion_yt = frases.para_youtube(
-        frase, tema, pagina, capitulo=bool(args.tema))
+        frase, tema, pagina, capitulo=bool(args.tema or args.texto))
     etiquetas_yt = frases.hashtags(tema, pagina)
     # Al lado del mp4, porque en el repositorio el reel se guarda siempre con
     # el mismo nombre (`ultimo.mp4`) y de ahi no se puede saber de que frase
@@ -520,7 +548,8 @@ def main(argv=None) -> int:
     if args.telegram:
         from src import telegram
         pie = "%s · %s%s" % (frase.id, tema.titulo,
-                             "  (capitulo entero)" if args.tema else "")
+                             "  (capitulo entero)" if args.tema else
+                             "  (texto de la semana)" if args.texto else "")
         try:
             telegram.enviar_video(ruta, pie)
             print("Mandado al chat.")

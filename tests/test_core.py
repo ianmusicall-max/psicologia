@@ -25,7 +25,7 @@ from unittest import mock
 from PIL import Image, ImageDraw
 
 from src import (bot, config, diseno, entorno, facebook, frases, instagram, libro,
-                 fondos, medir, parrilla, telegram, traducir, video)
+                 fondos, medir, parrilla, semana, telegram, traducir, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -3672,6 +3672,96 @@ class TestElRecorteDeLosFondos(unittest.TestCase):
         self.assertNotIn("-ss", orden, "el montaje arrancaria en otro segundo")
         filtro = orden[orden.index("-filter_complex") + 1]
         self.assertEqual(filtro.count("trim=duration=%.2f" % video.ESCENA), 3)
+
+
+class TestLosTextosDeLaSemana(unittest.TestCase):
+    """Siete textos de 90 segundos, en primera persona, sacados del libro.
+
+    Los pidio el usuario el 2026-10-26. Lo que puede romperse sin hacer ruido
+    es el largo: un texto que se pasa no falla al escribirlo, falla despues de
+    haber pagado la voz, que es el momento mas caro para enterarse.
+    """
+
+    def _textos(self):
+        return semana.leer()
+
+    def test_son_siete_y_hay_uno_por_cada_dia(self):
+        textos = self._textos()
+        self.assertEqual(len(textos), 7)
+        self.assertEqual(sorted(x.dia for x in textos), sorted(semana.DIAS))
+        self.assertEqual(len({x.id for x in textos}), 7, "hay ids repetidos")
+
+    def test_ninguno_pasa_del_tope_del_reel(self):
+        # La prueba que justifica el archivo. `armar` mide la voz ya
+        # sintetizada y se niega arriba de 90, asi que un texto largo se
+        # descubre cuando ya se gasto la plata.
+        largos = []
+        for x in self._textos():
+            unidades = video.unidades_de(x.texto, video.UNIDAD_MAXIMA)
+            segundos = video.segundos_reales(unidades)
+            if segundos > video.TOPE_CON_MARGEN:
+                largos.append("%s: %.1f s" % (x.id, segundos))
+        self.assertEqual(largos, [], "se pasan de %.1f s: %s"
+                         % (video.TOPE_CON_MARGEN, "; ".join(largos)))
+
+    def test_ninguno_se_queda_tan_corto_que_no_sea_lo_que_se_pidio(self):
+        # El otro lado, y hace falta: lo pedido son 90 segundos. Sin esto, un
+        # texto recortado a la mitad pasaria la prueba de arriba sin problema.
+        cortos = []
+        for x in self._textos():
+            segundos = video.segundos_reales(video.unidades_de(x.texto, video.UNIDAD_MAXIMA))
+            if segundos < 75:
+                cortos.append("%s: %.1f s" % (x.id, segundos))
+        self.assertEqual(cortos, [], "se quedan cortos: %s" % "; ".join(cortos))
+
+    def test_cada_uno_sale_de_un_capitulo_que_existe_y_esta_escrito(self):
+        # Es lo que mantiene la pagina y el libro diciendo lo mismo. Un texto
+        # que dijera salir de un capitulo inexistente dejaria al reel sin tema
+        # -y sin fondo, que se elige por el tema-.
+        temas = {t.tema: t for t in frases.leer()}
+        escritos = {p.stem.split("-", 1)[1] for p in (ROOT / "libro" / "capitulos").glob("*.md")}
+        for x in self._textos():
+            self.assertIn(x.capitulo, temas, "%s: no existe ese capitulo" % x.id)
+            self.assertIn(x.capitulo, escritos,
+                          "%s: el capitulo %s todavia no esta escrito" % (x.id, x.capitulo))
+
+    # Lo que le dice al lector «tú» en vez de contar lo que me paso a mi. Se
+    # mira esto y no que HAYA pronombres de primera persona: la primera
+    # version contaba «me», «mi» y «yo», y acuso a `sem-04`, que esta entero
+    # en primera persona -«Me paso», «aprendi», «dije»- pero casi sin
+    # pronombres sueltos. El texto estaba bien y la regla estaba mal.
+    SEGUNDA = re.compile(r"\b(tú|tu|tus|te|ti|contigo|tienes|puedes|debes|"
+                         r"sientes|haces|eres|estás|sabes|quieres)\b", re.I)
+
+    def test_hablan_en_primera_persona_y_no_le_hablan_al_lector(self):
+        # Las CITAS quedan exentas: `sem-04` cita «Dejaste los platos otra
+        # vez» y «Eres un desconsiderado» como ejemplos de lo que no conviene
+        # decir, y esas dos tienen que poder estar en segunda persona. Por eso
+        # tambien van entre comillas en el archivo: sin ellas no habria forma
+        # de distinguir una cita de un desliz.
+        for x in self._textos():
+            fuera_de_citas = re.sub(r"«[^»]*»", " ", x.texto)
+            sobra = self.SEGUNDA.findall(fuera_de_citas)
+            self.assertEqual(sobra, [], "%s le habla al lector: %s"
+                             % (x.id, ", ".join(sobra)))
+
+    def test_el_reel_los_dice_enteros(self):
+        # Un monologo no se recorta: o entra entero o no es el texto. Las dos
+        # rutas del banco SI eligen -`guion_largo` prueba combinaciones y
+        # `guion_de_tema` mete las frases que entren- y esta no.
+        for x in self._textos():
+            unidades = video.unidades_de(x.texto, video.UNIDAD_MAXIMA)
+            self.assertEqual(" ".join(unidades).split(), x.texto.split(),
+                             "%s se dice cortado" % x.id)
+
+    def test_no_los_lee_el_banco_de_frases(self):
+        # Si alguien moviera el archivo a `frases/`, `frases.leer()` lo
+        # tomaria por un tema -lee todos los yaml de esa carpeta- y la pagina
+        # se llenaria de temas rotos sin que nada avisara.
+        ids = {f.id for t in frases.leer() for f in t.frases}
+        for x in self._textos():
+            self.assertNotIn(x.id, ids, "%s entro al banco de frases" % x.id)
+        self.assertFalse((ROOT / "frases" / "semana.yaml").exists())
 
 
 class TestElTextoParaYoutube(unittest.TestCase):
