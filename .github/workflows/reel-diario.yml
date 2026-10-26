@@ -36,7 +36,7 @@ on:
         required: false
         type: string
       musica:
-        description: "Que pista (piano, noche, ventana, hondo, calma). Vacio: la del turno"
+        description: "Que pista (teclas, piano, noche, ventana, hondo). Vacio: la del turno"
         required: false
         type: string
       tema:

@@ -6192,6 +6192,21 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
         self.assertIn("OCULTO", str(cm.exception))
 
 
+    def test_el_workflow_nombra_las_piezas_que_hay(self):
+        """La descripcion del campo es lo unico que se ve al lanzarlo a mano.
+        Nombraba `calma` -que NO rota, es el colchon que el piano vino a
+        reemplazar- y no nombraba `teclas`. Una lista escrita a mano se queda
+        vieja el dia que entra una pieza, y el sintoma es elegir una que no
+        existe."""
+        hm = _script("hacermusica8", "hacer_musica.py")
+        texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(
+            encoding="utf-8")
+        linea = [x for x in texto.splitlines() if "Que pista" in x]
+        self.assertEqual(len(linea), 1)
+        for nombre in hm.PIEZAS:
+            self.assertIn(nombre, linea[0], nombre)
+        self.assertNotIn("calma", linea[0])
+
     def test_el_workflow_puede_pedir_la_frase(self):
         texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(
             encoding="utf-8")
