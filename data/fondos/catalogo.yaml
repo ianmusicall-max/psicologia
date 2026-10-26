@@ -465,3 +465,52 @@ bosque-niebla-hojas.mp4:
   # de `bosque-pinos-amanecer` (12,50). (Esta nota decia "el mas pesado,
   # 31 MB" y eran las dos cosas mal: el numero salia de redondear `ls` y el
   # puesto, de no haberlo mirado.)
+
+espuma-piedras-mejillones.mp4:
+  que_es: La espuma de una ola entrando y saliendo sobre piedras de playa, con tres mejillones abiertos
+  etiquetas: [mar, orilla, espuma, piedras, agua, frio, movimiento, melancolia, ciclo]
+  # Vertical de fabrica (1080x1920): entra sin perder un pixel por los
+  # costados. Sin pista de audio.
+  #
+  # Lo que pasa en los cuatro segundos que se usan: el agua entra tapando
+  # todo, se retira y deja las piedras mojadas y los mejillones a la vista. Es
+  # el unico de la carpeta donde algo se destapa en vez de solo moverse, y por
+  # eso va con los capitulos de ciclos y de dejar ir, no con los de quietud.
+  #
+  # Brillo medio 76 de 255 en esos cuatro segundos: el puesto 25 de 56, o sea
+  # el medio justo de la carpeta. El texto blanco se lee, pero este no es de
+  # los que lo hacen facil.
+  #
+  # Se mueve 17,2 (diferencia media entre dos cuadros a 0,2 s). Suena a mucho
+  # y no lo es: es el puesto 5 de 56, pegado a `lluvia-sobre-el-agua` (16,3) y
+  # a `arbol-contraluz-rayos` (17,5), que ya estaban y nunca molestaron. El
+  # que mas se mueve es `bosque-pinos-amanecer`, con 43,6.
+  #
+  # Las piedras traen marrones y naranjas, que en esta carpeta de grises y
+  # azules casi no hay. El otro con color calido es `vela-ventana-lluvia`, y
+  # ahi el calor viene de una llama; aca viene de la piedra mojada.
+
+mar-oscuro-orilla.mp4:
+  que_es: Agua de mar azul muy oscura vista desde arriba, con el borde de roca con algas abajo
+  etiquetas: [mar, agua, oscuro, azul, roca, orilla, soledad, profundidad, movimiento]
+  # Vertical de fabrica (1080x1920). Trae pista de audio; el reel nunca usa el
+  # audio del clip.
+  #
+  # Brillo medio 58 de 255: el puesto 15 de 56. Esta en la mitad oscura y el
+  # texto blanco se lee de sobra, pero NO es de los oscuros de verdad -esos
+  # son `cuarto-ventanal-noche` (18), `calle-rieles-noche` (20) y
+  # `carretera-noche-lluvia` (22)-. Se ve mas oscuro de lo que mide porque el
+  # azul es profundo y no hay nada claro en el cuadro.
+  #
+  # **El segundo que mas se mueve de la carpeta**: 27,5 de diferencia media
+  # entre dos cuadros a 0,2 s, contra 43,6 de `bosque-pinos-amanecer` y 16,3
+  # de `lluvia-sobre-el-agua`. Es agua abierta llenando el cuadro entero, asi
+  # que compite con el texto mas que un paisaje quieto. Entra igual, pero si
+  # un capitulo pide calma, antes esta `mar-ventana-barco`.
+  #
+  # No se pudo establecer si la camara ademas se mueve. Lo normal -comparar un
+  # pedazo fijo en dos momentos- no sirve aca: el agua cubre casi todo el
+  # cuadro y la roca de abajo se moja y cambia sola. Por franjas, la de arriba
+  # cambia 63 y la de la orilla 18, y una camara que se mueve arrastraria todo
+  # por igual, asi que lo que se mueve es sobre todo el agua. Queda dicho
+  # porque la respuesta es «no se», y no «esta quieta».
