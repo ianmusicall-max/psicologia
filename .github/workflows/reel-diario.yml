@@ -187,7 +187,12 @@ jobs:
             echo "Todavia no salio ningun reel."
             exit 0
           fi
-          git add -f data/reels_publicados.json data/factor_voz.jsonl
+          # `clips_usados.json` tambien: es lo que hace que el reel de
+          # manana no repita los clips del de hoy. Sin guardarlo, cada
+          # corrida arranca con la memoria en blanco y la regla no sirve de
+          # nada. Estuvo asi desde que se escribio, el 2026-10-26.
+          git add -f data/reels_publicados.json data/factor_voz.jsonl \
+                     data/reels/clips_usados.json
           if git diff --staged --quiet; then
             echo "Nada que guardar."
             exit 0

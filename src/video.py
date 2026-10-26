@@ -1402,6 +1402,12 @@ MUSICA_SOLA = 0.50
 ENTRADA = 1.5              # el fundido de entrada
 SALIDA = 2.5               # y el de salida, que evita el corte seco
 
+# Lo que puede pesar un reel, EN BITS. Sale del tope del bot de Telegram
+# (`telegram.TOPE_ARCHIVO`, 50 MB) y no de una idea de calidad: por ahi tiene
+# que pasar para que lo apruebes. Se escribe derivado y no copiado, para que
+# el dia que ese tope cambie no queden dos numeros distintos.
+TOPE_BITS = 50 * 1024 * 1024 * 8
+
 # El volumen al que Facebook e Instagram dejan todo lo que se sube: si el reel
 # viene más bajo lo suben igual, y si viene más alto lo bajan. Dejarlo acá hace
 # que un reel grabado con tu voz y otro hecho con `say` suenen parejo, que si
@@ -1524,10 +1530,25 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
         salida_audio = "%d:a" % pista_voz
     if salida_audio == "[a]":
         cadena = cadena[:-len("[a]")] + ",loudnorm=%s[a]" % SONORIDAD
+    # El techo de bits, que NO es una preferencia de calidad sino el ancho de
+    # la puerta por la que el reel tiene que pasar: el bot de Telegram no
+    # manda archivos de mas de 50 MB, y sin Telegram no hay aprobacion, y sin
+    # aprobacion no se publica. O sea que un reel que no entra no es un reel
+    # mas pesado: es un reel que no existe.
+    #
+    # Paso de verdad el 2026-10-26, con la tanda de clips nuevos: a CRF 20 sin
+    # tope, el peso depende de cuanto se mueva la imagen, y `sem-02` salio de
+    # 60 MB. Se armo entero, se pago la voz y murio al ir a pedir permiso.
+    #
+    # Se deja CRF 20 -la calidad manda mientras quepa- y el tope solo actua
+    # cuando la imagen es muy movida. `bufsize` de dos segundos para que un
+    # tramo agitado pueda pasarse un momento sin que el promedio se vaya.
+    techo = int(TOPE_BITS * 0.90 / max(total, 1.0)) - 128_000
     return ([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error"] + entradas +
             ["-filter_complex", cadena, "-map", "[v]", "-map", salida_audio,
              "-t", "%.2f" % total,
              "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+             "-maxrate", str(techo), "-bufsize", str(techo * 2),
              "-pix_fmt", "yuv420p", "-r", str(FPS),
              "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
              "-movflags", "+faststart", str(salida)])

@@ -3839,6 +3839,17 @@ class TestQueCadaReelNoRepitaLoAnterior(unittest.TestCase):
         self.assertGreater(anota[0], max(asigna),
                            "se anotan los clips antes de tener el reel")
 
+    def test_el_registro_se_guarda_entre_corridas(self):
+        # Sin esto la regla de no repetir no sirve: cada corrida de GitHub es
+        # un clon nuevo, asi que si el archivo no se commitea, el reel de
+        # manana arranca con la memoria en blanco. Estuvo asi desde que se
+        # escribio y se vio al mirar que clips elegiria la corrida siguiente.
+        flujo = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(encoding="utf-8")
+        guarda = [l for l in flujo.splitlines() if "git add -f" in l]
+        self.assertTrue(guarda, "el flujo no guarda nada")
+        bloque = flujo[flujo.index(guarda[0]):][:400]
+        self.assertIn("clips_usados.json", bloque)
+
     def test_el_registro_vive_junto_a_los_reels(self):
         # No en `data/`, y no es estetica: asi el camino sale de `--carpeta` y
         # una prueba que arma un reel en una carpeta temporal escribe el suyo
@@ -3924,6 +3935,38 @@ class TestElCaptionDeUnTextoDeLaSemana(unittest.TestCase):
                     "frase": frase.id, "titulo": "T", "descripcion": "D"}):
                 caption, _, _, _ = rdd.textos_de(mp4)
         self.assertIn(" ".join(frase.reflexion.split())[:40], " ".join(caption.split()))
+
+
+class TestElReelTieneQueEntrarPorTelegram(unittest.TestCase):
+    """Un reel que no entra en el bot no es un reel mas pesado: no existe.
+
+    Sin Telegram no hay aprobacion y sin aprobacion no se publica. El
+    2026-10-26 `sem-02` salio de 60 MB con los clips nuevos: se armo entero,
+    se pago la voz y murio al ir a pedir permiso.
+    """
+
+    def _orden(self, total):
+        return video.comando(Path("s.ass"), Path("o.mp4"), total,
+                             [Path("a.mp4")], musica=Path("m.m4a"))
+
+    def test_el_techo_sale_del_tope_del_bot(self):
+        self.assertEqual(video.TOPE_BITS, telegram.TOPE_ARCHIVO * 8)
+
+    def test_un_reel_del_largo_maximo_entra_con_margen(self):
+        orden = self._orden(float(video.TOPE_SEGUNDOS))
+        techo = int(orden[orden.index("-maxrate") + 1])
+        pesa = (techo + 128_000) * video.TOPE_SEGUNDOS / 8
+        self.assertLess(pesa, telegram.TOPE_ARCHIVO,
+                        "un reel del largo maximo no entraria en el bot")
+        self.assertGreater(pesa, telegram.TOPE_ARCHIVO * 0.8,
+                           "el techo esta tan bajo que regala calidad")
+
+    def test_el_techo_acompana_al_largo(self):
+        # Un reel corto puede gastar mas bits por segundo que uno largo y
+        # entrar igual. Un techo fijo le sacaria calidad al corto sin motivo.
+        corto = int(self._orden(40.0)[self._orden(40.0).index("-maxrate") + 1])
+        largo = int(self._orden(85.0)[self._orden(85.0).index("-maxrate") + 1])
+        self.assertGreater(corto, largo)
 
 
 class TestElSilencioDondeCambiaLaIdea(unittest.TestCase):
