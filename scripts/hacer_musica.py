@@ -104,6 +104,53 @@ PIEZAS = {
         "compas": 8.0, "tono": -7,
         "es": "Re menor, con septima. La mas oscura.",
     },
+    # La del 2026-10-26, y la unica que NO comparte la voz de las otras cuatro.
+    # El usuario pidio piano teniendo ya dos reels hechos con `piano.m4a`, asi
+    # que el pedido no era otra cancion sino que la cancion se oyera como un
+    # piano. Tres cosas la separan, y las tres estan medidas:
+    #
+    # - **las notas se oyen de a una**, y esto esta MEDIDO contando los golpes
+    #   que sobresalen en la banda del martillo (2-5 kHz), no mirando la
+    #   receta: `teclas` tiene **1,11 golpes por segundo que suben 10,4 dB**
+    #   -el mayor, 17,1- contra los **0,39 que suben 3,8 dB** de `piano`. En
+    #   las otras cuatro cae una nota cada 1,5 s y dura 4,5, asi que hay
+    #   siempre tres superpuestas y lo que se oye es un acorde sostenido;
+    # - **los armonicos altos se apagan rapido**, y ESTO es la causa, no el
+    #   martillo. `por_armonico` 0,84 contra 0,92: el armonico 20 se apaga en
+    #   0,07 s en vez de 1,1, asi que entre dos notas la banda del martillo se
+    #   queda en silencio y el golpe que sigue sobresale. Aislado -misma
+    #   pieza, solo ese numero- da **8,6 dB de golpe contra 4,3**;
+    # - **y ENCIMA de eso el golpe del martillo** (`golpe`), que suma 1,8 dB
+    #   mas: de 8,6 a 10,4. Se midio aparte porque la primera version de este
+    #   comentario decia que el martillo era lo que hacia el piano, y es al
+    #   reves: con `por_armonico` en 0,92 el martillo **no cambia nada**
+    #   -4,3 dB con y sin el-, porque el brillo sostenido tapa el salto. El
+    #   martillo no sirve si antes no se hizo silencio arriba;
+    # - el brillo PROMEDIO baja con esto (2,3% contra 5,1%) y es lo correcto:
+    #   un piano tiene el brillo en el ataque, no repartido. Buscar el
+    #   promedio mas alto es lo que lleva de nuevo al colchon;
+    # - **la mano izquierda sube una octava** (-24 y no -36) y pega mas suave.
+    #   A 55 Hz esa sola nota se llevaba la mitad de la energia de la pieza, y
+    #   en el telefono eso no se oye: se pierde.
+    #
+    # Sigue siendo de la familia: piano, debajo de la voz y sin resolver.
+    "teclas": {
+        "acordes": ((0, 3, 7, 12), (-7, -4, 0, 5), (-4, 0, 5, 8), (-5, -1, 2, 7)),
+        "compas": 3.6, "tono": -2,
+        "es": "Sol menor, i-iv-VI-v. Las notas se oyen de a una.",
+        "voz": {"armonicos": 20, "potencia": 0.6, "por_armonico": 0.84,
+                "caida": 2.2, "golpe": 0.100, "grave": -24,
+                "fuerza_grave": 0.55, "techo": 11000,
+                # Sala corta y floja. La de las otras cuatro devuelve ecos a
+                # 60, 110 y 180 ms, que es exactamente el hueco donde tendria
+                # que oirse el silencio entre dos notas: con esa sala el golpe
+                # no sobresale -medido, 3,6 dB contra los 3,5 de `piano`-.
+                "sala": "aecho=0.9:0.30:38|75:0.16|0.08",
+                # Y `LRA=7` aplana lo que el golpe acaba de levantar. Con 12
+                # la pieza sigue siendo una cama -no sube ni baja sola- pero
+                # el ataque de cada nota llega entero.
+                "lra": 12},
+    },
 }
 
 # Cuanto se desafinan los armonicos. Un numero chico; con 0 suena a organo.
@@ -123,22 +170,83 @@ CAIDA_POR_ARMONICO = 0.92
 POTENCIA = 0.9
 
 
+# EL MARTILLO. El 2026-10-26 el usuario pidio «otra musica, piano» teniendo
+# ya dos reels hechos CON `piano.m4a`, asi que se midio el archivo en vez de
+# releer la receta, y la receta mentia: el comentario de arriba dice que un
+# piano se reconoce por sus armonicos de varios kHz, y de la energia de
+# `piano.m4a` **el 1,9% esta arriba de 2 kHz y el 0,0% arriba de 5 kHz**.
+#
+# Lo que de verdad faltaba no es esto sino el SILENCIO entre dos notas, y
+# conviene que quede escrito porque la primera version de este comentario lo
+# tenia al reves. Un piano se reconoce por el salto al caer cada nota, y para
+# que haya salto la banda de arriba tiene que vaciarse antes. En las cuatro
+# piezas de siempre el armonico mas alto dura 1,5 s y cae una nota cada 1,5 s,
+# o sea que no se vacia nunca: cada nota entra sobre la anterior y lo que se
+# oye es un acorde sostenido -los 6,9 dB de cresta que se midieron-. Por eso
+# `ATAQUE`, una rampa de 12 ms, no alcanzaba: una rampa sube el volumen de lo
+# que ya estaba sonando.
+#
+# El martillo suma 1,8 dB ENCIMA de eso, y solo si eso ya se hizo: medido con
+# `por_armonico` en 0,92, poner el martillo o no poner no cambia ni un dB. Es
+# el adorno, no la causa. La cuenta completa esta en la ficha de `teclas`.
+GOLPE_DESDE = 6           # el golpe son los armonicos altos, no la fundamental
+GOLPE_HASTA = 46
+GOLPE_CAIDA = 0.045       # se apaga en centesimas: es un golpe, no una nota
+GOLPE_LARGO = 0.26        # mas alla de esto ya no queda nada que sumar
+GOLPE_POTENCIA = 0.4      # casi plano: el golpe es ancho de banda
+
+# La voz de cada pieza, que hasta hoy era una sola para todas y estaba suelta
+# en constantes de modulo. Separarla es lo que deja agregar una pieza que
+# suene distinto sin tocar ni un fotograma de las cuatro que ya salieron.
+VOZ_DE_SIEMPRE = {
+    "armonicos": ARMONICOS, "potencia": POTENCIA,
+    "por_armonico": CAIDA_POR_ARMONICO, "caida": CAIDA_GRAVE,
+    "golpe": 0.0, "grave": OCTAVA_GRAVE, "fuerza_grave": FUERZA_GRAVE,
+    "techo": 8000,
+    # Un poco de sala. Un piano en una habitacion seca suena a maqueta.
+    "sala": "aecho=0.8:0.9:60|110|180:0.30|0.20|0.12",
+    # Cuanto rango de volumen se le deja. Chico es una cama que no sube ni
+    # baja, que es lo que se quiere debajo de alguien hablando.
+    "lra": 7,
+}
+
+
 def _nota(frec: float, dura: float, fuerza: float, armonicos: int = ARMONICOS,
-          potencia: float = POTENCIA, por_armonico: float = CAIDA_POR_ARMONICO):
+          potencia: float = POTENCIA, por_armonico: float = CAIDA_POR_ARMONICO,
+          caida: float = CAIDA_GRAVE, golpe: float = 0.0):
     import array
     n = int(dura * SR)
     salida = array.array("d", [0.0]) * n
+    if golpe:
+        # El golpe del martillo: armonicos altos que se apagan en centesimas.
+        # Va aparte y no estirando `armonicos` porque lo que lo hace un golpe
+        # es que DURA poco, no que sea agudo. El bucle se corta en
+        # `GOLPE_LARGO` -despues de eso la exponencial ya no suma nada- asi
+        # que cuesta una fraccion de lo que cuesta la nota.
+        hasta = min(n, int(GOLPE_LARGO * SR))
+        for k in range(GOLPE_DESDE, GOLPE_HASTA + 1):
+            f = frec * k * math.sqrt(1 + INARMONICO * k * k)
+            if f > SR / 2.2:
+                break
+            amplitud = golpe * fuerza / (k ** GOLPE_POTENCIA)
+            paso = 2 * math.pi * f / SR
+            for i in range(hasta):
+                t = i / SR
+                env = math.exp(-t / GOLPE_CAIDA)
+                if t < ATAQUE:
+                    env *= t / ATAQUE
+                salida[i] += amplitud * env * math.sin(paso * i)
     for k in range(1, armonicos + 1):
         # La desafinacion crece con el armonico, como en una cuerda real.
         f = frec * k * math.sqrt(1 + INARMONICO * k * k)
         if f > SR / 2.2:
             break
         amplitud = fuerza / (k ** potencia)
-        caida = CAIDA_GRAVE * (por_armonico ** (k - 1))
+        apaga = caida * (por_armonico ** (k - 1))
         paso = 2 * math.pi * f / SR
         for i in range(n):
             t = i / SR
-            env = math.exp(-t / caida)
+            env = math.exp(-t / apaga)
             if t < ATAQUE:
                 env *= t / ATAQUE
             salida[i] += amplitud * env * math.sin(paso * i)
@@ -155,6 +263,7 @@ def componer(segundos: float, pieza: str = "piano"):
     acordes = receta["acordes"]
     paso_compas = receta["compas"]
     tono = receta["tono"]
+    voz = dict(VOZ_DE_SIEMPRE, **receta.get("voz", {}))
     total = int(segundos * SR)
     pista = array.array("d", [0.0]) * total
     notas = {}
@@ -176,10 +285,14 @@ def componer(segundos: float, pieza: str = "piano"):
             # La primera del acorde se toca un poco mas fuerte: marca el
             # cambio sin que haga falta un golpe.
             fuerza = 0.30 if j == 0 else 0.20
-            largo = min(CAIDA_GRAVE * 2.2, segundos - cuando)
+            largo = min(voz["caida"] * 2.2, segundos - cuando)
             llave = (round(f, 2), round(largo, 2), fuerza)
             if llave not in notas:
-                notas[llave] = _nota(f, largo, fuerza)
+                notas[llave] = _nota(f, largo, fuerza,
+                                     armonicos=voz["armonicos"],
+                                     potencia=voz["potencia"],
+                                     por_armonico=voz["por_armonico"],
+                                     caida=voz["caida"], golpe=voz["golpe"])
             nota = notas[llave]
             desde = int(cuando * SR)
             for i, v in enumerate(nota):
@@ -188,14 +301,14 @@ def componer(segundos: float, pieza: str = "piano"):
                 pista[desde + i] += v
         # La mano izquierda, al empezar el acorde. Sostiene mas que la
         # derecha, asi el cambio de acorde no deja un hueco.
-        f = LA * (2 ** ((acorde[0] + tono + OCTAVA_GRAVE) / 12.0))
-        largo = min(CAIDA_GRAVE * 2.6, segundos - t)
+        f = LA * (2 ** ((acorde[0] + tono + voz["grave"]) / 12.0))
+        largo = min(voz["caida"] * 2.6, segundos - t)
         if largo > 0.2:
             llave = ("grave", round(f, 2), round(largo, 2))
             if llave not in notas:
-                notas[llave] = _nota(f, largo, 0.30 * FUERZA_GRAVE,
+                notas[llave] = _nota(f, largo, 0.30 * voz["fuerza_grave"],
                                      armonicos=6, potencia=1.4,
-                                     por_armonico=0.75)
+                                     por_armonico=0.75, caida=voz["caida"])
             desde = int(t * SR)
             for i, v in enumerate(notas[llave]):
                 if desde + i >= total:
@@ -206,7 +319,17 @@ def componer(segundos: float, pieza: str = "piano"):
     return pista
 
 
-def guardar(pista, salida: Path, segundos: float) -> Path:
+def voz_de(pieza: str) -> dict:
+    """Como se toca y como se graba una pieza. Vive aca y no en `guardar`
+    porque es parte de como suena: a 8 kHz el golpe del martillo de `teclas`
+    se va casi entero, y con `LRA=7` la normalizacion lo aplana igual. Las
+    dos cosas son justo lo que se vino a arreglar."""
+    return dict(VOZ_DE_SIEMPRE, **PIEZAS[pieza].get("voz", {}))
+
+
+def guardar(pista, salida: Path, segundos: float, techo: int = 8000,
+            sala: str = "aecho=0.8:0.9:60|110|180:0.30|0.20|0.12",
+            lra: int = 7) -> Path:
     """A wav y de ahi a m4a. El fundido de entrada y de salida va aca y no al
     armar el reel: una pista que arranca de golpe se oye como un error."""
     pico = max((abs(x) for x in pista), default=1.0) or 1.0
@@ -234,10 +357,8 @@ def guardar(pista, salida: Path, segundos: float) -> Path:
     video._correr([
         video.ffmpeg(), "-y", "-hide_banner", "-loglevel", "error",
         "-i", str(crudo),
-        # Un poco de sala. Un piano en una habitacion seca suena a maqueta.
-        "-af", "aecho=0.8:0.9:60|110|180:0.30|0.20|0.12,"
-               "lowpass=f=8000,"      # fieltro: sin los agudos mas duros
-               "loudnorm=I=-18:TP=-3:LRA=7",
+        "-af", "%s,lowpass=f=%d,loudnorm=I=-18:TP=-3:LRA=%d"
+                % (sala, techo, lra),
         "-c:a", "aac", "-b:a", "128k", "-ac", "2",
         str(salida)], "pasar la musica a m4a", espera=600)
     crudo.unlink()
@@ -274,7 +395,9 @@ def main(argv=None) -> int:
             continue
         print("Componiendo %.0f s de %s (%s)..."
               % (args.segundos, nombre, PIEZAS[nombre]["es"]))
-        guardar(componer(args.segundos, nombre), salida, args.segundos)
+        v = voz_de(nombre)
+        guardar(componer(args.segundos, nombre), salida, args.segundos,
+                v["techo"], v["sala"], v["lra"])
         print("%s  (%.1f MB)" % (salida, salida.stat().st_size / 1048576.0))
     return 0
 

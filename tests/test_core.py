@@ -5783,6 +5783,110 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         for n, r in hm.PIEZAS.items():
             self.assertLessEqual(r["tono"], 0, n)
 
+    def test_la_voz_de_una_pieza_solo_pisa_cosas_que_existen(self):
+        """`voz` es un dict que se superpone a `VOZ_DE_SIEMPRE`. Una clave mal
+        escrita ahi no da error: se suma al dict y no la lee nadie, asi que la
+        pieza sale con el valor de siempre y nada avisa."""
+        hm = _script("hacermusica4", "hacer_musica.py")
+        for n, r in hm.PIEZAS.items():
+            sobra = set(r.get("voz", {})) - set(hm.VOZ_DE_SIEMPRE)
+            self.assertEqual(sobra, set(), "%s: %s" % (n, sorted(sobra)))
+
+    def test_las_cuatro_de_antes_no_cambiaron_de_voz(self):
+        """El 2026-10-26 se separo la voz del acorde para poder agregar
+        `teclas`. Las cuatro que ya salieron tienen que seguir sonando igual:
+        si una cambiara, el reel del martes no se parece al del lunes y nadie
+        pidio eso. `teclas` es la unica que trae voz propia."""
+        hm = _script("hacermusica5", "hacer_musica.py")
+        con_voz = sorted(n for n, r in hm.PIEZAS.items() if r.get("voz"))
+        self.assertEqual(con_voz, ["teclas"])
+
+    def test_los_armonicos_altos_se_apagan_antes_de_la_nota_que_sigue(self):
+        """Esta es la causa de que un piano se oiga como un piano, y la prueba
+        existe porque el 2026-10-26 la primera version de la nota decia que
+        era el martillo. Medido aislando cada cosa: con los armonicos altos
+        apagandose rapido el golpe sube 8,6 dB, y el martillo le suma 1,8 mas;
+        con los armonicos sostenidos el martillo **no cambia nada** -4,3 dB
+        con y sin el-, porque el brillo que queda arriba tapa el salto.
+
+        O sea que lo que hay que cuidar es que la banda de arriba se VACIE
+        entre dos notas. Si no, no hay salto que oir."""
+        hm = _script("hacermusica6", "hacer_musica.py")
+        r = hm.PIEZAS["teclas"]
+        v = hm.voz_de("teclas")
+        entre_notas = r["compas"] / len(r["acordes"][0])
+        # cuanto dura el armonico mas alto de la nota
+        arriba = v["caida"] * (v["por_armonico"] ** (v["armonicos"] - 1))
+        self.assertLess(arriba, entre_notas / 2,
+                        "el armonico alto dura %.2f s y cae una nota cada %.2f"
+                        % (arriba, entre_notas))
+        # Y asi es como NO tiene que ser, que es como estan las otras cuatro:
+        # ahi el armonico mas alto dura tanto como el hueco entre dos notas,
+        # o mas, y por eso suenan a acorde sostenido. No es un defecto de
+        # ellas -son camas a proposito-: es la diferencia que define `teclas`.
+        s = hm.VOZ_DE_SIEMPRE
+        suyo = hm.PIEZAS["piano"]
+        self.assertGreaterEqual(
+            s["caida"] * (s["por_armonico"] ** (s["armonicos"] - 1)),
+            suyo["compas"] / len(suyo["acordes"][0]) * 0.9)
+
+    def test_el_martillo_suena_al_principio_y_no_despues(self):
+        """El golpe es el adorno, no la causa -mide 1,8 dB de los 6,1 que
+        separan `teclas` de `piano`- pero tiene que ser un GOLPE: si lo que
+        agrega sigue sonando a la mitad de la nota, es brillo sostenido y tapa
+        justamente el salto que vino a marcar.
+
+        Se mide la BANDA entera arriba de 2 kHz con un pasa-altos y no unas
+        pocas frecuencias elegidas a dedo: la primera version de esta prueba
+        media a 2500, 3500, 5000 y 7000 Hz y se le colaba el armonico 11 de la
+        nota, que cae en 2420. Daba 1,2x donde tenia que dar mucho mas."""
+        hm = _script("hacermusica6b", "hacer_musica.py")
+        import math
+
+        def arriba_de_2k(muestras):
+            """Dos pasa-altos de primer orden a 2 kHz, y la energia que queda."""
+            rc = 1.0 / (2 * math.pi * 2000.0)
+            a = rc / (rc + 1.0 / hm.SR)
+            x = list(muestras)
+            for _ in range(2):
+                y = [0.0] * len(x)
+                for i in range(1, len(x)):
+                    y[i] = a * (y[i - 1] + x[i] - x[i - 1])
+                x = y
+            return sum(v * v for v in x)
+
+        comun = dict(armonicos=20, potencia=0.6, por_armonico=0.84, caida=2.2)
+        sin_golpe = hm._nota(220.0, 0.08, 0.3, golpe=0.0, **comun)
+        con_golpe = hm._nota(220.0, 0.08, 0.3, golpe=0.100, **comun)
+        # lo que el martillo AGREGA, nota a nota
+        suma = [b - a for a, b in zip(sin_golpe, con_golpe)]
+        self.assertGreater(arriba_de_2k(suma), 0.0)
+        # y tiene que estar casi todo en el arranque: `GOLPE_CAIDA` son 45 ms,
+        # asi que a los 40 ms ya cayo mas de la mitad.
+        corte = int(0.040 * hm.SR)
+        self.assertGreater(arriba_de_2k(suma[:corte]),
+                           arriba_de_2k(suma[corte:]) * 3)
+        # Y sumado a la nota, el principio tiene que quedar mas brillante que
+        # el final. Es lo que hace que se oiga el golpe.
+        mitad = len(con_golpe) // 2
+        self.assertGreater(arriba_de_2k(con_golpe[:mitad]),
+                           arriba_de_2k(con_golpe[mitad:]))
+
+    def test_teclas_toca_mas_seguido_de_lo_que_dura_cada_nota(self):
+        """Lo que convierte un piano en un colchon es que las notas se pisen.
+        En las cuatro de antes cae una cada 1,5 s y dura 4,5: siempre hay tres
+        sonando juntas. `teclas` existe para que eso no pase, asi que la nota
+        tiene que apagarse antes de que caiga la tercera siguiente."""
+        hm = _script("hacermusica7", "hacer_musica.py")
+        r = hm.PIEZAS["teclas"]
+        v = hm.voz_de("teclas")
+        entre_notas = r["compas"] / len(r["acordes"][0])
+        self.assertLess(v["caida"], 3 * entre_notas,
+                        "caida %.2f, una nota cada %.2f s" % (v["caida"], entre_notas))
+        # Y la sala no puede devolver ecos en el hueco entre dos notas, que es
+        # justo lo que hace la de las otras cuatro (60, 110 y 180 ms).
+        self.assertNotEqual(v["sala"], hm.VOZ_DE_SIEMPRE["sala"])
+
     def test_el_workflow_puede_pedir_la_frase(self):
         texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(
             encoding="utf-8")
