@@ -2,6 +2,7 @@
 """Deja los clips de fondo en la medida del reel, para que no pesen de mas.
 
     achicar_fondos.py --ver        dice cuanto pesan y cuanto duran
+    achicar_fondos.py --repetidos  dice si dos son el mismo video
     achicar_fondos.py --recortar   deja en 6 s los que pasan, SIN recomprimir
     achicar_fondos.py              los achica entero (reemplaza los archivos)
 
@@ -62,6 +63,47 @@ def clips_de(carpeta: Path):
         return []
     return sorted(x for x in carpeta.iterdir()
                   if x.is_file() and x.suffix.lower() in CLIPS)
+
+
+def huella(ruta: Path):
+    """Identifica el clip por los CUADROS que el reel usa, no por el archivo.
+
+    El md5 del archivo entero dejo de servir el dia que los clips se recortan
+    al entrar (2026-10-26): si el usuario vuelve a mandar un clip que ya esta
+    en la carpeta, el de la carpeta mide 6 s y el que llega mide 15, asi que
+    los bytes no coinciden y el repetido entra como nuevo. Paso ese mismo dia
+    con `ladera-bruma-anochecer`.
+
+    Esto compara los `video.ESCENA` segundos que el reel muestra de verdad, con
+    `framemd5`, que es la huella de los cuadros decodificados. Un recorte sin
+    recomprimir no la cambia, y es justamente lo que hace falta.
+
+    Devuelve None si no se puede leer: un archivo ilegible no es un repetido.
+    """
+    import hashlib
+    import subprocess
+    try:
+        r = subprocess.run(
+            [video.ffmpeg(), "-v", "error", "-i", str(ruta),
+             "-map", "0:v:0", "-t", str(video.ESCENA), "-an",
+             "-f", "framemd5", "-"],
+            capture_output=True, text=True)
+    except OSError:
+        return None
+    cuadros = [l for l in (r.stdout or "").splitlines() if l and not l.startswith("#")]
+    if not cuadros:
+        return None
+    return hashlib.md5("\n".join(cuadros).encode()).hexdigest()
+
+
+def repetidos(carpeta: Path):
+    """Los clips de la carpeta que son el mismo video, agrupados por huella."""
+    por_huella = {}
+    for c in clips_de(carpeta):
+        h = huella(c)
+        if h:
+            por_huella.setdefault(h, []).append(c.name)
+    return [sorted(v) for v in por_huella.values() if len(v) > 1]
 
 
 def ficha(ruta: Path):
@@ -260,6 +302,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ver", action="store_true", help="no toca nada")
+    ap.add_argument("--repetidos", action="store_true",
+                    help="dice si dos clips de la carpeta son el mismo video")
     ap.add_argument("--recortar", action="store_true",
                     help="solo recorta a %d s, sin recomprimir (la regla de "
                          "los clips nuevos)" % SEGUNDOS)
@@ -267,6 +311,14 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     carpeta = Path(args.carpeta)
+    if args.repetidos:
+        iguales = repetidos(carpeta)
+        for grupo in iguales:
+            print("  el mismo video: %s" % ", ".join(grupo))
+        print("%d clip(s) repetido(s) en %s" % (len(iguales), carpeta)
+              if iguales else "Ninguno repetido en %s." % carpeta)
+        return 1 if iguales else 0
+
     sobras = limpiar(carpeta) if not args.ver else 0
     if sobras:
         print("Borre %d archivo(s) a medio hacer de una corrida anterior." % sobras)

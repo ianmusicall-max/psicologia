@@ -216,7 +216,7 @@ avenida-noche-torres.mp4:
   # texto. (Decia "el segundo 2 y el 12"; con el recorte del 2026-10-26 el
   # clip dura 6,09, asi que se volvio a medir dentro de lo que quedo.)
   #
-  # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 156 del
+  # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 163 del
   # mas claro: oscuro de sobra para que el texto blanco se lea. Medido, no
   # estimado. (Decia "de los cuatro mas oscuros" y dejo de serlo el
   # 2026-10-26, al entrar `nieve-cayendo-oscuro` con 39: hoy es el octavo.
@@ -340,10 +340,15 @@ vela-ventana-lluvia.mp4:
 gotas-arbol-verde.mp4:
   que_es: Gotas de lluvia en primer plano sobre un vidrio, con un arbol verde borroso detras y cielo blanco
   etiquetas: [lluvia, gotas, ventana, arbol, verde, dia, fresco, detalle, quietud]
-  # El mas colorido despues de `lluvia-sobre-el-agua`: 13,7 de saturacion
-  # media contra 41,3 del turquesa y 2,6 del mas apagado. Y el mas claro de
-  # los que entraron hoy (brillo 113), asi que aca el contorno del texto SI
-  # hace falta -que lo lleva siempre-.
+  # Saturacion media 13,7 contra 41,3 de `lluvia-sobre-el-agua` y 0,0 de
+  # `gato-ventana-gris`, que es blanco y negro. (Esta nota decia "el mas
+  # colorido despues de lluvia-sobre-el-agua" y NUNCA fue cierto: es el puesto
+  # 50 de 60, y `ventanilla-nieve-azul`, `montana-nubes-altura`,
+  # `valle-nubes-pueblo` y `ruta-mojada-anochecer` ya estaban y son mas
+  # saturados. Se escribio mirando dos numeros en vez de la lista.)
+  #
+  # Brillo 113, el puesto 45 de 60: por encima de la media, asi que aca el
+  # contorno del texto SI hace falta -que lo lleva siempre-.
 
 espejo-lluvia-dia.mp4:
   que_es: Desde adentro de un auto, el vidrio lleno de gotas y el espejo retrovisor, con la calle borrosa detras
@@ -358,9 +363,10 @@ chorreras-niebla-ciudad.mp4:
   etiquetas: [lluvia, gotas, ventana, ciudad, niebla, gris, altura, blanco, distancia, encierro]
   # Trae pista de audio. El reel nunca usa el audio del clip.
   #
-  # De los tres mas claros de la carpeta: brillo medio 148,1 de 255, pegado a
-  # `ciudad-lluvia-semaforos` (148,3) y debajo de `lluvia-sobre-el-agua`
-  # (156,3), que sigue siendo el tope. Sobre un fondo asi el texto blanco
+  # De los mas claros de la carpeta: brillo medio 148,1 de 255, pegado a
+  # `ciudad-lluvia-semaforos` (148,3) y debajo de `lluvia-sobre-el-agua` (156)
+  # y de `cala-piedras-ladera` (163), que es el tope desde el 2026-10-26.
+  # Hoy es el cuarto; esta nota decia "de los tres" y que 156 era el tope. Sobre un fondo asi el texto blanco
   # depende del contorno, que lo lleva siempre, pero es de los que conviene no
   # usar con una frase larga.
   #
@@ -461,8 +467,9 @@ bosque-niebla-hojas.mp4:
   #
   # Pesaba 29,80 MB -el segundo, a 16 KB de `gotas-ventana-atardecer`- y eran
   # 18 segundos de los que el reel usa 4. Con el recorte del 2026-10-26 quedo
-  # en 11,18 MB y 6,11 s, y sigue siendo el segundo mas pesado, ahora detras
-  # de `bosque-pinos-amanecer` (12,50). (Esta nota decia "el mas pesado,
+  # en 11,18 MB y 6,11 s. Hoy es el TERCERO: `bosque-pinos-amanecer` pesa
+  # 12,50 y `orilla-rocas-sol` 11,93, que entro el 2026-10-26. (Esta nota
+  # decia "el mas pesado,
   # 31 MB" y eran las dos cosas mal: el numero salia de redondear `ls` y el
   # puesto, de no haberlo mirado.)
 
@@ -514,3 +521,87 @@ mar-oscuro-orilla.mp4:
   # cambia 63 y la de la orilla 18, y una camara que se mueve arrastraria todo
   # por igual, asi que lo que se mueve es sobre todo el agua. Queda dicho
   # porque la respuesta es «no se», y no «esta quieta».
+
+orilla-rocas-sol.mp4:
+  que_es: Rocas con musgo y grava rojiza en primer plano, y detras el mar encendido por el sol
+  etiquetas: [mar, orilla, rocas, piedras, sol, brillo, verde, calidez, movimiento]
+  # Vertical de fabrica (1080x1920), sin pista de audio.
+  #
+  # El mar de atras esta lleno de destellos de sol, asi que el pico de blanco
+  # llega a 251 de 255 aunque la media sea 113 (el puesto 46 de 60). Eso es lo
+  # que hay que saber: la media no dice nada de un cuadro con brillos
+  # puntuales. Se comprobo con el texto encima y se lee, porque el subtitulo
+  # lleva contorno oscuro siempre.
+  #
+  # Se mueve 9,9 -diferencia media entre dos cuadros a 0,2 s-: tranquilo para
+  # ser agua, bastante menos que `mar-oscuro-orilla` (27,5).
+  #
+  # **El segundo mas pesado de la carpeta**: 11,93 MB, detras de
+  # `bosque-pinos-amanecer` (12,50). Le saco el puesto a `bosque-niebla-hojas`
+  # (11,18), que lo tenia desde el 2026-10-26.
+  #
+  # El musgo verde sobre la roca y la grava rojiza traen color de tierra, que
+  # en esta carpeta de grises y azules casi no hay. El otro asi es
+  # `espuma-piedras-mejillones`, y ahi el color viene de las piedras mojadas.
+
+playa-olas-horizonte.mp4:
+  que_es: Una playa con las olas rompiendo, el horizonte del mar y cielo celeste con nubes
+  etiquetas: [mar, horizonte, playa, olas, espuma, cielo, azul, distancia, amanecer, partida]
+  # Vertical de fabrica (1080x1920), sin pista de audio.
+  #
+  # **Lo que este clip de verdad agrega es el HORIZONTE.** Hasta hoy habia UNO
+  # solo con esa etiqueta -`mar-ventana-barco`- y ocho capitulos la piden:
+  # reconexion, amistad, confianza, perdon, cambio, elegir, sentido y
+  # expectativas (`fondos.QUE_BUSCA`). Ahora son dos. Es el aporte mas util de
+  # la tanda, mas que cualquier cosa de su imagen.
+  #
+  # Brillo medio 140 de 255, el puesto 54 de 60: claro, por el cielo y la
+  # espuma. El texto se lee -se comprobo armando un reel de verdad con este
+  # clip y el subtitulo encima- pero depende del contorno.
+  #
+  # Saturacion 19,0, el cuarto mas saturado de 60, por el celeste del cielo.
+  # Detras de `lluvia-sobre-el-agua` (41,3), `ventanilla-nieve-azul` (22,0) y
+  # `montana-nubes-altura` (21,0).
+  #
+  # Se mueve 9,6, que para una ola rompiendo es poco: la ola ocupa una franja
+  # y el cielo y la arena estan quietos.
+
+cala-piedras-ladera.mp4:
+  que_es: Una cala de piedras con el agua clara lamiendo una roca, y una ladera con matorral al otro lado
+  etiquetas: [mar, cala, piedras, agua, ladera, distancia, quietud, calma, claro, descanso]
+  # Vertical de fabrica (1080x1920), sin pista de audio.
+  #
+  # **EL MAS CLARO DE LA CARPETA**: brillo medio 163 de 255, por encima de
+  # `lluvia-sobre-el-agua` (156), que era el tope desde hacia tiempo. No se
+  # dejo en una suposicion: se armo un reel de verdad con este clip y el
+  # subtitulo encima y el texto se lee, porque lleva contorno oscuro siempre.
+  # Aun asi es el limite por arriba, igual que `cuarto-ventanal-noche` (18) lo
+  # es por abajo.
+  #
+  # **Y el mas quieto de los de agua**: se mueve 4,6 -diferencia media entre
+  # dos cuadros a 0,2 s- contra 9,6 de `playa-olas-horizonte`, 16,3 de
+  # `lluvia-sobre-el-agua` y 27,5 de `mar-oscuro-orilla`. Por eso lleva
+  # `quietud` y `calma`, que son etiquetas medidas y no una impresion.
+  #
+  # La ladera del otro lado de la cala es lo que le da `distancia`: hay un
+  # alla y un aca, que es lo que piden los capitulos de apego y de limites.
+
+agua-reflejos-algas.mp4:
+  que_es: Agua oscura con reflejos plateados en las ondas, y abajo el borde de piedra con algas verdes
+  etiquetas: [mar, agua, reflejo, algas, oscuro, orilla, movimiento, soledad, encierro]
+  # Vertical de fabrica (1080x1920). Trae pista de audio; el reel nunca usa el
+  # audio del clip.
+  #
+  # Es de la misma familia que `mar-oscuro-orilla` -agua desde arriba con el
+  # borde de piedra abajo- y conviene saber en que se diferencian, porque si
+  # no se eligen al azar: aquel es azul parejo y sin nada claro; este tiene
+  # los reflejos plateados de la luz sobre las ondas y un verde fuerte en las
+  # algas. Brillo 86 contra 58.
+  #
+  # Saturacion media 3,6, el puesto 12 de 60 por abajo. El numero engana: casi
+  # todo el cuadro es agua gris y el unico color esta en la franja de algas.
+  #
+  # **El tercero que mas se mueve de la carpeta**: 25,8, detras de
+  # `bosque-pinos-amanecer` (43,6) y `mar-oscuro-orilla` (27,5). Agua abierta
+  # llenando el cuadro compite con el texto mas que un paisaje quieto; si el
+  # capitulo pide calma, antes esta `cala-piedras-ladera`.

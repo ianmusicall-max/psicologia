@@ -3623,6 +3623,33 @@ class TestElRecorteDeLosFondos(unittest.TestCase):
             self.assertIn("-f", orden, "ffmpeg no sabria que formato escribir")
             self.assertEqual(orden[orden.index("-f") + 1], "mp4")
 
+    def test_saber_si_un_clip_ya_esta_no_puede_mirar_el_archivo(self):
+        """Un clip repetido llega con otro largo, asi que los bytes no sirven.
+
+        Desde que los clips se recortan al entrar, el de la carpeta mide 6 s y
+        el que manda el usuario mide 15: el md5 del archivo dice que es nuevo.
+        El 2026-10-26 volvio a llegar asi `ladera-bruma-anochecer` y lo agarro
+        esta comparacion, que mira los cuadros que el reel usa de verdad.
+        """
+        import hashlib
+        ach = self._ach()
+        uno = ROOT / "data" / "fondos" / "cala-piedras-ladera.mp4"
+        if ach.huella(uno) is None:
+            self.skipTest("sin ffmpeg no se puede sacar la huella")
+        with tempfile.TemporaryDirectory() as d:
+            corto = Path(d) / "otro-nombre.mp4"
+            subprocess.run([video.ffmpeg(), "-v", "error", "-i", str(uno),
+                            "-t", "5", "-c", "copy", "-f", "mp4", str(corto)],
+                           check=True)
+            self.assertNotEqual(hashlib.md5(uno.read_bytes()).hexdigest(),
+                                hashlib.md5(corto.read_bytes()).hexdigest(),
+                                "el recorte tendria que cambiar los bytes")
+            self.assertEqual(ach.huella(uno), ach.huella(corto),
+                             "la huella cambio con el recorte y no sirve")
+        otro = ROOT / "data" / "fondos" / "mar-oscuro-orilla.mp4"
+        self.assertNotEqual(ach.huella(uno), ach.huella(otro),
+                            "dos clips distintos dan la misma huella")
+
     def test_el_recorte_deja_margen_sobre_el_tramo_del_reel(self):
         # La invariante de verdad, y no cuesta ninguna llamada: el reel
         # muestra `video.ESCENA` segundos de cada clip SIEMPRE desde el

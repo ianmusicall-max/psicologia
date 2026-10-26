@@ -53,6 +53,16 @@ paquete y no por cuadro: el archivo termina unos milisegundos despues.
 Hay pruebas para las dos mitades: una falla si algun clip pasa del tope, y
 otra si un clip corto se toca.
 
+### Para saber si un clip ya esta, no sirve mirar el archivo
+
+    python3 scripts/achicar_fondos.py --repetidos
+
+Desde que los clips se recortan al entrar, el de la carpeta mide seis segundos
+y el que mandas mide quince: son otros bytes, asi que comparar el archivo dice
+que es nuevo aunque sea el mismo video. El 2026-10-26 volvio a llegar asi
+`ladera-bruma-anochecer`. Lo que se compara son los **cuadros que el reel usa**
+(`framemd5` de los primeros cuatro segundos), que el recorte no cambia.
+
 Si alguna vez hace falta bajarla mas, el mismo script sin `--recortar` los
 deja ademas en 1080x1920 y sin audio -eso si recomprime, y en un clip 4K de
 17 s midio 22,5 MB -> 2,5 MB- y guarda los originales en
