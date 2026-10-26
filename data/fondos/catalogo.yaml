@@ -354,3 +354,35 @@ espejo-luces-noche.mp4:
   # 2. Viene en 1080x1906 y no 1080x1920: es la unica medida distinta de la
   #    carpeta. Al encajarlo se agranda un 0,73% y se le recortan 8 px de
   #    ancho. No se ve.
+
+auto-ruta-neblina.mp4:
+  que_es: Un auto parado en una curva de montana con niebla, con hojas enmarcando desde arriba
+  etiquetas: [ruta, montana, niebla, auto, verde, viaje, espera, quietud, distancia]
+  # APAISADO, y el mas extremo de la carpeta: viene en 3364x1440 (2,34:1), asi
+  # que al encajarlo en el reel se agranda 1,33 y **queda el 24% del ancho**.
+  # Entra bien igual porque el auto esta en el centro y las hojas de arriba
+  # siguen enmarcando; lo que se pierde son los costados, que son mas de lo
+  # mismo. Se comprobo dibujando el recorte, no razonando.
+  apaisado: true
+  #
+  # **Se le lee la patente del auto** (KL 07 CM 6201) en el recorte del reel,
+  # incluso con el brillo bajado. Es un clip de banco con licencia libre, asi
+  # que no hay problema legal, pero es el dato de un vehiculo de alguien que
+  # no tiene nada que ver con la pagina. Queda a la vista para decidirlo: se
+  # puede usar asi, desenfocar esa zona, o no usarlo.
+
+gotas-vidrio-sombrio.mp4:
+  que_es: Gotas grandes sobre un vidrio, con vegetacion oscura y desenfocada detras
+  etiquetas: [lluvia, gotas, ventana, verde, gris, oscuro, interior, quietud, encierro]
+  # APAISADO (1920x1080): queda el 32% del ancho. Aca no importa nada, y es
+  # el caso en que un clip horizontal entra sin pagar peaje: es una TEXTURA,
+  # no una composicion. No hay horizonte ni sujeto que pueda quedar afuera, y
+  # por lo mismo el texto se lee sobre cualquier parte del cuadro.
+  apaisado: true
+  #
+  # Se parece a `gotas-arbol-verde` y no son lo mismo: aquel tiene cielo
+  # blanco y un arbol reconocible, y es de los mas claros (brillo 113). Este
+  # no tiene cielo, las gotas son mas grandes y esta bastante mas oscuro (88).
+  #
+  # Pesa 30 MB y dura 44 s: el mas pesado y el mas largo de la carpeta. El
+  # reel usa los primeros 4 s, asi que son unos 27 MB que no se ven nunca.
