@@ -19,6 +19,16 @@
 # admiten Facebook e Instagram. Hay una prueba que lo exige, así que un texto
 # que se pase se pone en rojo acá y no después de pagar la voz.
 #
+# EL ÚLTIMO PÁRRAFO ES EL MENSAJE FINAL, y es lo único que habla de «tú». El
+# usuario lo pidió el 2026-10-26: «acaba muy seco sin ningún mensaje». Los
+# siete contaban mi historia y se cortaban. Ahora el cuerpo sigue siendo lo
+# que me pasó a mí y el cierre se da vuelta y le deja algo a quien mira. Hay
+# dos pruebas: una exige primera persona en el cuerpo y la otra, que el
+# último párrafo se dirija a quien mira.
+#
+# Cuesta unos diez segundos, así que los siete se recortaron el mismo día para
+# que entraran. Si se alarga un cierre, hay que acortar el cuerpo.
+#
 # LOS PÁRRAFOS SON LOS ESPACIOS. Donde hay un renglón en blanco, el reel se
 # calla `video.PAUSA_PARRAFO` en vez de `video.PAUSA`. Lo pidió el usuario el
 # 2026-10-26 -«dejando espacios»- y no es decoración: es lo que hace que un
@@ -37,25 +47,25 @@
   texto: >-
     Durante años creí que mis emociones duraban horas. Me levantaba de una
     discusión con el estómago cerrado toda la tarde, y la conclusión era
-    siempre la misma: soy demasiado intenso.
+    la misma: soy demasiado intenso.
 
     Tardé en ver que no era cierto. Una emoción dejada en paz sube, llega
     a un pico y afloja. Lo que la estira soy yo: repasar la escena,
-    ensayar lo que debí haber dicho.
+    ensayar lo que debí decir.
 
     No era la emoción la que duraba seis horas. Era la historia que me
     contaba sobre ella.
 
-    Ahora tengo una señal para distinguirlas. Cuando estoy sintiendo, hay
-    algo en el cuerpo: el pecho, el estómago. Cuando estoy dando vueltas,
-    hay frases. Si lo que pasa en mi cabeza se parece a un juicio, eso ya
-    no es lo que siento.
+    Ahora tengo una señal. Cuando estoy sintiendo, hay algo en el cuerpo:
+    el pecho, el estómago. Cuando estoy dando vueltas, hay frases.
 
     Antes tampoco le ponía nombre a lo que sentía, por miedo a agrandarlo.
-    Pasa al revés: lo que tiene nombre tiene bordes, y lo que tiene bordes
-    se puede rodear.
+    Pasa al revés: lo que tiene nombre tiene bordes.
 
     No sentí menos desde entonces. Dejé de agregarle horas.
+
+    Si algo te dura toda la tarde, fíjate si todavía lo estás sintiendo o
+    ya te lo estás contando. Solo una de las dos se puede soltar.
 
 - id: sem-02
   dia: martes
@@ -64,8 +74,8 @@
   texto: >-
     Hubo un tiempo en que me acostaba a las dos de la mañana resolviendo
     cosas. Eso sentía: que resolvía. Repasaba la conversación del día
-    siguiente, hacía cuentas por si salía mal. Me dormía a las cuatro,
-    cansado, con la sensación de haber trabajado.
+    siguiente, hacía cuentas por si salía mal. Me dormía a las cuatro con
+    la sensación de haber trabajado.
 
     A la mañana siguiente no había ni una decisión tomada.
 
@@ -75,13 +85,14 @@
 
     El noventa y uno por ciento no ocurrió.
 
-    No dice que nunca pase nada malo. Dice que mi cálculo está torcido
-    hacia el desastre, y que lo único que ocurrió siempre fue preocuparme.
+    No dice que nunca pase nada malo. Dice que mi cálculo está torcido, y
+    que lo único que ocurrió siempre fue preocuparme.
 
-    Ahora, cuando llevo un rato dando vueltas, me hago una sola pregunta:
-    cuál es el paso. Prepararse termina en algo que puedo hacer: una
-    llamada, una cifra. Si después de una hora no apareció ninguno, no
-    estoy preparando nada.
+    Prepararse termina en algo que puedo hacer: una llamada, una cifra.
+
+    Esta noche, cuando la cabeza arranque: ¿cuál es el paso? Si no hay
+    ninguno, no estás preparando. Estás pagando por adelantado algo que
+    casi nunca llega.
 
 - id: sem-03
   dia: miercoles
@@ -89,55 +100,57 @@
   titulo: El tono con el que me hablo
   texto: >-
     Hay una conversación que tengo todos los días y que nunca llamé así.
-    Dura dos segundos y pasa cuando se me cae algo o llego tarde.
+    Dura dos segundos y pasa cuando se me cae algo.
 
     Un día me escuché. No lo que me decía, que ya lo sabía: el tono.
 
     Era un tono que no le toleraría a nadie. Si un conocido me hablara
     así, dejaría de verlo.
 
-    Y lo defendí mucho tiempo. Pensaba que esa dureza era lo que me
-    mantenía funcionando, y que sin ella me iba a volver conformista.
+    Y lo defendí mucho tiempo: pensaba que esa dureza era lo que me
+    mantenía funcionando.
 
     Es falso, y hay datos. La autocrítica dura no mejora lo que hago: hace
-    que lo postergue, porque la tarea queda pegada al malestar.
+    que lo postergue.
 
     Lo que me sirvió no fue repetirme que soy maravilloso. Fue una
-    pregunta: qué le diría a alguien que quiero si estuviera exactamente
-    en mi situación. Le diría que es normal, que duele, que no define
-    nada. Y lo creería.
+    pregunta: qué le diría a alguien que quiero en mi situación. Le diría
+    que es normal, que duele, que no define nada.
 
-    Esa es la parte incómoda. Conmigo uso otra vara, mucho más dura, y no
-    la elegí: me la dieron.
+    Esa es la parte incómoda. Conmigo uso otra vara, y no la elegí: me la
+    dieron.
+
+    La próxima vez que se te caiga algo, no escuches lo que te dices.
+    Escucha el tono. Ahí está casi todo, y es lo único que hace falta
+    cambiar.
 
 - id: sem-04
   dia: jueves
   capitulo: limites
   titulo: No era la factura de la taza
   texto: >-
-    Me pasó más de una vez: estallar un martes por una taza, con una
-    fuerza que no le correspondía.
+    Me pasó más de una vez: estallar un martes por una taza con una fuerza
+    que no le correspondía.
 
-    La otra persona se quedaba mirándome sin entender, y con razón. Lo que
-    acababa de recibir no era la factura de la taza. Era la de los últimos
-    ocho meses.
+    La otra persona se quedaba sin entender, y con razón. Lo que recibía
+    no era la factura de la taza. Era la de ocho meses.
 
-    Detrás de cada estallido había una lista: todas las veces que dije que
-    sí sin querer.
+    Detrás de cada estallido había una lista: las veces que dije que sí
+    sin querer.
 
-    Creía que decir que sí era ser generoso. No lo era. Era pedir un
-    préstamo que después cobraba con frialdad, o con un reproche tardío y
-    por otra cosa.
+    Creía que decir que sí era ser generoso. Era un préstamo que cobraba
+    después con frialdad, o con un reproche tardío y por otra cosa.
 
     Lo que aprendí es de tiempos, no de carácter. Una molestia dicha el
-    mismo día es una frase. Guardada tres meses es un juicio con
-    expediente.
+    mismo día es una frase. Guardada tres meses, un expediente.
 
-    Y aprendí a cambiar una palabra. Donde iba a decir «eres», decir
+    Aprendí a cambiar una palabra: donde iba a decir «eres», decir
     «cuando». «Dejaste los platos otra vez» tiene arreglo. «Eres un
     desconsiderado» solo tiene defensa.
 
-    Hablar a tiempo no es buscar conflicto. Es lo que evita el grande.
+    Esa molestia chica que tienes guardada: dila mientras todavía es una
+    frase. En tres meses ya no vas a poder decirla sin que suene a
+    reproche.
 
 - id: sem-05
   dia: viernes
@@ -146,36 +159,36 @@
   texto: >-
     Hubo una época en que creía que estaba cuidando la relación. Revisaba
     a qué hora se había conectado. Contaba cuánto tardaba en contestar.
-    Tiraba un comentario para ver si reaccionaba.
 
     Eso no era cuidar. Era vigilar, y no lo sabía porque mientras lo hacía
     parecía sensatez.
 
     Buscaba tranquilidad y conseguía lo contrario. Ninguna comprobación me
     duraba más de un rato, y siempre había una siguiente. Y el otro se
-    sentía examinado, se volvía más cuidadoso, y eso me daba material
-    nuevo.
+    sentía examinado y se volvía más cuidadoso.
 
     El miedo a perder a alguien termina empujándolo. No porque el otro sea
     intolerante: nadie se relaja siendo medido.
 
     Me llevó tiempo entender de dónde venía. Aprendí a querer antes de
     saber hablar, mirando lo que pasaba cuando lloraba: si venía alguien y
-    cuándo. De ahí saqué una conclusión sobre el cariño que sigue
-    trabajando hoy.
+    cuándo.
 
     Lo único que me sirvió fue cambiar de verbo. Donde quería comprobar,
     preguntar.
+
+    Si hoy te ibas a quedar mirando a qué hora se conectó, pregúntale. Da
+    más miedo y dura menos, y es lo único que puede terminar en una
+    respuesta.
 
 - id: sem-06
   dia: sabado
   capitulo: habitos
   titulo: Las ganas vienen después
   texto: >-
-    Esperé las ganas durante años. Iba a empezar a caminar cuando tuviera
-    ganas, a escribir cuando tuviera ganas, a ordenar la casa cuando
-    tuviera ganas. Y cuando no llegaban, la conclusión era sobre mí: me
-    falta disciplina.
+    Esperé las ganas durante años. Iba a caminar cuando tuviera ganas, a
+    escribir cuando tuviera ganas, a ordenar la casa cuando tuviera ganas.
+    Y cuando no llegaban, la conclusión era sobre mí: me falta disciplina.
 
     El orden estaba al revés. Las ganas no vienen antes de empezar: vienen
     después, cuando uno ya está adentro. Esperarlas es esperar un permiso
@@ -183,15 +196,15 @@
 
     Lo otro que me sacó del lugar fue dejar de pelear con mi voluntad. Un
     hábito no se sostiene con fuerza: se sostiene con un lugar, una hora y
-    una señal. Y con un tamaño tan chico que no se pueda fallar.
-
-    Lo tercero fue mirar lo que tengo a mano. El entorno gana casi
-    siempre: lo que está a la vista se hace, y lo que hay que ir a buscar,
-    no.
+    una señal. Y con un tamaño tan chico que no se pueda fallar. El
+    entorno gana casi siempre: lo que está a la vista se hace.
 
     Y los días que fallo, que son muchos, aprendí algo. Fallar un día no
-    borra nada. Lo que borra un hábito es lo que decido después, cuando
-    concluyo que ya no vale la pena seguir.
+    borra nada. Lo que borra un hábito es lo que decido después.
+
+    No esperes las ganas. Empieza tan pequeño que te dé vergüenza
+    contarlo, y deja que las ganas te alcancen adentro. Nunca llegan
+    antes.
 
 - id: sem-07
   dia: domingo
@@ -199,22 +212,24 @@
   titulo: El hueco no se achica
   texto: >-
     Cuando perdí a alguien, lo primero que me dieron fue un mapa. Cinco
-    etapas, en orden, y la sensación de que había que ir cumpliéndolas.
+    etapas en orden, y la sensación de que había que ir cumpliéndolas.
 
     Ese mapa me hizo daño. Me pasaba el día calificándome: debería estar
-    ya en la cuarta, y ayer fue peor que el primer día.
+    ya en la cuarta, y ayer fue peor que el primero.
 
     El duelo no tiene etapas. Tiene días. Y los días no vienen con
     instrucciones: una mañana llorando y una tarde resolviendo papeles con
-    una eficacia que después da culpa. Las dos cosas son el duelo.
+    una eficacia que después da culpa.
 
-    Y tampoco se supera. Hay una imagen que lo explica: el hueco no se
-    achica nunca. Lo que se hace más grande es todo lo demás, alrededor.
+    Y tampoco se supera. El hueco no se achica nunca: lo que se hace más
+    grande es todo lo demás, alrededor.
 
     Sigue entero cuando lo toco. Solo que ahora es parte de algo mucho más
     grande.
 
-    Lo otro que aprendí es para los demás. Mis amigos dejaron de decir su
-    nombre por miedo a lastimarme, y no podían recordarme algo que no
-    olvidé. Que el nombre desaparezca de las conversaciones se vive como
-    una segunda pérdida.
+    Mis amigos dejaron de decir su nombre por miedo a lastimarme, y no
+    podían recordarme algo que no olvidé.
+
+    Y si quien está en duelo es alguien que quieres, di su nombre. No le
+    recuerdas nada que no recuerde cada día. Es lo más útil que puedes
+    hacer, y es gratis.

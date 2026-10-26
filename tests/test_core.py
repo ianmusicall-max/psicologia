@@ -3748,17 +3748,32 @@ class TestLosTextosDeLaSemana(unittest.TestCase):
     SEGUNDA = re.compile(r"\b(tú|tu|tus|te|ti|contigo|tienes|puedes|debes|"
                          r"sientes|haces|eres|estás|sabes|quieres)\b", re.I)
 
-    def test_hablan_en_primera_persona_y_no_le_hablan_al_lector(self):
+    def test_el_cuerpo_habla_en_primera_persona(self):
+        # El CUERPO cuenta lo que me paso a mi. El ultimo parrafo no: ese es el
+        # mensaje final y ahi si se le habla al lector, que es justo lo que el
+        # usuario pidio el 2026-10-26 («acaba muy seco sin ningun mensaje»).
+        #
         # Las CITAS quedan exentas: `sem-04` cita «Dejaste los platos otra
         # vez» y «Eres un desconsiderado» como ejemplos de lo que no conviene
         # decir, y esas dos tienen que poder estar en segunda persona. Por eso
-        # tambien van entre comillas en el archivo: sin ellas no habria forma
-        # de distinguir una cita de un desliz.
+        # van entre comillas en el archivo: sin ellas no habria forma de
+        # distinguir una cita de un desliz.
         for x in self._textos():
-            fuera_de_citas = re.sub(r"«[^»]*»", " ", x.texto)
-            sobra = self.SEGUNDA.findall(fuera_de_citas)
-            self.assertEqual(sobra, [], "%s le habla al lector: %s"
+            cuerpo = " ".join(x.parrafos[:-1])
+            sobra = self.SEGUNDA.findall(re.sub(r"«[^»]*»", " ", cuerpo))
+            self.assertEqual(sobra, [], "%s le habla al lector en el cuerpo: %s"
                              % (x.id, ", ".join(sobra)))
+
+    def test_cada_uno_termina_con_un_mensaje_para_quien_mira(self):
+        # Lo que faltaba: los siete contaban mi historia y se cortaban.
+        # «Acaba muy seco sin ningun mensaje». El ultimo parrafo tiene que
+        # dirigirse a quien mira, o el reel termina en el aire.
+        for x in self._textos():
+            cierre = x.parrafos[-1]
+            self.assertTrue(self.SEGUNDA.findall(re.sub(r"«[^»]*»", " ", cierre)),
+                            "%s termina sin mensaje: %r" % (x.id, cierre[:60]))
+            self.assertGreater(len(cierre), 80,
+                               "%s: el mensaje final es demasiado corto" % x.id)
 
     def test_el_reel_los_dice_enteros(self):
         # Un monologo no se recorta: o entra entero o no es el texto. Las dos
