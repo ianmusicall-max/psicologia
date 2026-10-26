@@ -216,7 +216,7 @@ avenida-noche-torres.mp4:
   # texto. (Decia "el segundo 2 y el 12"; con el recorte del 2026-10-26 el
   # clip dura 6,09, asi que se volvio a medir dentro de lo que quedo.)
   #
-  # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 163 del
+  # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 167 del
   # mas claro: oscuro de sobra para que el texto blanco se lea. Medido, no
   # estimado. (Decia "de los cuatro mas oscuros" y dejo de serlo el
   # 2026-10-26, al entrar `nieve-cayendo-oscuro` con 39: hoy es el octavo.
@@ -559,9 +559,9 @@ playa-olas-horizonte.mp4:
   # espuma. El texto se lee -se comprobo armando un reel de verdad con este
   # clip y el subtitulo encima- pero depende del contorno.
   #
-  # Saturacion 19,0, el cuarto mas saturado de 60, por el celeste del cielo.
-  # Detras de `lluvia-sobre-el-agua` (41,3), `ventanilla-nieve-azul` (22,0) y
-  # `montana-nubes-altura` (21,0).
+  # Saturacion 19,0 por el celeste del cielo. Era el cuarto mas saturado
+  # cuando entro; con la tanda del 2026-10-26 quedo sexto, detras tambien de
+  # `playa-atardecer-silueta` (39,9) y `mujer-campo-dorado` (22,0).
   #
   # Se mueve 9,6, que para una ola rompiendo es poco: la ola ocupa una franja
   # y el cielo y la arena estan quietos.
@@ -571,8 +571,9 @@ cala-piedras-ladera.mp4:
   etiquetas: [mar, cala, piedras, agua, ladera, distancia, quietud, calma, claro, descanso]
   # Vertical de fabrica (1080x1920), sin pista de audio.
   #
-  # **EL MAS CLARO DE LA CARPETA**: brillo medio 163 de 255, por encima de
-  # `lluvia-sobre-el-agua` (156), que era el tope desde hacia tiempo. No se
+  # Brillo medio 163 de 255. Fue el mas claro de la carpeta medio dia: lo paso
+  # `bote-mar-calma` (167) el 2026-10-26 por la tarde. Sigue siendo de los dos
+  # que marcan el limite por arriba. No se
   # dejo en una suposicion: se armo un reel de verdad con este clip y el
   # subtitulo encima y el texto se lee, porque lleva contorno oscuro siempre.
   # Aun asi es el limite por arriba, igual que `cuarto-ventanal-noche` (18) lo
@@ -605,3 +606,149 @@ agua-reflejos-algas.mp4:
   # `bosque-pinos-amanecer` (43,6) y `mar-oscuro-orilla` (27,5). Agua abierta
   # llenando el cuadro compite con el texto mas que un paisaje quieto; si el
   # capitulo pide calma, antes esta `cala-piedras-ladera`.
+
+# --- La tanda del 2026-10-26, quince clips. Cambia la cara de la carpeta y
+# conviene saberlo: hasta hoy esto era lluvia, ventanas, niebla y paisaje, y
+# NUEVE de estos quince tienen una persona. El usuario los mando y pidio
+# usarlos. Todos de espaldas o en silueta menos uno, que esta avisado.
+
+hombre-pasaje-mercado.mp4:
+  que_es: Un hombre mayor caminando de espaldas por un pasaje de mercado en sombra
+  etiquetas: [calle, interior, pasaje, gente, soledad, gris, cotidiano, caminar, melancolia]
+  # Brillo 54, saturacion 5,3, se mueve 3,1: oscuro, apagado y quieto. De los
+  # mas facales para leer texto encima de esta tanda.
+  #
+  # De espaldas, como los otros con persona. Se le ve la nuca y nada mas.
+
+olas-rompiente-rocas.mp4:
+  que_es: Olas rompiendo con espuma blanca sobre una escollera de rocas, desde arriba
+  etiquetas: [mar, olas, rocas, espuma, orilla, movimiento, gris, frio]
+  # Brillo 143: de los claros. El texto se lee por el contorno, pero la espuma
+  # blanca es lo mas claro del cuadro y esta por todos lados, asi que este es
+  # de los que conviene no poner en el renglon mas largo del reel.
+
+bote-mar-calma.mp4:
+  que_es: Un bote solo sobre el mar en calma al atardecer, con el horizonte y rocas adelante
+  etiquetas: [mar, horizonte, bote, calma, quietud, distancia, atardecer, partida, soledad]
+  # **EL MAS CLARO DE LA CARPETA**: brillo 167, por encima de
+  # `cala-piedras-ladera` (163), que lo era desde esta manana. Es el limite por
+  # arriba. Se mueve 6,9, que para agua es poco.
+  #
+  # Trae HORIZONTE, que es la etiqueta mas escasa: con este son tres clips para
+  # los ocho capitulos que la piden.
+
+mar-turquesa-roca.mp4:
+  que_es: Mar turquesa agitado rompiendo sobre una roca, visto desde arriba
+  etiquetas: [mar, agua, turquesa, roca, movimiento, frio, abstracto]
+  # Brillo 106, saturacion 9,0, se mueve 14,9: de los agitados. Agua abierta
+  # llenando el cuadro compite con el texto; si el capitulo pide calma, antes
+  # esta `cala-piedras-ladera`.
+
+celosia-silueta-reflejo.mp4:
+  que_es: Un muro de celosia blanca a contraluz, la silueta de alguien de pie y el reflejo en el piso mojado
+  etiquetas: [interior, ventana, silueta, gente, distancia, encierro, gris, quietud, espera]
+  # Brillo 112 pero con la celosia blanca al fondo: el contraste es duro y el
+  # texto cae sobre una reja de cuadritos. Es el mas grafico de la tanda.
+  #
+  # La silueta esta a contraluz: no se distingue ninguna cara.
+
+mujer-ventana-luz.mp4:
+  que_es: Una mujer de espaldas junto a una puerta ventana de madera, con luz calida afuera
+  etiquetas: [interior, ventana, gente, calidez, quietud, hogar, espera, descanso]
+  # Brillo 108, saturacion 17,8: de los mas calidos de la carpeta, que casi no
+  # los hay. Se mueve 8,0.
+  #
+  # De espaldas. Es el que mejor ilustra mirar por la ventana sin que la
+  # ventana sea el sujeto.
+
+taza-ventana-ciudad.mp4:
+  que_es: Una taza blanca en el alfeizar de madera, con la ciudad desenfocada detras
+  etiquetas: [interior, ventana, ciudad, taza, quietud, descanso, cotidiano, hogar, calma]
+  # Brillo 148 y se mueve 2,9: claro y casi inmovil. El unico objeto cotidiano
+  # de la carpeta -no hay otro bodegon-, y por eso sirve para los capitulos de
+  # habitos y descanso, donde el paisaje queda grande.
+  #
+  # Pesa 0,98 MB recortado: el mas liviano de los 75.
+
+puerta-turquesa-silueta.mp4:
+  que_es: Un interior a oscuras con una puerta de celosia turquesa iluminada y la silueta de alguien pasando
+  etiquetas: [interior, silueta, gente, encierro, oscuro, turquesa, umbral, soledad]
+  # Brillo 36: el cuarto mas oscuro de los 75, detras de `cuarto-ventanal-noche`
+  # (18), `calle-rieles-noche` (20) y `carretera-noche-lluvia` (22). El texto
+  # blanco se lee sobre cualquier parte del cuadro menos sobre la puerta.
+  #
+  # Se mueve 1,7. Es el mas quieto de la tanda y de los mas quietos de todo.
+
+mujer-campo-dorado.mp4:
+  que_es: Una mujer de espaldas en un campo dorado al atardecer, con un arbol y cielo abierto
+  etiquetas: [campo, horizonte, gente, dorado, atardecer, calidez, distancia, esperanza, quietud]
+  # Brillo 122, saturacion 22,0: de los mas saturados de la carpeta. Se mueve
+  # 2,5, que es muy poco para un exterior con viento.
+  #
+  # De espaldas y lejos. Es el unico de la carpeta que se siente de dia y
+  # abierto sin ser un paisaje vacio.
+
+camino-casa-larga.mp4:
+  que_es: Un sendero junto a un edificio largo y viejo, con cables y alguien alejandose al fondo
+  etiquetas: [calle, camino, gente, gris, distancia, soledad, partida, cotidiano, melancolia]
+  # Brillo 90, saturacion 4,8, y se mueve 0,9. Es de los mas quietos de los 75
+  # -el record sigue siendo `cuarto-ventanal-noche`, con 0,1- y eso con una
+  # persona caminando adentro, que es lo unico que se mueve del cuadro.
+  #
+  # La figura esta lejos y de espaldas.
+
+cortina-sombra-luz.mp4:
+  que_es: Una cortina clara con la luz entrando y la sombra de una cabeza proyectada
+  etiquetas: [interior, ventana, luz, sombra, silueta, quietud, intimidad, espera, calma]
+  # Brillo 93 y se mueve 2,1. No se ve a nadie: solo su sombra, que es lo que
+  # lo hace distinto de los otros con persona.
+  #
+  # Es el mas sugerido de la tanda y el que mejor va con los capitulos de
+  # intimidad y de lo que no se dice.
+
+calle-hombre-maleta.mp4:
+  que_es: Una calle de ciudad con un hombre cruzando con una maleta, frente a una fachada de piedra
+  etiquetas: [calle, ciudad, gente, maleta, partida, viaje, gris, cotidiano]
+  # **CUIDADO: ES EL UNICO DE LOS 75 DONDE SE VE UNA CARA.** El hombre pasa de
+  # perfil y es reconocible. Los otros catorce de esta tanda son de espaldas,
+  # en silueta o sombra, y el de la persona con paraguas tambien.
+  #
+  # La licencia de Pexels lo permite, pero publicar la cara de un desconocido
+  # en una pagina de psicologia es otra cosa que usar un paisaje: queda a
+  # decision del usuario, igual que la patente de `auto-ruta-neblina`. Hasta
+  # que lo diga, NO se usa.
+  #
+  # Viene en 1440x2560, que es la misma proporcion que el reel (9:16), asi que
+  # no se pierde nada por los costados. Dura 5,31 s, debajo del tope, asi que
+  # no se recorto.
+
+ventana-silueta-campo.mp4:
+  que_es: Desde un interior oscuro, la silueta de alguien asomado al hueco de una ventana sobre un campo gris
+  etiquetas: [interior, ventana, silueta, gente, campo, gris, encierro, distancia, melancolia, espera]
+  # Brillo 48 y se mueve 1,5: oscuro y quieto, el marco negro ocupa los bordes
+  # y deja el centro libre. De los mejores de la tanda para leer texto encima.
+  #
+  # La figura es una silueta contra el cielo: no se distingue nada de ella.
+
+playa-atardecer-silueta.mp4:
+  que_es: Una playa al atardecer naranja, la silueta de alguien en la orilla y un bote en el horizonte
+  etiquetas: [mar, horizonte, playa, atardecer, naranja, silueta, gente, calidez, distancia, partida]
+  # Saturacion 39,9: **el segundo mas saturado de los 75**, detras de
+  # `lluvia-sobre-el-agua` (41,3). Brillo 107, se mueve 9,9.
+  #
+  # El unico atardecer naranja de la carpeta. Al lado de los grises y azules
+  # canta, asi que conviene no mezclarlo con ellos en el mismo reel sin
+  # pensarlo: el corte cada cuatro segundos se nota mas cuando cambia la
+  # temperatura de color.
+
+calle-paseo-perro.mp4:
+  que_es: Una calle peatonal vacia de ciudad vieja, con alguien paseando un perro de espaldas
+  etiquetas: [calle, ciudad, gente, perro, gris, soledad, cotidiano, caminar, distancia]
+  # **El QUINTO que mas se mueve de los 75**: 19,2 de diferencia media entre
+  # dos cuadros a 0,2 s. Delante van `bosque-pinos-amanecer` (43,6),
+  # `mar-oscuro-orilla` (27,5), `agua-reflejos-algas` (25,8) y
+  # `espejo-lluvia-dia` (19,8). Medido sobre los 75, no estimado.
+  #
+  # Hay carteles de negocios en las fachadas, en otro alfabeto, chicos y
+  # lejos. A cuatro segundos y con el brillo bajado no se leen, igual que en
+  # `ciudad-lluvia-semaforos`.
