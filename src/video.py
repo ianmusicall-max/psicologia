@@ -1530,28 +1530,55 @@ def comando(subtitulos: Path, salida: Path, total: float, fondo,
         salida_audio = "%d:a" % pista_voz
     if salida_audio == "[a]":
         cadena = cadena[:-len("[a]")] + ",loudnorm=%s[a]" % SONORIDAD
-    # El techo de bits, que NO es una preferencia de calidad sino el ancho de
-    # la puerta por la que el reel tiene que pasar: el bot de Telegram no
-    # manda archivos de mas de 50 MB, y sin Telegram no hay aprobacion, y sin
-    # aprobacion no se publica. O sea que un reel que no entra no es un reel
-    # mas pesado: es un reel que no existe.
+    # SIN TOPE DE BITS, y eso es una decision del usuario del 2026-10-26:
+    # «subelo en alta calidad pero mandamelo al boot solo para aprobar».
     #
-    # Paso de verdad el 2026-10-26, con la tanda de clips nuevos: a CRF 20 sin
-    # tope, el peso depende de cuanto se mueva la imagen, y `sem-02` salio de
-    # 60 MB. Se armo entero, se pago la voz y murio al ir a pedir permiso.
-    #
-    # Se deja CRF 20 -la calidad manda mientras quepa- y el tope solo actua
-    # cuando la imagen es muy movida. `bufsize` de dos segundos para que un
-    # tramo agitado pueda pasarse un momento sin que el promedio se vaya.
-    techo = int(TOPE_BITS * 0.90 / max(total, 1.0)) - 128_000
+    # Durante unas horas este encode llevo un `-maxrate` atado al tope del bot
+    # de Telegram, porque un reel de 60 MB no se podia mandar a aprobar y el
+    # turno moria ahi. Era arreglar el problema en el lugar equivocado: lo que
+    # tiene que entrar en 50 MB es la copia que se MIRA para decir que si, no
+    # la que se publica. Eso lo hace `para_aprobar`.
     return ([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error"] + entradas +
             ["-filter_complex", cadena, "-map", "[v]", "-map", salida_audio,
              "-t", "%.2f" % total,
              "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-             "-maxrate", str(techo), "-bufsize", str(techo * 2),
              "-pix_fmt", "yuv420p", "-r", str(FPS),
              "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2",
              "-movflags", "+faststart", str(salida)])
+
+
+def para_aprobar(ruta: Path, destino: Optional[Path] = None,
+                 tope: int = 0) -> Path:
+    """Una copia liviana del reel, para mirarla y decir que si.
+
+    El reel que se publica va en alta calidad y puede pesar lo que haga falta.
+    Esta copia existe por una sola razon: el bot de Telegram no manda archivos
+    de mas de 50 MB, y sin Telegram no hay aprobacion.
+
+    Devuelve el ORIGINAL si ya entra, y asi la mayoria de los dias no se
+    reencoda nada: lo que se mira es exactamente lo que se publica, que es lo
+    mejor que puede pasar cuando lo que estas haciendo es aprobar.
+
+    Cuando no entra, se achica a 720 de ancho y se le pone un techo de bits
+    sacado del largo. 720 y no 1080 porque lo que hay que poder juzgar es el
+    texto, el fondo y el ritmo, y eso se ve igual; y porque bajar la medida
+    cuesta menos calidad aparente que estrujar el bitrate a la misma medida.
+    El audio se copia tal cual: es el mismo y pesa poco.
+    """
+    ruta = Path(ruta)
+    tope = tope or TOPE_BITS // 8
+    if ruta.stat().st_size <= tope:
+        return ruta
+    destino = Path(destino) if destino else ruta.with_name(ruta.stem + "-liviano.mp4")
+    segundos = duracion(ruta) or float(TOPE_SEGUNDOS)
+    techo = max(300_000, int(tope * 8 * 0.85 / segundos) - 128_000)
+    _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-i", str(ruta),
+             "-vf", "scale=720:-2",
+             "-c:v", "libx264", "-preset", "veryfast", "-crf", "26",
+             "-maxrate", str(techo), "-bufsize", str(techo * 2),
+             "-pix_fmt", "yuv420p", "-c:a", "copy",
+             "-movflags", "+faststart", str(destino)], "achicar el reel para el bot")
+    return destino
 
 
 def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path] = None,

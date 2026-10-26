@@ -359,9 +359,23 @@ def pedir_permiso(ruta: Path, caption: str, titulo: str, donde=PLATAFORMAS,
     llave = diario.llave(ruta)
     pie = ("¿Publico este reel en %s?\n\n«%s»\n\n%s"
            % (_y(list(donde)), titulo, caption))
-    telegram.enviar_video(ruta, pie, botones=[[
-        ("Publicar", "reel:ok:%s" % llave),
-        ("Descartar", "reel:no:%s" % llave)]])
+    # Al bot va una copia liviana si hace falta; lo que se PUBLICA es `ruta`,
+    # en alta calidad. Lo pidio el usuario el 2026-10-26. `llave` sale del
+    # original a proposito: la decision es sobre el reel, no sobre la copia.
+    mirar = video.para_aprobar(ruta)
+    if mirar != ruta:
+        print("El reel pesa %.0f MB: al bot va una copia liviana de %.0f MB. "
+              "Se publica el original." % (ruta.stat().st_size / 1e6,
+                                           mirar.stat().st_size / 1e6))
+    try:
+        telegram.enviar_video(mirar, pie, botones=[[
+            ("Publicar", "reel:ok:%s" % llave),
+            ("Descartar", "reel:no:%s" % llave)]])
+    finally:
+        # La copia no se guarda: es media copia mas de cada reel en un disco
+        # que ya se lleno una vez, y se rehace en un segundo.
+        if mirar != ruta and mirar.exists():
+            mirar.unlink()
     return diario.esperar_decision(llave, espera, paso)
 
 

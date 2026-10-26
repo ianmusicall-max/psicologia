@@ -3938,35 +3938,76 @@ class TestElCaptionDeUnTextoDeLaSemana(unittest.TestCase):
 
 
 class TestElReelTieneQueEntrarPorTelegram(unittest.TestCase):
-    """Un reel que no entra en el bot no es un reel mas pesado: no existe.
+    """Se publica en alta calidad; al bot va una copia liviana si hace falta.
 
-    Sin Telegram no hay aprobacion y sin aprobacion no se publica. El
-    2026-10-26 `sem-02` salio de 60 MB con los clips nuevos: se armo entero,
-    se pago la voz y murio al ir a pedir permiso.
+    Lo pidio el usuario el 2026-10-26: «subelo en alta calidad pero mandamelo
+    al boot solo para aprobar». Antes de eso, el encode llevaba un techo de
+    bits atado al tope del bot, o sea que Telegram le estaba bajando la
+    calidad a lo que se publica en Facebook. Era arreglar el problema en el
+    lugar equivocado.
     """
 
-    def _orden(self, total):
-        return video.comando(Path("s.ass"), Path("o.mp4"), total,
-                             [Path("a.mp4")], musica=Path("m.m4a"))
+    def test_lo_que_se_publica_no_tiene_techo_de_bits(self):
+        orden = video.comando(Path("s.ass"), Path("o.mp4"), 85.0,
+                              [Path("a.mp4")], musica=Path("m.m4a"))
+        self.assertNotIn("-maxrate", orden,
+                         "Telegram le esta bajando la calidad al reel publicado")
+        self.assertIn("20", orden[orden.index("-crf") + 1:orden.index("-crf") + 2])
 
-    def test_el_techo_sale_del_tope_del_bot(self):
-        self.assertEqual(video.TOPE_BITS, telegram.TOPE_ARCHIVO * 8)
+    def test_si_el_reel_ya_entra_se_manda_el_mismo(self):
+        # Lo mejor que puede pasar cuando apruebas es que lo que miras sea
+        # exactamente lo que sale.
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "chico.mp4"
+            mp4.write_bytes(b"x" * 100)
+            with mock.patch.object(video, "_correr",
+                                   side_effect=AssertionError("reencodo de mas")):
+                self.assertEqual(video.para_aprobar(mp4), mp4)
 
-    def test_un_reel_del_largo_maximo_entra_con_margen(self):
-        orden = self._orden(float(video.TOPE_SEGUNDOS))
-        techo = int(orden[orden.index("-maxrate") + 1])
-        pesa = (techo + 128_000) * video.TOPE_SEGUNDOS / 8
-        self.assertLess(pesa, telegram.TOPE_ARCHIVO,
-                        "un reel del largo maximo no entraria en el bot")
-        self.assertGreater(pesa, telegram.TOPE_ARCHIVO * 0.8,
-                           "el techo esta tan bajo que regala calidad")
+    def test_si_no_entra_se_achica_y_el_original_no_se_toca(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "grande.mp4"
+            mp4.write_bytes(b"x" * 1000)
+            ordenes = []
 
-    def test_el_techo_acompana_al_largo(self):
-        # Un reel corto puede gastar mas bits por segundo que uno largo y
-        # entrar igual. Un techo fijo le sacaria calidad al corto sin motivo.
-        corto = int(self._orden(40.0)[self._orden(40.0).index("-maxrate") + 1])
-        largo = int(self._orden(85.0)[self._orden(85.0).index("-maxrate") + 1])
-        self.assertGreater(corto, largo)
+            def correr(orden, que, espera=300):
+                ordenes.append(orden)
+                Path(orden[-1]).write_bytes(b"y")
+
+            with mock.patch.object(video, "_correr", side_effect=correr), \
+                 mock.patch.object(video, "duracion", return_value=85.0):
+                copia = video.para_aprobar(mp4, tope=100)
+            self.assertNotEqual(copia, mp4)
+            self.assertEqual(mp4.read_bytes(), b"x" * 1000, "toco el original")
+            self.assertIn("-maxrate", ordenes[0])
+            self.assertIn("scale=720:-2", ordenes[0])
+
+    def test_la_copia_entra_en_el_bot(self):
+        # El techo sale del tope de verdad y del largo, no de un numero al ojo.
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "g.mp4"
+            mp4.write_bytes(b"x" * (60 * 1024 * 1024))
+            ordenes = []
+            with mock.patch.object(video, "_correr",
+                                   side_effect=lambda o, q, espera=300: (
+                                       ordenes.append(o),
+                                       Path(o[-1]).write_bytes(b"y"))), \
+                 mock.patch.object(video, "duracion", return_value=90.0):
+                video.para_aprobar(mp4)
+            techo = int(ordenes[0][ordenes[0].index("-maxrate") + 1])
+        self.assertLess((techo + 128_000) * 90.0 / 8, telegram.TOPE_ARCHIVO)
+
+    def test_la_copia_no_queda_en_el_disco(self):
+        # Media copia mas de cada reel en un disco que ya se lleno una vez.
+        rdd = _script("rdd", "reel_del_dia.py")
+        arbol = ast.parse((ROOT / "scripts" / "reel_del_dia.py").read_text(encoding="utf-8"))
+        funcion = next(n for n in ast.walk(arbol)
+                       if isinstance(n, ast.FunctionDef) and n.name == "pedir_permiso")
+        self.assertTrue(any(isinstance(n, ast.Try) and n.finalbody
+                            for n in ast.walk(funcion)),
+                        "la copia se puede quedar si Telegram falla")
+        self.assertIn("unlink", ast.dump(funcion))
+        self.assertTrue(hasattr(rdd, "pedir_permiso"))
 
 
 class TestElSilencioDondeCambiaLaIdea(unittest.TestCase):
