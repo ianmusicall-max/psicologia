@@ -156,7 +156,13 @@ def ordenar(clips: List[Path], tema: Optional[str], semilla: str,
 # Un archivo y no la ficha del mp4: los reels no se guardan todos en el repo
 # -`ultimo.mp4` se pisa- asi que la ficha del anterior puede no existir
 # cuando se arma el de hoy. Esto es una linea de json que siempre esta.
-USADOS = ROOT / "data" / "clips_usados.json"
+#
+# Vive JUNTO A LOS REELS y no en `data/`, y el motivo no es estetico: asi el
+# camino sale de `--carpeta`, y una prueba que arma un reel en una carpeta
+# temporal escribe el suyo ahi. Con el camino fijo, correr la suite le
+# cambiaba el fondo al reel de verdad del dia siguiente -paso el 2026-10-26,
+# lo escribia un subproceso de `reel_del_dia.py` y el monkeypatch no lo veia-.
+USADOS = ROOT / "data" / "reels" / "clips_usados.json"
 
 
 def ultimos(archivo: Optional[Path] = None) -> List[str]:

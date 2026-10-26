@@ -54,7 +54,8 @@ from src import config, diario, fondos, frases, traducir, video  # noqa: E402
 CLIPS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
-def elegir_fondo(donde: str, semilla: str, tema: str = "") -> list:
+def elegir_fondo(donde: str, semilla: str, tema: str = "",
+                 usados: Optional[Path] = None) -> list:
     """Los clips del fondo, en el orden en que se van a turnar.
 
     Varios y no uno: la referencia que mando el usuario va cortando entre
@@ -80,7 +81,7 @@ def elegir_fondo(donde: str, semilla: str, tema: str = "") -> list:
     # Los del reel anterior van al final: con 60 clips y 22 tramos hay de
     # sobra para no repetir ninguno, y asi dos reels seguidos no se parecen.
     # Lo pidio el usuario el 2026-10-26.
-    return fondos.ordenar(clips, tema, semilla, evitar=fondos.ultimos())
+    return fondos.ordenar(clips, tema, semilla, evitar=fondos.ultimos(usados))
 
 
 # Lo que puede ser una pista. Varias y no solo `.m4a` porque la musica que
@@ -369,7 +370,10 @@ def main(argv=None) -> int:
                     else video.guion(frase))
     # `tema.tema` y no `tema.titulo`: la clave del capitulo es la que figura
     # en `fondos.QUE_BUSCA`.
-    fondo = elegir_fondo(args.fondo, frase.id, tema.tema) if args.fondo else None
+    fondo = elegir_fondo(args.fondo, frase.id, tema.tema,
+                              carpeta / "clips_usados.json") if args.fondo else None
+    trozos_usados = (video.escenas(fondo, video.OBJETIVO * video.VOZ_MAS_LENTA)
+                     if fondo else [])
     cuerpo, _ = video.reparto(unidades)
 
     print("%s · capitulo %d, %s%s" % (frase.id, tema.capitulo, tema.titulo,
@@ -414,12 +418,6 @@ def main(argv=None) -> int:
               "pedirlos (el resto ya esta en la cache)."
               % (letras, len(unidades), len(nuevas)))
         return 0
-
-    # Despues del `--ver`, que promete no tocar nada, y antes de pedir la voz:
-    # si el reel falla a mitad igual queda dicho que esos clips se usaron, y
-    # repetir un clip es mas barato que volver a pagar la voz para saberlo.
-    if fondo:
-        fondos.anotar(video.escenas(fondo, video.OBJETIVO * video.VOZ_MAS_LENTA))
 
     marcas = None
     voz = Path(args.voz) if args.voz else None
@@ -553,6 +551,13 @@ def main(argv=None) -> int:
         return 1
     global ULTIMO
     ULTIMO = ruta
+    # Los clips quedan anotados CUANDO EL REEL EXISTE, no al elegirlos. La
+    # primera version anotaba antes de pedir la voz, y una corrida que fallaba
+    # ahi -o una prueba que arma un reel de mentira- le cambiaba el fondo al
+    # reel de verdad del dia siguiente sin que nadie lo hubiera visto. Lo que
+    # se recuerda es lo que SALIO.
+    if fondo:
+        fondos.anotar(trozos_usados, carpeta / "clips_usados.json")
     print()
     print(ruta)
 

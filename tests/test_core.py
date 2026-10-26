@@ -3814,16 +3814,24 @@ class TestQueCadaReelNoRepitaLoAnterior(unittest.TestCase):
                  if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
                  and n.func.attr == "anotar"]
         self.assertEqual(len(anota), 1, "hay mas de un sitio que anota")
-        # El `if args.ver:` que corta la corrida, buscado por su forma y no
-        # por un texto: un mensaje se reescribe y la prueba se quedaria muda.
-        cortes = [n for n in ast.walk(arbol) if isinstance(n, ast.If)
-                  and any(isinstance(x, ast.Attribute) and x.attr == "ver"
-                          for x in ast.walk(n.test))
-                  and any(isinstance(x, ast.Return) for x in ast.walk(n))]
-        self.assertTrue(cortes, "no encuentro la salida de --ver")
-        fin = max(x.lineno for c in cortes for x in ast.walk(c) if hasattr(x, "lineno"))
-        self.assertGreater(anota[0], fin,
-                           "se anotan los clips antes de la salida de --ver")
+        # Y va DESPUES de que el reel exista, no al elegir los clips: una
+        # corrida que falla pidiendo la voz -o una prueba que arma un reel de
+        # mentira- no puede cambiarle el fondo al reel de verdad de manana.
+        asigna = [n.lineno for n in ast.walk(arbol) if isinstance(n, ast.Assign)
+                  and any(isinstance(d, ast.Name) and d.id == "ULTIMO"
+                          for d in n.targets)]
+        self.assertTrue(asigna, "no encuentro donde queda armado el reel")
+        self.assertGreater(anota[0], max(asigna),
+                           "se anotan los clips antes de tener el reel")
+
+    def test_el_registro_vive_junto_a_los_reels(self):
+        # No en `data/`, y no es estetica: asi el camino sale de `--carpeta` y
+        # una prueba que arma un reel en una carpeta temporal escribe el suyo
+        # ahi. Con el camino fijo, correr la suite le cambiaba el fondo al
+        # reel de verdad del dia siguiente.
+        self.assertEqual(fondos.USADOS.parent.name, "reels")
+        texto = (ROOT / "scripts" / "reel.py").read_text(encoding="utf-8")
+        self.assertIn('carpeta / "clips_usados.json"', texto)
 
     def test_lo_que_se_anota_es_lo_que_lee_el_siguiente(self):
         with tempfile.TemporaryDirectory() as d:
