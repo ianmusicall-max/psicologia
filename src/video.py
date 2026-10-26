@@ -1615,7 +1615,12 @@ def armar(frase: Frase, pagina: Pagina, titulo: str = "", salida: Optional[Path]
         rotular = tema == "papel"
     rotulos = (marca(pagina, titulo, carpeta / ("%s-marca.png" % frase.id), tema)
                if rotular else None)
-    sub = carpeta / ("%s.ass" % frase.id)
+    # Al lado del mp4 y derivado de EL, no de `frase.id`: `historias.guion_de`
+    # lo busca como `<reel>.ass` para saber donde puede cortar el reel al
+    # partirlo en tarjetas de historia. Con `frase.id` coincidia de casualidad
+    # -porque nadie pasa `salida`- y el dia que alguien la pasara los cortes
+    # se perderian EN SILENCIO: el reel saldria partido a mitad de frase.
+    sub = salida.with_suffix(".ass")
     sub.write_text(ass(unidades, marcas, pagina, tema), encoding="utf-8")
     try:
         r = subprocess.run(comando(sub, salida, total, fondo, rotulos, voz, musica),

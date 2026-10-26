@@ -90,6 +90,15 @@ def main(argv=None) -> int:
         salida = {"post_id": facebook.publicar(pagina, texto, ruta),
                   "instagram": "", "error_instagram": ""}
 
+    # La historia del flyer, DESPUES de que el post salio. Va aca y no dentro
+    # de `facebook.publicar` porque Instagram usa esa misma funcion para su
+    # camino y una historia de Facebook no tiene nada que hacer ahi.
+    #
+    # No se mira si salio: `del_flyer` no levanta error nunca. Lo que ya se
+    # publico esta publicado, y la historia es el extra.
+    from src import historias  # noqa: E402
+    historias.del_flyer(pagina, ruta)
+
     frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre, extra={
         "hora": ahora.hour, "tema": tema.tema, "eje": tema.eje,
         "estilo": estilo, "instagram": salida.get("instagram") or "",

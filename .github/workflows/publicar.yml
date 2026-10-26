@@ -87,6 +87,9 @@ jobs:
             exit 0
           fi
           git add -f data/publicadas.json
+          # Como salio la historia del flyer. Puede no existir -el primer
+          # turno antes de que esto se desplegara- asi que no corta el paso.
+          git add -f data/historias_estado.json 2>/dev/null || true
           # Si no salio nada -fuera de hora, o ya habia salido- no hay que
           # commitear: un commit vacio por hora ensuciaria la historia.
           if git diff --staged --quiet; then

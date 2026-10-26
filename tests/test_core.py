@@ -24,8 +24,9 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from src import (bot, config, diseno, entorno, facebook, frases, instagram, libro,
-                 fondos, medir, parrilla, semana, telegram, traducir, video)
+from src import (bot, config, diseno, entorno, facebook, frases, historias,
+                 instagram, libro, fondos, medir, parrilla, semana, telegram,
+                 traducir, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -5886,6 +5887,254 @@ class TestElReelPasaElMinuto(unittest.TestCase):
         # Y la sala no puede devolver ecos en el hueco entre dos notas, que es
         # justo lo que hace la de las otras cuatro (60, 110 y 180 ms).
         self.assertNotEqual(v["sala"], hm.VOZ_DE_SIEMPRE["sala"])
+
+class TestLasHistoriasDeLaPagina(unittest.TestCase):
+    """Lo pidio el usuario el 2026-10-26: "sube las frases y los videos a las
+    historias de facebook"."""
+
+    def _pagina(self):
+        return config.cargar()
+
+    # El flyer
+    # -----------------------------------------------------------------
+
+    def test_la_historia_del_flyer_es_vertical_y_no_recorta_nada(self):
+        """El flyer es 1080x1350 (2160x2700 al publicar) y la historia 1080x1920.
+        Si se recortara para llenar, se perderia texto arriba o abajo."""
+        with tempfile.TemporaryDirectory() as d:
+            flyer = Path(d) / "f.jpg"
+            Image.new("RGB", (2160, 2700), (243, 239, 230)).save(flyer)
+            hecha = historias.vertical(flyer)
+            im = Image.open(hecha)
+            self.assertEqual(im.size, (historias.ANCHO, historias.ALTO))
+            # el flyer entero entra: su alto escalado tiene que caber
+            escala = min(historias.ANCHO / 2160, historias.ALTO / 2700)
+            self.assertLessEqual(round(2700 * escala), historias.ALTO)
+            self.assertLessEqual(round(2160 * escala), historias.ANCHO)
+
+    def test_el_flyer_no_se_borra_al_limpiar_la_vertical(self):
+        """`del_flyer` borra su copia en un `finally`. En el proyecto de salud
+        la primera version borraba "lo que devolvio `vertical`", y una prueba
+        con un doble que devolvia el ORIGINAL se llevo el archivo de pruebas
+        entero: en produccion habria borrado el flyer de un post publicado."""
+        with tempfile.TemporaryDirectory() as d:
+            flyer = Path(d) / "f.jpg"
+            Image.new("RGB", (40, 50), (0, 0, 0)).save(flyer)
+            with mock.patch.object(historias, "vertical", return_value=flyer), \
+                 mock.patch.object(historias, "subir_foto", return_value="1"), \
+                 mock.patch.dict(os.environ, {"HISTORIAS": "1"}):
+                historias.del_flyer(self._pagina(), flyer)
+            self.assertTrue(flyer.exists(), "se llevo el flyer del post")
+
+    def test_una_historia_que_falla_no_levanta_error(self):
+        """El post ya salio. Una historia que explota no puede tumbarlo."""
+        with tempfile.TemporaryDirectory() as d:
+            flyer = Path(d) / "f.jpg"
+            Image.new("RGB", (216, 270), (0, 0, 0)).save(flyer)
+            with mock.patch.object(historias, "subir_foto",
+                                   side_effect=RuntimeError("Facebook dijo no")), \
+                 mock.patch.object(historias, "anotar"), \
+                 mock.patch.object(telegram, "enviar"), \
+                 mock.patch.dict(os.environ, {"HISTORIAS": "1"}):
+                self.assertEqual(historias.del_flyer(self._pagina(), flyer), "")
+
+    def test_apagadas_no_hablan_con_facebook(self):
+        with tempfile.TemporaryDirectory() as d:
+            flyer = Path(d) / "f.jpg"
+            Image.new("RGB", (216, 270), (0, 0, 0)).save(flyer)
+            with mock.patch.object(historias, "subir_foto",
+                                   side_effect=AssertionError("publico con HISTORIAS=0")), \
+                 mock.patch.dict(os.environ, {"HISTORIAS": "0"}):
+                self.assertEqual(historias.del_flyer(self._pagina(), flyer), "")
+
+    # El reel, que no entra de una
+    # -----------------------------------------------------------------
+
+    def test_ningun_tramo_pasa_del_tope_de_facebook(self):
+        """Es la razon de ser de `tramos`. Se prueba contra todos los largos
+        que el reel puede tener, no contra el de hoy."""
+        for dura in [x / 2.0 for x in range(20, 2 * video.TOPE_SEGUNDOS + 1)]:
+            for cortes in ((), tuple(y / 2.0 for y in range(5, 2 * int(dura)))):
+                for desde, hasta in historias.tramos(dura, cortes):
+                    self.assertLessEqual(hasta - desde, historias.VIDEO_MAXIMO + 0.05,
+                                         "%.1f s con %d cortes" % (dura, len(cortes)))
+
+    def test_los_tramos_cubren_el_reel_entero_sin_huecos(self):
+        """Lo que no puede pasar es que se pierda un pedazo: el mensaje final
+        vive en los ultimos 10 segundos y se agrego a pedido del usuario."""
+        for dura in (61.0, 76.0, 80.0, 85.4, 90.0):
+            cortes = [round(x * 2.7, 2) for x in range(1, 40)]
+            reparto = historias.tramos(dura, cortes)
+            self.assertEqual(reparto[0][0], 0.0)
+            self.assertAlmostEqual(reparto[-1][1], dura, places=2)
+            for (_, fin), (sigue, _) in zip(reparto, reparto[1:]):
+                self.assertEqual(fin, sigue, "hueco o solape en %.1f s" % dura)
+
+    def test_el_corte_cae_donde_termina_un_renglon(self):
+        """Partir una frase al medio se oye. Los cortes salen del `.ass`."""
+        cortes = [12.0, 41.3, 55.9]
+        reparto = historias.tramos(80.0, cortes)
+        self.assertEqual(len(reparto), 2)
+        self.assertIn(reparto[0][1], cortes)
+
+    def test_las_tarjetas_quedan_parejas(self):
+        """Una de 59 s y otra de 20 hace que el que mira se vaya antes de la
+        segunda, que es donde esta el mensaje final."""
+        cortes = [round(x * 1.3, 2) for x in range(1, 70)]
+        for dura in (76.0, 80.0, 85.0):
+            largos = [b - a for a, b in historias.tramos(dura, cortes)]
+            self.assertLess(max(largos) - min(largos), 6.0,
+                            "%.1f s dio %s" % (dura, largos))
+
+    def test_un_reel_que_entra_sale_de_una_y_sin_reencodificar(self):
+        """La mayoria de los reels viejos entran. Reencodificar de gusto les
+        saca calidad y cuesta minutos."""
+        self.assertEqual(historias.tramos(47.2), [(0.0, 47.2)])
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(historias.subprocess, "run",
+                                   side_effect=AssertionError("llamo a ffmpeg")):
+                self.assertEqual(historias.partir(mp4, [(0.0, 47.2)]), [mp4])
+
+    def test_los_cortes_salen_del_ass_que_escribe_el_reel(self):
+        """No se leen silencios del audio: la musica suena todo el tiempo
+        debajo de la voz, asi que `silencedetect` no encuentra ni uno
+        -comprobado, cero silencios a -32 dB en un reel entero-."""
+        unidades = ["Primera cosa.", "Segunda cosa.", "Tercera."]
+        marcas = video.tiempos(unidades)
+        texto = video.ass(unidades, marcas, config.cargar())
+        with tempfile.TemporaryDirectory() as d:
+            sub = Path(d) / "x.ass"
+            sub.write_text(texto, encoding="utf-8")
+            cortes = historias.cortes_del_guion(sub)
+        self.assertEqual(len(cortes), len(unidades))
+        for (_, hasta), corte in zip(marcas, cortes):
+            self.assertAlmostEqual(hasta, corte, places=1)
+
+    def test_el_ass_del_reel_esta_al_lado_del_mp4(self):
+        """`historias.guion_de` da por hecho eso, y es lo que `video.armar`
+        hace: `carpeta / (frase.id + '.ass')` junto a `carpeta / (frase.id +
+        '.mp4')`. Si algun dia se moviera, los cortes se perderian EN SILENCIO
+        y los reels saldrian partidos a mitad de frase."""
+        arbol = ast.parse((ROOT / "src" / "video.py").read_text(encoding="utf-8"))
+        armar = next(n for n in ast.walk(arbol)
+                     if isinstance(n, ast.FunctionDef) and n.name == "armar")
+        self.assertIn("salida.with_suffix('.ass')", ast.unparse(armar))
+        self.assertEqual(historias.guion_de(Path("/a/b/sem-01.mp4")),
+                         Path("/a/b/sem-01.ass"))
+
+    def test_sin_guion_igual_se_parte_y_no_se_pierde_nada(self):
+        """Un reel viejo no tiene `.ass`. Perder el reel entero seria peor que
+        un corte a mitad de frase."""
+        self.assertEqual(historias.cortes_del_guion(Path("/no/existe.ass")), [])
+        reparto = historias.tramos(80.0, [])
+        self.assertAlmostEqual(reparto[-1][1], 80.0, places=2)
+        self.assertTrue(all(b - a <= historias.VIDEO_MAXIMO for a, b in reparto))
+
+    def test_el_reel_no_se_borra_al_limpiar_las_tarjetas(self):
+        """Mismo cuidado que con el flyer, y aca es peor: el reel se publica en
+        Instagram y en YouTube DESPUES de Facebook."""
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x" * 10)
+            with mock.patch.object(historias, "duracion", return_value=40.0), \
+                 mock.patch.object(historias, "partir", return_value=[mp4]), \
+                 mock.patch.object(historias, "subir_video", return_value="1"), \
+                 mock.patch.object(historias, "anotar"), \
+                 mock.patch.dict(os.environ, {"HISTORIAS": "1"}):
+                historias.del_reel(self._pagina(), mp4)
+            self.assertTrue(mp4.exists(), "se llevo el reel")
+
+    def test_una_tarjeta_que_falla_no_levanta_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x")
+            with mock.patch.object(historias, "duracion", return_value=40.0), \
+                 mock.patch.object(historias, "subir_video",
+                                   side_effect=RuntimeError("no")), \
+                 mock.patch.object(historias, "anotar"), \
+                 mock.patch.object(telegram, "enviar"), \
+                 mock.patch.dict(os.environ, {"HISTORIAS": "1"}):
+                self.assertEqual(historias.del_reel(self._pagina(), mp4), [])
+
+    # El enganche
+    # -----------------------------------------------------------------
+
+    def test_la_historia_del_reel_va_despues_de_que_el_reel_salio(self):
+        """Una historia es un aviso de que hay algo nuevo. Si el reel no se
+        publico, no hay nada que avisar."""
+        texto = (ROOT / "scripts" / "reel_del_dia.py").read_text(encoding="utf-8")
+        arbol = ast.parse(texto)
+        pub = next(n for n in ast.walk(arbol)
+                   if isinstance(n, ast.FunctionDef) and n.name == "publicar")
+        fuente = ast.unparse(pub)
+        self.assertIn("historias.del_reel", fuente)
+        self.assertLess(fuente.index("publicar_reel"), fuente.index("historias.del_reel"))
+
+    def test_la_historia_del_flyer_va_despues_de_publicar(self):
+        texto = (ROOT / "scripts" / "publicar_turno.py").read_text(encoding="utf-8")
+        self.assertIn("historias.del_flyer", texto)
+        self.assertLess(texto.index("salida = {"), texto.index("historias.del_flyer"))
+
+    def test_el_aviso_dice_si_la_historia_salio_o_no(self):
+        """`PLATAFORMAS` no la incluye, asi que sin esto el unico lugar donde
+        se veria es el log de GitHub, que no se lee desde el telefono."""
+        rdd = _script("rddhist", "reel_del_dia.py")
+        texto = rdd.aviso(Path("x.mp4"), "T", {
+            "facebook": "https://fb/1", "historia": "2 tarjetas"})
+        self.assertIn("2 tarjetas", texto)
+        malo = rdd.aviso(Path("x.mp4"), "T", {
+            "facebook": "https://fb/1", "historia": "error: sin permiso"})
+        self.assertIn("sin permiso", malo)
+
+    def test_una_historia_no_decide_si_el_turno_salio_bien(self):
+        """Ni al revés: una que sale no puede tapar que las tres plataformas
+        fallaron, y una que falla no vuelve un fallo un reel ya publicado."""
+        rdd = _script("rddhist2", "reel_del_dia.py")
+        self.assertIn("historia", rdd.EXTRAS)
+        for cual in rdd.EXTRAS:
+            self.assertNotIn(cual, rdd.PLATAFORMAS)
+
+    def test_la_historia_no_publica_ningun_post(self):
+        """La regla es que nada sale sin aprobacion. La historia es el MISMO
+        reel ya aprobado y el MISMO flyer ya publicado, asi que no la rompe;
+        lo que no puede hacer es publicar un post o un reel por su cuenta."""
+        arbol = ast.parse((ROOT / "src" / "historias.py").read_text(encoding="utf-8"))
+        llamadas = {ast.unparse(n.func) for n in ast.walk(arbol)
+                    if isinstance(n, ast.Call)}
+        for prohibida in ("facebook.publicar", "facebook.publicar_reel",
+                          "facebook.subir_foto", "instagram.publicar_reel"):
+            self.assertNotIn(prohibida, llamadas)
+        texto = (ROOT / "src" / "historias.py").read_text(encoding="utf-8")
+        self.assertIn("photo_stories", texto)
+        self.assertIn("video_stories", texto)
+
+    def test_el_estado_se_guarda_entre_corridas(self):
+        """Cada corrida de GitHub es un clon nuevo, asi que un archivo en
+        `data/` -que esta en el .gitignore- se pierde al terminar. Es el mismo
+        agujero que tuvo `clips_usados.json`, que dejo la regla de no repetir
+        clips sin funcionar desde el dia que se escribio."""
+        for flujo in ("reel-diario.yml", "publicar.yml"):
+            texto = (ROOT / ".github" / "workflows" / flujo).read_text(encoding="utf-8")
+            self.assertIn("data/historias_estado.json", texto, flujo)
+            self.assertIn("git add -f data/historias_estado.json", texto, flujo)
+
+    def test_el_error_de_facebook_llega_sin_el_token(self):
+        """Un error de `requests` trae la URL entera, y la URL lleva
+        `access_token=`. Ese texto termina en Telegram y en las capturas."""
+        class Falsa:
+            status_code = 400
+            text = "algo?access_token=SECRETO123&x=1"
+
+            def json(self):
+                return {"error": {"message": "fallo con access_token=SECRETO123"}}
+
+        with self.assertRaises(RuntimeError) as cm:
+            historias._revisar(Falsa())
+        self.assertNotIn("SECRETO123", str(cm.exception))
+        self.assertIn("OCULTO", str(cm.exception))
+
 
     def test_el_workflow_puede_pedir_la_frase(self):
         texto = (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(

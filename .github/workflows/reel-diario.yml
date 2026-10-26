@@ -191,8 +191,13 @@ jobs:
           # manana no repita los clips del de hoy. Sin guardarlo, cada
           # corrida arranca con la memoria en blanco y la regla no sirve de
           # nada. Estuvo asi desde que se escribio, el 2026-10-26.
+          # Y `historias_estado.json`, por lo mismo: cada corrida es un clon
+          # nuevo, asi que sin guardarlo la respuesta a "se estan subiendo las
+          # historias?" se pierde al terminar la corrida, que es justo cuando
+          # hace falta dias despues.
           git add -f data/reels_publicados.json data/factor_voz.jsonl \
                      data/reels/clips_usados.json
+          git add -f data/historias_estado.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "Nada que guardar."
             exit 0

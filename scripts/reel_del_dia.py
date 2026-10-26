@@ -401,6 +401,21 @@ def publicar(ruta: Path, caption: str, titulo: str, descripcion: str,
         try:
             ident = facebook.publicar_reel(pagina, ruta, caption)
             salidas["facebook"] = facebook.enlace_de_reel(ident)
+            # La historia del reel, y SOLO si el reel salio: una historia es
+            # un aviso de que hay algo nuevo, y si el reel no se publico no
+            # hay nada que avisar.
+            #
+            # Son dos tarjetas y no una: el reel dura entre 76 y 85 s y una
+            # historia de video aguanta 60. Cortar en el 60 se llevaria el
+            # mensaje final, que es lo que se le agrego a los textos a pedido
+            # del usuario. `historias.del_reel` lo parte donde termina un
+            # renglon del guion.
+            from src import historias
+            tarjetas = historias.del_reel(pagina, ruta)
+            salidas["historia"] = ("%d tarjeta%s" % (
+                len(tarjetas), "s" if len(tarjetas) != 1 else "")) if tarjetas \
+                else "error: %s" % (historias.ultima().get("error")
+                                    or "no salio, y no quedo anotado por que")
         except Exception as e:                            # noqa: BLE001
             salidas["facebook"] = "error: %s" % e
 
@@ -472,9 +487,19 @@ def probar(donde=PLATAFORMAS) -> dict:
     return estado
 
 
+# Lo que va en `salidas` y NO es una plataforma. Se lista aparte porque el
+# aviso recorre `PLATAFORMAS` y el exito del turno se juzga solo con esas: una
+# historia que falla no convierte el turno en un fallo -el reel ya salio- y una
+# que sale no puede tapar que las tres plataformas fallaron.
+EXTRAS = ("historia",)
+
+
 def aviso(ruta: Path, titulo: str, salidas: dict) -> str:
     lineas = ["Reel del dia: %s" % titulo, ""]
     for cual in PLATAFORMAS:
+        if cual in salidas:
+            lineas.append("%s: %s" % (cual.capitalize(), salidas[cual]))
+    for cual in EXTRAS:
         if cual in salidas:
             lineas.append("%s: %s" % (cual.capitalize(), salidas[cual]))
     return "\n".join(lineas)
@@ -617,7 +642,10 @@ def _trabajar(args, donde) -> int:
     print(texto)
     _avisar(texto)
     # Que una plataforma falle no es un fallo del turno: las otras salieron.
-    return 0 if any(not v.startswith("error:") for v in salidas.values()) else 1
+    # Se miran SOLO las plataformas: una historia que sale no puede tapar que
+    # las tres fallaron, ni una que falla volver un fallo un reel ya publicado.
+    plataformas = [v for k, v in salidas.items() if k not in EXTRAS]
+    return 0 if any(not v.startswith("error:") for v in plataformas) else 1
 
 
 def _avisar(texto: str) -> None:
