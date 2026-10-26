@@ -3548,6 +3548,63 @@ class TestLosOriginalesDeLosFondos(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
 
 
+class TestElRecorteDeLosFondos(unittest.TestCase):
+    """Los clips estan recortados a `SEGUNDOS`: el reel usa los primeros 4.
+
+    El 2026-10-26 el usuario pidio recortarlos a 6 y la carpeta paso de 584 MB
+    a 263 MB. Sin un guardian, el recorte se deshace solo: la tanda siguiente
+    de clips entra de 15 o 20 segundos y nadie lo nota hasta mirar el peso.
+    """
+
+    def _clips(self):
+        return sorted((ROOT / "data" / "fondos").glob("*.mp4"))
+
+    # El sobrante del ultimo paquete. `ffmpeg -t 6 -c copy` corta por paquete y
+    # no por cuadro, asi que el archivo puede terminar unos milisegundos
+    # despues del segundo 6; el mas pasado de la carpeta esta en 6,13. Medio
+    # segundo es la cola de un paquete, no el tramo de otro clip.
+    COLA = 0.5
+
+    def test_ningun_clip_de_fondo_pasa_del_recorte(self):
+        ach = _script("ach", "achicar_fondos.py")
+        clips = self._clips()
+        self.assertTrue(clips, "no hay ningun clip en data/fondos")
+        tope = ach.SEGUNDOS + self.COLA
+        largos = []
+        for c in clips:
+            dura = ach.segundos(c)
+            if dura is None:
+                self.skipTest("sin ffmpeg no se puede medir %s" % c.name)
+            if dura > tope:
+                largos.append("%s: %.2f s" % (c.name, dura))
+        self.assertEqual(largos, [], "clips sin recortar a %d s: %s"
+                         % (ach.SEGUNDOS, "; ".join(largos)))
+
+    def test_el_recorte_deja_margen_sobre_el_tramo_del_reel(self):
+        # Esta es la invariante de verdad, y no cuesta ninguna llamada: el reel
+        # muestra `video.ESCENA` segundos de cada clip SIEMPRE desde el
+        # principio -cada tramo es una entrada propia con `trim=duration` y sin
+        # `-ss`-, asi que si el recorte quedara por debajo de `ESCENA` todos
+        # los clips se repetirian dentro de su propio tramo.
+        ach = _script("ach", "achicar_fondos.py")
+        self.assertGreater(ach.SEGUNDOS, video.ESCENA,
+                           "el recorte no cubre el tramo del reel")
+
+    def test_un_clip_repetido_muestra_el_mismo_tramo(self):
+        # Lo que justifica que seis alcance. Durante un tiempo el comentario de
+        # `SEGUNDOS` decia que el margen era "para que un mismo clip pueda
+        # salir dos veces sin que se vea el mismo tramo", y el reel no hace
+        # eso: lo guarda esta prueba para que el numero no se vuelva a elegir
+        # por una razon que el codigo no cumple.
+        orden = video.comando(Path("s.ass"), Path("o.mp4"), 12.0,
+                              [Path("a.mp4"), Path("b.mp4"), Path("a.mp4")])
+        entradas = [orden[i + 1] for i, x in enumerate(orden) if x == "-i"]
+        self.assertEqual(entradas[:3], ["a.mp4", "b.mp4", "a.mp4"])
+        self.assertNotIn("-ss", orden, "el montaje arrancaria en otro segundo")
+        filtro = orden[orden.index("-filter_complex") + 1]
+        self.assertEqual(filtro.count("trim=duration=%.2f" % video.ESCENA), 3)
+
+
 class TestElTextoParaYoutube(unittest.TestCase):
     """El reel sirve para YouTube tal cual; lo que falta es el texto."""
 

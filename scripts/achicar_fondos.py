@@ -11,7 +11,9 @@ armar el video- pero el archivo pesa cuatro veces.
 Y el peso importa mas de lo que parece: estos clips viven en el repositorio,
 asi que CADA corrida de GitHub se los baja. El turno que publica corre cuatro
 veces por hora; con medio giga de clips eso es media hora de descarga por dia
-para algo que ese turno ni usa.
+para algo que ese turno ni usa. (El 2026-10-26 el recorte a 6 s dejo la
+carpeta en 263 MB. Esto achica mas todavia, porque ademas reencoda a la
+medida del reel y saca el audio.)
 
 Ademas:
 
@@ -56,11 +58,21 @@ def clips_de(carpeta: Path):
                   if x.is_file() and x.suffix.lower() in CLIPS)
 
 
-def medida(ruta: Path):
-    """Ancho y alto del clip, o None si no se puede leer.
+def ficha(ruta: Path):
+    """Ancho, alto y segundos del clip en UNA sola llamada, o None.
 
-    `ffmpeg -i` sin salida termina con error y escribe la ficha en stderr:
-    eso es lo normal, no una falla, asi que no se mira el codigo de salida.
+    `ffmpeg -i` sin salida termina con error y escribe la ficha en stderr: eso
+    es lo normal, no una falla, asi que no se mira el codigo de salida.
+
+    Una llamada y no dos porque el listado necesita las dos cosas de cada
+    clip, y son 54.
+
+    Aca se intento antes leer la duracion del `mvhd` del mp4, sin ffmpeg, para
+    que la prueba que recorre la carpeta no pagara 54 procesos. NO SIRVE y
+    conviene que quede escrito: los cinco clips que traen el `moov` adelante
+    declaran `duration` 0 en esa cabecera -la duracion de verdad vive en cada
+    pista- y el lector devolvia 0,000 para `espejo-luces-noche`, que dura
+    2,98. Un guardian que mide mal es peor que no tenerlo.
     """
     import re
     import subprocess
@@ -69,8 +81,28 @@ def medida(ruta: Path):
                            capture_output=True, text=True)
     except OSError:
         return None
-    m = re.search(r"Video:.*?(\d{2,5})x(\d{2,5})", r.stderr or "", re.S)
-    return (int(m.group(1)), int(m.group(2))) if m else None
+    salida = r.stderr or ""
+    m = re.search(r"Video:.*?(\d{2,5})x(\d{2,5})", salida, re.S)
+    d = re.search(r"Duration:\s*(\d+):(\d\d):(\d\d(?:\.\d+)?)", salida)
+    if not m and not d:
+        return None
+    return (
+        (int(m.group(1)), int(m.group(2))) if m else None,
+        (int(d.group(1)) * 3600 + int(d.group(2)) * 60 + float(d.group(3)))
+        if d else None,
+    )
+
+
+def medida(ruta: Path):
+    """Ancho y alto del clip, o None si no se puede leer."""
+    f = ficha(ruta)
+    return f[0] if f else None
+
+
+def segundos(ruta: Path):
+    """Cuanto dura el clip, o None si no se puede leer."""
+    f = ficha(ruta)
+    return f[1] if f else None
 
 
 # Donde van a parar los originales. NO se reemplazan: el usuario los quiere
@@ -81,11 +113,18 @@ ORIGINALES = "originales"
 
 # Cuanto se guarda de cada clip. El reel cambia de clip cada `video.ESCENA`
 # segundos -hoy 4- asi que de un clip de un minuto se ven cuatro. Guardar el
-# resto es peso puro, y es de donde salen los archivos de 44 MB.
+# resto es peso puro, y es de donde salian los archivos de 44 MB.
 #
-# Ocho y no cuatro para que un mismo clip pueda salir dos veces sin que se
-# vea el mismo tramo.
-SEGUNDOS = 8
+# SEIS, que lo pidio el usuario el 2026-10-26 y es el numero con el que la
+# carpeta quedo recortada ese dia (584 MB -> 263 MB, sin recomprimir).
+#
+# Decia "ocho y no cuatro para que un mismo clip pueda salir dos veces sin que
+# se vea el mismo tramo", y eso el reel NO lo hace: cada tramo es una entrada
+# propia con `trim=duration` desde el principio y sin `-ss` (`video.comando`),
+# asi que un clip repetido muestra los mismos cuatro segundos las dos veces.
+# Los dos de margen son para el dia que `video.ESCENA` suba de 4, no para
+# variar el tramo.
+SEGUNDOS = 6
 
 # Con el recorte a 8 segundos, comprimir bien ya casi no cuesta tiempo: lo
 # que habia hecho fallar a `slow` era un 4K de un minuto entero, no la
@@ -170,10 +209,12 @@ def main(argv=None) -> int:
     print("%d clips, %.0f MB en total." % (len(clips), antes))
     print()
     for c in clips:
-        tam = medida(c)
+        f = ficha(c) or (None, None)
+        tam, dura = f
         grande = tam and (tam[0] > ANCHO or tam[1] > ALTO)
-        print("  %-42s %7.1f MB  %s%s"
+        print("  %-42s %7.1f MB  %6s  %s%s"
               % (c.name[:42], c.stat().st_size / 1048576.0,
+                 ("%.1f s" % dura) if dura else "? s",
                  ("%dx%d" % tam) if tam else "?",
                  "  <- mas grande que el reel" if grande else ""))
     if args.ver:

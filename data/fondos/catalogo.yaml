@@ -11,6 +11,18 @@
 # Para agregar uno: el nombre del archivo y sus etiquetas. El nombre es
 # descriptivo a proposito -`lluvia-arbol-gris` y no `7681527`- porque es lo
 # primero que se lee al mirar la carpeta y al leer el log de una corrida.
+#
+# TODOS LOS CLIPS ESTAN RECORTADOS A 6 SEGUNDOS (2026-10-26, a pedido del
+# usuario). El reel usa los PRIMEROS CUATRO de cada uno, y siempre los mismos
+# aunque un clip salga dos veces en el mismo reel: cada tramo es una entrada
+# propia con `trim=duration` y SIN `-ss` (`video.comando`). O sea que del
+# segundo 6 en adelante no se ve nada nunca, y los dos de margen son para el
+# dia que `video.ESCENA` suba de 4.
+#
+# El recorte fue SIN RECOMPRIMIR (`-c copy`): los cuatro segundos que se usan
+# salen bit por bit iguales a los del original -comprobado con framemd5 en los
+# 54-. La carpeta paso de 584 MB a 263 MB. Un clip nuevo se recorta al entrar,
+# y hay una prueba que lo exige.
 
 lluvia-arbol-gris.mp4:
   que_es: Lluvia sobre un vidrio, un arbol pelado y cielo gris
@@ -139,8 +151,8 @@ calle-lluvia-toldo.mp4:
 gotas-ventana-atardecer.mp4:
   que_es: Gotas de lluvia sobre un vidrio, con el atardecer dorado y una palmera borrosa detras
   etiquetas: [lluvia, gotas, ventana, atardecer, dorado, borroso, interior, quietud]
-  # Pesa 30 MB: por la pagina de GitHub no entraria -el tope son 25- pero por
-  # git si. Es el mas pesado de la carpeta.
+  # Pesaba 29,82 MB y era el mas pesado de la carpeta. Con el recorte a 6 s
+  # del 2026-10-26 quedo en 10,17 MB y paso a ser el cuarto.
 
 ruta-mojada-anochecer.mp4:
   que_es: Avanzando por una ruta mojada al anochecer, con las luces reflejadas en el asfalto
@@ -191,8 +203,11 @@ ventanal-cruce-ciudad.mp4:
 avenida-noche-torres.mp4:
   que_es: Una avenida de noche vista desde arriba entre dos torres, con el transito y las ventanas encendidas
   etiquetas: [ciudad, noche, avenida, torres, luces, altura, oscuro, soledad, encierro, cotidiano]
-  # Camara QUIETA: el encuadre es el mismo en el segundo 2 y en el 12. Lo que
-  # se mueve son los autos, asi que no compite con el texto.
+  # Camara QUIETA: el encuadre es el mismo en el segundo 1 y en el 5,5 -entre
+  # esos dos cuadros la diferencia media es 10,65 de 255 y solo el 5,9% de los
+  # pixeles cambia, que son los autos y las ventanas-. No compite con el
+  # texto. (Decia "el segundo 2 y el 12"; con el recorte del 2026-10-26 el
+  # clip dura 6,09, asi que se volvio a medir dentro de lo que quedo.)
   #
   # Brillo medio 47 de 255 en los cuatro segundos que se usan, contra 156 del
   # mas claro: oscuro de sobra para que el texto blanco se lea. Medido, no
@@ -203,10 +218,9 @@ avenida-noche-torres.mp4:
 ventanilla-nieve-azul.mp4:
   que_es: Desde adentro de un bus, gotas en el vidrio y un paisaje nevado con edificios grises al anochecer
   etiquetas: [ventana, nieve, invierno, azul, frio, interior, viaje, gotas, melancolia, distancia]
-  # Son 6,5 segundos, el mas corto de la carpeta (el que le sigue tiene 8,8).
-  # No importa: el reel usa los PRIMEROS cuatro segundos de cada clip y repite
-  # el que sea mas corto que el tramo (`trim=duration` con `-stream_loop -1`
-  # en `video.comando`). Queda anotado para que nadie lo mire dos veces.
+  # Eran 6,5 segundos y era el mas corto de la carpeta. Con el recorte del
+  # 2026-10-26 ninguno pasa de 6,13, asi que dejo de ser un caso: dura 6,11,
+  # como casi todos.
   #
   # Hay una mano apoyada en el marco, abajo a la derecha, y nada mas: es un
   # clip de mirar por la ventanilla, no de alguien.
@@ -252,10 +266,11 @@ calle-lluvia-motos.mp4:
   etiquetas: [lluvia, noche, calle, ciudad, motos, cotidiano, gente, verde, melancolia, soledad]
   # Trae pista de audio. El reel nunca usa el audio del clip.
   #
-  # Son 4,3 segundos, el mas corto de la carpeta, y justo alcanza: el reel usa
-  # los primeros CUATRO de cada clip. No hace falta que repita ni un cuadro,
-  # pero no queda margen: si algun dia `video.ESCENA` sube de 4, este es el
-  # primero que se va a empezar a repetir.
+  # Son 4,3 segundos y justo alcanzan: el reel usa los primeros CUATRO de
+  # cada clip. No hace falta que repita ni un cuadro, pero no queda margen: si
+  # algun dia `video.ESCENA` sube de 4, este es el segundo que se va a empezar
+  # a repetir. (Esta nota lo llamaba "el mas corto de la carpeta" y nunca lo
+  # fue: `espejo-luces-noche` tiene 2,98 y ya estaba cuando se escribio.)
   #
   # La lluvia se ve caer, como en `lluvia-farol-casa`. Hay gente caminando y
   # carteles de negocios al fondo, chicos y lejos. La rama verde de la derecha
@@ -387,11 +402,11 @@ gotas-vidrio-sombrio.mp4:
   # blanco y un arbol reconocible, y es de los mas claros (brillo 113). Este
   # no tiene cielo, las gotas son mas grandes y esta bastante mas oscuro (88).
   #
-  # **El mas LARGO de la carpeta**: 44 s, contra 25 del que le sigue. Pesa
-  # 29,05 MB, que es el tercero -no el primero, como decia esta nota el
-  # 2026-10-25: `gotas-ventana-atardecer` pesa 29,82 y ya estaba-. El reel
-  # usa los primeros 4 s, asi que son unos 26 MB que no se ven nunca, y por
-  # eso es el que mas ganaria con un recorte.
+  # **El que mas gano con el recorte del 2026-10-26**: era el mas largo de la
+  # carpeta -44 s contra 25 del que le seguia- y pesaba 29,05 MB, de los que
+  # el reel usaba 4 s. Quedo en 6,13 s y 4,60 MB: 24 MB menos el, solo.
+  # Hoy comparte el puesto de mas largo con `torre-antena-niebla`, los dos en
+  # 6,131125 s exactos.
 
 gotas-vidrio-ambar.mp4:
   que_es: Gotas sobre un vidrio a oscuras, con un resplandor ambar detras
@@ -437,7 +452,9 @@ bosque-niebla-hojas.mp4:
   # las hojas se repiten por todo el cuadro: no hay un sujeto que pueda quedar
   # afuera del recorte.
   #
-  # Pesa 29,80 MB: el segundo de la carpeta, a 16 KB de
-  # `gotas-ventana-atardecer` (29,82). Son 18 segundos de los que el reel usa
-  # 4. (Esta nota decia "el mas pesado, 31 MB" y eran las dos cosas mal: el
-  # numero salia de redondear `ls` y el puesto, de no haberlo mirado.)
+  # Pesaba 29,80 MB -el segundo, a 16 KB de `gotas-ventana-atardecer`- y eran
+  # 18 segundos de los que el reel usa 4. Con el recorte del 2026-10-26 quedo
+  # en 11,18 MB y 6,11 s, y sigue siendo el segundo mas pesado, ahora detras
+  # de `bosque-pinos-amanecer` (12,50). (Esta nota decia "el mas pesado,
+  # 31 MB" y eran las dos cosas mal: el numero salia de redondear `ls` y el
+  # puesto, de no haberlo mirado.)

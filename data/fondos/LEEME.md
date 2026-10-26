@@ -25,6 +25,32 @@ Esta carpeta es la unica de `data/` que se versiona a proposito (ver el
 `.gitignore`). Son unos megas cada uno, no cambian nunca, y es lo unico que
 hace que el reel salga sobre paisajes y no sobre el papel de la marca.
 
+## Los clips estan recortados a seis segundos
+
+El reel usa los **primeros cuatro segundos** de cada clip y nada mas. No es
+que corte por tramos: cada tramo del reel es una entrada propia de ffmpeg con
+`trim=duration` y sin `-ss`, asi que si un clip sale dos veces en el mismo
+reel se ven los mismos cuatro segundos las dos veces. Del segundo seis en
+adelante no se ve nada nunca; los dos de margen son para el dia que
+`video.ESCENA` suba de cuatro.
+
+El 2026-10-26 se recortaron los 54 que habia y **la carpeta paso de 584 MB a
+263 MB**. El recorte fue sin recomprimir, asi que los cuatro segundos que se
+usan son bit por bit los del original.
+
+Un clip nuevo se recorta al entrar:
+
+    ffmpeg -i tuyo.mp4 -t 6 -c copy data/fondos/nombre-descriptivo.mp4
+
+`-c copy` es la parte importante: copia los cuadros tal cual, sin volver a
+comprimir, asi que no se pierde nada de imagen y tarda un segundo. Hay una
+prueba que falla si algun clip de la carpeta pasa de seis segundos, para que
+la carpeta no vuelva a crecer sin que nadie se entere.
+
+Si alguna vez hace falta bajarla mas, `scripts/achicar_fondos.py` los deja
+ademas en 1080x1920 y sin audio -eso si recomprime- y guarda los originales
+en `data/fondos/originales/`, que no se sube.
+
 ## Como se elige cual va en cada reel
 
 Los clips se eligen por lo que SE VE en ellos. `catalogo.yaml` dice que hay en
@@ -49,8 +75,10 @@ log de una corrida.
   recorta por los costados y se pierde medio encuadre.
 - **De 900 px de ancho para arriba.** Mas chico se ve pixelado al agrandarlo.
 - **mp4, mov, m4v, webm o mkv.**
-- **Cinco a quince segundos** cada uno. El reel va cortando entre clips cada
-  pocos segundos; uno largo se usa por tramos igual.
+- **El largo no importa: mandalos como vengan.** Al entrar se recortan a seis
+  segundos (ver abajo). Lo que NO pasa es que un clip largo se use por tramos:
+  el reel toma siempre los primeros cuatro segundos, aunque el mismo clip
+  salga dos veces en el mismo reel.
 - **Sin texto, sin logos y sin gente hablando a camara**: encima va el texto
   del reel y compiten.
 - **Movimiento lento.** Una rama con viento, agua, nubes. Un dron sobre una
