@@ -5955,34 +5955,60 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
         que el reel puede tener, no contra el de hoy."""
         for dura in [x / 2.0 for x in range(20, 2 * video.TOPE_SEGUNDOS + 1)]:
             for cortes in ((), tuple(y / 2.0 for y in range(5, 2 * int(dura)))):
-                for desde, hasta in historias.tramos(dura, cortes):
-                    self.assertLessEqual(hasta - desde, historias.VIDEO_MAXIMO + 0.05,
-                                         "%.1f s con %d cortes" % (dura, len(cortes)))
+                for partir in (False, True):
+                    for desde, hasta in historias.tramos(dura, cortes,
+                                                         partir_todo=partir):
+                        self.assertLessEqual(
+                            hasta - desde, historias.VIDEO_MAXIMO + 0.05,
+                            "%.1f s, %d cortes, partir=%s" % (dura, len(cortes), partir))
 
-    def test_los_tramos_cubren_el_reel_entero_sin_huecos(self):
-        """Lo que no puede pasar es que se pierda un pedazo: el mensaje final
-        vive en los ultimos 10 segundos y se agrego a pedido del usuario."""
+    def test_por_omision_va_una_sola_tarjeta(self):
+        """Lo eligio el usuario: "no importa que se corte el reel". Se le habia
+        hecho de dos justamente para no perder el mensaje final, y con eso a la
+        vista eligio una."""
+        self.assertFalse(historias.PARTIR_EL_REEL)
+        cortes = [round(x * 2.5, 2) for x in range(1, 40)]
+        for dura in (62.0, 76.0, 80.0, 85.4, 90.0):
+            self.assertEqual(len(historias.tramos(dura, cortes)), 1,
+                             "%.1f s dio mas de una" % dura)
+
+    def test_la_tarjeta_arranca_en_cero_y_termina_en_un_renglon(self):
+        """Cortar a mitad de palabra suena a archivo roto y no cuesta nada
+        evitarlo: los renglones duran unos 2,5 s, asi que el ultimo que entra
+        pierde menos de 3 segundos mas que el tope exacto."""
+        cortes = [12.0, 41.3, 55.9, 61.2, 74.8]
+        reparto = historias.tramos(80.0, cortes)
+        self.assertEqual(reparto[0][0], 0.0)
+        self.assertEqual(reparto[0][1], 55.9)
+        self.assertLessEqual(reparto[0][1], historias.VIDEO_MAXIMO)
+
+    def test_la_constante_manda_y_no_el_valor_de_la_firma(self):
+        """`partir_todo` se resuelve dentro de la funcion. En la firma se
+        evalua al importar y cambiar `PARTIR_EL_REEL` no haria nada, que es la
+        misma trampa que tiene anotada `diseno.dibujar` con `FLYERS`."""
+        cortes = [round(x * 2.5, 2) for x in range(1, 40)]
+        with mock.patch.object(historias, "PARTIR_EL_REEL", True):
+            self.assertGreater(len(historias.tramos(80.0, cortes)), 1)
+        with mock.patch.object(historias, "PARTIR_EL_REEL", False):
+            self.assertEqual(len(historias.tramos(80.0, cortes)), 1)
+
+    def test_partido_cubre_el_reel_entero_sin_huecos(self):
+        """El camino de varias tarjetas sigue entero y probado: volver a el es
+        cambiar `PARTIR_EL_REEL`, y si se rompiera en silencio volver no seria
+        gratis."""
         for dura in (61.0, 76.0, 80.0, 85.4, 90.0):
             cortes = [round(x * 2.7, 2) for x in range(1, 40)]
-            reparto = historias.tramos(dura, cortes)
+            reparto = historias.tramos(dura, cortes, partir_todo=True)
             self.assertEqual(reparto[0][0], 0.0)
             self.assertAlmostEqual(reparto[-1][1], dura, places=2)
             for (_, fin), (sigue, _) in zip(reparto, reparto[1:]):
                 self.assertEqual(fin, sigue, "hueco o solape en %.1f s" % dura)
 
-    def test_el_corte_cae_donde_termina_un_renglon(self):
-        """Partir una frase al medio se oye. Los cortes salen del `.ass`."""
-        cortes = [12.0, 41.3, 55.9]
-        reparto = historias.tramos(80.0, cortes)
-        self.assertEqual(len(reparto), 2)
-        self.assertIn(reparto[0][1], cortes)
-
-    def test_las_tarjetas_quedan_parejas(self):
-        """Una de 59 s y otra de 20 hace que el que mira se vaya antes de la
-        segunda, que es donde esta el mensaje final."""
+    def test_partido_deja_las_tarjetas_parejas(self):
         cortes = [round(x * 1.3, 2) for x in range(1, 70)]
         for dura in (76.0, 80.0, 85.0):
-            largos = [b - a for a, b in historias.tramos(dura, cortes)]
+            largos = [b - a for a, b in
+                      historias.tramos(dura, cortes, partir_todo=True)]
             self.assertLess(max(largos) - min(largos), 6.0,
                             "%.1f s dio %s" % (dura, largos))
 
@@ -5995,7 +6021,36 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
             mp4.write_bytes(b"x")
             with mock.patch.object(historias.subprocess, "run",
                                    side_effect=AssertionError("llamo a ffmpeg")):
-                self.assertEqual(historias.partir(mp4, [(0.0, 47.2)]), [mp4])
+                self.assertEqual(historias.partir(mp4, [(0.0, 47.2)], 47.2), [mp4])
+
+    def test_un_solo_trozo_que_es_un_RECORTE_si_se_corta(self):
+        """El bug que una prueba unitaria no vio y aparecio corriendolo de
+        verdad: `partir` devolvia el original con `len(trozos) <= 1`, y desde
+        que la historia es UNA tarjeta cortada, un solo trozo ya no significa
+        el reel entero. Se habria subido el reel completo de 80 s a una ranura
+        de 60, y que pasa ahi lo decide Facebook."""
+        self.assertFalse(historias._es_el_entero([(0.0, 57.5)], 80.0))
+        self.assertTrue(historias._es_el_entero([(0.0, 47.2)], 47.2))
+        # Sin saber cuanto dura se corta, que es la falla segura.
+        self.assertFalse(historias._es_el_entero([(0.0, 47.2)], 0.0))
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "r.mp4"
+            mp4.write_bytes(b"x")
+            ordenes = []
+            with mock.patch.object(
+                    historias.subprocess, "run",
+                    side_effect=lambda o, **k: ordenes.append(o)):
+                historias.partir(mp4, [(0.0, 57.5)], 80.0)
+            self.assertEqual(len(ordenes), 1, "no corto el reel")
+            self.assertIn("57.500", " ".join(ordenes[0]))
+
+    def test_del_reel_le_pasa_a_partir_cuanto_dura(self):
+        """Sin eso `partir` no puede distinguir el entero de un recorte, y el
+        bug de arriba vuelve en silencio."""
+        arbol = ast.parse((ROOT / "src" / "historias.py").read_text(encoding="utf-8"))
+        funcion = next(n for n in ast.walk(arbol)
+                       if isinstance(n, ast.FunctionDef) and n.name == "del_reel")
+        self.assertIn("partir(video, reparto, dura)", ast.unparse(funcion))
 
     def test_los_cortes_salen_del_ass_que_escribe_el_reel(self):
         """No se leen silencios del audio: la musica suena todo el tiempo
@@ -6024,13 +6079,14 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
         self.assertEqual(historias.guion_de(Path("/a/b/sem-01.mp4")),
                          Path("/a/b/sem-01.ass"))
 
-    def test_sin_guion_igual_se_parte_y_no_se_pierde_nada(self):
-        """Un reel viejo no tiene `.ass`. Perder el reel entero seria peor que
-        un corte a mitad de frase."""
+    def test_sin_guion_la_historia_sale_igual(self):
+        """Un reel viejo no tiene `.ass`. Perder la historia entera seria peor
+        que un corte a mitad de frase, asi que se corta en el tope."""
         self.assertEqual(historias.cortes_del_guion(Path("/no/existe.ass")), [])
         reparto = historias.tramos(80.0, [])
-        self.assertAlmostEqual(reparto[-1][1], 80.0, places=2)
-        self.assertTrue(all(b - a <= historias.VIDEO_MAXIMO for a, b in reparto))
+        self.assertEqual(reparto, [(0.0, historias.VIDEO_MAXIMO)])
+        entero = historias.tramos(80.0, [], partir_todo=True)
+        self.assertAlmostEqual(entero[-1][1], 80.0, places=2)
 
     def test_el_reel_no_se_borra_al_limpiar_las_tarjetas(self):
         """Mismo cuidado que con el flyer, y aca es peor: el reel se publica en

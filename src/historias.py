@@ -12,13 +12,24 @@ no lleva link al post: es un aviso de que hay algo nuevo.
 salio; la historia es el extra. Por eso `del_flyer` y `del_reel` no levantan
 ningun error: anotan y siguen.
 
-EL REEL NO ENTRA DE UNA, y es lo unico delicado de este archivo. Facebook
-corta una historia de video en 60 segundos y los reels de esta pagina duran
-entre 76 y 85 -el usuario los pidio de mas de un minuto el 2026-10-25-. Cortar
-en el segundo 60 se llevaria el **mensaje final**, que es justo lo que se le
-agrego a los siete textos a pedido suyo ("acaba muy seco sin ningun mensaje").
-Asi que el reel se parte en dos tarjetas que se ven una detras de la otra, y
-el corte cae donde termina un renglon del guion: ver `tramos`.
+EL REEL NO ENTRA DE UNA. Facebook corta una historia de video en 60 segundos y
+los reels de esta pagina duran entre 76 y 85 -el usuario los pidio de mas de
+un minuto el 2026-10-25-.
+
+**Va UNA tarjeta y el reel cortado, y lo eligio el usuario**: "no puedes subir
+la historia a medida que demanda la historia, no importa que se corte el reel".
+Se le habia hecho primero de dos tarjetas justamente para no perder el
+**mensaje final** -que es lo que se les agrego a los siete textos a pedido suyo,
+"acaba muy seco sin ningun mensaje"- y con eso a la vista eligio una sola.
+
+Lo que SI se conserva es que el corte **cae donde termina un renglon** y no a
+mitad de palabra: eso no cuesta nada. Los renglones duran unos 2,5 s cada uno
+-33 en un reel de 83 s, medido-, asi que cortar en el ultimo que entra pierde
+menos de 3 segundos mas que cortar en el tope exacto, y se oye como un final y
+no como un error.
+
+`PARTIR_EL_REEL = True` vuelve a las dos tarjetas sin tocar nada mas: el camino
+esta entero y probado.
 """
 from __future__ import annotations
 
@@ -49,6 +60,16 @@ BRILLO_FONDO = 0.55
 VIDEO_MAXIMO = 59.5
 # Mas corto que esto no es una tarjeta, es un parpadeo.
 TRAMO_MINIMO = 8.0
+
+# Si el reel se parte en varias tarjetas o se corta en una.
+#
+# FALSE, y lo eligio el usuario con el precio a la vista: la historia se ajusta
+# a lo que la historia aguanta y el reel se corta. Lo que se pierde son los
+# ultimos 20 a 25 segundos, donde vive el mensaje final.
+#
+# True reparte el reel entero en tarjetas parejas que se ven una detras de la
+# otra. El camino esta entero y probado, asi que volver es cambiar este numero.
+PARTIR_EL_REEL = False
 
 # Los dos permisos que usa este camino. `pages_show_list` NO esta a proposito:
 # es el que sirve para CONSEGUIR el token de la pagina, asi que si algo de
@@ -142,27 +163,38 @@ def guion_de(video: Path) -> Path:
 
 
 def tramos(dura: float, cortes: Sequence[float] = (),
-           tope: float = VIDEO_MAXIMO) -> List[Tuple[float, float]]:
-    """En que tarjetas se parte un reel de `dura` segundos.
+           tope: float = VIDEO_MAXIMO,
+           partir_todo: Optional[bool] = None) -> List[Tuple[float, float]]:
+    """Que tramos del reel van a la historia, como `(desde, hasta)`.
 
-    Devuelve `(desde, hasta)` por tarjeta, cubriendo el reel entero y sin que
-    ninguna pase de `tope`. Si entra de una, devuelve una sola.
+    Si el reel entra de una, devuelve uno solo y no se toca nada. Si no entra,
+    depende de `PARTIR_EL_REEL`:
 
-    Dos decisiones que importan:
+    - apagado -lo que eligio el usuario-: UNA tarjeta, del arranque al ultimo
+      renglon que entra. El reel se corta y el final se pierde;
+    - prendido: el reel entero en tarjetas parejas, no una de 59 s y otra de
+      20. El objetivo se recalcula en cada vuelta sobre lo que falta, asi que
+      un corte que caiga lejos no desbalancea las que siguen.
 
-    - **Las tarjetas quedan PAREJAS**, no una de 59 s y otra de 20. Se recalcula
-      el objetivo en cada vuelta sobre lo que falta, asi que un corte que caiga
-      lejos no desbalancea las que siguen. Dos de 40 se miran; una de 59 hace
-      que el que mira se vaya antes de la segunda, que es donde esta el mensaje
-      final.
-    - **El corte cae donde termina un renglon.** Si no hay ninguno que sirva
-      -un reel sin `.ass`, o uno viejo- se corta igual en el objetivo: media
-      frase partida es peor que un corte limpio, pero perder el reel entero es
-      peor que las dos cosas.
+    En los dos casos **el corte cae donde termina un renglon del guion**. Si no
+    hay ninguno que sirva -un reel sin `.ass`, o uno viejo- se corta en el tope
+    o en el objetivo: media frase partida es peor que un corte limpio, pero
+    perder la historia entera es peor que las dos cosas.
+
+    `partir_todo` se resuelve ACA y no en la firma: en la firma se evalua al
+    importar y `PARTIR_EL_REEL` dejaria de mandar.
     """
+    if partir_todo is None:
+        partir_todo = PARTIR_EL_REEL
     if dura <= tope + 0.05:
         return [(0.0, dura)]
     posibles_todas = sorted(c for c in cortes if 0.0 < c < dura)
+    if not partir_todo:
+        # El ultimo renglon que entra. Los renglones duran unos 2,5 s, asi que
+        # esto pierde menos de 3 segundos mas que cortar en el tope exacto, y
+        # el corte se oye como un final en vez de como un archivo roto.
+        entran = [c for c in posibles_todas if TRAMO_MINIMO <= c <= tope]
+        return [(0.0, max(entran) if entran else tope)]
     puntos: List[float] = []
     desde = 0.0
     while dura - desde > tope + 0.05:
@@ -196,8 +228,33 @@ def duracion(video: Path) -> float:
         return 0.0
 
 
-def partir(video, trozos: Sequence[Tuple[float, float]]) -> List[Path]:
-    """Las tarjetas en disco. Con un solo trozo devuelve el video tal cual.
+def _es_el_entero(trozos: Sequence[Tuple[float, float]], dura: float) -> bool:
+    """Si lo pedido es el video tal cual, de punta a punta.
+
+    Esto existe por un bug que una prueba unitaria NO vio y que aparecio al
+    correrlo de verdad: la primera version devolvia el original cuando habia
+    `len(trozos) <= 1`, razonando que un solo trozo es el reel entero. Eso era
+    cierto cuando un reel largo siempre se partia en varias tarjetas, y dejo de
+    serlo el mismo dia en que un solo trozo pasa a significar «el reel
+    CORTADO». O sea que la historia se habria subido con el reel completo de 80
+    segundos a una ranura de 60, y el que decide que pasa ahi es Facebook.
+
+    La prueba no lo vio porque solo probaba el caso en que el trozo SI era el
+    entero, que es el unico que existia cuando se escribio.
+    """
+    return (len(trozos) == 1 and trozos[0][0] <= 0.01
+            and bool(dura) and trozos[0][1] >= dura - 0.05)
+
+
+def partir(video, trozos: Sequence[Tuple[float, float]],
+           dura: float = 0.0) -> List[Path]:
+    """Las tarjetas en disco. Si lo pedido es el video entero, lo devuelve tal cual.
+
+    `dura` es cuanto dura el video, y hace falta para poder distinguir «un
+    trozo que es todo» de «un trozo que es un recorte»: ver `_es_el_entero`.
+    Sin ella se corta, que es la falla segura -una tarjeta recortada de mas se
+    ve; una historia de 80 s en una ranura de 60 la arregla Facebook como
+    quiera-.
 
     Se REENCODIFICA y no se copia el flujo: un corte con `-c copy` tiene que
     caer en un cuadro clave, y los del reel estan cada 10 segundos. Copiando,
@@ -206,7 +263,7 @@ def partir(video, trozos: Sequence[Tuple[float, float]]) -> List[Path]:
     """
     from . import video as v
     video = Path(str(video))
-    if len(trozos) <= 1:
+    if _es_el_entero(trozos, dura):
         return [video]
     hechas = []
     for i, (desde, hasta) in enumerate(trozos, start=1):
@@ -390,7 +447,13 @@ def del_reel(pagina: Pagina, video) -> List[str]:
         if len(reparto) > 1:
             print("  El reel dura %.0f s y una historia aguanta %.0f: %d tarjetas"
                   % (dura, VIDEO_MAXIMO, len(reparto)))
-        trozos = partir(video, reparto)
+        elif reparto[-1][1] < dura - 0.1:
+            # Se dice cuanto se pierde y no solo que se corto: es la decision
+            # del usuario, y el numero es lo que deja cambiarla a la vuelta.
+            print("  El reel dura %.0f s y una historia aguanta %.0f: la historia "
+                  "sale con los primeros %.0f y se cortan %.0f"
+                  % (dura, VIDEO_MAXIMO, reparto[-1][1], dura - reparto[-1][1]))
+        trozos = partir(video, reparto, dura)
         ids = []
         for i, trozo in enumerate(trozos, start=1):
             ident = subir_video(pagina, trozo)

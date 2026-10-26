@@ -405,11 +405,11 @@ def publicar(ruta: Path, caption: str, titulo: str, descripcion: str,
             # un aviso de que hay algo nuevo, y si el reel no se publico no
             # hay nada que avisar.
             #
-            # Son dos tarjetas y no una: el reel dura entre 76 y 85 s y una
-            # historia de video aguanta 60. Cortar en el 60 se llevaria el
-            # mensaje final, que es lo que se le agrego a los textos a pedido
-            # del usuario. `historias.del_reel` lo parte donde termina un
-            # renglon del guion.
+            # El reel dura entre 76 y 85 s y una historia de video aguanta
+            # 60, asi que la historia sale CORTADA: lo pidio el usuario -"no
+            # importa que se corte el reel"- con el precio a la vista, que es
+            # perder el mensaje final. El corte cae donde termina un renglon.
+            # `historias.PARTIR_EL_REEL` vuelve a las dos tarjetas.
             from src import historias
             tarjetas = historias.del_reel(pagina, ruta)
             salidas["historia"] = ("%d tarjeta%s" % (
