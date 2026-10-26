@@ -16,9 +16,11 @@ que al fin y al cabo son todos paisajes de la misma familia.
 """
 from __future__ import annotations
 
+import json
 import random
 from pathlib import Path
-from typing import Dict, List, Optional
+from datetime import datetime
+from typing import Iterable, Dict, List, Optional
 
 import yaml
 
@@ -118,7 +120,8 @@ def puntaje(nombre: str, busca: List[str], cat: Optional[Dict[str, dict]] = None
 
 
 def ordenar(clips: List[Path], tema: Optional[str], semilla: str,
-            cat: Optional[Dict[str, dict]] = None) -> List[Path]:
+            cat: Optional[Dict[str, dict]] = None,
+            evitar: Optional[Iterable[str]] = None) -> List[Path]:
     """Los clips, los que mejor le van al capitulo primero.
 
     El desempate sale de una semilla y no del azar: volver a armar el mismo
@@ -127,11 +130,58 @@ def ordenar(clips: List[Path], tema: Optional[str], semilla: str,
 
     Los que no puntuan NO se descartan: van detras. Quedarse sin fondo por no
     encontrar la etiqueta exacta seria peor que usar un paisaje cualquiera.
+
+    `evitar` son los nombres que ya salieron en el reel anterior. Van DETRAS,
+    no afuera, y esa es la diferencia que importa: con 60 clips y 22 tramos,
+    sacarlos del todo dejaria al reel sin material el dia que dos capitulos
+    pidan las mismas etiquetas. Asi, mientras haya clips sin usar se usan
+    esos, y si no alcanzan se repiten los de antes en vez de fallar.
+
+    Lo pidio el usuario el 2026-10-26: «usar diferentes clips». Sin esto, dos
+    reels seguidos de temas parecidos compartian diez de veintidos, porque el
+    orden lo decidian las etiquetas y las etiquetas no cambian.
     """
     cat = catalogo() if cat is None else cat
     busca = QUE_BUSCA.get((tema or "").strip().lower(), [])
+    ya = {Path(x).name for x in (evitar or ())}
     mezclados = list(clips)
     random.Random(semilla).shuffle(mezclados)
     if not busca:
-        return mezclados
-    return sorted(mezclados, key=lambda c: -puntaje(c.name, busca, cat))
+        return sorted(mezclados, key=lambda c: c.name in ya)
+    return sorted(mezclados, key=lambda c: (c.name in ya, -puntaje(c.name, busca, cat)))
+
+
+# Los clips del reel anterior, para que el siguiente no los repita.
+#
+# Un archivo y no la ficha del mp4: los reels no se guardan todos en el repo
+# -`ultimo.mp4` se pisa- asi que la ficha del anterior puede no existir
+# cuando se arma el de hoy. Esto es una linea de json que siempre esta.
+USADOS = ROOT / "data" / "clips_usados.json"
+
+
+def ultimos(archivo: Optional[Path] = None) -> List[str]:
+    """Los nombres que uso el reel anterior. Lista vacia si no hay registro."""
+    ruta = Path(archivo) if archivo else USADOS
+    try:
+        datos = json.loads(ruta.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return [str(x) for x in (datos.get("clips") or [])]
+
+
+def anotar(clips: Iterable[Path], archivo: Optional[Path] = None) -> None:
+    """Deja anotado que clips salieron, para el reel que viene.
+
+    No puede tumbar un reel: el video ya esta armado cuando esto corre, asi
+    que un disco lleno o un permiso raro se traga y se sigue. Lo que se pierde
+    es que el proximo repita algun clip, no el reel.
+    """
+    ruta = Path(archivo) if archivo else USADOS
+    try:
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        ruta.write_text(json.dumps(
+            {"cuando": datetime.now().isoformat(timespec="seconds"),
+             "clips": sorted({Path(c).name for c in clips})},
+            ensure_ascii=False, indent=1), encoding="utf-8")
+    except OSError:
+        pass

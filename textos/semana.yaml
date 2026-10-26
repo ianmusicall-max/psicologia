@@ -13,11 +13,18 @@
 # `capitulo`. Eso es lo que mantiene la página y el libro diciendo lo mismo:
 # quien llega por un reel encuentra adentro, desarrollado, lo que escuchó.
 #
-# EL LARGO NO SE ELIGE A OJO. Son unos 920 caracteres, que es lo que
-# `video.segundos_reales` predice entre 81 y 85 segundos: debajo de
-# `video.TOPE_CON_MARGEN` (85,5) y de los 90 que admiten Facebook e Instagram.
-# Hay una prueba que lo exige, así que un texto que se pase se pone en rojo
-# acá y no después de pagar la voz.
+# EL LARGO NO SE ELIGE A OJO, Y EL SILENCIO CUENTA. Son unos 880 caracteres,
+# que `video.segundos_reales` predice entre 83,8 y 84,7 segundos CONTANDO las
+# pausas largas: debajo de `video.TOPE_CON_MARGEN` (85,5) y de los 90 que
+# admiten Facebook e Instagram. Hay una prueba que lo exige, así que un texto
+# que se pase se pone en rojo acá y no después de pagar la voz.
+#
+# LOS PÁRRAFOS SON LOS ESPACIOS. Donde hay un renglón en blanco, el reel se
+# calla `video.PAUSA_PARRAFO` en vez de `video.PAUSA`. Lo pidió el usuario el
+# 2026-10-26 -«dejando espacios»- y no es decoración: es lo que hace que un
+# monólogo de 33 renglones no suene a dictado. Cuesta casi cinco segundos por
+# texto, y por eso los siete se recortaron ese mismo día. Mover un renglón en
+# blanco cambia cuánto dura el reel.
 #
 # QUEDA AFUERA `pensamientos` (capítulo 8), a propósito: su material -dar
 # vueltas, pensar no es lo mismo que rumiar- es el mismo que el del martes, y
@@ -29,24 +36,24 @@
   titulo: La emoción no duraba seis horas
   texto: >-
     Durante años creí que mis emociones duraban horas. Me levantaba de una
-    discusión y seguía con el estómago cerrado toda la tarde, y la conclusión
-    era siempre la misma: soy demasiado intenso.
+    discusión con el estómago cerrado toda la tarde, y la conclusión era
+    siempre la misma: soy demasiado intenso.
 
-    Tardé en ver que no era cierto. Una emoción dejada en paz sube, llega a un
-    pico y afloja. Lo que la estira soy yo: repasar la escena, ensayar lo que
-    debí haber dicho, buscar culpables.
+    Tardé en ver que no era cierto. Una emoción dejada en paz sube, llega
+    a un pico y afloja. Lo que la estira soy yo: repasar la escena,
+    ensayar lo que debí haber dicho.
 
-    No era la emoción la que duraba seis horas. Era la historia que me contaba
-    sobre ella.
+    No era la emoción la que duraba seis horas. Era la historia que me
+    contaba sobre ella.
 
-    Ahora tengo una señal para distinguirlas. Cuando estoy sintiendo, hay algo
-    en el cuerpo: el pecho, la garganta, el estómago. Cuando estoy dando
-    vueltas, hay frases. Si lo que pasa en mi cabeza se parece a un juicio, eso
-    ya no es lo que siento.
+    Ahora tengo una señal para distinguirlas. Cuando estoy sintiendo, hay
+    algo en el cuerpo: el pecho, el estómago. Cuando estoy dando vueltas,
+    hay frases. Si lo que pasa en mi cabeza se parece a un juicio, eso ya
+    no es lo que siento.
 
-    Antes tampoco le ponía nombre a lo que sentía, por miedo a que se
-    agrandara. Pasa al revés: lo que tiene nombre tiene bordes, y lo que tiene
-    bordes se puede rodear.
+    Antes tampoco le ponía nombre a lo que sentía, por miedo a agrandarlo.
+    Pasa al revés: lo que tiene nombre tiene bordes, y lo que tiene bordes
+    se puede rodear.
 
     No sentí menos desde entonces. Dejé de agregarle horas.
 
@@ -55,80 +62,80 @@
   capitulo: ansiedad
   titulo: El noventa y uno por ciento no ocurrió
   texto: >-
-    Hubo un tiempo en que me acostaba a las dos de la mañana resolviendo cosas.
-    Eso sentía: que resolvía. Repasaba la conversación del día siguiente, hacía
-    cuentas por si algo salía mal. Me dormía a las cuatro, cansado, con la
-    sensación de haber trabajado.
+    Hubo un tiempo en que me acostaba a las dos de la mañana resolviendo
+    cosas. Eso sentía: que resolvía. Repasaba la conversación del día
+    siguiente, hacía cuentas por si salía mal. Me dormía a las cuatro,
+    cansado, con la sensación de haber trabajado.
 
     A la mañana siguiente no había ni una decisión tomada.
 
-    Lo que me cambió fue un número. A veintinueve personas con ansiedad les
-    pidieron anotar sus preocupaciones durante diez días, y después comprobaron
-    una por una qué había pasado.
+    Lo que me cambió fue un número. A veintinueve personas con ansiedad
+    les pidieron anotar sus preocupaciones diez días, y después
+    comprobaron una por una qué pasó.
 
     El noventa y uno por ciento no ocurrió.
 
-    No dice que nunca pase nada malo. Dice que mi cálculo está torcido hacia el
-    desastre, y que lo único que ocurrió el cien por ciento de las veces fue
-    preocuparme.
+    No dice que nunca pase nada malo. Dice que mi cálculo está torcido
+    hacia el desastre, y que lo único que ocurrió siempre fue preocuparme.
 
-    Ahora, cuando llevo un rato dando vueltas, me hago una sola pregunta: cuál
-    es el paso. Prepararse termina en algo que puedo hacer: una llamada, una
-    cifra que buscar. Si después de una hora no apareció ninguno, no estoy
-    preparando nada.
+    Ahora, cuando llevo un rato dando vueltas, me hago una sola pregunta:
+    cuál es el paso. Prepararse termina en algo que puedo hacer: una
+    llamada, una cifra. Si después de una hora no apareció ninguno, no
+    estoy preparando nada.
 
 - id: sem-03
   dia: miercoles
   capitulo: autoestima
   titulo: El tono con el que me hablo
   texto: >-
-    Hay una conversación que tengo todos los días y que nunca llamé
-    conversación. Dura dos segundos y pasa cuando se me cae algo o llego tarde.
+    Hay una conversación que tengo todos los días y que nunca llamé así.
+    Dura dos segundos y pasa cuando se me cae algo o llego tarde.
 
     Un día me escuché. No lo que me decía, que ya lo sabía: el tono.
 
-    Era un tono que no le toleraría a nadie. Si un conocido me hablara así una
-    sola vez, dejaría de verlo.
+    Era un tono que no le toleraría a nadie. Si un conocido me hablara
+    así, dejaría de verlo.
 
-    Y lo defendí mucho tiempo. Pensaba que esa dureza era lo que me mantenía
-    funcionando, y que si dejaba de exigirme me iba a volver conformista.
+    Y lo defendí mucho tiempo. Pensaba que esa dureza era lo que me
+    mantenía funcionando, y que sin ella me iba a volver conformista.
 
-    Es falso, y hay datos. La autocrítica dura no mejora lo que hago: hace que
-    lo postergue, porque la tarea queda pegada al malestar.
+    Es falso, y hay datos. La autocrítica dura no mejora lo que hago: hace
+    que lo postergue, porque la tarea queda pegada al malestar.
 
-    Lo que me sirvió no fue repetirme que soy maravilloso. Fue una pregunta:
-    qué le diría a alguien que quiero si estuviera exactamente en mi situación.
-    Le diría que es normal, que duele, que no define nada. Y no estaría
-    mintiéndole: lo creería.
+    Lo que me sirvió no fue repetirme que soy maravilloso. Fue una
+    pregunta: qué le diría a alguien que quiero si estuviera exactamente
+    en mi situación. Le diría que es normal, que duele, que no define
+    nada. Y lo creería.
 
-    Esa es la parte incómoda. Conmigo uso otra vara, mucho más dura, y esa vara
-    no la elegí: me la dieron.
+    Esa es la parte incómoda. Conmigo uso otra vara, mucho más dura, y no
+    la elegí: me la dieron.
 
 - id: sem-04
   dia: jueves
   capitulo: limites
   titulo: No era la factura de la taza
   texto: >-
-    Me pasó más de una vez: estallar un martes cualquiera por una taza, con una
-    fuerza que no le correspondía al asunto.
+    Me pasó más de una vez: estallar un martes por una taza, con una
+    fuerza que no le correspondía.
 
-    La otra persona se quedaba mirándome sin entender, y tenía razón en no
-    entender. Lo que acababa de recibir no era la factura de la taza. Era la de
-    los últimos ocho meses.
+    La otra persona se quedaba mirándome sin entender, y con razón. Lo que
+    acababa de recibir no era la factura de la taza. Era la de los últimos
+    ocho meses.
 
-    Detrás de cada uno de esos estallidos había una lista: todas las veces que
-    dije que sí sin querer.
+    Detrás de cada estallido había una lista: todas las veces que dije que
+    sí sin querer.
 
-    Creía que decir que sí era ser generoso. No lo era. Era pedir un préstamo
-    que después cobraba con frialdad, o con un reproche que llegaba tarde y por
-    otra cosa.
+    Creía que decir que sí era ser generoso. No lo era. Era pedir un
+    préstamo que después cobraba con frialdad, o con un reproche tardío y
+    por otra cosa.
 
-    Lo que aprendí es de tiempos y no de carácter. Una molestia dicha el mismo
-    día es una frase. Guardada tres meses es un juicio con expediente.
+    Lo que aprendí es de tiempos, no de carácter. Una molestia dicha el
+    mismo día es una frase. Guardada tres meses es un juicio con
+    expediente.
 
-    Y aprendí a cambiar una palabra. Donde iba a decir «eres», decir «cuando».
-    «Dejaste los platos otra vez» tiene arreglo. «Eres un desconsiderado»
-    solo tiene defensa.
+    Y aprendí a cambiar una palabra. Donde iba a decir «eres», decir
+    «cuando». «Dejaste los platos otra vez» tiene arreglo. «Eres un
+    desconsiderado» solo tiene defensa.
 
     Hablar a tiempo no es buscar conflicto. Es lo que evita el grande.
 
@@ -137,24 +144,25 @@
   capitulo: apego
   titulo: Creía que estaba cuidando
   texto: >-
-    Hubo una época en que creía que estaba cuidando la relación. Revisaba a qué
-    hora se había conectado. Contaba cuánto tardaba en contestarme. Tiraba un
-    comentario para ver si reaccionaba.
+    Hubo una época en que creía que estaba cuidando la relación. Revisaba
+    a qué hora se había conectado. Contaba cuánto tardaba en contestar.
+    Tiraba un comentario para ver si reaccionaba.
 
     Eso no era cuidar. Era vigilar, y no lo sabía porque mientras lo hacía
     parecía sensatez.
 
     Buscaba tranquilidad y conseguía lo contrario. Ninguna comprobación me
-    duraba más de un rato, y siempre había una siguiente. Y el otro empezaba a
-    sentirse examinado, se volvía más cuidadoso, y eso me daba material nuevo.
+    duraba más de un rato, y siempre había una siguiente. Y el otro se
+    sentía examinado, se volvía más cuidadoso, y eso me daba material
+    nuevo.
 
     El miedo a perder a alguien termina empujándolo. No porque el otro sea
     intolerante: nadie se relaja siendo medido.
 
-    Me llevó tiempo entender de dónde venía. Aprendí a querer antes de saber
-    hablar, mirando lo que pasaba cuando lloraba: si venía alguien y cuánto
-    tardaba. De ahí saqué una conclusión sobre el cariño que sigue trabajando
-    hoy.
+    Me llevó tiempo entender de dónde venía. Aprendí a querer antes de
+    saber hablar, mirando lo que pasaba cuando lloraba: si venía alguien y
+    cuándo. De ahí saqué una conclusión sobre el cariño que sigue
+    trabajando hoy.
 
     Lo único que me sirvió fue cambiar de verbo. Donde quería comprobar,
     preguntar.
@@ -165,47 +173,48 @@
   titulo: Las ganas vienen después
   texto: >-
     Esperé las ganas durante años. Iba a empezar a caminar cuando tuviera
-    ganas, a escribir cuando tuviera ganas, a ordenar la casa cuando tuviera
-    ganas. Y cuando no llegaban, la conclusión era sobre mí: me falta
-    disciplina.
+    ganas, a escribir cuando tuviera ganas, a ordenar la casa cuando
+    tuviera ganas. Y cuando no llegaban, la conclusión era sobre mí: me
+    falta disciplina.
 
     El orden estaba al revés. Las ganas no vienen antes de empezar: vienen
-    después, cuando uno ya está adentro. Esperarlas es esperar un permiso que
-    no va a llegar.
+    después, cuando uno ya está adentro. Esperarlas es esperar un permiso
+    que no va a llegar.
 
     Lo otro que me sacó del lugar fue dejar de pelear con mi voluntad. Un
-    hábito no se sostiene con fuerza: se sostiene con un lugar, una hora y una
-    señal. Y con un tamaño tan chico que no se pueda fallar.
+    hábito no se sostiene con fuerza: se sostiene con un lugar, una hora y
+    una señal. Y con un tamaño tan chico que no se pueda fallar.
 
-    Lo tercero fue mirar lo que tengo a mano. El entorno gana casi siempre: lo
-    que está a la vista se hace, y lo que hay que ir a buscar, no.
+    Lo tercero fue mirar lo que tengo a mano. El entorno gana casi
+    siempre: lo que está a la vista se hace, y lo que hay que ir a buscar,
+    no.
 
-    Y los días que fallo, que son muchos, aprendí algo. Fallar un día no borra
-    nada. Lo que borra un hábito es lo que decido después, cuando concluyo que
-    ya no vale la pena seguir.
+    Y los días que fallo, que son muchos, aprendí algo. Fallar un día no
+    borra nada. Lo que borra un hábito es lo que decido después, cuando
+    concluyo que ya no vale la pena seguir.
 
 - id: sem-07
   dia: domingo
   capitulo: duelo
   titulo: El hueco no se achica
   texto: >-
-    Cuando perdí a alguien, lo primero que me dieron fue un mapa. Cinco etapas,
-    en orden, y la sensación de que había que ir cumpliéndolas.
+    Cuando perdí a alguien, lo primero que me dieron fue un mapa. Cinco
+    etapas, en orden, y la sensación de que había que ir cumpliéndolas.
 
-    Ese mapa me hizo daño. Me pasaba el día calificándome: debería estar ya en
-    la cuarta, llevo ocho meses y ayer fue peor que el primer día.
+    Ese mapa me hizo daño. Me pasaba el día calificándome: debería estar
+    ya en la cuarta, y ayer fue peor que el primer día.
 
     El duelo no tiene etapas. Tiene días. Y los días no vienen con
-    instrucciones: una mañana entera llorando y una tarde resolviendo papeles
-    con una eficacia que después da culpa. Las dos cosas son el duelo.
+    instrucciones: una mañana llorando y una tarde resolviendo papeles con
+    una eficacia que después da culpa. Las dos cosas son el duelo.
 
-    Y tampoco se supera. Hay una imagen que lo explica: el hueco no se achica
-    nunca. Lo que se hace más grande es todo lo demás, alrededor.
+    Y tampoco se supera. Hay una imagen que lo explica: el hueco no se
+    achica nunca. Lo que se hace más grande es todo lo demás, alrededor.
 
-    Sigue entero cuando lo toco. Solo que ahora es una parte de algo mucho más
+    Sigue entero cuando lo toco. Solo que ahora es parte de algo mucho más
     grande.
 
     Lo otro que aprendí es para los demás. Mis amigos dejaron de decir su
-    nombre por miedo a lastimarme, y no podían recordarme algo que no olvidé ni
-    un día. Que el nombre desaparezca de las conversaciones se vive como una
-    segunda pérdida.
+    nombre por miedo a lastimarme, y no podían recordarme algo que no
+    olvidé. Que el nombre desaparezca de las conversaciones se vive como
+    una segunda pérdida.

@@ -31,6 +31,14 @@ on:
     - cron: "7,37 23 * * *"
   workflow_dispatch:
     inputs:
+      texto:
+        description: "Uno de los siete de la semana (sem-01..sem-07, o 'hoy'). Gana a tema y frase"
+        required: false
+        type: string
+      musica:
+        description: "Que pista (piano, noche, ventana, hondo, calma). Vacio: la del turno"
+        required: false
+        type: string
       tema:
         description: "Capitulo entero (nombre o numero). Vacio: la frase que toca"
         required: false
@@ -142,11 +150,15 @@ jobs:
           # Lo que se escribe en el formulario viaja por env y NO interpolado
           # dentro del script: un valor con un `;` o con comillas se correria
           # como comando. Y de paso un nombre con espacios llega entero.
+          TEXTO: ${{ inputs.texto }}
+          MUSICA: ${{ inputs.musica }}
           TEMA: ${{ inputs.tema }}
           FRASE: ${{ inputs.frase }}
           VIDEO: ${{ inputs.video }}
         run: |
           ARGS=()
+          if [ -n "$TEXTO" ]; then ARGS+=(--texto "$TEXTO"); fi
+          if [ -n "$MUSICA" ]; then ARGS+=(--musica "$MUSICA"); fi
           if [ -n "$TEMA" ]; then ARGS+=(--tema "$TEMA"); fi
           if [ -n "$FRASE" ]; then ARGS+=(--frase "$FRASE"); fi
           if [ -n "$VIDEO" ]; then ARGS+=(--video "$VIDEO"); fi

@@ -21,6 +21,7 @@ data/*
 # una maquina nueva, asi que sin esto la serie se pierde y `VOZ_MAS_LENTA`
 # vuelve a depender de una sola medicion, que es como se llego al 1,75.
 !data/factor_voz.jsonl
+!data/clips_usados.json
 # Los clips de fondo de los reels, si se quieren usar desde GitHub: alla la
 # maquina es nueva y no tiene nada. Son unos megas cada uno y no cambian, asi
 # que versionarlos cuesta poco y es lo unico que hace que el reel de GitHub

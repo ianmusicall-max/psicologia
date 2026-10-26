@@ -3695,10 +3695,13 @@ class TestLosTextosDeLaSemana(unittest.TestCase):
         # La prueba que justifica el archivo. `armar` mide la voz ya
         # sintetizada y se niega arriba de 90, asi que un texto largo se
         # descubre cuando ya se gasto la plata.
+        # CONTANDO los espacios, que es lo que de verdad dura. Medido sin
+        # ellos, los siete entraban con 81-85 s y el reel real daba 88-90: el
+        # 2026-10-26 se agregaron las pausas largas y hubo que recortarlos.
         largos = []
         for x in self._textos():
             unidades = video.unidades_de(x.texto, video.UNIDAD_MAXIMA)
-            segundos = video.segundos_reales(unidades)
+            segundos = video.segundos_reales(unidades, x.espacios)
             if segundos > video.TOPE_CON_MARGEN:
                 largos.append("%s: %.1f s" % (x.id, segundos))
         self.assertEqual(largos, [], "se pasan de %.1f s: %s"
@@ -3709,10 +3712,22 @@ class TestLosTextosDeLaSemana(unittest.TestCase):
         # texto recortado a la mitad pasaria la prueba de arriba sin problema.
         cortos = []
         for x in self._textos():
-            segundos = video.segundos_reales(video.unidades_de(x.texto, video.UNIDAD_MAXIMA))
+            segundos = video.segundos_reales(
+                video.unidades_de(x.texto, video.UNIDAD_MAXIMA), x.espacios)
             if segundos < 75:
                 cortos.append("%s: %.1f s" % (x.id, segundos))
         self.assertEqual(cortos, [], "se quedan cortos: %s" % "; ".join(cortos))
+
+    def test_cada_uno_tiene_espacios_donde_cambia_la_idea(self):
+        # Los parrafos SON los espacios: donde hay un renglon en blanco el
+        # reel se calla `PAUSA_PARRAFO` en vez de `PAUSA`. Un texto de un solo
+        # parrafo se diria de un tiron, que es lo que el usuario pidio evitar.
+        for x in self._textos():
+            self.assertGreaterEqual(x.espacios, 3,
+                                    "%s se dice casi de un tiron" % x.id)
+            self.assertEqual(" ".join(" ".join(x.parrafos).split()),
+                             " ".join(x.texto.split()),
+                             "%s: los parrafos no arman el texto" % x.id)
 
     def test_cada_uno_sale_de_un_capitulo_que_existe_y_esta_escrito(self):
         # Es lo que mantiene la pagina y el libro diciendo lo mismo. Un texto
@@ -3762,6 +3777,110 @@ class TestLosTextosDeLaSemana(unittest.TestCase):
         for x in self._textos():
             self.assertNotIn(x.id, ids, "%s entro al banco de frases" % x.id)
         self.assertFalse((ROOT / "frases" / "semana.yaml").exists())
+
+
+class TestQueCadaReelNoRepitaLoAnterior(unittest.TestCase):
+    """Dos reels seguidos no se pueden ver iguales.
+
+    Antes del 2026-10-26 el orden de los clips lo decidian solo las etiquetas
+    del capitulo, y como las etiquetas no cambian, dos reels de temas
+    parecidos compartian diez de veintidos clips. Lo pidio el usuario:
+    «usar diferentes clips».
+    """
+
+    def test_los_clips_del_reel_anterior_van_al_final(self):
+        clips = sorted((ROOT / "data" / "fondos").glob("*.mp4"))
+        anterior = [c.name for c in fondos.ordenar(clips, "ansiedad", 7)][:22]
+        ahora = [c.name for c in fondos.ordenar(clips, "emociones", 7,
+                                                evitar=anterior)][:22]
+        self.assertEqual(sorted(set(anterior) & set(ahora)), [],
+                         "el reel repetiria clips del anterior")
+
+    def test_evitar_no_deja_al_reel_sin_fondo(self):
+        # Van DETRAS, no afuera. El dia que se eviten mas clips de los que hay
+        # el reel tiene que salir igual, con repetidos, y no quedarse sin
+        # fondo: un reel sobre el papel de la marca es peor que uno repetido.
+        clips = sorted((ROOT / "data" / "fondos").glob("*.mp4"))
+        todos = [c.name for c in clips]
+        quedan = fondos.ordenar(clips, "emociones", 7, evitar=todos)
+        self.assertEqual(len(quedan), len(clips))
+
+    def test_con_ver_no_se_anota_nada(self):
+        # `--ver` promete no tocar nada, y la primera version de esto anotaba
+        # los clips antes de esa salida: una corrida de mentira le cambiaba el
+        # fondo al reel de verdad del dia siguiente.
+        arbol = ast.parse((ROOT / "scripts" / "reel.py").read_text(encoding="utf-8"))
+        anota = [n.lineno for n in ast.walk(arbol)
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                 and n.func.attr == "anotar"]
+        self.assertEqual(len(anota), 1, "hay mas de un sitio que anota")
+        # El `if args.ver:` que corta la corrida, buscado por su forma y no
+        # por un texto: un mensaje se reescribe y la prueba se quedaria muda.
+        cortes = [n for n in ast.walk(arbol) if isinstance(n, ast.If)
+                  and any(isinstance(x, ast.Attribute) and x.attr == "ver"
+                          for x in ast.walk(n.test))
+                  and any(isinstance(x, ast.Return) for x in ast.walk(n))]
+        self.assertTrue(cortes, "no encuentro la salida de --ver")
+        fin = max(x.lineno for c in cortes for x in ast.walk(c) if hasattr(x, "lineno"))
+        self.assertGreater(anota[0], fin,
+                           "se anotan los clips antes de la salida de --ver")
+
+    def test_lo_que_se_anota_es_lo_que_lee_el_siguiente(self):
+        with tempfile.TemporaryDirectory() as d:
+            archivo = Path(d) / "usados.json"
+            self.assertEqual(fondos.ultimos(archivo), [])
+            fondos.anotar([Path("a.mp4"), Path("x/b.mp4")], archivo)
+            self.assertEqual(fondos.ultimos(archivo), ["a.mp4", "b.mp4"])
+
+    def test_anotar_no_puede_tumbar_un_reel_ya_armado(self):
+        # Corre despues de elegir el fondo: un disco lleno no puede costar el
+        # reel entero. El camino imposible se arma con un ARCHIVO de padre,
+        # porque esto corre como root y un /no/existe se crearia sin chistar.
+        with tempfile.TemporaryDirectory() as d:
+            padre = Path(d) / "soy-un-archivo"
+            padre.write_text("x")
+            fondos.anotar([Path("a.mp4")], padre / "usados.json")
+
+
+class TestElSilencioDondeCambiaLaIdea(unittest.TestCase):
+    """«Dejando espacios», 2026-10-26: mas aire donde termina una idea."""
+
+    def _voz(self, unidades, largas):
+        ordenes = []
+
+        def correr(orden, que, espera=300):
+            ordenes.append(orden)
+            Path(orden[-1]).write_bytes(b"x")
+
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(video, "_correr", side_effect=correr), \
+                 mock.patch.object(video, "duracion", return_value=1.0):
+                video.voz_por_unidades(unidades, Path(d), "v",
+                                       decir_fn=lambda *a, **k: None,
+                                       largas=largas)
+            return ordenes, (Path(d) / "voz.txt")
+
+    def test_el_silencio_largo_va_solo_donde_se_pide(self):
+        ordenes, _ = self._voz(["uno.", "dos.", "tres."], largas=[0])
+        duraciones = [o[o.index("-t") + 1] for o in ordenes if "-t" in o]
+        self.assertIn("%.2f" % video.PAUSA, duraciones)
+        self.assertIn("%.2f" % video.PAUSA_PARRAFO, duraciones)
+
+    def test_sin_espacios_no_se_arma_el_silencio_largo(self):
+        ordenes, _ = self._voz(["uno.", "dos."], largas=[])
+        duraciones = [o[o.index("-t") + 1] for o in ordenes if "-t" in o]
+        self.assertNotIn("%.2f" % video.PAUSA_PARRAFO, duraciones)
+
+    def test_la_prediccion_suma_el_silencio_que_insertamos(self):
+        # Es la parte de la prediccion que NO es una estimacion: ese silencio
+        # lo escribe ffmpeg y dura lo que dice. Por eso va aparte del factor.
+        u = video.unidades_de("Una frase. Y otra frase distinta.", 40)
+        self.assertAlmostEqual(
+            video.segundos_reales(u, 3) - video.segundos_reales(u),
+            3 * (video.PAUSA_PARRAFO - video.PAUSA), places=6)
+
+    def test_el_aire_del_parrafo_es_mayor_que_el_de_siempre(self):
+        self.assertGreater(video.PAUSA_PARRAFO, video.PAUSA)
 
 
 class TestElTextoParaYoutube(unittest.TestCase):

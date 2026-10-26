@@ -77,7 +77,10 @@ def elegir_fondo(donde: str, semilla: str, tema: str = "") -> list:
     clips = sorted(x for x in ruta.iterdir() if x.suffix.lower() in CLIPS)
     if not clips:
         raise SystemExit("En %s no hay ningun video (%s)" % (ruta, ", ".join(CLIPS)))
-    return fondos.ordenar(clips, tema, semilla)
+    # Los del reel anterior van al final: con 60 clips y 22 tramos hay de
+    # sobra para no repetir ninguno, y asi dos reels seguidos no se parecen.
+    # Lo pidio el usuario el 2026-10-26.
+    return fondos.ordenar(clips, tema, semilla, evitar=fondos.ultimos())
 
 
 # Lo que puede ser una pista. Varias y no solo `.m4a` porque la musica que
@@ -309,6 +312,7 @@ def main(argv=None) -> int:
     ya = frases.publicadas()
     carpeta = Path(args.carpeta)
 
+    espacios = []
     if args.texto:
         # Un texto de la semana es un monologo de una pieza: se dice entero,
         # no se le suma nada alrededor. El largo ya esta medido en el archivo
@@ -333,6 +337,14 @@ def main(argv=None) -> int:
                              principio="", fuente="", reflexion="",
                              tema=tema.tema, destacar=[], sensible=None)
         unidades = video.unidades_de(de_la_semana.texto, video.UNIDAD_MAXIMA)
+        # Donde cambia la idea el reel se calla mas. Los indices salen de
+        # contar los renglones de cada parrafo, no de buscar el texto: dos
+        # parrafos pueden terminar con la misma frase y el buscador elegiria
+        # mal. El ultimo no entra: detras no va nada.
+        espacios, llevados = [], 0
+        for parrafo in de_la_semana.parrafos[:-1]:
+            llevados += len(video.unidades_de(parrafo, video.UNIDAD_MAXIMA))
+            espacios.append(llevados - 1)
     elif args.tema:
         tema = buscar_tema(temas, args.tema)
         if tema is None:
@@ -391,14 +403,23 @@ def main(argv=None) -> int:
         # tener aire y en realidad ya no se habria armado asi.
         print("Duraria %.0f s leido, o sea unos %.0f hablados (tope %.0f, "
               "que son los %d de Facebook con margen)."
-              % (leido, leido * video.VOZ_MAS_LENTA, video.TOPE_CON_MARGEN,
-                 video.TOPE_SEGUNDOS))
+              % (leido, video.segundos_reales(unidades, len(espacios)),
+                 video.TOPE_CON_MARGEN, video.TOPE_SEGUNDOS))
+        if espacios:
+            print("Son %d espacios de %.1f s donde cambia la idea, que ya van "
+                  "contados arriba." % (len(espacios), video.PAUSA_PARRAFO))
         letras = sum(len(u) for u in unidades)
         nuevas = [u for u in unidades if not video.en_cache(u, args.voz_ia or video.VOZ_IA)]
         print("Con --voz-ia serian %d caracteres, %d renglones, y %d habria que "
               "pedirlos (el resto ya esta en la cache)."
               % (letras, len(unidades), len(nuevas)))
         return 0
+
+    # Despues del `--ver`, que promete no tocar nada, y antes de pedir la voz:
+    # si el reel falla a mitad igual queda dicho que esos clips se usaron, y
+    # repetir un clip es mas barato que volver a pagar la voz para saberlo.
+    if fondo:
+        fondos.anotar(video.escenas(fondo, video.OBJETIVO * video.VOZ_MAS_LENTA))
 
     marcas = None
     voz = Path(args.voz) if args.voz else None
@@ -407,6 +428,15 @@ def main(argv=None) -> int:
     # siendo el espanol del banco y la voz dice su traduccion, oracion por
     # oracion, que es la unidad mas chica donde los dos coinciden.
     grupos, a_leer = None, unidades
+    # Con `--ingles` la voz va por oracion, asi que los espacios hay que
+    # mudarlos de renglon a oracion: el que CONTIENE el final del parrafo.
+    if espacios and args.ingles:
+        por_oracion, visto = [], 0
+        for i, g in enumerate(video.agrupar_en_oraciones(unidades)):
+            visto += len(g)
+            if any(e < visto for e in espacios if e >= visto - len(g)):
+                por_oracion.append(i)
+        espacios = por_oracion
     if args.ingles:
         grupos = video.agrupar_en_oraciones(unidades)
         en_espanol = [" ".join(g) for g in grupos]
@@ -426,7 +456,7 @@ def main(argv=None) -> int:
         # entero, que es exactamente lo que ya paso una vez.
         sobran = []
         while len(a_leer) > 1:
-            dicho = video.duracion_del_guion(a_leer) * video.VOZ_MAS_LENTA
+            dicho = video.segundos_reales(a_leer, len(espacios))
             if dicho <= video.TOPE_CON_MARGEN:
                 break
             sobran.append(a_leer.pop())
@@ -468,7 +498,7 @@ def main(argv=None) -> int:
         try:
             voz, duraciones = video.voz_por_unidades(
                 a_leer, carpeta / ("%s-voz" % frase.id), args.voz_ia,
-                decir_fn=video.decir_con_ia, color=args.color)
+                decir_fn=video.decir_con_ia, color=args.color, largas=espacios)
         except video.VideoError as e:
             print(e)
             return 1
@@ -485,7 +515,7 @@ def main(argv=None) -> int:
         try:
             voz, duraciones = video.voz_por_unidades(
                 a_leer, carpeta / ("%s-voz" % frase.id), args.voz_eleven,
-                decir_fn=video.decir_con_eleven, color=args.color)
+                decir_fn=video.decir_con_eleven, color=args.color, largas=espacios)
         except video.VideoError as e:
             print(e)
             return 1

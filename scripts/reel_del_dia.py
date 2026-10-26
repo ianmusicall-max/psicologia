@@ -258,7 +258,8 @@ def a_instagram(pagina, ruta: Path, caption: str) -> str:
     return "error: %s" % " · ".join(errores)
 
 
-def armar(tema: str = "", carpeta: Path = None, frase: str = "") -> Path:
+def armar(tema: str = "", carpeta: Path = None, frase: str = "",
+          texto: str = "", musica: str = "") -> Path:
     """Arma el reel y devuelve donde quedo. Levanta si no se pudo.
 
     Sin argumentos sale la frase que toca, que es como corre todos los dias.
@@ -271,14 +272,32 @@ def armar(tema: str = "", carpeta: Path = None, frase: str = "") -> Path:
     capitulo el orden da lo mismo porque van a salir todas.
 
     `tema` es otra cosa: el capitulo ENTERO, varias frases en un reel.
+
+    `texto` es uno de los siete de la semana (`textos/semana.yaml`): un
+    monologo en primera persona que se dice entero y que lleva sus pausas
+    largas donde cambia la idea. Gana a los otros dos.
+
+    `musica` fuerza una pista por nombre (`noche`, `hondo`...). Sin ella sale
+    la que le toca por turno, que es lo que evita dos reels seguidos con la
+    misma.
     """
     from scripts import reel  # noqa: F401  (se importa tarde: tarda)
     argv = list(COMO) + ["--carpeta", str(carpeta or video.REELS)]
-    if tema:
+    if musica:
+        # Reemplaza al `--musica` sin valor de COMO, que es el del turno. Los
+        # dos en la misma orden dejarian ganar al ultimo en silencio.
+        argv = [a for a in argv if a != "--musica"] + ["--musica", musica]
+    if texto:
+        # `--largo` sale de la orden: solo lo mira la ruta de la frase, asi
+        # que mandarlo con `--texto` seria una bandera que no hace nada, y en
+        # este proyecto una bandera que se ignora en silencio ya costo un dia.
+        argv = [a for a in argv if a != "--largo"] + ["--texto", texto]
+    elif tema:
         argv += ["--tema", tema]
     elif frase:
-        # `elif` y no `if`: `reel.py` mira `--tema` primero y se olvida del
-        # `--id`, asi que mandar los dos haria que uno se ignore en silencio.
+        # `elif` encadenado y no tres `if`: `reel.py` mira `--texto`, despues
+        # `--tema` y despues `--id`, asi que mandar dos haria que uno se
+        # ignore en silencio.
         argv += ["--id", frase]
     if hay_clips():
         argv += ["--fondo", str(FONDOS)]
@@ -437,6 +456,10 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--video", help="publicar uno ya armado en vez de armar")
     ap.add_argument("--tema", help="el capitulo entero en vez de la frase que toca")
+    ap.add_argument("--texto", default="",
+                    help="uno de los siete de la semana (sem-01..sem-07, o 'hoy')")
+    ap.add_argument("--musica", default="",
+                    help="que pista: piano, noche, ventana, hondo, calma")
     ap.add_argument("--frase", metavar="ID",
                     help="que frase (ans-07), en vez de la que toca. Es la "
                          "forma de elegir cuanto dura el reel")
@@ -515,7 +538,8 @@ def _trabajar(args, donde) -> int:
             return 1
     else:
         try:
-            ruta = armar(args.tema or "", Path(args.carpeta), args.frase or "")
+            ruta = armar(args.tema or "", Path(args.carpeta), args.frase or "",
+                         texto=args.texto or "", musica=args.musica or "")
         except Exception as e:                            # noqa: BLE001
             print("No pude armar el reel: %s" % e)
             _avisar("No pude armar el reel del dia: %s" % e)

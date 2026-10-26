@@ -245,7 +245,7 @@ def guion(frase: Frase, tope: int = UNIDAD_MAXIMA) -> List[str]:
 TOPE_LARGO = TOPE_CON_MARGEN
 
 
-def segundos_reales(unidades: Sequence[str]) -> float:
+def segundos_reales(unidades: Sequence[str], largas: int = 0) -> float:
     """Lo que va a durar el reel, antes de pagar la voz.
 
     Es la UNICA forma de preguntarlo, y es una multiplicacion: el factor se
@@ -258,10 +258,17 @@ def segundos_reales(unidades: Sequence[str]) -> float:
     ORACION dicha y no por renglon del subtitulo -que con `--ingles` no son
     lo mismo, 8 contra 21 en el reel que lo descubrio-.
 
+    `largas` son los cambios de idea: cada uno cambia la pausa normal por
+    `PAUSA_PARRAFO`, asi que suma la diferencia. Va aparte del factor a
+    proposito -ver el comentario de `PAUSA_PARRAFO`-: es silencio que
+    insertamos nosotros y dura exactamente lo que dice, mientras que el factor
+    es una medicion de cuanto tarda una voz.
+
     Es una prediccion y no una promesa: quien decide es `armar`, que mide la
     voz ya sintetizada y se niega arriba de `TOPE_SEGUNDOS`.
     """
-    return duracion_del_guion(unidades) * VOZ_MAS_LENTA
+    return (duracion_del_guion(unidades) * VOZ_MAS_LENTA
+            + largas * (PAUSA_PARRAFO - PAUSA))
 
 
 def primera_oracion(texto: str) -> str:
@@ -665,6 +672,23 @@ PAUSA = 0.55
 # cambiar `PAUSA` sin volver a medirlo deja la prediccion vieja. Hay una
 # prueba que exige que los dos se muevan juntos.
 PAUSA_CALIBRADA = 0.55
+
+# El aire DONDE CAMBIA LA IDEA, que es otra cosa que el aire entre renglones.
+# Lo pidio el usuario el 2026-10-26: «dejando espacios».
+#
+# Se hizo asi y no subiendo `PAUSA` por dos razones. La primera es el oido:
+# con 33 renglones, medio segundo parejo entre todos suena a dictado, y lo que
+# hace respirar a un monologo es callarse mas donde termina una idea y menos
+# dentro de ella. La segunda es la cuenta: subir `PAUSA` una decima son 33
+# decimas -un reel de 83 segundos se va a 86- mientras que esto son seis o
+# siete pausas por texto, que es lo que se puede pagar.
+#
+# **No invalida la calibracion.** `VOZ_MAS_LENTA` se midio con PAUSA=0,55 y
+# eso no se toco; lo que este numero agrega es silencio NUESTRO, que ffmpeg
+# inserta y dura exactamente lo que dice. Por eso `segundos_reales` lo suma
+# aparte en vez de esconderlo en el factor: es la unica parte de la
+# prediccion que no es una estimacion.
+PAUSA_PARRAFO = 1.4
 
 
 def _correr(orden: List[str], que: str, espera: int = 300) -> None:
@@ -1135,7 +1159,8 @@ def _pedir_voz(clave: str, cuerpo: dict) -> bytes:
 
 
 def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
-                     decir_fn=None, color: Optional[str] = None) -> Tuple[Path, List[float]]:
+                     decir_fn=None, color: Optional[str] = None,
+                     largas: Sequence[int] = ()) -> Tuple[Path, List[float]]:
     """Lee cada unidad por separado y las pega con un silencio en el medio.
 
     Por separado y no de un tirón, que es lo que de verdad importa acá: así se
@@ -1150,6 +1175,14 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
     _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
              "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
              "-t", "%.2f" % PAUSA, str(silencio)], "armar el silencio")
+    # El aire de los cambios de idea. Se arma solo si hace falta: un reel sin
+    # parrafos no tiene por que escribir un archivo que nadie va a usar.
+    largas = set(largas or ())
+    hueco = carpeta / "silencio-largo.wav"
+    if largas:
+        _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-f", "lavfi",
+                 "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
+                 "-t", "%.2f" % PAUSA_PARRAFO, str(hueco)], "armar el aire del parrafo")
     lista, duraciones = [], []
     for i, unidad in enumerate(unidades):
         # Dos nombres y no uno: `say` escribe el crudo y ffmpeg lo pasa a 48
@@ -1160,8 +1193,12 @@ def voz_por_unidades(unidades: Sequence[str], carpeta: Path, voz: str = VOZ_MAC,
         parejo = carpeta / ("voz-%02d.wav" % i)
         _correr([ffmpeg(), "-y", "-hide_banner", "-loglevel", "error", "-i", str(crudo),
                  "-ar", "48000", "-ac", "2", str(parejo)], "emparejar la voz")
-        duraciones.append(duracion(parejo) + PAUSA)
-        lista += [parejo, silencio]
+        # El ultimo no lleva pausa detras: el reel ya termina con `COLA`, y
+        # sumarle el aire de un parrafo seria medio segundo de nada al final.
+        ultimo = i == len(unidades) - 1
+        cual, cuanto = (hueco, PAUSA_PARRAFO) if (i in largas and not ultimo) else (silencio, PAUSA)
+        duraciones.append(duracion(parejo) + cuanto)
+        lista += [parejo, cual]
     # El demuxer concat pide todos los archivos con el mismo formato, que es
     # para lo que se pasaron todos a 48 kHz estéreo arriba.
     #

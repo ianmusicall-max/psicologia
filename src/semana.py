@@ -38,6 +38,16 @@ class Texto:
     capitulo: str
     titulo: str
     texto: str
+    parrafos: tuple = ()
+
+    @property
+    def espacios(self) -> int:
+        """Cuantos cambios de idea tiene, o sea cuantas pausas largas lleva.
+
+        Uno menos que los parrafos: el aire va ENTRE ideas, y detras de la
+        ultima no va nada porque el reel ya termina con su cola.
+        """
+        return max(0, len(self.parrafos) - 1)
 
 
 def leer(archivo: Optional[Path] = None) -> List[Texto]:
@@ -52,9 +62,16 @@ def leer(archivo: Optional[Path] = None) -> List[Texto]:
         if faltan:
             raise SemanaError("al texto %r le faltan: %s"
                               % (d.get("id", "?"), ", ".join(faltan)))
+        # Los parrafos son los cambios de idea, y de ahi salen las pausas
+        # largas del reel. El `>-` del yaml deja cada uno en su renglon, asi
+        # que partir por salto de linea los recupera; `texto` sigue siendo
+        # todo junto, que es lo que se dice.
+        parrafos = tuple(" ".join(x.split()) for x in str(d["texto"]).splitlines()
+                         if x.strip())
         salida.append(Texto(id=str(d["id"]), dia=str(d["dia"]),
                             capitulo=str(d["capitulo"]), titulo=str(d["titulo"]),
-                            texto=" ".join(str(d["texto"]).split())))
+                            texto=" ".join(str(d["texto"]).split()),
+                            parrafos=parrafos))
     return salida
 
 
