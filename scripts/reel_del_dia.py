@@ -379,6 +379,30 @@ def pedir_permiso(ruta: Path, caption: str, titulo: str, donde=PLATAFORMAS,
     return diario.esperar_decision(llave, espera, paso)
 
 
+def guardar_caption(ruta: Path, caption: str) -> Path:
+    """El caption en un txt al lado del mp4. SOLO ESCRIBE UN ARCHIVO.
+
+    Existe para que el caption viaje con el video en el artefacto de la
+    corrida: lo que hace falta para subir el reel a mano a otra plataforma son
+    las dos cosas, y buscarlas en dos lugares distintos es como se termina
+    pegando el caption de otro dia.
+
+    Se guarda el caption SOLO, sin titulo ni encabezado, porque esta hecho
+    para copiarse entero de una vez. El titulo ya va en el nombre del archivo.
+
+    Se escribe ANTES de pedir aprobacion, asi que un reel descartado tambien
+    lo conserva: queda armado en disco y se puede publicar despues sin volver
+    a pagar la voz, y entonces su caption tiene que seguir ahi.
+    """
+    destino = Path(ruta).with_suffix(".caption.txt")
+    try:
+        destino.write_text(caption, encoding="utf-8")
+    except OSError as e:
+        # No puede tumbar el turno: el reel ya esta armado y la voz pagada.
+        print("  No pude guardar el caption en %s: %s" % (destino, e))
+    return destino
+
+
 def _y(cosas: list) -> str:
     """facebook, instagram y youtube."""
     if len(cosas) <= 1:
@@ -605,6 +629,7 @@ def _trabajar(args, donde) -> int:
         print("No pude armar el texto: %s" % e)
         _avisar("El reel se armo pero no pude armar su texto: %s" % e)
         return 1
+    guardar_caption(ruta, caption)
 
     # Entre armar y publicar: el reel ya existe y todavia no salio a ningun
     # lado. Es el unico momento en que se puede descartar sin borrar nada.

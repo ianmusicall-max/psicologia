@@ -6192,6 +6192,90 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
         self.assertIn("OCULTO", str(cm.exception))
 
 
+class TestLoQueElFlujoDelReelGuardaYOfrece(unittest.TestCase):
+    """El reel y su caption tienen que poder recuperarse DESPUES, y el
+    formulario tiene que ofrecer lo que de verdad existe.
+
+    Estas pruebas vivian pegadas al final de `TestLasHistoriasDeLaPagina` por
+    un anclaje mal elegido al insertarlas, y arrastraron ahi tambien a
+    `test_el_workflow_puede_pedir_la_frase`, que es de 2026-10-25. No rompia
+    nada -unittest corre un metodo de prueba este en la clase que este- pero el
+    dia que alguien borre la clase de historias se lleva por delante cuatro
+    pruebas del flujo sin enterarse.
+    """
+
+    def test_cada_reel_queda_guardado_como_artefacto(self):
+        """El 2026-10-27 el usuario pidio los cinco reels que habian salido
+        para subirlos a TikTok y habia DOS: la rama `reel-publico` se reemplaza
+        en cada turno, asi que cada reel borraba al anterior, y los otros tres
+        se perdieron con el contenedor de su corrida."""
+        # Se lee el YAML y no se busca texto en una ventana de caracteres:
+        # la primera version miraba 400 letras alrededor de `upload-artifact`
+        # y fallaba porque los comentarios de al lado la corrian. Una prueba
+        # que depende de donde cae un comentario no prueba nada.
+        import yaml
+        flujo = yaml.safe_load(
+            (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(
+                encoding="utf-8"))
+        pasos = flujo["jobs"]["reel"]["steps"]
+        guarda = [x for x in pasos
+                  if "upload-artifact" in str(x.get("uses") or "")]
+        self.assertEqual(len(guarda), 1, "ninguno o mas de un artefacto")
+        con = guarda[0].get("with") or {}
+        caminos = [x.strip() for x in str(con.get("path") or "").splitlines()
+                   if x.strip()]
+        self.assertIn("data/reels/*.mp4", caminos)
+        self.assertIn("data/reels/*.caption.txt", caminos)
+        # `ultimo.mp4` afuera: esta versionado en el repo, asi que subirlo
+        # seria la misma copia de 13 MB todos los dias durante 90.
+        self.assertIn("!data/reels/ultimo.mp4", caminos)
+        # `always()`: el reel se arma ANTES de publicar, asi que si Facebook
+        # falla o si lo descartas el mp4 existe igual, y es justo cuando mas
+        # conviene tenerlo guardado.
+        self.assertIn("always()", str(guarda[0].get("if") or ""))
+        # Y una corrida de `--probar`, que no arma nada, no puede quedar en
+        # rojo por esto.
+        self.assertEqual(con.get("if-no-files-found"), "ignore")
+        self.assertGreaterEqual(int(con.get("retention-days") or 0), 30)
+
+    def test_el_caption_queda_al_lado_del_mp4(self):
+        """Lo que hace falta para subir un reel a mano a otra plataforma son
+        las dos cosas. Buscarlas en dos lugares distintos es como se termina
+        pegando el caption de otro dia."""
+        rdd = _script("rddcaption", "reel_del_dia.py")
+        with tempfile.TemporaryDirectory() as d:
+            mp4 = Path(d) / "sem-02.mp4"
+            mp4.write_bytes(b"x")
+            destino = rdd.guardar_caption(mp4, "El caption\n\n#psicología")
+            self.assertEqual(destino, Path(d) / "sem-02.caption.txt")
+            # El caption SOLO, sin titulo ni encabezado: esta hecho para
+            # copiarse entero de una vez.
+            self.assertEqual(destino.read_text(encoding="utf-8"),
+                             "El caption\n\n#psicología")
+
+    def test_el_caption_se_guarda_antes_de_pedir_aprobacion(self):
+        """Un reel descartado queda armado en disco y se puede publicar
+        despues sin volver a pagar la voz, asi que su caption tiene que seguir
+        ahi. Y si lo que falla es Telegram, el artefacto lo salva igual."""
+        texto = (ROOT / "scripts" / "reel_del_dia.py").read_text(encoding="utf-8")
+        arbol = ast.parse(texto)
+        funcion = next(n for n in ast.walk(arbol)
+                       if isinstance(n, ast.FunctionDef) and n.name == "_trabajar")
+        fuente = ast.unparse(funcion)
+        self.assertIn("guardar_caption", fuente)
+        self.assertLess(fuente.index("guardar_caption"), fuente.index("pedir_permiso"))
+
+    def test_guardar_el_caption_no_puede_tumbar_el_turno(self):
+        """El reel ya esta armado y la voz pagada."""
+        rdd = _script("rddcaption2", "reel_del_dia.py")
+        # un camino imposible: el padre es un ARCHIVO, no un directorio. No se
+        # usa /no/existe porque esto corre como root y lo crearia sin chistar,
+        # y ademas dejaria el directorio hecho para las pruebas de al lado.
+        with tempfile.TemporaryDirectory() as d:
+            tapon = Path(d) / "tapon"
+            tapon.write_bytes(b"x")
+            rdd.guardar_caption(tapon / "sub" / "r.mp4", "hola")
+
     def test_el_workflow_nombra_las_piezas_que_hay(self):
         """La descripcion del campo es lo unico que se ve al lanzarlo a mano.
         Nombraba `calma` -que NO rota, es el colchon que el piano vino a

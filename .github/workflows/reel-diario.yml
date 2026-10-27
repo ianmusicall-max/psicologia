@@ -170,6 +170,46 @@ jobs:
           if [ "${{ inputs.solo_probar }}" = "true" ]; then ARGS+=(--probar); fi
           python scripts/reel_del_dia.py "${ARGS[@]}"
 
+      # El reel y su caption quedan guardados aparte del repositorio.
+      #
+      # Por que hacia falta: la rama `reel-publico` se REEMPLAZA en cada turno
+      # -y tiene que ser asi, versionar 48 MB por dia son 1,4 GB al mes en un
+      # historial que no se deshace-, asi que cada reel borraba al anterior. El
+      # 2026-10-27 el usuario pidio los cinco que habian salido para subirlos a
+      # TikTok y habia DOS: uno por estar versionado de antes y el ultimo por
+      # estar en esa rama. Los otros tres se perdieron con el contenedor de su
+      # corrida.
+      #
+      # Un artefacto vive fuera de git, asi que no engorda el repositorio, y
+      # GitHub lo guarda `retention-days`. 90 es el maximo que deja por defecto
+      # y en un repositorio publico ese almacenamiento no se cobra.
+      #
+      # `always()` porque el reel se arma ANTES de publicar: si Facebook falla
+      # o si lo descartas, el mp4 existe igual y es justo cuando mas conviene
+      # tenerlo guardado. `ignore` para que una corrida de `--probar`, que no
+      # arma nada, no quede en rojo por esto.
+      - name: Como se llama el artefacto
+        if: always()
+        id: nombre_artefacto
+        run: |
+          echo "valor=reel-$(date +'%Y-%m-%d')-${{ github.run_number }}" \
+            >> "$GITHUB_OUTPUT"
+
+      - name: Guardar el reel y su caption como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.nombre_artefacto.outputs.valor }}
+          # `ultimo.mp4` queda AFUERA a proposito: esta versionado en el repo,
+          # asi que subirlo seria la misma copia de 13 MB todos los dias
+          # durante 90 dias para algo que ya se puede bajar del repositorio.
+          path: |
+            data/reels/*.mp4
+            data/reels/*.caption.txt
+            !data/reels/ultimo.mp4
+          retention-days: 90
+          if-no-files-found: ignore
+
       - name: Guardar las voces
         if: always()
         uses: actions/cache/save@v4
