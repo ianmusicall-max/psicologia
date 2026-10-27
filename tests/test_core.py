@@ -315,17 +315,12 @@ class TestElCaption(unittest.TestCase):
         self.assertEqual(len(hs), 4)
         self.assertEqual(hs.count("#psicología") + hs.count("#psicologia"), 1)
 
-    def test_solo_los_temas_sensibles_llevan_el_pie(self):
-        sensibles = {t.tema for t in TEMAS if t.sensible}
-        for t in TEMAS:
-            c = frases.caption(t.frases[0], t, PAGINA)
-            self.assertEqual(PAGINA.pie_sensible in c, t.tema in sensibles, t.tema)
-
-    def test_una_frase_puede_pedir_el_pie_sola(self):
-        t = tema(sensible=False)
-        self.assertIn(PAGINA.pie_sensible, frases.caption(una(sensible=True), t, PAGINA))
-        t = tema(sensible=True)
-        self.assertNotIn(PAGINA.pie_sensible, frases.caption(una(sensible=False), t, PAGINA))
+    # Acá vivían las dos pruebas del pie sensible -que lo llevaran los temas
+    # marcados y que una frase pudiera pedirlo sola-. Se borraron el
+    # 2026-10-27 con el pie: exigían que un texto que el usuario prohibió
+    # saliera en el caption, así que patcharlas para que pasaran habría dejado
+    # en verde una guarda que pide lo contrario de lo que se decidió. La regla
+    # de hoy está en `TestQueLoDeLaTerapiaNoVuelvaNunca`.
 
     def test_el_caption_no_repite_la_frase_del_flyer(self):
         # La frase ya está en la imagen, grande. Repetida se come los dos
@@ -6327,3 +6322,164 @@ class TestLoQueElFlujoDelReelGuardaYOfrece(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestElRespaldoDelReelCuandoGithubNoCorreElCron(unittest.TestCase):
+    """GitHub no corre los cron de este repositorio, asi que hay un camino
+    de atras: el turno de las frases pide el reel cuando falta.
+
+    Medido el 2026-10-27: el turno de las frases declara 96 corridas por dia
+    y llegaron 5; el del reel declara 2 y ese dia no llego ninguna.
+    """
+
+    def _pedidor(self):
+        return _script("prf", "pedir_reel_si_falta.py")
+
+    def test_la_hora_sale_del_cron_y_no_de_un_numero_escrito_aparte(self):
+        # Dos numeros que tienen que coincidir terminan no coincidiendo: el
+        # dia que el cron se mueva, esta hora se mueve sola.
+        from src import diario
+        self.assertEqual(diario.hora_del_turno(), 14)
+
+    def test_antes_de_la_hora_no_se_adelanta_el_reel(self):
+        # Esto es una red, no otro horario: la hora la eligio el usuario.
+        from src import diario
+        self.assertEqual(
+            diario.falta_pedir_el_reel(datetime(2026, 10, 27, 13, 59), {}, 0,
+                                       hora=14), "")
+
+    def test_si_hoy_ya_salio_no_se_pide_otro(self):
+        from src import diario
+        self.assertEqual(
+            diario.falta_pedir_el_reel(datetime(2026, 10, 27, 18, 0),
+                                       {"titulo": "T"}, 0, hora=14), "")
+
+    def test_un_reel_descartado_tambien_cuenta_como_que_hoy_ya_se_vio(self):
+        # `anotar` escribe el renglon aunque el reel no salga, justamente para
+        # que nadie pague la voz dos veces por algo que ya miraste.
+        from src import diario
+        with tempfile.TemporaryDirectory() as d:
+            reg = Path(d) / "r.json"
+            diario.anotar(Path("x.mp4"), "T", {"aprobacion": "descartado"},
+                          dia=date(2026, 10, 27), registro=reg, publicado=False)
+            salio = diario.ya_salio_hoy(dia=date(2026, 10, 27), registro=reg)
+            self.assertTrue(salio)
+            self.assertEqual(
+                diario.falta_pedir_el_reel(datetime(2026, 10, 27, 18, 0),
+                                           salio, 0, hora=14), "")
+
+    def test_una_corrida_caida_no_hace_pagar_la_voz_de_nuevo(self):
+        # El tope que acota el gasto de todo esto: si hoy YA hubo una corrida
+        # del reel no se pide otra, saliera como saliera. Una que se cae antes
+        # de anotar -paso el 2026-10-26- dejaria el registro vacio, y sin este
+        # tope cada corrida de las frases pediria otro reel.
+        from src import diario
+        self.assertEqual(
+            diario.falta_pedir_el_reel(datetime(2026, 10, 27, 18, 0), {}, 1,
+                                       hora=14), "")
+
+    def test_sin_corridas_y_pasada_la_hora_si_se_pide(self):
+        from src import diario
+        motivo = diario.falta_pedir_el_reel(datetime(2026, 10, 27, 17, 24),
+                                            {}, 0, hora=14)
+        self.assertTrue(motivo)
+        self.assertIn("14", motivo)
+
+    def test_las_corridas_se_cuentan_en_dias_de_lima_y_no_de_utc(self):
+        # Una corrida de las 19:12 UTC que GitHub entrega seis horas tarde cae
+        # el dia siguiente en UTC y el MISMO dia en Lima, que es el dia del
+        # que estamos hablando. Contandola en UTC, la red pediria un segundo
+        # reel por uno que ya se armo.
+        prf = self._pedidor()
+        corridas = {"workflow_runs": [
+            {"created_at": "2026-10-28T01:12:00Z"},   # 2026-10-27 20:12 Lima
+            {"created_at": "2026-10-26T23:00:00Z"},   # 2026-10-26 18:00 Lima
+        ]}
+        with mock.patch.object(prf, "_pedir", return_value=corridas):
+            self.assertEqual(
+                prf.corridas_de_hoy("x/y", "t", date(2026, 10, 27)), 1)
+
+    def test_el_respaldo_no_publica_nada_ni_arma_el_reel(self):
+        # Lo unico que hace es disparar el flujo de siempre. Si armara o
+        # publicara por su cuenta, habria dos caminos y el dia que esto cambie
+        # se arregla uno y el otro se queda con la forma vieja. Y se lee el
+        # AST y no el texto, porque el docstring NOMBRA lo que no hace.
+        fuente = (ROOT / "scripts" / "pedir_reel_si_falta.py").read_text(
+            encoding="utf-8")
+        arbol = ast.parse(fuente)
+        importados = set()
+        for nodo in ast.walk(arbol):
+            if isinstance(nodo, ast.ImportFrom) and nodo.module == "src":
+                importados.update(a.name for a in nodo.names)
+        self.assertEqual(importados, {"diario"}, importados)
+        self.assertNotIn("subprocess", fuente.split('"""')[2])
+
+    def test_el_turno_de_las_frases_lo_corre_y_puede_pedirlo(self):
+        # Sin `actions: write` el pedido falla con 403 y la red no existe, sin
+        # que nada mas se ponga en rojo.
+        import yaml as _yaml
+        texto = (ROOT / ".github" / "workflows"
+                 / "publicar.yml").read_text(encoding="utf-8")
+        flujo = _yaml.safe_load(texto)
+        self.assertEqual(flujo["permissions"].get("actions"), "write")
+        pasos = flujo["jobs"]["publicar"]["steps"]
+        respaldo = [p for p in pasos
+                    if "pedir_reel_si_falta.py" in (p.get("run") or "")]
+        self.assertEqual(len(respaldo), 1, pasos)
+        # Una frase que no salio no tiene nada que ver con el reel, y una red
+        # que se rompe no puede poner en rojo al turno que ya publico.
+        self.assertEqual(respaldo[0].get("if"), "always()")
+        self.assertTrue(respaldo[0].get("continue-on-error"))
+
+
+class TestQueLoDeLaTerapiaNoVuelvaNunca(unittest.TestCase):
+    """«No menciones lo de terapia nunca más», pedido dos veces por el usuario.
+
+    La segunda fue el 2026-10-27, viendo el caption del reel de ruptura: uno
+    de los tres temas marcados `sensible: true` -con duelo e intimidad- que
+    eran los que seguían arrastrando el pie. Vaciar el config lo apaga; esto
+    es lo que impide que vuelva, que es lo que de verdad se pidió.
+    """
+
+    PROHIBIDO = ("profesional de salud mental", "no reemplaza una terapia",
+                 "reemplaza una terapia")
+
+    def test_el_pie_sensible_esta_vacio(self):
+        self.assertEqual(config.cargar().pie_sensible, "")
+
+    def test_ningun_caption_lo_lleva_aunque_el_tema_sea_sensible(self):
+        # Por el camino de verdad y no por el config: se arman los captions de
+        # los tres temas sensibles con el banco real.
+        pagina = config.cargar()
+        sensibles = [t for t in frases.leer() if getattr(t, "sensible", False)]
+        self.assertTrue(sensibles, "el banco ya no tiene temas sensibles")
+        for tema in sensibles:
+            textos = [frases.caption_de_tema(tema, pagina)]
+            for frase in (tema.frases or [])[:3]:
+                textos.append(frases.caption(frase, tema, pagina))
+            for texto in textos:
+                for palabra in self.PROHIBIDO:
+                    self.assertNotIn(palabra, texto.lower(),
+                                     "%s: %s" % (tema.tema, texto))
+
+    def test_el_texto_no_esta_escrito_en_ningun_archivo_del_repo(self):
+        # Vaciar el config no alcanza como garantía: el día que alguien lo
+        # vuelva a llenar -o lo escriba en un prompt, en un script o en otro
+        # yaml- esto se pone en rojo. Se saltea este archivo, que lo nombra
+        # para poder prohibirlo.
+        yo = Path(__file__).resolve()
+        sospechosos = []
+        for carpeta in ("config", "src", "scripts", "frases", "prompts"):
+            raiz = ROOT / carpeta
+            if not raiz.exists():
+                continue
+            for ruta in raiz.rglob("*"):
+                if not ruta.is_file() or ruta.resolve() == yo:
+                    continue
+                if ruta.suffix not in (".py", ".yaml", ".yml", ".md", ".txt"):
+                    continue
+                texto = ruta.read_text(encoding="utf-8", errors="ignore").lower()
+                for palabra in self.PROHIBIDO:
+                    if palabra in texto:
+                        sospechosos.append("%s: %s" % (ruta, palabra))
+        self.assertEqual(sospechosos, [], sospechosos)

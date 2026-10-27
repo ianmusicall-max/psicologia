@@ -41,6 +41,68 @@ PASO_APROBACION = 10
 # se corto la luz- y dejarlo para siempre seria no poder armar nunca mas.
 VIEJO = 30 * 60
 
+# De donde sale la hora del turno. No esta escrita aca a proposito: la manda
+# el cron del flujo, y dos numeros que tienen que coincidir terminan no
+# coincidiendo.
+FLUJO_DEL_REEL = ROOT / ".github" / "workflows" / "reel-diario.yml"
+
+# Peru no cambia de hora en todo el ano, asi que el corrimiento es fijo. Con
+# `zoneinfo` habria que tener la base de zonas horarias instalada, y esto
+# corre en un runner pelado.
+UTC_A_LIMA = -5
+
+
+def hora_del_turno(flujo: Optional[Path] = None) -> int:
+    """A que hora de Lima pide el reel el turno de GitHub.
+
+    La mas temprana de las que declara el cron: las demas son reintentos.
+    """
+    import yaml                                           # noqa: PLC0415
+
+    texto = Path(flujo or FLUJO_DEL_REEL).read_text(encoding="utf-8")
+    # `on:` lo lee PyYAML como el booleano True, que es un viejo conocido de
+    # YAML 1.1 y no un error de este archivo.
+    horas = [int(c["cron"].split()[1].split(",")[0])
+             for c in yaml.safe_load(texto)[True]["schedule"]]
+    return (min(horas) + UTC_A_LIMA) % 24
+
+
+def falta_pedir_el_reel(ahora: datetime, salio_hoy: dict,
+                        corridas_de_hoy: int, hora: Optional[int] = None) -> str:
+    """Por que hay que pedir el reel a mano, o '' si no hace falta.
+
+    GitHub no honra los cron de este repositorio: medido el 2026-10-27, de las
+    96 corridas diarias que declara el turno de las frases llegan unas cinco,
+    y el turno del reel -que declara dos- quedo ese dia en CERO. Este es el
+    camino de atras: cualquier corrida que si llegue mira si el reel de hoy
+    falta y lo pide.
+
+    Las tres puertas, en orden, y cada una tapa un gasto distinto:
+
+    - **Antes de la hora no se adelanta nada.** El reel tiene su hora porque
+      el usuario la eligio; esto es una red, no otro horario.
+    - **Si hoy ya salio, no se pide.** Es la guarda de siempre, y cuenta
+      tambien el reel que se armo y se descarto: `anotar` escribe el renglon
+      igual, justamente para que nadie pague la voz dos veces por algo que ya
+      miraste.
+    - **Si hoy YA hubo una corrida del reel, no se pide otra**, saliera como
+      saliera. Es lo que acota el riesgo de esto: una corrida que se cae antes
+      de anotar -paso el 2026-10-26, cuando el reel armado no entraba por el
+      bot- dejaria el registro vacio, y sin este tope cada corrida de las
+      frases pediria otro reel y pagaria la voz de nuevo. Con el tope, lo peor
+      que pasa es un reel de mas en el dia.
+    """
+    if hora is None:
+        hora = hora_del_turno()
+    if ahora.hour < hora:
+        return ""
+    if salio_hoy:
+        return ""
+    if corridas_de_hoy:
+        return ""
+    return ("son las %02d:%02d, el turno es a las %02d:00 y hoy no corrio "
+            "ninguna vez" % (ahora.hour, ahora.minute, hora))
+
 
 def _leer(registro: Optional[Path] = None) -> dict:
     ruta = Path(registro or SALIDOS)

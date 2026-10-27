@@ -34,6 +34,11 @@ permissions:
   # Para poder volver a subir data/publicadas.json. Sin esto, cada corrida
   # empezaria de cero y republicaria la primera frase.
   contents: write
+  # Para poder PEDIR el reel del dia cuando su propio turno no llego (ver el
+  # ultimo paso). Con `GITHUB_TOKEN`, `workflow_dispatch` es una de las dos
+  # unicas puertas que si crean otra corrida; las demas no, para que un flujo
+  # no se llame a si mismo sin fin.
+  actions: write
 
 concurrency:
   # Dos corridas a la vez se pisarian al subir el estado. Y no se cancela la
@@ -101,3 +106,22 @@ jobs:
           # tanto; se rebasea antes de empujar en vez de fallar.
           git pull --rebase --autostash
           git push
+
+      # EL RESPALDO DEL REEL. GitHub no corre los cron de este repositorio:
+      # medido el 2026-10-27, de las 96 corridas diarias que declara este
+      # turno llegaron 5, y el del reel -que declara 2- quedo en 0. Asi que el
+      # reel se apoya en el turno que mas corridas recibe, que es este.
+      #
+      # No arma nada ni publica nada: dispara `reel-diario.yml`, el mismo
+      # camino del cron y del boton del bot, y el reel sigue pasando por tu
+      # aprobacion en el bot.
+      #
+      # `always()` porque una frase que no salio no tiene nada que ver con el
+      # reel, y `continue-on-error` porque esto es una red: si se rompe, el
+      # turno que ya publico no se pone en rojo por eso.
+      - name: Pedir el reel del dia si su turno no llego
+        if: always()
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/pedir_reel_si_falta.py

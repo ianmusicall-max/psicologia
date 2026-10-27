@@ -73,13 +73,19 @@ pagina:
   # criterio que las páginas de salud.
   hashtags_fijos: [psicología, relaciones]
 
-  # Va al final del caption en los temas marcados `sensible: true` (duelo) o
-  # en una frase marcada así. Nunca en el flyer: un flyer con aviso legal se
-  # lee como un prospecto.
-  pie_sensible: >-
-    Si lo que sientes te pesa más de lo que puedes cargar, habla con un
-    profesional de salud mental. Esta página acompaña; no reemplaza una
-    terapia.
+  # VACÍO, y lo pidió el usuario dos veces: «no menciones lo de terapia nunca
+  # más». La segunda vez fue el 2026-10-27, viendo el caption del reel de
+  # ruptura, que es uno de los tres temas marcados `sensible: true` (los otros
+  # son duelo e intimidad) y por eso lo seguía llevando.
+  #
+  # Mientras esté vacío no sale en ningún caption: los tres lugares que lo
+  # agregan (`frases.caption`, `caption_de_tema` y `caption_de_reel`) piden
+  # que haya algo escrito acá. O sea que esto NO se arregla volviendo a
+  # llenarlo, que es justo lo que no hay que hacer.
+  #
+  # La guarda de verdad es una prueba que recorre el repositorio y se pone en
+  # rojo si el texto vuelve a aparecer en cualquier lado.
+  pie_sensible: ""
 
   facebook:
     page_id_env: PSI_FB_PAGE_ID
