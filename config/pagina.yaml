@@ -35,8 +35,14 @@ pagina:
   # Por eso una y no cero: con la grilla llena de videos, la promesa de la
   # biografia no se prueba en ningun lado.
   #
-  # Las 12, que es el mediodia y queda lejos de las 18 -la hora del reel-.
-  # Dos cosas de la pagina pegadas compiten entre ellas.
+  # Las 12, que es el mediodía. Se eligieron por quedar lejos de la hora del
+  # reel, que entonces eran las 18: dos cosas de la página pegadas compiten
+  # entre ellas.
+  #
+  # OJO: el 2026-10-27 el reel se movió a las 14, así que ahora quedan a DOS
+  # horas. Queda escrito y no se movió solo, porque la hora de Instagram la
+  # eligió el usuario y cambiarla es una decisión suya, no un efecto de haber
+  # movido el reel.
   #
   # En Facebook siguen saliendo las ocho, que ahi si monetizan y el feed
   # todavia muestra fotos.
