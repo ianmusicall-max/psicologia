@@ -8,7 +8,7 @@ andando antes de largar otra. Un `src` que importa un `script` seria al reves.
 Las dos guardas son por lo mismo: armar un reel cuesta la voz de ElevenLabs y
 las fotos, y tarda varios minutos.
 
-- **Por dia**: el turno de las 18 se intenta dos veces -GitHub demora y saltea
+- **Por dia**: el turno de las 14 se intenta dos veces -GitHub demora y saltea
   los horarios- y el segundo no puede armar un segundo reel.
 - **Por corrida**: dos toques seguidos del boton del bot armarian dos, porque
   el primero todavia no termino y no anoto nada.
@@ -30,8 +30,8 @@ CANDADO = ROOT / "data" / "reel_del_dia.lock"
 DECISION = ROOT / "data" / "reel_decision.json"
 
 # Cuanto se espera tu respuesta antes de dejar el reel sin publicar, y cada
-# cuanto se vuelve a preguntar. Dos horas porque el turno es a las 18 y la
-# respuesta puede tardar lo que tarde una cena; el tope de una corrida de
+# cuanto se vuelve a preguntar. Dos horas porque el turno es a las 14 y la
+# respuesta puede tardar lo que tarde un almuerzo; el tope de una corrida de
 # GitHub son seis, asi que esto entra con margen.
 ESPERA_APROBACION = 2 * 60 * 60
 PASO_APROBACION = 10
@@ -60,7 +60,7 @@ def ya_salio_hoy(dia: Optional[date] = None,
     """Lo que salio hoy, o {} si todavia no salio nada.
 
     Es por DIA y no por hora a proposito: lo que se pidio es un reel diario,
-    asi que si el de las 18 fallo y se dispara a mano a las 21, ese cuenta.
+    asi que si el de las 14 fallo y se dispara a mano a las 21, ese cuenta.
     """
     return _leer(registro).get((dia or date.today()).isoformat()) or {}
 
@@ -113,7 +113,7 @@ def anotar(ruta: Path, titulo: str, salidas: dict, dia: Optional[date] = None,
 # muestramelo en el bot y yo lo aprobare».
 #
 # **El que espera es el que armo el reel**, y no el bot: es el unico que tiene
-# el mp4 a mano. El turno de las 18 corre en GitHub y el boton del bot corre
+# el mp4 a mano. El turno de las 14 corre en GitHub y el boton del bot corre
 # en la Mac, asi que la espera tiene que funcionar en los dos lados.
 #
 # De ahi que la respuesta se busque por DOS puertas:

@@ -336,7 +336,7 @@ def como_va_el_libro(pagina: Optional[Pagina] = None) -> str:
 def video(pagina: Optional[Pagina] = None) -> str:
     """Arma el reel del día y te lo manda para que lo apruebes.
 
-    Es el MISMO camino que el turno de las 18 (`scripts/reel_del_dia.py`), no
+    Es el MISMO camino que el turno de las 14 (`scripts/reel_del_dia.py`), no
     una copia: si cada uno hiciera lo suyo, el día que esto cambie se arregla
     uno y el otro se queda con la forma vieja.
 
@@ -492,7 +492,7 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
 def aprobar_el_reel(arg: str) -> None:
     """Anota tu respuesta al reel. NO publica, y eso es a propósito.
 
-    El que publica es el que armó el reel -el turno de las 18 en GitHub, o el
+    El que publica es el que armó el reel -el turno de las 14 en GitHub, o el
     proceso que largó el botón del menú-, porque es el único que tiene el mp4.
     Este bot puede estar en otra máquina, así que lo único que hace es dejar
     la respuesta donde el que espera la lee (`diario.anotar_decision`).
@@ -518,7 +518,7 @@ def aprobar_el_reel(arg: str) -> None:
                         "enlaces te llegan acá en un rato.")
         return
     telegram.enviar("Anotado, pero acá no hay ninguna corrida esperando. Si "
-                    "este reel lo armó el turno de las 18 en GitHub, el botón "
+                    "este reel lo armó el turno de las 14 en GitHub, el botón "
                     "se lo quedó este bot y el turno no se va a enterar: "
                     "cortá el bot y apretá Publicar otra vez.")
 

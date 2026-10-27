@@ -1479,7 +1479,7 @@ class TestLosScripts(unittest.TestCase):
         #   frase_del_dia.py --publicar   lo corre una persona
         #   el botón Publicar del bot     vive en src/bot.py, con sus pruebas
         #   publicar_turno.py             SIN APROBACIÓN, a la hora que toca
-        #   reel_del_dia.py               SIN APROBACIÓN, a las 18
+        #   reel_del_dia.py               SIN APROBACIÓN, a las 14
         # El tercero entró para la prueba de ocho por día: ocho aprobaciones
         # diarias en el teléfono no son un sistema que alguien use. El cuarto
         # lo pidió el usuario el 2026-10-24 -un reel diario en las tres
@@ -4486,16 +4486,43 @@ class TestElReelEnLasTresPlataformas(unittest.TestCase):
         self.assertIn("scripts/reel_del_dia.py", flujo)
         self.assertIn("reel_del_dia.py", (ROOT / "src" / "bot.py").read_text(encoding="utf-8"))
 
-    def test_el_turno_es_a_las_seis_de_la_tarde_de_lima(self):
-        # El cron de GitHub es UTC y Lima es UTC-5: 23:xx UTC son las 18:xx.
-        # Y NINGUNO en punto, que es cuando GitHub va mas cargado.
+    def test_el_turno_es_a_las_dos_de_la_tarde_de_lima(self):
+        # Pedido el 2026-10-27: antes era a las 18. El cron de GitHub es UTC y
+        # Lima es UTC-5, asi que las 14 de Lima son las 19 UTC. Y NINGUNO en
+        # punto, que es cuando GitHub va mas cargado.
         import yaml as _yaml
-        flujo = _yaml.safe_load(
-            (ROOT / ".github" / "workflows" / "reel-diario.yml").read_text(encoding="utf-8"))
+        texto = (ROOT / ".github" / "workflows"
+                 / "reel-diario.yml").read_text(encoding="utf-8")
+        flujo = _yaml.safe_load(texto)
         crones = [c["cron"] for c in flujo[True]["schedule"]]
-        self.assertEqual(crones, ["7,37 23 * * *"])
-        self.assertIn("TZ: America/Lima", (ROOT / ".github" / "workflows"
-                                           / "reel-diario.yml").read_text(encoding="utf-8"))
+        self.assertEqual(len(crones), 1, crones)
+        minutos, hora = crones[0].split()[:2]
+        self.assertEqual(hora, "19", crones)
+        self.assertNotIn("0", minutos.split(","))
+        self.assertIn("TZ: America/Lima", texto)
+
+    def test_el_reel_no_cae_en_el_minuto_del_turno_de_las_frases(self):
+        # Las 14 son una hora de la parrilla, asi que a esa hora tambien sale
+        # un flyer. Las dos corridas escriben y suben
+        # `data/historias_estado.json`: en el mismo minuto chocan en el push y
+        # el `-X theirs` del reel descarta lo que anoto la otra.
+        #
+        # Los minutos salen de los DOS workflows y no de una lista escrita
+        # aca: el dia que alguien mueva uno de los dos, esto se pone en rojo.
+        import yaml as _yaml
+
+        def minutos_de(nombre):
+            flujo = _yaml.safe_load(
+                (ROOT / ".github" / "workflows" / nombre).read_text(encoding="utf-8"))
+            puestos = set()
+            for entrada in flujo[True]["schedule"]:
+                puestos.update(entrada["cron"].split()[0].split(","))
+            return puestos
+
+        frases = minutos_de("publicar.yml")
+        reel = minutos_de("reel-diario.yml")
+        self.assertTrue(frases, "el turno de las frases no declara ningun minuto")
+        self.assertEqual(frases & reel, set(), (frases, reel))
 
 
 class TestQueNoSalganDosReelsElMismoDia(unittest.TestCase):
@@ -4687,7 +4714,7 @@ class TestQueElTokenNoSalgaEnNingunError(unittest.TestCase):
 
 class TestComprobarLasCredencialesSinPublicar(unittest.TestCase):
     """El turno corre una vez por dia: sin esto, que falte un secreto se
-    descubre a las 18, con el reel ya armado y pago."""
+    descubre a las 14, con el reel ya armado y pago."""
 
     def test_pregunta_por_las_tres_y_no_publica_nada(self):
         from src import instagram, youtube
@@ -4915,7 +4942,7 @@ class TestPublicarUnReelQueYaEstaArmado(unittest.TestCase):
         self.assertEqual(pub.call_args[0][0], mp4)
         self.assertEqual(pub.call_args[1].get("donde") or pub.call_args[0][5],
                          ["facebook", "instagram"])
-        # Se anota igual: lo publicado es el reel de hoy, y el turno de las 18
+        # Se anota igual: lo publicado es el reel de hoy, y el turno de las 14
         # no tiene que mandar otro encima.
         anotar.assert_called_once()
 
@@ -5182,7 +5209,7 @@ class TestNadaSaleSinQueLoApruebes(unittest.TestCase):
         paso = [s for s in d["jobs"]["reel"]["steps"]
                 if "reel_del_dia.py" in (s.get("run") or "")][0]
         # La bandera aparece SOLO dentro del `if` de la entrada: si estuviera
-        # suelta, el turno de las 18 publicaría sin preguntar.
+        # suelta, el turno de las 14 publicaría sin preguntar.
         for linea in paso["run"].splitlines():
             if "--sin-aprobar" in linea:
                 self.assertIn("inputs.sin_aprobar", linea)

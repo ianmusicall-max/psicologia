@@ -16,7 +16,7 @@ toco.
 Si no contestas, el reel NO sale y queda armado: publicarlo mas tarde no
 vuelve a pagar la voz.
 
-Es UN solo camino con dos disparadores: el turno de las 18 y el boton del bot.
+Es UN solo camino con dos disparadores: el turno de las 14 y el boton del bot.
 Si cada uno hiciera lo suyo, el dia que esto cambie se arregla uno y el otro
 se queda con la forma vieja.
 
@@ -470,7 +470,7 @@ def probar(donde=PLATAFORMAS) -> dict:
     """Pregunta si las tres credenciales andan, sin publicar ni gastar nada.
 
     Existe porque el turno corre una vez por dia: sin esto, que falte un
-    secreto se descubre a las 18, con el reel ya armado y pago. Las tres
+    secreto se descubre a las 14, con el reel ya armado y pago. Las tres
     preguntas son de solo lectura y ninguna cuesta un centavo.
     """
     pagina = config.cargar()
