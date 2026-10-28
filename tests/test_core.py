@@ -6550,3 +6550,105 @@ class TestQueLoDeLaTerapiaNoVuelvaNunca(unittest.TestCase):
                     if palabra in texto:
                         sospechosos.append("%s: %s" % (ruta, palabra))
         self.assertEqual(sospechosos, [], sospechosos)
+
+
+class TestElLibroEnPdfYEpub(unittest.TestCase):
+    """El libro armado para imprimir y para vender. Pedido el 2026-10-28."""
+
+    def _lp(self):
+        try:
+            import reportlab  # noqa: F401
+        except ImportError:
+            self.skipTest("sin reportlab no se puede armar el libro")
+        return _script("lp", "libro_pdf.py")
+
+    def test_el_marcado_de_los_capitulos_se_entiende(self):
+        lp = self._lp()
+        md = ("# Capítulo 9 · Un nombre\n\n"
+              "Un párrafo cortado\nen dos renglones.\n\n"
+              "## Un apartado\n\n"
+              "> Un epígrafe largo\n> que ocupa dos renglones.\n\n"
+              "Otro párrafo.\n\n---\n")
+        self.assertEqual(list(lp.bloques(md)), [
+            ("titulo", "Capítulo 9 · Un nombre"),
+            ("parrafo", "Un párrafo cortado en dos renglones."),
+            ("apartado", "Un apartado"),
+            ("epigrafe", "Un epígrafe largo que ocupa dos renglones."),
+            ("parrafo", "Otro párrafo."),
+            ("filete", ""),
+        ])
+
+    def test_la_negrita_y_la_cursiva_pasan_y_lo_demas_se_escapa(self):
+        # Sin escapar, un «<» del texto rompería el párrafo entero: reportlab
+        # lee marcado, no texto plano.
+        lp = self._lp()
+        self.assertEqual(lp.en_linea("**esto** y *eso*"), "<b>esto</b> y <i>eso</i>")
+        self.assertEqual(lp.en_linea("a < b & c"), "a &lt; b &amp; c")
+
+    def test_un_capitulo_de_verdad_llega_entero_al_pdf(self):
+        # La prueba del camino completo: se arma un PDF de un capítulo real y
+        # se vuelve a leer. Mirar que el script no reviente no alcanza -puede
+        # salir un PDF vacío- y comparar texto del .md tampoco, porque lo que
+        # interesa es que el epígrafe y el título hayan llegado al papel.
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            self.skipTest("sin pypdf no se puede releer el PDF")
+        lp = self._lp()
+        uno = ROOT / "libro" / "capitulos" / "18-culpa.md"
+        if not uno.exists():
+            self.skipTest("no está el capítulo de prueba")
+        with tempfile.TemporaryDirectory() as d:
+            solo = Path(d) / "capitulos"
+            solo.mkdir()
+            (solo / uno.name).write_text(uno.read_text(encoding="utf-8"),
+                                         encoding="utf-8")
+            with mock.patch.object(lp, "CAPITULOS", solo):
+                pdf = lp.armar_pdf(Path(d) / "x.pdf")
+            texto = " ".join(p.extract_text() for p in PdfReader(str(pdf)).pages)
+        plano = re.sub(r"\s+", " ", texto)
+        self.assertIn("Culpa y vergüenza no son lo mismo", plano)
+        self.assertIn("La culpa dice hice algo mal", plano)
+        self.assertIn("Índice", plano)
+
+    def test_el_pdf_no_declara_ninguna_fuente_sin_incrustar(self):
+        # Una imprenta puede rechazar un PDF con una fuente que no viaja
+        # adentro, y no hay forma de explicarle que no se usa. Pasó con la
+        # Helvetica que reportlab le pone de oficio a la tabla del índice.
+        if not shutil.which("pdffonts"):
+            self.skipTest("sin pdffonts no se puede mirar las fuentes")
+        lp = self._lp()
+        if lp.registrar_fuentes()[0] == "Times-Roman":
+            self.skipTest("sin las fuentes del libro, Times va de serie")
+        uno = ROOT / "libro" / "capitulos" / "18-culpa.md"
+        if not uno.exists():
+            self.skipTest("no está el capítulo de prueba")
+        with tempfile.TemporaryDirectory() as d:
+            solo = Path(d) / "capitulos"
+            solo.mkdir()
+            (solo / uno.name).write_text(uno.read_text(encoding="utf-8"),
+                                         encoding="utf-8")
+            with mock.patch.object(lp, "CAPITULOS", solo):
+                pdf = lp.armar_pdf(Path(d) / "x.pdf")
+            salida = subprocess.run(["pdffonts", str(pdf)],
+                                    capture_output=True, text=True).stdout
+        sueltas = [l.split()[0] for l in salida.splitlines()[2:]
+                   if l.strip() and l.split()[3] == "no"]
+        self.assertEqual(sueltas, [], salida)
+
+    def test_el_libro_armado_no_va_al_repositorio(self):
+        # Medio mega por versión, y se regenera en un segundo desde los
+        # capítulos. Es la misma razón por la que `data/` entero está fuera.
+        salida = ROOT / "libro" / "salida" / "x.pdf"
+        hecho = subprocess.run(["git", "check-ignore", str(salida)],
+                               cwd=ROOT, capture_output=True)
+        self.assertEqual(hecho.returncode, 0, "libro/salida/ no está ignorado")
+
+    def test_el_turno_de_las_frases_no_paga_las_dependencias_del_libro(self):
+        # `requirements.txt` lo instala el turno que publica, que corre muchas
+        # veces por día y no arma ningún libro.
+        base = (ROOT / "requirements.txt").read_text(encoding="utf-8").lower()
+        self.assertNotIn("reportlab", base)
+        aparte = (ROOT / "requirements-libro.txt").read_text(encoding="utf-8").lower()
+        self.assertIn("reportlab", aparte)
+        self.assertIn("-r requirements.txt", aparte)

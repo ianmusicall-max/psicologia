@@ -1,0 +1,13 @@
+# Solo para armar el libro (scripts/libro_pdf.py), que se corre a mano.
+#
+# No esta en requirements.txt a proposito: ese lo instala el turno que publica
+# las frases, que corre muchas veces por dia y no arma ningun libro. Cada cosa
+# que se agregue alla la paga ese turno en cada corrida.
+#
+# El EPUB lo arma `pandoc`, que no es un paquete de Python: si no esta, el PDF
+# sale igual y el script lo dice.
+-r requirements.txt
+reportlab==5.0.1
+# Para partir en silabas. Sin esto el texto justificado sale con rios de
+# espacios; reportlab lo ignora si falta, asi que no rompe nada.
+pyphen==0.18.1

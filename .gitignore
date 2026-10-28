@@ -44,3 +44,8 @@ data/fondos/originales/
 
 psicologia.bundle
 data/muestra/
+
+# El libro armado. Se regenera de libro/capitulos/ con scripts/libro_pdf.py,
+# y un PDF de medio mega por version dejaria el repositorio inmanejable: es la
+# misma razon por la que data/ entero esta ignorado.
+libro/salida/
