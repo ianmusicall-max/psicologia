@@ -1336,11 +1336,78 @@ class TestLaPrueba(unittest.TestCase):
         self.assertEqual(guardado["hora"], 8)
         self.assertEqual(guardado["post_id"], "105_1")
 
-    def test_fuera_de_hora_no_publica(self):
+    def test_antes_del_primer_turno_del_dia_no_publica(self):
+        # Antes era `test_fuera_de_hora_no_publica` y probaba las 09, o sea
+        # una hora que no está en la parrilla. Desde el 2026-10-28 ESO SÍ
+        # PUBLICA, a propósito: a las 09 el turno de las 08 está pendiente y
+        # GitHub casi nunca corre en una hora par. Lo que no puede publicar es
+        # una corrida anterior al primer turno del día, porque ahí no hay nada
+        # atrasado que recuperar.
         mod = _turno()
         with mock.patch.object(facebook, "publicar", side_effect=AssertionError("publicó")), \
                 mock.patch("builtins.print"):
-            self.assertEqual(mod.main(["--ahora", "2026-10-23T09"]), 0)
+            self.assertEqual(mod.main(["--ahora", "2026-10-23T07"]), 0)
+
+    def test_el_turno_que_se_perdio_sale_en_la_corrida_siguiente(self):
+        # El caso que dejó la página dos días sin publicar: la parrilla son
+        # horas pares y de las cinco corridas que GitHub honró el 2026-10-27,
+        # ninguna cayó en una.
+        mod = _turno()
+        horas = [8, 10, 12, 14, 16, 18, 20, 22]
+        self.assertEqual(mod.hora_a_publicar(horas, {}, datetime(2026, 10, 27, 13, 26)), 12)
+
+    def test_se_toma_el_pendiente_mas_nuevo_y_no_el_mas_viejo(self):
+        # Un flyer once horas tarde se anota con una hora que no es y encima
+        # le saca el lugar al que todavía puede salir cerca de su horario.
+        mod = _turno()
+        horas = [8, 10, 12, 14, 16, 18, 20, 22]
+        self.assertEqual(mod.pendientes(horas, {}, datetime(2026, 10, 27, 19, 18)),
+                         [8, 10, 12, 14, 16, 18])
+        self.assertEqual(mod.hora_a_publicar(horas, {}, datetime(2026, 10, 27, 19, 18)), 18)
+
+    def test_un_turno_que_ya_salio_no_queda_pendiente(self):
+        mod = _turno()
+        horas = [8, 10, 12]
+        ya = {"a": {"dia": "2026-10-27", "hora": 12},
+              "b": {"dia": "2026-10-27", "hora": 8}}
+        self.assertEqual(mod.hora_a_publicar(horas, ya, datetime(2026, 10, 27, 13)), 10)
+
+    def test_sin_pendientes_no_hay_nada_que_publicar(self):
+        mod = _turno()
+        self.assertIsNone(mod.hora_a_publicar([8, 10], {}, datetime(2026, 10, 27, 7, 59)))
+
+    def test_dos_corridas_seguidas_no_sacan_dos_flyers_pegados(self):
+        # GitHub puede honrar dos corridas en la misma hora. Sin esto, la
+        # segunda recuperaría el turno anterior y saldrían dos flyers con
+        # media hora de diferencia, que en la página se lee como un error.
+        mod = _turno()
+        ya = {"a": {"dia": "2026-10-27", "hora": 18,
+                    "cuando": "2026-10-27T18:13:00"}}
+        self.assertTrue(mod.hace_muy_poco(ya, datetime(2026, 10, 27, 18, 45)))
+        self.assertFalse(mod.hace_muy_poco(ya, datetime(2026, 10, 27, 20, 5)))
+
+    def test_un_registro_viejo_sin_la_hora_real_no_frena_nada(self):
+        # Los siete posts anteriores al 2026-10-28 no tienen `cuando`. Frenar
+        # por las dudas dejaría la página sin publicar, que es el problema que
+        # esto viene a arreglar.
+        mod = _turno()
+        ya = {"a": {"dia": "2026-10-27", "hora": 18}}
+        self.assertFalse(mod.hace_muy_poco(ya, datetime(2026, 10, 27, 18, 45)))
+
+    def test_el_turno_a_su_hora_no_espera_a_nadie(self):
+        # La espera es solo para los atrasados: dos horas de la parrilla están
+        # a dos horas de distancia por definición, así que pedírsela al turno
+        # puntual solo podría hacerle perder su propia hora.
+        mod = _turno()
+        texto = (ROOT / "scripts" / "publicar_turno.py").read_text(encoding="utf-8")
+        self.assertIn("if hora != ahora.hour and hace_muy_poco(ya, ahora):", texto)
+        self.assertGreater(mod.ESPERA_ENTRE_POSTS, 60 * 60)
+
+    def test_la_hora_real_queda_anotada(self):
+        # Es lo que lee `hace_muy_poco`, y en un turno atrasado no coincide
+        # con `hora`, que es el turno al que pertenece.
+        texto = (ROOT / "scripts" / "publicar_turno.py").read_text(encoding="utf-8")
+        self.assertIn('"cuando": ahora.isoformat(timespec="seconds")', texto)
 
     def test_en_la_misma_hora_no_publica_dos_veces(self):
         # Un reintento, el reloj que se atrasa o dos programadores encendidos
