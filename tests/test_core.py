@@ -6744,3 +6744,140 @@ class TestLaCopiaEnDrive(unittest.TestCase):
         cuerpo = fuente.split("def main")[-1]
         self.assertLess(cuerpo.index("salidas = publicar("),
                         cuerpo.index("drive.guardar_reel("))
+
+
+class TestLosPictogramasDelLibro(unittest.TestCase):
+    """Uno por capítulo, y ninguno repetido. Pedido el 2026-10-28."""
+
+    def test_los_veintinueve_capitulos_tienen_el_suyo(self):
+        from src import pictogramas
+        capitulos = {t.capitulo for t in frases.leer()}
+        faltan = sorted(capitulos - set(pictogramas.DIBUJOS))
+        self.assertEqual(faltan, [], faltan)
+
+    def test_ningun_dibujo_esta_repetido(self):
+        # No alcanza con que las funciones sean distintas: dos funciones
+        # pueden dibujar lo mismo. Se DIBUJA cada una en su propio lienzo y se
+        # comparan los trazos, que es la única manera de verlo sin mirar.
+        #
+        # Es el error que de verdad pasó: en la primera tanda, autoestima y
+        # soledad eran el mismo círculo con un punto, y hábitos y duelo el
+        # mismo anillo abierto. Separados se veían bien.
+        try:
+            from reportlab.pdfgen import canvas as cv
+        except ImportError:
+            self.skipTest("sin reportlab")
+        from reportlab.lib.colors import black
+        from src import pictogramas
+        import hashlib
+        huellas = {}
+        for numero in sorted(pictogramas.DIBUJOS):
+            c = cv.Canvas("/dev/null", pagesize=(100, 100))
+            pictogramas.dibujar(c, numero, 50, 50, 40, black)
+            trazos = c._code + c._currentPageHasImages * [""]
+            huella = hashlib.sha1("".join(trazos).encode()).hexdigest()
+            self.assertNotIn(huella, huellas,
+                             "%d dibuja lo mismo que %d"
+                             % (numero, huellas.get(huella, 0)))
+            huellas[huella] = numero
+
+    def test_un_capitulo_sin_dibujo_no_rompe_el_libro(self):
+        # Quedarse sin libro porque falta un icono sería el peor cambio
+        # posible: una apertura sin dibujo es una apertura sin dibujo.
+        try:
+            from reportlab.pdfgen import canvas as cv
+        except ImportError:
+            self.skipTest("sin reportlab")
+        from reportlab.lib.colors import black
+        from src import pictogramas
+        c = cv.Canvas("/dev/null", pagesize=(100, 100))
+        self.assertFalse(pictogramas.dibujar(c, 999, 50, 50, 40, black))
+        self.assertTrue(pictogramas.dibujar(c, 1, 50, 50, 40, black))
+
+
+class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
+    """Dos PDF del mismo diseño, y el de imprenta sin una gota de color."""
+
+    def _lp(self):
+        try:
+            import reportlab  # noqa: F401
+        except ImportError:
+            self.skipTest("sin reportlab no se puede armar el libro")
+        return _script("lp", "libro_pdf.py")
+
+    def _colores(self, ruta):
+        """Los colores NO grises que declara el PDF, leyéndolo de verdad."""
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            self.skipTest("sin pypdf no se puede releer el PDF")
+        vistos = set()
+        for pg in PdfReader(str(ruta)).pages:
+            for m in re.finditer(rb"([\d.]+) ([\d.]+) ([\d.]+) (rg|RG)",
+                                 pg.get_contents().get_data()):
+                c = tuple(round(float(x), 3) for x in m.groups()[:3])
+                if len(set(c)) > 1:
+                    vistos.add(c)
+        return vistos
+
+    def _un_capitulo(self, lp, d):
+        uno = ROOT / "libro" / "capitulos" / "18-culpa.md"
+        if not uno.exists():
+            self.skipTest("no está el capítulo de prueba")
+        solo = Path(d) / "capitulos"
+        solo.mkdir()
+        (solo / uno.name).write_text(uno.read_text(encoding="utf-8"),
+                                     encoding="utf-8")
+        return solo
+
+    def test_el_de_imprenta_no_lleva_un_solo_pixel_de_color(self):
+        # ES PLATA, no estética: una impresora por demanda no cobra el color
+        # por página. Alcanza UN pixel que no sea gris para que el libro
+        # entero se facture como libro a color, y eso multiplica varias veces
+        # el costo por ejemplar.
+        #
+        # La primera versión pasaba `acento=negro` y seguía teniendo color: el
+        # texto iba en #1F2933, un azul grisáceo que a ojo ES negro. Se vio
+        # releyendo el PDF, no leyendo el código.
+        from reportlab.lib.colors import black
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(lp, "CAPITULOS", self._un_capitulo(lp, d)):
+                pdf = lp.armar_pdf(Path(d) / "negro.pdf", black, black)
+            self.assertEqual(self._colores(pdf), set())
+
+    def test_el_de_pantalla_si_lleva_el_acento(self):
+        # Si los dos salieran iguales, el de pantalla no tendría sentido y la
+        # prueba de arriba pasaría sola.
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(lp, "CAPITULOS", self._un_capitulo(lp, d)):
+                pdf = lp.armar_pdf(Path(d) / "color.pdf")
+            self.assertTrue(self._colores(pdf))
+
+    def test_la_tapa_es_blanca(self):
+        # La pidió blanca el usuario. Y blanca de verdad, no crema: el crema
+        # se apaga contra el fondo de una lista de tienda.
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            self.skipTest("sin pypdf")
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            tapa = lp.armar_portada(Path(d) / "tapa.pdf")
+            datos = PdfReader(str(tapa)).pages[0].get_contents().get_data()
+        self.assertIn(b"1 1 1 rg", datos)
+
+    def test_cada_capitulo_abre_con_su_pictograma(self):
+        # El dibujo entra por el número del archivo, así que un capítulo
+        # nuevo lo trae solo si está en la tabla.
+        lp = self._lp()
+        fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
+        self.assertIn("pictogramas.dibujar", fuente)
+        self.assertIn("Apertura(numero", fuente)
+
+    def test_salen_los_dos_pdf_y_no_uno(self):
+        lp = self._lp()
+        fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
+        self.assertIn("-impresion", fuente)
+        self.assertIn("-pantalla", fuente)
