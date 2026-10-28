@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import random
 import re
 import subprocess
 import sys
@@ -53,7 +54,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from reportlab import rl_config  # noqa: E402
-from reportlab.lib.colors import HexColor, black, white  # noqa: E402
+from reportlab.lib.colors import Color, HexColor, black, white  # noqa: E402
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY  # noqa: E402
 from reportlab.lib.styles import ParagraphStyle  # noqa: E402
 from reportlab.lib.units import inch, mm  # noqa: E402
@@ -210,6 +211,7 @@ class Libro(BaseDocTemplate):
         # Hasta que empiece el primer capitulo no se adorna nada: la portadilla
         # y el indice van sin titulillo ni folio.
         self.cuerpo_desde = 10 ** 9
+        self.dibujo_en_blanco = 0
         ancho = MEDIDA[0] - ADENTRO - AFUERA
         alto = MEDIDA[1] - ARRIBA - ABAJO
 
@@ -241,10 +243,22 @@ class Libro(BaseDocTemplate):
         self._handle_pageBegin()
 
     def adornar(self, lienzo, doc):
+        # La pagina en blanco se mira PRIMERO, antes que la guarda del cuerpo.
+        # Al reves -que es como estaba- la de antes del primer capitulo quedaba
+        # sin trama: todavia no se habia visto ningun capitulo, asi que
+        # `cuerpo_desde` valia infinito y el metodo salia antes de llegar aca.
+        # Solo pasa cuando el indice entra en una pagina, asi que en el libro
+        # entero no se veia. Lo encontro una prueba con cuatro capitulos.
+        if doc.page == doc.en_blanco:
+            # Sin titulillo ni folio, pero con la composicion del capitulo que
+            # viene: una pagina vacia de verdad es una hoja desperdiciada.
+            if doc.dibujo_en_blanco:
+                composicion(lienzo, doc.dibujo_en_blanco, doc.acento)
+            return
         if doc.page < doc.cuerpo_desde:
             return
-        if doc.page in (doc.abre_en, doc.en_blanco):
-            return      # la que abre capitulo y la que quedo en blanco, limpias
+        if doc.page == doc.abre_en:
+            return                       # la que abre capitulo, limpia
         lienzo.saveState()
         arriba = MEDIDA[1] - ARRIBA + 7 * mm
         lienzo.setFont(doc.sans, 7.2)
@@ -267,6 +281,60 @@ class Libro(BaseDocTemplate):
             self.notify("TOCEntry", (0, flowable.titulo_corto, self.page))
 
 
+def _aguada(color, cuanto=0.17):
+    """El mismo color, aclarado hacia el blanco.
+
+    Se aclara el COLOR en vez de bajarle la opacidad: una transparencia en un
+    PDF de imprenta obliga a la aplanadora de la imprenta a rasterizar la
+    pagina, y una pagina rasterizada pesa y a veces cambia de tono. Un color
+    claro es un color y nada mas.
+    """
+    return Color(1 - (1 - color.red) * cuanto,
+                 1 - (1 - color.green) * cuanto,
+                 1 - (1 - color.blue) * cuanto)
+
+
+def composicion(lienzo, numero, color):
+    """La pagina en blanco de antes de un capitulo, con su propio pictograma.
+
+    Lo pidio el usuario el 2026-10-28: «hay paginas en blanco, se le puede
+    agregar imagenes abstractas». Son nueve en el libro -las que hacen que
+    cada capitulo abra del lado derecho- y estaban completamente vacias.
+
+    El dibujo NO es abstracto porque si: es el pictograma de ESE capitulo,
+    repetido a distintos tamanos, girado y saliendose de la hoja. Asi la
+    pagina de enfrente anuncia lo que viene en vez de decorar, y no hay que
+    inventar un lenguaje grafico nuevo para nueve paginas.
+
+    El reparto sale del numero del capitulo, asi que cada uno tiene SU
+    composicion y la misma siempre: un azar sin semilla daria un libro
+    distinto en cada corrida y no se podria revisar una prueba de imprenta.
+    """
+    azar = random.Random(numero * 7919)
+    lienzo.saveState()
+    lienzo.setStrokeColor(_aguada(color))
+    lienzo.setFillColor(_aguada(color))
+    for i in range(7):
+        # El primero es grande y centrado; los demas lo rodean y se cortan
+        # contra los bordes, que es lo que hace que se lea como una trama y
+        # no como siete dibujos sueltos.
+        if i == 0:
+            s, x, y = 120 * mm, MEDIDA[0] * 0.5, MEDIDA[1] * 0.52
+        else:
+            s = azar.uniform(26, 68) * mm
+            x = azar.uniform(-0.1, 1.1) * MEDIDA[0]
+            y = azar.uniform(-0.05, 1.05) * MEDIDA[1]
+        lienzo.saveState()
+        lienzo.translate(x, y)
+        lienzo.rotate(azar.uniform(0, 360))
+        # Grosor FIJO y no proporcional: con el proporcional, un dibujo de
+        # 120 mm sale con una linea de casi 8 mm y la hoja se lee como
+        # burbujas. Fino y parejo, los siete se ven como un solo trazado.
+        pictogramas.dibujar(lienzo, numero, 0, 0, s, _aguada(color), trazo=1.9)
+        lienzo.restoreState()
+    lienzo.restoreState()
+
+
 class AbreEnImpar(ActionFlowable):
     """Si la pagina que viene es par, mete una en blanco.
 
@@ -277,9 +345,14 @@ class AbreEnImpar(ActionFlowable):
     esta. Esto si, porque `apply` recibe el documento.
     """
 
+    def __init__(self, numero=0):
+        super().__init__()
+        self.numero = numero              # el capitulo que viene despues
+
     def apply(self, doc):
         if doc.page % 2 == 0:
             doc.en_blanco = doc.page      # esa no lleva titulillo ni folio
+            doc.dibujo_en_blanco = self.numero
             doc.handle_pageBreak()
 
 
@@ -482,9 +555,14 @@ def armar_pdf(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
         ("RIGHTPADDING", (0, 0), (-1, -1), 0),
         ("FONT", (0, 0), (-1, -1), serif),
     ])
-    hist += [indice, PageBreak(), AbreEnImpar()]
-
     capitulos = sorted(CAPITULOS.glob("[0-9]*.md"))
+    # El salto de despues del indice tambien lleva el numero del capitulo que
+    # viene. Sin eso, la unica pagina en blanco que quedaba vacia era la que
+    # enfrenta al PRIMER capitulo, que es justo la que mas se mira. Lo
+    # encontro la prueba, no la vista.
+    primero = int(capitulos[0].name.split("-")[0]) if capitulos else 0
+    hist += [indice, PageBreak(), AbreEnImpar(primero)]
+
     for ruta in capitulos:
         numero = int(ruta.name.split("-")[0])
         primero_del_apartado = True
@@ -515,7 +593,8 @@ def armar_pdf(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
                 primero_del_apartado = False
         hist.append(PageBreak())
         if ruta != capitulos[-1]:
-            hist.append(AbreEnImpar())
+            siguiente = int(capitulos[capitulos.index(ruta) + 1].name.split("-")[0])
+            hist.append(AbreEnImpar(siguiente))
 
     doc.multiBuild(hist)
     return destino
