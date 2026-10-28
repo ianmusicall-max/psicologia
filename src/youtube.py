@@ -355,8 +355,14 @@ def como_quedo(respuesta: Dict) -> str:
     return ", ".join(partes)
 
 
-def enlace_de_permiso(cliente: str, redireccion: str) -> str:
+def enlace_de_permiso(cliente: str, redireccion: str,
+                      permisos: Sequence[str] = PERMISOS) -> str:
     """La dirección que se abre en el navegador para dar el permiso una vez.
+
+    `permisos` es un argumento y no la constante de este archivo porque el
+    mismo cliente de Google sirve para otros servicios: el token que se pide
+    acá también es el que usa `src/drive.py`. Quien pide el consentimiento
+    sabe para qué lo quiere; este módulo solo sabe de YouTube.
 
     `access_type=offline` es lo que hace que Google devuelva un token de
     refresco, que es el único que se guarda. `prompt=consent` lo pide de nuevo
@@ -366,7 +372,7 @@ def enlace_de_permiso(cliente: str, redireccion: str) -> str:
     from urllib.parse import urlencode
     return "%s?%s" % (AUTORIZAR, urlencode({
         "client_id": cliente, "redirect_uri": redireccion,
-        "response_type": "code", "scope": " ".join(PERMISOS),
+        "response_type": "code", "scope": " ".join(permisos),
         "access_type": "offline", "prompt": "consent"}))
 
 

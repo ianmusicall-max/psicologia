@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Da el permiso de YouTube UNA vez y lo guarda en el .env.
+"""Da el permiso de YouTube y de Drive UNA vez y lo guarda en el .env.
 
     python3 scripts/youtube_token.py
 
@@ -35,7 +35,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import entorno, youtube  # noqa: E402
+from src import drive, entorno, youtube  # noqa: E402
 
 # Cualquier puerto libre sirve: un cliente de escritorio acepta la vuelta a
 # 127.0.0.1 en el puerto que sea. Se fija uno para que la dirección que se
@@ -122,7 +122,11 @@ def main(argv=None) -> int:
         print(e)
         return 1
     redireccion = "http://127.0.0.1:%d" % httpd.server_address[1]
-    enlace = youtube.enlace_de_permiso(cliente, redireccion)
+    # Los de YouTube Y el de Drive, en la misma vuelta: el token es uno
+    # solo, así que pedirlos por separado obligaría a hacer esto dos veces y
+    # la segunda pisaría a la primera.
+    enlace = youtube.enlace_de_permiso(cliente, redireccion,
+                                       youtube.PERMISOS + (drive.PERMISO,))
 
     print("Abriendo el navegador para que des el permiso...")
     print()

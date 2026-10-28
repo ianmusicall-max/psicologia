@@ -6658,3 +6658,89 @@ class TestElLibroEnPdfYEpub(unittest.TestCase):
         aparte = (ROOT / "requirements-libro.txt").read_text(encoding="utf-8").lower()
         self.assertIn("reportlab", aparte)
         self.assertIn("-r requirements.txt", aparte)
+
+
+class TestLaCopiaEnDrive(unittest.TestCase):
+    """El mp4 en Drive, con el mismo cliente de Google que YouTube.
+
+    Pedido por el usuario varias veces. Lo que faltaba nunca fue una
+    credencial nueva: era un permiso más dentro del token que ya existe, y eso
+    lo da el dueño de la cuenta en el navegador.
+    """
+
+    def test_el_permiso_es_el_mas_chico_que_existe(self):
+        # `drive.file` deja crear archivos y tocar SOLO los que esta app creó.
+        # Con `drive` a secas, el token que vive en los secretos del
+        # repositorio podría leer el Drive entero.
+        from src import drive
+        self.assertEqual(drive.PERMISO,
+                         "https://www.googleapis.com/auth/drive.file")
+
+    def test_el_consentimiento_pide_los_tres_permisos_de_una_vez(self):
+        # El token es UNO solo: pedirlos por separado obliga a repetir el
+        # trámite y la segunda vuelta pisa a la primera.
+        from src import drive, youtube
+        enlace = youtube.enlace_de_permiso(
+            "cid", "http://127.0.0.1:1/x", youtube.PERMISOS + (drive.PERMISO,))
+        for permiso in youtube.PERMISOS + (drive.PERMISO,):
+            self.assertIn(permiso.replace(":", "%3A").replace("/", "%2F"),
+                          enlace, permiso)
+
+    def test_sin_el_permiso_no_se_intenta_nada(self):
+        # Mientras el token no lo tenga, esto no puede costar ni una llamada
+        # ni un renglón rojo por día. Es la lección de `RECETA_PRIVADA`: un
+        # error que sale todos los días esconde al que es nuevo.
+        from src import drive, youtube
+        with mock.patch.object(youtube, "permisos_del_token",
+                               return_value=list(youtube.PERMISOS)), \
+                mock.patch.object(drive, "_pedir",
+                                  side_effect=AssertionError("habló con Drive")):
+            self.assertFalse(drive.puede())
+            salida = drive.guardar_reel(Path("x.mp4"))
+        self.assertIn("permiso", salida["error"])
+
+    def test_si_no_se_puede_preguntar_tampoco_se_intenta(self):
+        from src import drive, youtube
+        with mock.patch.object(youtube, "permisos_del_token",
+                               side_effect=RuntimeError("sin red")):
+            self.assertFalse(drive.puede())
+
+    def test_una_falla_de_drive_no_rompe_un_reel_ya_publicado(self):
+        # Cuando esto corre, el reel YA salió en las tres plataformas. Una
+        # copia que no se pudo guardar no puede convertir eso en un fallo.
+        from src import drive, youtube
+        with mock.patch.object(youtube, "permisos_del_token",
+                               return_value=[drive.PERMISO]), \
+                mock.patch.object(youtube, "acceso", return_value="t"), \
+                mock.patch.object(drive, "carpeta",
+                                  side_effect=drive.DriveError("se cayó")):
+            salida = drive.guardar_reel(Path("x.mp4"))
+        self.assertEqual(salida, {"error": "se cayó"})
+
+    def test_el_cuerpo_multipart_lleva_la_ficha_y_despues_el_archivo(self):
+        # Drive pide las dos partes en ESE orden y con esos tipos. Con
+        # `files=` de requests saldría `form-data` y Drive lo rechaza.
+        from src import drive
+        cuerpo, tipo = drive._multipart({"name": "x.mp4"}, b"BYTES", "video/mp4")
+        self.assertTrue(tipo.startswith("multipart/related; boundary="))
+        linde = tipo.split("boundary=")[1]
+        self.assertIn(linde.encode(), cuerpo)
+        self.assertLess(cuerpo.index(b'"name"'), cuerpo.index(b"BYTES"))
+        self.assertIn(b"Content-Type: video/mp4", cuerpo)
+        self.assertTrue(cuerpo.rstrip().endswith(("--%s--" % linde).encode()))
+
+    def test_la_copia_no_puede_tapar_que_fallaron_las_plataformas(self):
+        # `drive` va en EXTRAS: el éxito del turno se juzga solo con las
+        # plataformas, igual que la historia.
+        rdd = _script("rdd", "reel_del_dia.py")
+        self.assertIn("drive", rdd.EXTRAS)
+        self.assertNotIn("drive", rdd.PLATAFORMAS)
+
+    def test_se_guarda_despues_de_publicar_y_no_antes(self):
+        # Lo que no puede fallar es la publicación; esto es un archivo
+        # guardado. Se miran las dos llamadas en el cuerpo de `main` y en qué
+        # orden están, que es lo único que hay que cuidar acá.
+        fuente = (ROOT / "scripts" / "reel_del_dia.py").read_text(encoding="utf-8")
+        cuerpo = fuente.split("def main")[-1]
+        self.assertLess(cuerpo.index("salidas = publicar("),
+                        cuerpo.index("drive.guardar_reel("))

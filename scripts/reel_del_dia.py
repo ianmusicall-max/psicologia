@@ -515,7 +515,7 @@ def probar(donde=PLATAFORMAS) -> dict:
 # aviso recorre `PLATAFORMAS` y el exito del turno se juzga solo con esas: una
 # historia que falla no convierte el turno en un fallo -el reel ya salio- y una
 # que sale no puede tapar que las tres plataformas fallaron.
-EXTRAS = ("historia",)
+EXTRAS = ("historia", "drive")
 
 
 def aviso(ruta: Path, titulo: str, salidas: dict) -> str:
@@ -659,6 +659,16 @@ def _trabajar(args, donde) -> int:
             return 0
 
     salidas = publicar(ruta, caption, titulo, descripcion, etiquetas, donde)
+    # La copia en alta, en Drive. Va DESPUES de publicar y no antes, por lo
+    # mismo que la historia: lo que no puede fallar es la publicacion, y esto
+    # es un archivo guardado.
+    #
+    # `guardar_reel` no levanta error nunca y contesta "el token no tiene el
+    # permiso" mientras ese permiso falte, asi que hasta que se de el
+    # consentimiento esto no cuesta ni una llamada ni un renglon rojo.
+    from src import drive                                  # noqa: E402
+    copia = drive.guardar_reel(ruta, ruta.with_suffix(".caption.txt"))
+    salidas["drive"] = copia.get("video") or ("no: %s" % copia.get("error"))
     # Se anota ANTES de avisar: si el aviso falla, lo que no puede perderse es
     # la marca de que hoy ya salio -o el proximo intento arma otro-.
     diario.anotar(ruta, titulo, salidas)
