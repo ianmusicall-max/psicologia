@@ -42,5 +42,18 @@
   },
   "publicado": true,
   "cuando": "2026-10-27T17:54:37"
+ },
+ "2026-10-28": {
+  "video": "due-01.mp4",
+  "titulo": "Lo que se pierde y lo que se queda",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1604063760839072",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18133310824773910",
+   "youtube": "https://youtube.com/shorts/PAnItjI1YIo",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-10-28T15:12:16"
  }
 }
