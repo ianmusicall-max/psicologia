@@ -1,6 +1,6 @@
 # Lo que nadie te explicó del amor
 
-### Ideas para quererte, elegir mejor y entenderte con quien querés
+### Ideas para quererte, elegir mejor y entenderte con quien quieres
 
 El título lo eligió el usuario el 2026-10-23 sobre tres opciones. Cubre las dos
 mitades del libro, quererte y vincularte, que es lo que la página promete, y

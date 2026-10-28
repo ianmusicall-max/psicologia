@@ -210,7 +210,7 @@ es no chocar, es arreglar rápido.
 
 Tres cosas, si quieres quedarte con algo:
 
-Al repartir, contá también lo que no se ve: quién lleva la lista, quién anticipa,
+Al repartir, cuenta también lo que no se ve: quién lleva la lista, quién anticipa,
 quién supervisa. Esa es media casa.
 
 No discutan porcentajes: los dos van a sumar más de cien y los dos van a estar

@@ -28,7 +28,7 @@ AVISO = ("<!-- Generado por scripts/armar_libro.py a partir de frases/. No edita
 # sonar a reproche a quien busca pareja, y «Hablarte bien», el más propio y el
 # que menos dice de qué trata.
 TITULO = "Lo que nadie te explicó del amor"
-SUBTITULO = "Ideas para quererte, elegir mejor y entenderte con quien querés"
+SUBTITULO = "Ideas para quererte, elegir mejor y entenderte con quien quieres"
 
 
 def borrador(temas: Iterable[Tema], titulo: str = TITULO,

@@ -176,7 +176,7 @@ promesa solo se puede creer o no.
 
 > Quien rompió no decide cuánto tarda el otro en volver a confiar.
 
-Es muy frecuente que quien falló quiera cerrar el tema. Ya pedí perdón, ya
+Es muy frecuente que quien falló quiera cerrar el tema. Ya pide perdón, ya
 expliqué, ¿hasta cuándo vamos a seguir con esto.
 
 Gordon y Baucom encontraron que imponer plazos se asocia a peor restauración de
@@ -202,10 +202,10 @@ reloj lo maneja quien fue dañado.
 Tres cosas, si quieres quedarte con algo:
 
 Si rompiste la confianza, no prometas. Decí qué vas a hacer distinto, en qué
-situación, y dejá que se pueda comprobar.
+situación, y deja que se pueda comprobar.
 
-Si te la rompieron, no busques la garantía: no existe. Mirá la constancia, que
+Si te la rompieron, no busques la garantía: no existe. Mira la constancia, que
 sí se puede medir.
 
-Y si estás revisando el teléfono, fijate si la necesidad baja con los meses. Si
+Y si estás revisando el teléfono, fíjate si la necesidad baja con los meses. Si
 no baja, eso ya no es seguridad.

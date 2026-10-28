@@ -44,7 +44,7 @@ Gottman identificó cuatro maneras de pelear que predicen la ruptura, y las
 llamó los cuatro jinetes. La primera es la crítica: no la queja sobre una
 conducta, sino el juicio sobre la persona.
 
-La diferencia es la que hay entre «dejaste los platos otra vez» y «siempre sos
+La diferencia es la que hay entre «dejaste los platos otra vez» y «siempre eres
 un desastre». La primera tiene arreglo —los platos se lavan— y la segunda es
 una sentencia sobre quién es el otro.
 
@@ -175,7 +175,7 @@ quiere. Hay reclamos que no se pueden traducir, y cuando eso pasa suele ser
 información valiosa: lo que había no era un pedido, era un dolor que todavía no
 encontró su forma.
 
-## Qué querés que pase después
+## Qué quieres que pase después
 
 > Ganar la discusión y perder la noche no es ganar.
 

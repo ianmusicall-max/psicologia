@@ -59,7 +59,7 @@ sugiere.
 ## Lo que hace que una disculpa funcione
 
 > Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que
-> sentís.
+> sientes.
 
 Roy Lewicki y sus colegas hicieron algo que parecía imposible: desarmaron la
 disculpa en seis componentes y los midieron por separado para ver cuál pesa.
@@ -80,7 +80,7 @@ sirve: dije esto, estuvo mal, entiendo qué te hizo, y esto voy a hacer distinto
 
 ## El malestar no repara
 
-> Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que hacés el día
+> Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que haces el día
 > siguiente.
 
 Hay una idea muy instalada de que el castigo interno paga la deuda. Si me siento
@@ -111,9 +111,9 @@ específica, ligada a un hecho, que pide algo concreto. Y hay una culpa difusa y
 constante, que no está ligada a nada en particular y que se asocia a malestar
 sin producir ninguna corrección.
 
-La manera práctica de distinguirlas cabe en una pregunta: ¿qué querés que haga?
+La manera práctica de distinguirlas cabe en una pregunta: ¿qué quieres que haga?
 
-Si la culpa tiene respuesta —llamá a tu hermana, devolvé la plata, pedile
+Si la culpa tiene respuesta —llama a tu hermana, devuelve la plata, pedile
 disculpas a esa persona— es información, y conviene hacerle caso rápido. Si no
 tiene respuesta, si lo único que dice es que deberías sentirte así, entonces no
 está pidiendo nada. Está cobrando.
@@ -124,7 +124,7 @@ siempre más chico que la nube.
 
 ## Culpa por descansar
 
-> Sentirte culpable por descansar es la prueba de que creés que valés por lo que
+> Sentirte culpable por descansar es la prueba de que crees que valés por lo que
 > producís.
 
 Jennifer Crocker y Connie Wolfe describieron lo que llamaron contingencias de la
@@ -147,7 +147,7 @@ entregaste esta semana.
 
 ## El enojo del otro no es un veredicto
 
-> Que alguien se enoje con vos no te hace culpable. Son dos cosas distintas y
+> Que alguien se enoje contigo no te hace culpable. Son dos cosas distintas y
 > casi siempre se confunden.
 
 Hay personas que, apenas alguien se molesta, revisan qué hicieron mal. Lo hacen
@@ -202,7 +202,7 @@ Tres cosas, si quieres quedarte con algo:
 Cuando algo te apriete, fíjate si la frase es «hice» o «soy». Si es «soy»,
 tradúcela a «hice» antes de hacer nada más.
 
-Cuando sientas culpa, preguntale qué quiere. Si tiene respuesta, hazlo hoy. Si
+Cuando sientas culpa, pregúntale qué quiere. Si tiene respuesta, hazlo hoy. Si
 no tiene, no es responsabilidad: es un impuesto.
 
 Y cuando pidas disculpas, di qué hiciste. Esa es la parte que se mide, y es

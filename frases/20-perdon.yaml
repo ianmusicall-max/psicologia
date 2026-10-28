@@ -13,14 +13,14 @@ tesis: >-
 
 frases:
   - id: per-01
-    texto: "Perdonar no es decir que estuvo bien. Es dejar de pagar vos la cuenta."
+    texto: "Perdonar no es decir que estuvo bien. Es dejar de pagar tú la cuenta."
     destacar: [cuenta]
     principio: "El perdón se define como la reducción de la motivación de venganza y evitación, no como excusar el daño ni como reconciliarse."
     fuente: "McCullough, Worthington y Rachal (1997); Enright (2001)."
     reflexion: >-
       Mucha gente no perdona porque cree que perdonar es firmar que lo que le
       hicieron estuvo bien. No es eso. El daño sigue siendo daño; lo que
-      cambia es quién carga con el costo diario de recordarlo. Podés tener
+      cambia es quién carga con el costo diario de recordarlo. Puedes tener
       razón y aun así estar cansado de sostenerla.
 
   - id: per-02
@@ -30,12 +30,12 @@ frases:
     fuente: "Enright y Fitzgibbons (2015), terapia del perdón."
     reflexion: >-
       Se confunden todo el tiempo, y esa confusión deja a gente atrapada en
-      vínculos que ya no quiere. Podés soltar el rencor y no volver a abrir la
-      puerta. Podés desearle que le vaya bien desde lejos. La única condición
+      vínculos que ya no quiere. Puedes soltar el rencor y no volver a abrir la
+      puerta. Puedes desearle que le vaya bien desde lejos. La única condición
       que el perdón te pone es interna.
 
   - id: per-03
-    texto: "El rencor es una deuda que cobrás vos todos los días."
+    texto: "El rencor es una deuda que cobrás tú todos los días."
     destacar: [deuda]
     principio: "Rumiar una ofensa mantiene activa la respuesta de estrés; el malestar fisiológico persiste aunque el otro no esté presente."
     fuente: "Witvliet, Ludwig y Vander Laan (2001), respuestas cardiovasculares."
@@ -54,10 +54,10 @@ frases:
       Hay disculpas que funcionan como un botón de reinicio: se dicen, baja la
       tensión y todo sigue igual hasta la próxima. Lo que distingue a una
       disculpa real no es la emoción con la que se dice, sino lo que pasa la
-      semana siguiente. Mirá eso y no el tono.
+      semana siguiente. Mira eso y no el tono.
 
   - id: per-05
-    texto: "Perdonarte a vos mismo también cuenta, y suele ser lo último que se hace."
+    texto: "Perdonarte a ti mismo también cuenta, y suele ser lo último que se hace."
     destacar: [cuenta]
     principio: "El autoperdón se asocia a menor depresión y ansiedad, y funciona mejor cuando incluye responsabilidad y reparación, no solo alivio."
     fuente: "Hall y Fincham (2005); Woodyatt y Wenzel (2013)."
@@ -68,14 +68,14 @@ frases:
       de cobrarse. Lo primero sin lo segundo es solo castigo.
 
   - id: per-06
-    texto: "No hace falta que el otro lo entienda para que vos puedas seguir."
+    texto: "No hace falta que el otro lo entienda para que tú puedas seguir."
     destacar: [seguir]
     principio: "El perdón no requiere la participación del ofensor; intervenciones unilaterales reducen la rumiación y mejoran el estado de ánimo."
     fuente: "Wade, Hoyt, Kidwell y Worthington (2014), metaanálisis de intervenciones."
     reflexion: >-
       Hay gente que espera años una conversación que no va a ocurrir: que
       reconozca, que explique, que se haga cargo. Esa espera convierte tu
-      descanso en algo que decide otro. Podés cerrar vos lo que el otro dejó
+      descanso en algo que decide otro. Puedes cerrar tú lo que el otro dejó
       abierto, aunque sea menos justo de lo que merecías.
 
   - id: per-07
@@ -90,7 +90,7 @@ frases:
       lo que hace que después el perdón aguante.
 
   - id: per-08
-    texto: "Si cada vez que perdonás vuelve a pasar, el problema no es tu perdón."
+    texto: "Si cada vez que perdonas vuelve a pasar, el problema no es tu perdón."
     destacar: [problema]
     principio: "Perdonar a una pareja que no repara su conducta se asocia a reincidencia; el perdón funciona como señal de que el costo es bajo."
     fuente: "McNulty (2011), estudio longitudinal en parejas."
@@ -101,12 +101,12 @@ frases:
       indulgencia, es un límite.
 
   - id: per-09
-    texto: "Lo que soltás no es la historia. Es el peso de estar reclamándola."
+    texto: "Lo que sueltas no es la historia. Es el peso de estar reclamándola."
     destacar: [peso]
     principio: "El perdón no implica olvidar ni minimizar; implica cambiar la relación con el recuerdo, de demanda activa a hecho pasado."
     fuente: "Worthington (2006), modelo REACH del perdón."
     reflexion: >-
       Nadie te pide que borres lo que pasó, ni que lo cuentes distinto. Lo que
       cambia es el lugar que ocupa: deja de ser un reclamo que llevás abierto y
-      pasa a ser algo que te pasó. Seguís sabiéndolo. Ya no estás esperando que
+      pasa a ser algo que te pasó. Sigues sabiéndolo. Ya no estás esperando que
       alguien lo repare.

@@ -13,13 +13,13 @@ tesis: >-
 
 frases:
   - id: exp-01
-    texto: "Creer que existe una sola persona para vos vuelve cualquier problema una señal de error."
+    texto: "Creer que existe una sola persona para ti vuelve cualquier problema una señal de error."
     destacar: [señal]
     principio: "Las creencias de destino se asocian a abandonar ante la dificultad, mientras que las creencias de crecimiento se asocian a persistir y resolver."
     fuente: "Knee (1998), teorías implícitas de las relaciones."
     reflexion: >-
-      Si creés que la relación correcta se reconoce porque fluye, el primer
-      problema serio se lee como prueba de que no era. Si creés que las
+      Si crees que la relación correcta se reconoce porque fluye, el primer
+      problema serio se lee como prueba de que no era. Si crees que las
       relaciones se construyen, el mismo problema se lee como algo que toca
       resolver. Los dos ven lo mismo y hacen cosas opuestas.
 
@@ -52,7 +52,7 @@ frases:
     fuente: "Epstein y Eidelson (1981), creencias disfuncionales de pareja."
     reflexion: >-
       Se llama lectura de mente y es una de las creencias que más predice
-      conflicto. Esperás que el otro adivine, el otro no adivina, y la falta
+      conflicto. Esperas que el otro adivine, el otro no adivina, y la falta
       de adivinación se interpreta como falta de amor. Pedir no le quita valor
       a lo que recibís.
 
@@ -101,7 +101,7 @@ frases:
       natural casi siempre es negociación vieja.
 
   - id: exp-09
-    texto: "Nadie te completa. Como mucho, te acompaña mientras te completás vos."
+    texto: "Nadie te completa. Como mucho, te acompaña mientras te completás tú."
     destacar: [acompaña]
     principio: "La dependencia de la pareja para la regulación de la autoestima se asocia a mayor ansiedad relacional y menor satisfacción de ambos."
     fuente: "Knee, Canevello, Bush y Cook (2008), contingencias de autoestima."

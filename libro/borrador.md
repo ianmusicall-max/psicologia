@@ -2,7 +2,7 @@
 
 # Lo que nadie te explicó del amor
 
-### Ideas para quererte, elegir mejor y entenderte con quien querés
+### Ideas para quererte, elegir mejor y entenderte con quien quieres
 
 *Borrador armado del banco de frases: 29 capítulos, 243 frases.*
 
@@ -36,7 +36,7 @@
 26. El día a día que nadie cuenta (9 frases)
 27. Lo que nos contaron del amor (9 frases)
 28. La gente cambia, pero no así (9 frases)
-29. El miedo que decide por vos (9 frases)
+29. El miedo que decide por tú (9 frases)
 
 
 ## Capítulo 1 · Sentir no es un error
@@ -1135,7 +1135,7 @@ La transmisión existe y está medida, pero no es un destino: lo que más predic
 *Fuente:* Van IJzendoorn (1995), transmisión intergeneracional del apego; Main et al. (1985), seguridad ganada.
 
 
-> Con tus padres podés sentir cariño y enojo al mismo tiempo. La mayoría de la gente siente las dos cosas.
+> Con tus padres puedes sentir cariño y enojo al mismo tiempo. La mayoría de la gente siente las dos cosas.
 
 Cuando se les pregunta por separado, la mayoría de los hijos adultos reporta a la vez afecto fuerte y tensión fuerte con sus padres. No es una contradicción que haya que resolver eligiendo una. Es cómo son casi todos estos vínculos, y pelearse con eso agrega culpa al asunto.
 
@@ -1156,7 +1156,7 @@ La idea de que el mayor es responsable y el menor rebelde es de las más querida
 La amistad es el único vínculo enteramente elegido, y por eso es el primero que se cae cuando falta tiempo: nada obliga a sostenerlo. Se construye con horas y se mantiene con frecuencia, no con intensidad. Y a diferencia de una pareja, casi nunca se termina diciéndolo.
 
 
-> Una amistad no se hace con afinidad. Se hace con horas, y son más de las que creés.
+> Una amistad no se hace con afinidad. Se hace con horas, y son más de las que crees.
 
 Mucha gente cree que con la persona correcta la amistad aparece sola. Lo que muestran los datos es menos romántico y más útil: hace falta estar, muchas veces, haciendo cualquier cosa. Por eso cuesta tanto hacer amigos de adulto, cuando ya nadie comparte ocho horas por día sin proponérselo.
 
@@ -1172,7 +1172,7 @@ Hasta los veinticinco, el contacto repetido viene de regalo: escuela, facultad, 
 *Fuente:* Wrzus et al. (2013), Psychological Bulletin, metaanálisis sobre redes sociales a lo largo de la vida.
 
 
-> La mitad de las personas que vos considerás amigas no te consideran a vos. Y es mutuo, con otros.
+> La mitad de las personas que tú considerás amigas no te consideran a ti. Y es mutuo, con otros.
 
 Suena peor de lo que es. No significa que no te quieran: significa que cada uno ordena su lista distinto, y que casi nadie lo dice en voz alta. Saberlo ayuda a dejar de medir la amistad por el lugar que uno ocupa y a mirar lo que de verdad pasa cuando se ven.
 
@@ -1190,7 +1190,7 @@ Una pareja que se termina tiene una conversación, una fecha y a veces un motivo
 
 > No hace falta una conversación profunda. Hace falta volver a aparecer.
 
-Hay gente que no escribe porque siente que debería escribir algo importante, y entonces no escribe nunca. Lo que sostiene una amistad son los mensajes sin contenido: una foto, una pavada, un me acordé de vos. La profundidad viene después, y solo si hubo antes.
+Hay gente que no escribe porque siente que debería escribir algo importante, y entonces no escribe nunca. Lo que sostiene una amistad son los mensajes sin contenido: una foto, una pavada, un me acordé de ti. La profundidad viene después, y solo si hubo antes.
 
 *Principio:* La frecuencia del contacto predice el mantenimiento de la amistad mejor que la profundidad de cada interacción.  
 *Fuente:* Hall (2019); Oswald, Clark & Kelly (2004), mantenimiento de la amistad.
@@ -1204,7 +1204,7 @@ En el metaanálisis más citado sobre el tema, tener vínculos sólidos se asoci
 *Fuente:* Chopik (2017), Personal Relationships; Holt-Lunstad et al. (2010), metaanálisis sobre vínculos y mortalidad.
 
 
-> Cómo reaccionás cuando a tu amigo le va bien dice más del vínculo que cómo reaccionás cuando le va mal.
+> Cómo reaccionas cuando a tu amigo le va bien dice más del vínculo que cómo reaccionas cuando le va mal.
 
 Estar en las malas es lo que todos sabemos que hay que hacer. Lo que casi nadie mira es el momento en que alguien llega con una buena noticia y recibe un «qué bien» tibio, o peor, un comentario que la achica. Eso se mide y pesa, en la pareja y en la amistad.
 
@@ -1241,7 +1241,7 @@ La vergüenza empuja a achicarse, bajar la mirada y desaparecer de la escena. En
 *Fuente:* Tangney et al. (2007); Gilbert (2009), terapia centrada en la compasión.
 
 
-> Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que sentís.
+> Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que sientes.
 
 Se midieron los pedazos de una disculpa por separado. El que más mueve la aguja es decir qué hiciste y hacerte cargo. «Perdón si te sentiste mal» no incluye eso, y por eso suena a lo que es: una forma de pedir disculpas sin reconocer nada.
 
@@ -1249,7 +1249,7 @@ Se midieron los pedazos de una disculpa por separado. El que más mueve la aguja
 *Fuente:* Lewicki, Polin & Lount (2016), Negotiation and Conflict Management Research: los componentes de una disculpa eficaz.
 
 
-> Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que hacés el día siguiente.
+> Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que haces el día siguiente.
 
 Hay una idea de que el castigo interno paga la deuda, y por eso mucha gente se queda en el malestar como si eso fuera la reparación. No lo es para el otro, que no ve nada, y tampoco para uno. La culpa termina cuando algo cambió afuera, no cuando el malestar fue suficiente.
 
@@ -1259,13 +1259,13 @@ Hay una idea de que el castigo interno paga la deuda, y por eso mucha gente se q
 
 > La culpa que no lleva a ninguna acción no es responsabilidad. Es un impuesto que te cobrás.
 
-Preguntale a la culpa qué querés que haga. Si tiene respuesta, es información y conviene hacerle caso. Si no tiene, no está pidiendo nada: está cobrando. Esa diferencia se puede chequear en treinta segundos y ahorra meses.
+Pregúntale a la culpa qué quieres que haga. Si tiene respuesta, es información y conviene hacerle caso. Si no tiene, no está pidiendo nada: está cobrando. Esa diferencia se puede chequear en treinta segundos y ahorra meses.
 
 *Principio:* La culpa adaptativa es específica y accionable; la culpa crónica y difusa no corrige nada y se asocia a malestar.  
 *Fuente:* Tilghman-Osborne, Cole & Felton (2010), revisión sobre culpa adaptativa y desadaptativa.
 
 
-> Sentirte culpable por descansar es la prueba de que creés que valés por lo que producís.
+> Sentirte culpable por descansar es la prueba de que crees que valés por lo que producís.
 
 Si el valor propio depende de lo hecho, cada hora sin hacer nada se siente como una pérdida de valor. Por eso hay gente que descansa peor que la que trabaja, y vuelve del descanso más cansada. El problema no es la agenda: es de dónde cree esa persona que viene su valor.
 
@@ -1273,7 +1273,7 @@ Si el valor propio depende de lo hecho, cada hora sin hacer nada se siente como 
 *Fuente:* Crocker & Wolfe (2001), Psychological Review, contingencias de la autoestima; Sonnentag & Fritz (2007).
 
 
-> Que alguien se enoje con vos no te hace culpable. Son dos cosas distintas y casi siempre se confunden.
+> Que alguien se enoje contigo no te hace culpable. Son dos cosas distintas y casi siempre se confunden.
 
 Hay personas que, apenas alguien se molesta, revisan qué hicieron mal, incluso cuando no hicieron nada. Aprendieron a usar el estado de ánimo del otro como el termómetro de su propia conducta. Son dos preguntas distintas: qué siente el otro, y si está bien lo que hice.
 
@@ -1363,9 +1363,9 @@ La pregunta no es si uno tenía ganas sino para qué dijo que sí. Hacerlo para 
 Perdonar y reconciliar son dos decisiones distintas, y confundirlas atrapa a mucha gente: creen que soltar el rencor les obliga a volver. Perdonar es dejar de cobrarle a alguien una deuda que ya no va a pagar; reconciliar es volver a confiar, y eso exige que el otro cambie. Se puede hacer lo primero sin lo segundo.
 
 
-> Perdonar no es decir que estuvo bien. Es dejar de pagar vos la cuenta.
+> Perdonar no es decir que estuvo bien. Es dejar de pagar tú la cuenta.
 
-Mucha gente no perdona porque cree que perdonar es firmar que lo que le hicieron estuvo bien. No es eso. El daño sigue siendo daño; lo que cambia es quién carga con el costo diario de recordarlo. Podés tener razón y aun así estar cansado de sostenerla.
+Mucha gente no perdona porque cree que perdonar es firmar que lo que le hicieron estuvo bien. No es eso. El daño sigue siendo daño; lo que cambia es quién carga con el costo diario de recordarlo. Puedes tener razón y aun así estar cansado de sostenerla.
 
 *Principio:* El perdón se define como la reducción de la motivación de venganza y evitación, no como excusar el daño ni como reconciliarse.  
 *Fuente:* McCullough, Worthington y Rachal (1997); Enright (2001).
@@ -1373,13 +1373,13 @@ Mucha gente no perdona porque cree que perdonar es firmar que lo que le hicieron
 
 > Perdonar y volver son dos decisiones. Nadie te obliga a tomar las dos.
 
-Se confunden todo el tiempo, y esa confusión deja a gente atrapada en vínculos que ya no quiere. Podés soltar el rencor y no volver a abrir la puerta. Podés desearle que le vaya bien desde lejos. La única condición que el perdón te pone es interna.
+Se confunden todo el tiempo, y esa confusión deja a gente atrapada en vínculos que ya no quiere. Puedes soltar el rencor y no volver a abrir la puerta. Puedes desearle que le vaya bien desde lejos. La única condición que el perdón te pone es interna.
 
 *Principio:* Perdón y reconciliación son procesos separables: el primero es intrapersonal, el segundo requiere confianza restaurada y cambio del otro.  
 *Fuente:* Enright y Fitzgibbons (2015), terapia del perdón.
 
 
-> El rencor es una deuda que cobrás vos todos los días.
+> El rencor es una deuda que cobrás tú todos los días.
 
 Cuando repasás lo que te hicieron, tu cuerpo responde como si estuviera pasando otra vez: sube la presión, se tensa todo. El otro no se entera. La escena se repite en una sola cabeza, y es la tuya. Eso no te pide perdonar por generosidad; te lo pide por descanso.
 
@@ -1389,13 +1389,13 @@ Cuando repasás lo que te hicieron, tu cuerpo responde como si estuviera pasando
 
 > Pedir perdón sin cambiar nada es pedir permiso para repetirlo.
 
-Hay disculpas que funcionan como un botón de reinicio: se dicen, baja la tensión y todo sigue igual hasta la próxima. Lo que distingue a una disculpa real no es la emoción con la que se dice, sino lo que pasa la semana siguiente. Mirá eso y no el tono.
+Hay disculpas que funcionan como un botón de reinicio: se dicen, baja la tensión y todo sigue igual hasta la próxima. Lo que distingue a una disculpa real no es la emoción con la que se dice, sino lo que pasa la semana siguiente. Mira eso y no el tono.
 
 *Principio:* Una disculpa eficaz incluye reconocimiento del daño, responsabilidad sin excusas, reparación y un cambio verificable de conducta.  
 *Fuente:* Lewicki, Polin y Lount (2016), componentes de la disculpa.
 
 
-> Perdonarte a vos mismo también cuenta, y suele ser lo último que se hace.
+> Perdonarte a ti mismo también cuenta, y suele ser lo último que se hace.
 
 Mucha gente perdona a otros con facilidad y se guarda el juicio más duro para sí. El autoperdón que sirve no es el que dice que no pasó nada: es el que reconoce el daño, hace lo que puede para repararlo y después deja de cobrarse. Lo primero sin lo segundo es solo castigo.
 
@@ -1403,9 +1403,9 @@ Mucha gente perdona a otros con facilidad y se guarda el juicio más duro para s
 *Fuente:* Hall y Fincham (2005); Woodyatt y Wenzel (2013).
 
 
-> No hace falta que el otro lo entienda para que vos puedas seguir.
+> No hace falta que el otro lo entienda para que tú puedas seguir.
 
-Hay gente que espera años una conversación que no va a ocurrir: que reconozca, que explique, que se haga cargo. Esa espera convierte tu descanso en algo que decide otro. Podés cerrar vos lo que el otro dejó abierto, aunque sea menos justo de lo que merecías.
+Hay gente que espera años una conversación que no va a ocurrir: que reconozca, que explique, que se haga cargo. Esa espera convierte tu descanso en algo que decide otro. Puedes cerrar tú lo que el otro dejó abierto, aunque sea menos justo de lo que merecías.
 
 *Principio:* El perdón no requiere la participación del ofensor; intervenciones unilaterales reducen la rumiación y mejoran el estado de ánimo.  
 *Fuente:* Wade, Hoyt, Kidwell y Worthington (2014), metaanálisis de intervenciones.
@@ -1419,7 +1419,7 @@ Hay un perdón que llega antes de tiempo, empujado por la incomodidad o por la p
 *Fuente:* Luskin (2002); McNulty (2011), efectos según el contexto.
 
 
-> Si cada vez que perdonás vuelve a pasar, el problema no es tu perdón.
+> Si cada vez que perdonas vuelve a pasar, el problema no es tu perdón.
 
 El perdón repetido sin cambio del otro no es generosidad, es información: le dice que esto no cuesta. Hay vínculos donde perdonar una vez abre una puerta y perdonar cinco la deja sin picaporte. Ahí lo que falta no es indulgencia, es un límite.
 
@@ -1427,9 +1427,9 @@ El perdón repetido sin cambio del otro no es generosidad, es información: le d
 *Fuente:* McNulty (2011), estudio longitudinal en parejas.
 
 
-> Lo que soltás no es la historia. Es el peso de estar reclamándola.
+> Lo que sueltas no es la historia. Es el peso de estar reclamándola.
 
-Nadie te pide que borres lo que pasó, ni que lo cuentes distinto. Lo que cambia es el lugar que ocupa: deja de ser un reclamo que llevás abierto y pasa a ser algo que te pasó. Seguís sabiéndolo. Ya no estás esperando que alguien lo repare.
+Nadie te pide que borres lo que pasó, ni que lo cuentes distinto. Lo que cambia es el lugar que ocupa: deja de ser un reclamo que llevás abierto y pasa a ser algo que te pasó. Sigues sabiéndolo. Ya no estás esperando que alguien lo repare.
 
 *Principio:* El perdón no implica olvidar ni minimizar; implica cambiar la relación con el recuerdo, de demanda activa a hecho pasado.  
 *Fuente:* Worthington (2006), modelo REACH del perdón.
@@ -1437,12 +1437,12 @@ Nadie te pide que borres lo que pasó, ni que lo cuentes distinto. Lo que cambia
 
 ## Capítulo 21 · Estar solo no es sentirse solo
 
-La soledad que duele no se mide en personas alrededor: se mide en la distancia entre los vínculos que tenés y los que querrías tener. Por eso se puede estar acompañado y sentirse solo, y vivir solo sin sentirlo. Es una señal, como el hambre, y lo que la calma no es más gente sino más cercanía.
+La soledad que duele no se mide en personas alrededor: se mide en la distancia entre los vínculos que tienes y los que querrías tener. Por eso se puede estar acompañado y sentirse solo, y vivir solo sin sentirlo. Es una señal, como el hambre, y lo que la calma no es más gente sino más cercanía.
 
 
 > Se puede estar rodeado de gente y seguir sintiéndote solo. No estás fallando.
 
-La soledad no cuenta cabezas, mide distancia. Por eso una mesa llena puede dejarte más solo que una tarde a solas: lo que falta no es compañía, es que alguien sepa de verdad cómo estás. Entenderlo cambia lo que buscás: no más planes, más cercanía en alguno.
+La soledad no cuenta cabezas, mide distancia. Por eso una mesa llena puede dejarte más solo que una tarde a solas: lo que falta no es compañía, es que alguien sepa de verdad cómo estás. Entenderlo cambia lo que buscas: no más planes, más cercanía en alguno.
 
 *Principio:* La soledad se define como la discrepancia entre las relaciones deseadas y las percibidas, no como aislamiento objetivo.  
 *Fuente:* Peplau y Perlman (1982); Cacioppo y Patrick (2008).
@@ -1458,7 +1458,7 @@ Es incómoda a propósito. Si no doliera, nadie haría el esfuerzo de acercarse 
 
 > Estar solo un rato no es lo mismo que estar aislado mucho tiempo.
 
-Hay una soledad que elegís y que descansa, y otra que te pasa y que desgasta. La diferencia no está en las horas sino en si la puerta está abierta. Si podés volver cuando querés, es descanso. Si no sabés cómo volver, es otra cosa.
+Hay una soledad que eliges y que descansa, y otra que te pasa y que desgasta. La diferencia no está en las horas sino en si la puerta está abierta. Si puedes volver cuando quieres, es descanso. Si no sabes cómo volver, es otra cosa.
 
 *Principio:* La soledad elegida y breve se asocia a recuperación y creatividad; el aislamiento crónico percibido se asocia a peor salud física y mental.  
 *Fuente:* Long y Averill (2003); Holt-Lunstad y colegas (2015), metaanálisis.
@@ -1472,7 +1472,7 @@ Cuando llevás tiempo solo, el cerebro empieza a leer rechazo en cosas que no lo
 *Fuente:* Cacioppo y Hawkley (2009); Spithoven, Bijttebier y Goossens (2017).
 
 
-> Un vínculo donde podés decir la verdad vale más que diez donde actuás.
+> Un vínculo donde puedes decir la verdad vale más que diez donde actuás.
 
 El estudio más largo que se hizo sobre vidas adultas encontró que lo que sostiene no es la agenda llena: es tener vínculos donde no hace falta actuar. Uno o dos alcanzan. Si estás midiendo tu vida social por cantidad, estás mirando la columna equivocada.
 
@@ -1482,7 +1482,7 @@ El estudio más largo que se hizo sobre vidas adultas encontró que lo que sosti
 
 > Esperar a sentirte bien para ver gente es esperar al revés.
 
-La trampa es que el ánimo bajo te saca las ganas justo de lo que lo levanta. Si esperás a tener ganas, la espera se hace larga. Lo que suele funcionar es al revés: ir primero, aunque sea un rato corto, y dejar que las ganas lleguen después.
+La trampa es que el ánimo bajo te saca las ganas justo de lo que lo levanta. Si esperas a tener ganas, la espera se hace larga. Lo que suele funcionar es al revés: ir primero, aunque sea un rato corto, y dejar que las ganas lleguen después.
 
 *Principio:* El contacto social predice aumentos posteriores del estado de ánimo; esperar a sentirse bien invierte la secuencia y mantiene el retraimiento.  
 *Fuente:* Lewinsohn (1974), modelo conductual; activación conductual.
@@ -1506,7 +1506,7 @@ Quien pide ayuda casi siempre cree que molesta más de lo que molesta, y quien l
 
 > Si te aislás cuando estás mal, tu cabeza se queda sin nadie que la contradiga.
 
-Solo, las ideas sobre vos mismo no encuentran resistencia: giran y se confirman. Una conversación cualquiera las interrumpe, aunque no hablen del tema. No hace falta contarle todo a nadie. Alcanza con que haya otra voz en el día.
+Solo, las ideas sobre tú mismo no encuentran resistencia: giran y se confirman. Una conversación cualquiera las interrumpe, aunque no hablen del tema. No hace falta contarle todo a nadie. Alcanza con que haya otra voz en el día.
 
 *Principio:* El aislamiento reduce la exposición a perspectivas alternativas y facilita el mantenimiento de interpretaciones negativas sobre uno mismo.  
 *Fuente:* Nolen-Hoeksema (2000), rumiación; terapia cognitiva.
@@ -1527,7 +1527,7 @@ No es magia: una discusión que arranca con un reproche pone al otro a defenders
 
 > Decí lo que pasó, no lo que el otro es. El hecho se discute, el carácter no.
 
-No es lo mismo dejaste los platos que siempre sos un desastre. Lo primero tiene arreglo, lo segundo es una sentencia sobre quién es. Y nadie negocia con una sentencia: se defiende. La queja concreta deja la puerta abierta; la etiqueta la cierra.
+No es lo mismo dejaste los platos que siempre eres un desastre. Lo primero tiene arreglo, lo segundo es una sentencia sobre quién es. Y nadie negocia con una sentencia: se defiende. La queja concreta deja la puerta abierta; la etiqueta la cierra.
 
 *Principio:* La crítica a la persona, frente a la queja sobre una conducta concreta, escala el conflicto y reduce la probabilidad de resolución.  
 *Fuente:* Gottman (1994), los cuatro jinetes.
@@ -1543,7 +1543,7 @@ Poner los ojos en blanco, imitar el tono del otro, reírse de lo que dijo. Son s
 
 > Si ya no escuchás, no estás discutiendo: estás esperando tu turno.
 
-Pasado cierto punto, el cuerpo entra en alerta y la conversación se vuelve imposible: el otro habla y vos ya estás armando la respuesta. No es mala voluntad, es fisiología. Lo único que sirve ahí es parar, y volver cuando bajó.
+Pasado cierto punto, el cuerpo entra en alerta y la conversación se vuelve imposible: el otro habla y tú ya estás armando la respuesta. No es mala voluntad, es fisiología. Lo único que sirve ahí es parar, y volver cuando bajó.
 
 *Principio:* Durante la activación fisiológica alta se reduce la capacidad de procesar información nueva y aumenta la conducta defensiva.  
 *Fuente:* Gottman (1994), inundación fisiológica.
@@ -1660,7 +1660,7 @@ Prometer que no pasa de nuevo es una intención, y las intenciones generales cas
 
 > Quien rompió no decide cuánto tarda el otro en volver a confiar.
 
-Es frecuente que quien falló quiera cerrar el tema: ya pedí perdón, hasta cuándo. Ese apuro vuelve a poner sus necesidades primero, que es justo lo que rompió la confianza. El tiempo lo marca el que fue dañado, y el otro lo acompaña.
+Es frecuente que quien falló quiera cerrar el tema: ya pide perdón, hasta cuándo. Ese apuro vuelve a poner sus necesidades primero, que es justo lo que rompió la confianza. El tiempo lo marca el que fue dañado, y el otro lo acompaña.
 
 *Principio:* Imponer plazos a la recuperación del dañado se asocia a menor restauración de la confianza y a mayor conflicto.  
 *Fuente:* Gordon y Baucom (2003); Worthington (2006).
@@ -1671,9 +1671,9 @@ Es frecuente que quien falló quiera cerrar el tema: ya pedí perdón, hasta cu�
 Compararse es automático, pero el material con el que nos comparamos cambió: hoy medimos nuestro día completo contra los momentos editados de cientos de personas. La comparación hacia arriba, sostenida y con desconocidos, predice peor ánimo. No se trata de dejar de comparar sino de elegir contra qué.
 
 
-> Comparás tu día entero con el mejor minuto del otro.
+> Comparas tu día entero con el mejor minuto del otro.
 
-Vos tenés acceso a tu día completo: el aburrimiento, la discusión, el rato tirado en la cama. Del otro ves quince segundos elegidos entre cien. La comparación no es injusta por envidia, es injusta porque los dos lados no tienen el mismo tamaño.
+Tú tienes acceso a tu día completo: el aburrimiento, la discusión, el rato tirado en la cama. Del otro ves quince segundos elegidos entre cien. La comparación no es injusta por envidia, es injusta porque los dos lados no tienen el mismo tamaño.
 
 *Principio:* El contenido social en línea muestra momentos seleccionados, lo que sesga la comparación al presentar solo los extremos positivos de otros.  
 *Fuente:* Chou y Edge (2012), percepción de las vidas ajenas.
@@ -1689,7 +1689,7 @@ Scrollear sin interactuar es lo que más se asocia a sentirse peor después. Esc
 
 > Compararte con quien empezó hace diez años no te dice nada útil.
 
-La comparación sirve para orientarse: saber si vas bien, qué te falta. Para eso el otro tiene que ser parecido a vos en el punto de partida. Contra alguien que lleva una década de ventaja no obtenés información, obtenés desánimo.
+La comparación sirve para orientarse: saber si vas bien, qué te falta. Para eso el otro tiene que ser parecido a ti en el punto de partida. Contra alguien que lleva una década de ventaja no obtenés información, obtenés desánimo.
 
 *Principio:* La comparación social es informativa cuando el referente es similar en condiciones de partida; con referentes muy distintos pierde valor diagnóstico.  
 *Fuente:* Festinger (1954), teoría de la comparación social.
@@ -1697,13 +1697,13 @@ La comparación sirve para orientarse: saber si vas bien, qué te falta. Para es
 
 > Mirar a alguien que va mejor puede alentarte o hundirte. Depende de si lo ves posible.
 
-El mismo ejemplo funciona de dos maneras opuestas. Si pensás eso lo puedo hacer, te empuja. Si pensás yo nunca, te desarma. Antes de seguir a alguien conviene notar cuál de las dos cosas te pasa en el cuerpo cuando lo mirás.
+El mismo ejemplo funciona de dos maneras opuestas. Si piensas eso lo puedo hacer, te empuja. Si piensas yo nunca, te desarma. Antes de seguir a alguien conviene notar cuál de las dos cosas te pasa en el cuerpo cuando lo miras.
 
 *Principio:* La comparación ascendente motiva cuando el referente se percibe como alcanzable y desmoraliza cuando se percibe como inalcanzable.  
 *Fuente:* Lockwood y Kunda (1997), modelos a seguir.
 
 
-> La envidia te está señalando algo que querés. Eso es información.
+> La envidia te está señalando algo que quieres. Eso es información.
 
 La envidia tiene mala fama y es un dato preciso: marca lo que querrías y no estás teniendo. La diferencia está en hacia dónde apunta. Si apunta a lo que el otro consiguió, te mueve. Si apunta a que el otro lo pierda, te deja donde estabas.
 
@@ -1719,9 +1719,9 @@ En un estudio, la gente subestimaba sistemáticamente cuánto sufrían los demá
 *Fuente:* Jordan y colegas (2011), subestimación del malestar ajeno.
 
 
-> Compararte con vos de hace un año es la única comparación con datos reales.
+> Compararte contigo de hace un año es la única comparación con datos reales.
 
-De esa comparación tenés las dos mitades: sabés de dónde saliste y lo que costó. No hay edición de por medio. Es la única medida que te dice algo verdadero sobre si estás avanzando, y casi nunca es la que usamos.
+De esa comparación tienes las dos mitades: sabes de dónde saliste y lo que costó. No hay edición de por medio. Es la única medida que te dice algo verdadero sobre si estás avanzando, y casi nunca es la que usamos.
 
 *Principio:* La comparación temporal con uno mismo se asocia a mayor bienestar que la comparación social, al usar un referente con información completa.  
 *Fuente:* Albert (1977), comparación temporal; Wilson y Ross (2000).
@@ -1737,7 +1737,7 @@ Casi nadie decide cada mañana ver eso que lo deja peor: la mano abre la aplicac
 
 > Si todo lo que ves te muestra lo que te falta, vas a sentir que te falta todo.
 
-La vara con la que medís tu vida no es fija: se arma con lo que ves seguido. Si lo que ves seguido son casas, viajes y parejas perfectas, tu vida normal va a parecer poca, aunque no haya cambiado nada en ella. Cambiar la dieta cambia la vara.
+La vara con la que mides tu vida no es fija: se arma con lo que ves seguido. Si lo que ves seguido son casas, viajes y parejas perfectas, tu vida normal va a parecer poca, aunque no haya cambiado nada en ella. Cambiar la dieta cambia la vara.
 
 *Principio:* La exposición selectiva a referentes superiores desplaza el punto de referencia usado para evaluar la propia situación.  
 *Fuente:* Kahneman y Tversky (1979), puntos de referencia; Festinger (1954).
@@ -1806,7 +1806,7 @@ Es común que uno se encargue de todo y el otro prefiera no mirar. Mientras todo
 
 > Prestarle plata a alguien cercano compra un problema futuro, no un favor.
 
-Los vínculos cercanos funcionan con una lógica de dar sin llevar cuenta; un préstamo mete adentro una lógica de deuda. Cuando las dos conviven, cada encuentro tiene una pregunta no dicha. Si vas a prestar, conviene decidir de antemano si podés regalarlo.
+Los vínculos cercanos funcionan con una lógica de dar sin llevar cuenta; un préstamo mete adentro una lógica de deuda. Cuando las dos conviven, cada encuentro tiene una pregunta no dicha. Si vas a prestar, conviene decidir de antemano si puedes regalarlo.
 
 *Principio:* Los préstamos informales entre allegados generan asimetrías de obligación que deterioran el vínculo cuando la devolución se demora.  
 *Fuente:* Clark y Mills (1979), relaciones comunales e intercambio.
@@ -1835,7 +1835,7 @@ Se puede repartir quién lava y quién cocina y que uno siga llevando toda la pl
 
 > Ayudar en casa es la palabra del problema. No se ayuda en lo propio.
 
-Ayudar supone que la tarea es de otro y vos colaborás. Mientras la palabra siga ahí, la responsabilidad de que las cosas pasen queda en el mismo lugar, aunque las manos sean dos. Cambiar el verbo no resuelve el reparto, pero lo deja a la vista.
+Ayudar supone que la tarea es de otro y tú colaborás. Mientras la palabra siga ahí, la responsabilidad de que las cosas pasen queda en el mismo lugar, aunque las manos sean dos. Cambiar el verbo no resuelve el reparto, pero lo deja a la vista.
 
 *Principio:* El encuadre de la participación doméstica como ayuda mantiene la responsabilidad en un solo miembro y predice reparto desigual.  
 *Fuente:* Hochschild y Machung (1989), la segunda jornada.
@@ -1902,9 +1902,9 @@ Toda convivencia produce fricción: es lo que pasa cuando dos costumbres compart
 Muchas de las ideas con las que entramos a una relación vienen de las historias que escuchamos, no de cómo funcionan los vínculos: que existe una persona destinada, que el amor verdadero no requiere esfuerzo, que si hay que hablarlo ya está mal. Esas creencias predicen peor ajuste cuando aparece la primera dificultad real.
 
 
-> Creer que existe una sola persona para vos vuelve cualquier problema una señal de error.
+> Creer que existe una sola persona para ti vuelve cualquier problema una señal de error.
 
-Si creés que la relación correcta se reconoce porque fluye, el primer problema serio se lee como prueba de que no era. Si creés que las relaciones se construyen, el mismo problema se lee como algo que toca resolver. Los dos ven lo mismo y hacen cosas opuestas.
+Si crees que la relación correcta se reconoce porque fluye, el primer problema serio se lee como prueba de que no era. Si crees que las relaciones se construyen, el mismo problema se lee como algo que toca resolver. Los dos ven lo mismo y hacen cosas opuestas.
 
 *Principio:* Las creencias de destino se asocian a abandonar ante la dificultad, mientras que las creencias de crecimiento se asocian a persistir y resolver.  
 *Fuente:* Knee (1998), teorías implícitas de las relaciones.
@@ -1928,7 +1928,7 @@ Hace cien años a una pareja se le pedía compañía y sustento. Hoy se le pide 
 
 > Si tengo que pedirlo, ya no vale: esa idea arruina más vínculos que el egoísmo.
 
-Se llama lectura de mente y es una de las creencias que más predice conflicto. Esperás que el otro adivine, el otro no adivina, y la falta de adivinación se interpreta como falta de amor. Pedir no le quita valor a lo que recibís.
+Se llama lectura de mente y es una de las creencias que más predice conflicto. Esperas que el otro adivine, el otro no adivina, y la falta de adivinación se interpreta como falta de amor. Pedir no le quita valor a lo que recibís.
 
 *Principio:* La expectativa de que la pareja anticipe las necesidades sin comunicación explícita predice mayor conflicto y menor satisfacción.  
 *Fuente:* Epstein y Eidelson (1981), creencias disfuncionales de pareja.
@@ -1966,7 +1966,7 @@ La idea de encajar sugiere que hay piezas que ya vienen con la forma correcta. E
 *Fuente:* Knee (1998); Markman, Stanley y Blumberg (2010).
 
 
-> Nadie te completa. Como mucho, te acompaña mientras te completás vos.
+> Nadie te completa. Como mucho, te acompaña mientras te completás tú.
 
 La idea de la media naranja suena romántica y pone un peso imposible: que el otro sea quien resuelva lo que te falta. Los vínculos aguantan mejor cuando cada uno llega entero y el otro suma, en vez de llegar roto y esperar reparación.
 
@@ -1981,7 +1981,7 @@ La gente cambia, pero no por amor, ni por una promesa, ni porque alguien se lo p
 
 > Nadie cambia porque se lo pidan. Cambia cuando le conviene más cambiar que seguir.
 
-Lo que se hace para que el otro deje de insistir dura lo que dura la insistencia. Es la diferencia entre dejar de fumar porque tu pareja amenaza y dejar porque te asustaste vos. Desde afuera se parecen; a los seis meses no.
+Lo que se hace para que el otro deje de insistir dura lo que dura la insistencia. Es la diferencia entre dejar de fumar porque tu pareja amenaza y dejar porque te asustaste tú. Desde afuera se parecen; a los seis meses no.
 
 *Principio:* El cambio sostenido requiere motivación autónoma; la presión externa produce cumplimiento temporal y mayor recaída.  
 *Fuente:* Deci y Ryan (2000), teoría de la autodeterminación.
@@ -2005,7 +2005,7 @@ Voy a hacer ejercicio casi no mueve la aguja. Los martes y jueves a las siete, z
 
 > Cambiar el entorno cuesta menos que cambiar la fuerza de voluntad.
 
-Quienes parecen tener más disciplina no están resistiendo todo el día: se arman la vida para no tener que resistir. Sacar la aplicación del teléfono, no comprar lo que no querés comer. Lo que no está adelante no hay que vencerlo.
+Quienes parecen tener más disciplina no están resistiendo todo el día: se arman la vida para no tener que resistir. Sacar la aplicación del teléfono, no comprar lo que no quieres comer. Lo que no está adelante no hay que vencerlo.
 
 *Principio:* Las personas con mejor autorregulación reportan menos conflictos de tentación porque estructuran su entorno, no porque resistan más.  
 *Fuente:* Hofmann, Baumeister, Förster y Vohs (2012); Galla y Duckworth (2015).
@@ -2043,22 +2043,22 @@ Es un patrón conocido: la crisis produce una mejora inmediata y visible, y la m
 *Fuente:* Deci y Ryan (2000); Marlatt y Gordon (1985).
 
 
-> Preguntate qué va a ser distinto el martes a las siete. Si no hay respuesta, no hay cambio.
+> Pregúntate qué va a ser distinto el martes a las siete. Si no hay respuesta, no hay cambio.
 
-Es la prueba más rápida que hay, y sirve tanto para vos como para lo que te promete otro. Voy a estar más presente no se puede comprobar; el martes salgo a las seis y te paso a buscar sí. Si nadie puede nombrar la escena, todavía no hay plan.
+Es la prueba más rápida que hay, y sirve tanto para ti como para lo que te promete otro. Voy a estar más presente no se puede comprobar; el martes salgo a las seis y te paso a buscar sí. Si nadie puede nombrar la escena, todavía no hay plan.
 
 *Principio:* Los compromisos de cambio sin especificación conductual concreta no se distinguen empíricamente de la ausencia de compromiso.  
 *Fuente:* Gollwitzer y Sheeran (2006); Locke y Latham (2002), fijación de metas.
 
 
-## Capítulo 29 · El miedo que decide por vos
+## Capítulo 29 · El miedo que decide por tú
 
-Buena parte de lo que parece desinterés en los vínculos es miedo: a que te dejen, a que te conozcan, a elegir mal y perder el tiempo. El miedo no avisa que algo es peligroso, avisa que algo importa. El problema no es sentirlo sino dejar que elija por vos sin que lo nombres.
+Buena parte de lo que parece desinterés en los vínculos es miedo: a que te dejen, a que te conozcan, a elegir mal y perder el tiempo. El miedo no avisa que algo es peligroso, avisa que algo importa. El problema no es sentirlo sino dejar que elija por tú sin que lo nombres.
 
 
 > Lo que parece frialdad muchas veces es miedo bien escondido.
 
-Hay quien se aleja justo cuando la cosa se pone cercana. Desde afuera parece desinterés; por dentro suele ser una forma vieja de protegerse. Entenderlo no obliga a quedarse, pero cambia la historia que te contás sobre por qué pasó.
+Hay quien se aleja justo cuando la cosa se pone cercana. Desde afuera parece desinterés; por dentro suele ser una forma vieja de protegerse. Entenderlo no obliga a quedarse, pero cambia la historia que te cuentas sobre por qué pasó.
 
 *Principio:* La evitación del apego funciona como estrategia de desactivación: reduce la expresión de necesidad para evitar el rechazo anticipado.  
 *Fuente:* Mikulincer y Shaver (2007), estrategias de apego.
@@ -2074,7 +2074,7 @@ El miedo pide pruebas, y las pruebas cansan. Cuanto más se pide, más se aleja 
 
 > Decir tengo miedo cambia la conversación entera.
 
-Ponerle nombre a lo que sentís baja la reacción, y además le da al otro algo con qué trabajar. No es lo mismo recibir un reproche que recibir un me da miedo que esto no funcione. Lo segundo invita a acercarse; lo primero, a defenderse.
+Ponerle nombre a lo que sientes baja la reacción, y además le da al otro algo con qué trabajar. No es lo mismo recibir un reproche que recibir un me da miedo que esto no funcione. Lo segundo invita a acercarse; lo primero, a defenderse.
 
 *Principio:* Etiquetar verbalmente una emoción reduce la activación de la amígdala y la intensidad subjetiva del estado afectivo.  
 *Fuente:* Lieberman y colegas (2007), el efecto de poner en palabras.
@@ -2112,9 +2112,9 @@ No decidir se siente más seguro porque no tiene un momento visible de error. Pe
 *Fuente:* Anderson (2003), evitación de decisiones; Gilovich y Medvec (1995).
 
 
-> Mostrarte como sos da miedo porque recién ahí el rechazo cuenta.
+> Mostrarte como eres da miedo porque recién ahí el rechazo cuenta.
 
-Si mostrás una versión editada y te eligen, no sabés si te eligieron a vos. Si mostrás lo que hay y te eligen, ya sabés. El costo de lo segundo es que el rechazo duele de verdad; el beneficio es que la aceptación también vale.
+Si mostrás una versión editada y te eligen, no sabes si te eligieron a tú. Si mostrás lo que hay y te eligen, ya sabes. El costo de lo segundo es que el rechazo duele de verdad; el beneficio es que la aceptación también vale.
 
 *Principio:* La autorrevelación aumenta la cercanía percibida y también la vulnerabilidad al rechazo, lo que explica su evitación.  
 *Fuente:* Aron y colegas (1997), generación de cercanía; Collins y Miller (1994).

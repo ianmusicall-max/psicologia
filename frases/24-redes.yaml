@@ -12,12 +12,12 @@ tesis: >-
 
 frases:
   - id: red-01
-    texto: "Comparás tu día entero con el mejor minuto del otro."
+    texto: "Comparas tu día entero con el mejor minuto del otro."
     destacar: [minuto]
     principio: "El contenido social en línea muestra momentos seleccionados, lo que sesga la comparación al presentar solo los extremos positivos de otros."
     fuente: "Chou y Edge (2012), percepción de las vidas ajenas."
     reflexion: >-
-      Vos tenés acceso a tu día completo: el aburrimiento, la discusión, el
+      Tú tienes acceso a tu día completo: el aburrimiento, la discusión, el
       rato tirado en la cama. Del otro ves quince segundos elegidos entre
       cien. La comparación no es injusta por envidia, es injusta porque los
       dos lados no tienen el mismo tamaño.
@@ -40,7 +40,7 @@ frases:
     fuente: "Festinger (1954), teoría de la comparación social."
     reflexion: >-
       La comparación sirve para orientarse: saber si vas bien, qué te falta.
-      Para eso el otro tiene que ser parecido a vos en el punto de partida.
+      Para eso el otro tiene que ser parecido a ti en el punto de partida.
       Contra alguien que lleva una década de ventaja no obtenés información,
       obtenés desánimo.
 
@@ -50,13 +50,13 @@ frases:
     principio: "La comparación ascendente motiva cuando el referente se percibe como alcanzable y desmoraliza cuando se percibe como inalcanzable."
     fuente: "Lockwood y Kunda (1997), modelos a seguir."
     reflexion: >-
-      El mismo ejemplo funciona de dos maneras opuestas. Si pensás eso lo
-      puedo hacer, te empuja. Si pensás yo nunca, te desarma. Antes de seguir a
+      El mismo ejemplo funciona de dos maneras opuestas. Si piensas eso lo
+      puedo hacer, te empuja. Si piensas yo nunca, te desarma. Antes de seguir a
       alguien conviene notar cuál de las dos cosas te pasa en el cuerpo cuando
-      lo mirás.
+      lo miras.
 
   - id: red-05
-    texto: "La envidia te está señalando algo que querés. Eso es información."
+    texto: "La envidia te está señalando algo que quieres. Eso es información."
     destacar: [información]
     principio: "La envidia benigna, dirigida a lo que el otro logró, se asocia a motivación de mejora; la envidia maliciosa, dirigida a la persona, no."
     fuente: "Van de Ven, Zeelenberg y Pieters (2009), dos tipos de envidia."
@@ -78,12 +78,12 @@ frases:
       buena medida, lo que a nadie le conviene mostrar.
 
   - id: red-07
-    texto: "Compararte con vos de hace un año es la única comparación con datos reales."
+    texto: "Compararte contigo de hace un año es la única comparación con datos reales."
     destacar: [reales]
     principio: "La comparación temporal con uno mismo se asocia a mayor bienestar que la comparación social, al usar un referente con información completa."
     fuente: "Albert (1977), comparación temporal; Wilson y Ross (2000)."
     reflexion: >-
-      De esa comparación tenés las dos mitades: sabés de dónde saliste y lo que
+      De esa comparación tienes las dos mitades: sabes de dónde saliste y lo que
       costó. No hay edición de por medio. Es la única medida que te dice algo
       verdadero sobre si estás avanzando, y casi nunca es la que usamos.
 
@@ -104,7 +104,7 @@ frases:
     principio: "La exposición selectiva a referentes superiores desplaza el punto de referencia usado para evaluar la propia situación."
     fuente: "Kahneman y Tversky (1979), puntos de referencia; Festinger (1954)."
     reflexion: >-
-      La vara con la que medís tu vida no es fija: se arma con lo que ves
+      La vara con la que mides tu vida no es fija: se arma con lo que ves
       seguido. Si lo que ves seguido son casas, viajes y parejas perfectas, tu
       vida normal va a parecer poca, aunque no haya cambiado nada en ella.
       Cambiar la dieta cambia la vara.

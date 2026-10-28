@@ -125,7 +125,7 @@ enciende en este terreno es algo que se hace, no algo que se es. Acordarse de
 qué le preocupaba, preguntar cómo salió, no mirar el teléfono mientras habla.
 Suena poco romántico. Es lo que se midió.
 
-## Primero revisá el cansancio
+## Primero revisa el cansancio
 
 > El cansancio y el estrés bajan el deseo más que cualquier problema de pareja.
 > Y casi nadie lo revisa primero.

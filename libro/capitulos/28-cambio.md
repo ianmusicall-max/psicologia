@@ -31,7 +31,7 @@ Las dos producen conducta. La diferencia aparece en la duración: lo que se hace
 por presión externa dura lo que dura la presión, y recae más.
 
 Es la diferencia entre dejar de fumar porque tu pareja amenaza con irse y dejar
-porque te asustaste vos. Desde afuera, las dos primeras semanas se parecen. A
+porque te asustaste tú. Desde afuera, las dos primeras semanas se parecen. A
 los seis meses no se parecen en nada.
 
 Esto tiene una consecuencia incómoda para quien está esperando que otro cambie:
@@ -192,7 +192,7 @@ demostrar.
 
 ## La prueba del martes
 
-> Preguntate qué va a ser distinto el martes a las siete. Si no hay respuesta,
+> Pregúntate qué va a ser distinto el martes a las siete. Si no hay respuesta,
 > no hay cambio.
 
 Es la prueba más rápida que existe, y sirve tanto para uno mismo como para lo
@@ -225,11 +225,11 @@ miedo.
 
 Tres cosas, si quieres quedarte con algo:
 
-Si querés cambiar algo, no empieces cinco cosas: empezá una, tan chica que casi
+Si quieres cambiar algo, no empieces cinco cosas: empieza una, tan chica que casi
 no cueste, con día y hora puestos.
 
 Antes de confiar en tu voluntad, saca el disparador de la vista. Los
 disciplinados no resisten más, resisten menos veces.
 
-Y cuando alguien te prometa que va a cambiar, preguntale qué va a ser distinto
+Y cuando alguien te prometa que va a cambiar, pregúntale qué va a ser distinto
 el martes a las siete. Si no hay escena, no hay cambio: hay una promesa.

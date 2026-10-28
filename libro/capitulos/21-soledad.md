@@ -70,8 +70,8 @@ factores de riesgo clásicos.
 Las dos cosas son verdad, y lo que las separa no son las horas. Es si la puerta
 está abierta.
 
-Si podés volver cuando quieras —si hay a quién escribirle, si el sábado hay
-plan posible— las horas a solas descansan. Si no sabés cómo volver, las mismas
+Si puedes volver cuando quieras —si hay a quién escribirle, si el sábado hay
+plan posible— las horas a solas descansan. Si no sabes cómo volver, las mismas
 horas desgastan, y además se multiplican, por el motivo del apartado que sigue.
 
 ## El truco
@@ -100,7 +100,7 @@ este le molesto», se la puede tratar como una hipótesis en vez de como un dato
 
 ## Uno o dos alcanzan
 
-> Un vínculo donde podés decir la verdad vale más que diez donde actuás.
+> Un vínculo donde puedes decir la verdad vale más que diez donde actuás.
 
 El estudio de Harvard sobre el desarrollo adulto siguió a sus participantes
 durante más de setenta años, y es probablemente el seguimiento más largo que se

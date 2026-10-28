@@ -1,4 +1,4 @@
-# Capítulo 29 · El miedo que decide por vos
+# Capítulo 29 · El miedo que decide por tú
 
 Buena parte de lo que en los vínculos parece desinterés es miedo.
 
@@ -96,7 +96,7 @@ pronóstico, el miedo aconseja no ir. Leído como señal de valor, dice que ahí
 había algo que querías.
 
 Vale para una conversación difícil, para mostrar un trabajo, para decirle a
-alguien lo que sentís. El síntoma es idéntico en los tres casos.
+alguien lo que sientes. El síntoma es idéntico en los tres casos.
 
 ## Siempre en esa dirección
 
@@ -165,7 +165,7 @@ es «nada», y «nada» durante dos años es una decisión bastante grande.
 
 ## Recién ahí cuenta
 
-> Mostrarte como sos da miedo porque recién ahí el rechazo cuenta.
+> Mostrarte como eres da miedo porque recién ahí el rechazo cuenta.
 
 Arthur Aron y sus colegas diseñaron un procedimiento para generar cercanía entre
 desconocidos, y el ingrediente central era la autorrevelación progresiva:
@@ -223,10 +223,10 @@ Tres cosas, si quieres quedarte con algo:
 Cuando tengas ganas de revisar, comprobar o pedir una prueba, decí el miedo en
 voz alta en vez de actuarlo. Es la misma información y produce lo contrario.
 
-Cuando algo te dé miedo, preguntate si te lo da porque es peligroso o porque te
+Cuando algo te dé miedo, pregúntate si te lo da porque es peligroso o porque te
 importa. Casi siempre es lo segundo.
 
-Y cuando estés esperando a estar listo, buscá el paso más chico que puedas dar
+Y cuando estés esperando a estar listo, busca el paso más chico que puedas dar
 hoy con el miedo puesto. La espera no lo saca: lo agranda.
 
 ---

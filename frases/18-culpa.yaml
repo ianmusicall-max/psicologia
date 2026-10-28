@@ -35,7 +35,7 @@ frases:
       contestar.
 
   - id: cul-03
-    texto: "Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que sentís."
+    texto: "Una disculpa funciona cuando incluye lo que hiciste, no cuando incluye lo que sientes."
     destacar: [lo que hiciste]
     principio: "De los componentes de una disculpa, reconocer la responsabilidad es el que más pesa; la expresión de arrepentimiento sola pesa mucho menos."
     fuente: "Lewicki, Polin & Lount (2016), Negotiation and Conflict Management Research: los componentes de una disculpa eficaz."
@@ -46,7 +46,7 @@ frases:
       disculpas sin reconocer nada.
 
   - id: cul-04
-    texto: "Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que hacés el día siguiente."
+    texto: "Sentirte mal mucho tiempo no repara nada. Lo que repara es lo que haces el día siguiente."
     destacar: [el día siguiente]
     principio: "La rumiación sobre una falta no produce reparación y se asocia a vergüenza; la acción reparadora concreta sí resuelve la culpa."
     fuente: "Baumeister, Stillwell & Heatherton (1994), Psychological Bulletin: las funciones interpersonales de la culpa."
@@ -62,13 +62,13 @@ frases:
     principio: "La culpa adaptativa es específica y accionable; la culpa crónica y difusa no corrige nada y se asocia a malestar."
     fuente: "Tilghman-Osborne, Cole & Felton (2010), revisión sobre culpa adaptativa y desadaptativa."
     reflexion: >-
-      Preguntale a la culpa qué querés que haga. Si tiene respuesta, es
+      Pregúntale a la culpa qué quieres que haga. Si tiene respuesta, es
       información y conviene hacerle caso. Si no tiene, no está pidiendo nada:
       está cobrando. Esa diferencia se puede chequear en treinta segundos y
       ahorra meses.
 
   - id: cul-06
-    texto: "Sentirte culpable por descansar es la prueba de que creés que valés por lo que producís."
+    texto: "Sentirte culpable por descansar es la prueba de que crees que valés por lo que producís."
     destacar: [por lo que producís]
     principio: "La valía contingente al logro convierte el descanso en una transgresión, y mantiene el ciclo de agotamiento."
     fuente: "Crocker & Wolfe (2001), Psychological Review, contingencias de la autoestima; Sonnentag & Fritz (2007)."
@@ -79,7 +79,7 @@ frases:
       es la agenda: es de dónde cree esa persona que viene su valor.
 
   - id: cul-07
-    texto: "Que alguien se enoje con vos no te hace culpable. Son dos cosas distintas y casi siempre se confunden."
+    texto: "Que alguien se enoje contigo no te hace culpable. Son dos cosas distintas y casi siempre se confunden."
     destacar: [dos cosas distintas]
     principio: "La reacción emocional ajena no establece responsabilidad; confundirlas es un patrón central en personas con tendencia a la complacencia."
     fuente: "Alberti & Emmons (2017), asertividad; Tangney & Dearing (2002)."

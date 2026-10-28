@@ -12,7 +12,7 @@ tesis: >-
 
 frases:
   - id: ami-01
-    texto: "Una amistad no se hace con afinidad. Se hace con horas, y son más de las que creés."
+    texto: "Una amistad no se hace con afinidad. Se hace con horas, y son más de las que crees."
     destacar: [horas]
     principio: "La cercanía en amistad escala con el tiempo compartido: se estiman unas 50 horas para un conocido cercano y unas 200 para un amigo íntimo."
     fuente: "Hall (2019), Journal of Social and Personal Relationships: cuántas horas lleva hacer un amigo."
@@ -34,7 +34,7 @@ frases:
       lo que lo sostenía sin esfuerzo.
 
   - id: ami-03
-    texto: "La mitad de las personas que vos considerás amigas no te consideran a vos. Y es mutuo, con otros."
+    texto: "La mitad de las personas que tú considerás amigas no te consideran a ti. Y es mutuo, con otros."
     destacar: [no te consideran]
     principio: "En redes medidas, cerca de la mitad de las amistades declaradas no son recíprocas, y las personas sobrestiman la reciprocidad."
     fuente: "Almaatouq et al. (2016), PLoS ONE: reciprocidad en las amistades declaradas."
@@ -63,7 +63,7 @@ frases:
     reflexion: >-
       Hay gente que no escribe porque siente que debería escribir algo
       importante, y entonces no escribe nunca. Lo que sostiene una amistad son
-      los mensajes sin contenido: una foto, una pavada, un me acordé de vos.
+      los mensajes sin contenido: una foto, una pavada, un me acordé de ti.
       La profundidad viene después, y solo si hubo antes.
 
   - id: ami-06
@@ -79,7 +79,7 @@ frases:
       todos los años.
 
   - id: ami-07
-    texto: "Cómo reaccionás cuando a tu amigo le va bien dice más del vínculo que cómo reaccionás cuando le va mal."
+    texto: "Cómo reaccionas cuando a tu amigo le va bien dice más del vínculo que cómo reaccionas cuando le va mal."
     destacar: [le va bien]
     principio: "La respuesta activa y constructiva ante las buenas noticias predice la calidad del vínculo mejor que el apoyo en la adversidad."
     fuente: "Gable, Reis, Impett & Asher (2004), JPSP: qué haces cuando las cosas salen bien."

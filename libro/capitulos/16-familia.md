@@ -81,7 +81,7 @@ tocó, y lo que no se practicó no se tiene a mano.
 
 ## Cariño y enojo al mismo tiempo
 
-> Con tus padres podés sentir cariño y enojo al mismo tiempo. La mayoría de la
+> Con tus padres puedes sentir cariño y enojo al mismo tiempo. La mayoría de la
 > gente siente las dos cosas.
 
 Cuando a hijos adultos se les pregunta por separado cuánto afecto sienten por
@@ -112,7 +112,7 @@ intención de nadie: un equilibrio que se movió genera presión hacia el
 equilibrio anterior.
 
 En la práctica eso se ve así: la primera Navidad que no vas a los dos lados, la
-primera vez que cortás una conversación, la primera vez que decís que ese tema
+primera vez que cortás una conversación, la primera vez que dices que ese tema
 no se habla. La respuesta es desproporcionada, y la lectura automática es «me
 equivoqué».
 

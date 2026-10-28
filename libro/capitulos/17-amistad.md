@@ -16,7 +16,7 @@ una amistad dura.
 ## Se hace con horas
 
 > Una amistad no se hace con afinidad. Se hace con horas, y son más de las que
-> creés.
+> crees.
 
 Mucha gente cree que con la persona correcta la amistad aparece sola. Jeffrey
 Hall fue a medir cuántas horas lleva, y el resultado es incómodo para esa idea.
@@ -59,7 +59,7 @@ contextos.
 
 ## La mitad no es mutua
 
-> La mitad de las personas que vos considerás amigas no te consideran a vos. Y
+> La mitad de las personas que tú considerás amigas no te consideran a ti. Y
 > es mutuo, con otros.
 
 Abdullah Almaatouq y sus colegas hicieron algo que suena simple y casi nadie
@@ -114,7 +114,7 @@ amistad en el tiempo. Lo que mejor predice que siga existiendo es la frecuencia
 del contacto, no la profundidad de cada intercambio.
 
 O sea que lo que mantiene una amistad son los mensajes sin contenido. Una foto,
-una pavada, un «me acordé de vos», un meme a las once de la noche. Nada de eso
+una pavada, un «me acordé de ti», un meme a las once de la noche. Nada de eso
 parece importante, y es justamente el material del que está hecho el vínculo.
 
 La profundidad viene después, y solo si hubo antes. Nadie le cuenta algo difícil
@@ -145,8 +145,8 @@ este libro que se construye únicamente poniendo tiempo.
 
 ## Cuando al otro le va bien
 
-> Cómo reaccionás cuando a tu amigo le va bien dice más del vínculo que cómo
-> reaccionás cuando le va mal.
+> Cómo reaccionas cuando a tu amigo le va bien dice más del vínculo que cómo
+> reaccionas cuando le va mal.
 
 Estar en las malas es lo que todos sabemos que hay que hacer. Shelly Gable, Harry
 Reis y sus colegas se fijaron en el otro momento, el que nadie mira: qué pasa
@@ -197,10 +197,10 @@ las mide es qué haces cuando al otro le va bien.
 
 Tres cosas, si quieres quedarte con algo:
 
-Si querés hacer un amigo de adulto, no busques afinidad: busca algo que se
+Si quieres hacer un amigo de adulto, no busques afinidad: busca algo que se
 repita todas las semanas. La afinidad aparece adentro de las horas.
 
-Si hace mucho que no escribís, no esperes tener algo importante que decir.
+Si hace mucho que no escribes, no esperes tener algo importante que decir.
 Manda la pavada. La pavada es el vínculo.
 
 Y cuando alguien te cuente algo bueno, quédate ahí un minuto más y preguntá.

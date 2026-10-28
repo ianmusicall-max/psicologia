@@ -176,8 +176,8 @@ Lo que termina dañado casi nunca es la plata. Es la posibilidad de verse sin
 cuentas de por medio.
 
 El criterio práctico es bastante claro: si vas a prestar, decidí de antemano si
-podés regalarlo. Si podés, prestá sabiendo eso. Si no podés, lo que estás
-haciendo no es un favor: es una operación financiera con alguien que querés.
+puedes regalarlo. Si puedes, prestá sabiendo eso. Si no puedes, lo que estás
+haciendo no es un favor: es una operación financiera con alguien que quieres.
 
 ## Se escriben
 
@@ -209,7 +209,7 @@ emergencia.
 
 Tres cosas, si quieres quedarte con algo:
 
-Si el tema vuelve siempre, dejá de discutir el monto y preguntale al otro qué lo
+Si el tema vuelve siempre, deja de discutir el monto y pregúntale al otro qué lo
 hace sentir tranquilo con la plata. Casi seguro no es lo mismo que a ti.
 
 Agendá veinte minutos al mes cuando no pase nada. Es la diferencia entre un

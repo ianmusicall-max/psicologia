@@ -71,7 +71,10 @@ from src import libro, pictogramas  # noqa: E402
 CAPITULOS = ROOT / "libro" / "capitulos"
 SALIDA = ROOT / "libro" / "salida"
 
-SUBTITULO = "Ideas para quererte, elegir mejor y entenderte con quien querés"
+# Del modulo y no copiado: estaba escrito en los dos lados, y dos copias del
+# mismo texto es como se descubre tarde que una de las dos esta vieja. Paso
+# justo con esto, que quedo en voseo aca despues de arreglarlo alla.
+SUBTITULO = libro.SUBTITULO
 AUTOR = "José Luis Del Carpio Chirinos"
 
 TINTA = HexColor("#1F2933")
@@ -289,10 +292,18 @@ class Apertura(Flowable):
     podria partirlos en dos paginas.
     """
 
-    def __init__(self, numero, sans, acento, alto=40 * mm):
+    # Nunca se separa de lo que sigue: el numero de capitulo al pie de una
+    # pagina y el titulo arriba de la siguiente seria lo peor de los dos.
+    keepWithNext = 1
+
+    def __init__(self, numero, sans, acento, alto=32 * mm):
         super().__init__()
         self.numero, self.sans, self.acento = numero, sans, acento
         self.alto = alto
+        # El aire va EN la pieza y no en un `Spacer` suelto: un espaciador
+        # entre dos flowables rompe la cadena de `keepWithNext`, porque el
+        # espaciador no se queda con nadie.
+        self.spaceAfter = 7 * mm
 
     def wrap(self, ancho, alto):
         self.ancho = ancho
@@ -300,7 +311,7 @@ class Apertura(Flowable):
 
     def draw(self):
         c = self.canv
-        pictogramas.dibujar(c, self.numero, 13 * mm, self.alto - 8 * mm,
+        pictogramas.dibujar(c, self.numero, 13 * mm, self.alto - 7 * mm,
                             11 * mm, self.acento)
         c.setFillColor(self.acento)
         c.setFont(_variante(self.sans, "bold"), 54)
@@ -323,9 +334,15 @@ class Apartado(Flowable):
     abajo y el filete arriba de la siguiente.
     """
 
+    # Un rotulo solo al pie de una pagina es el defecto que mas se nota al
+    # hojear: el apartado empieza en una hoja y su texto en la otra.
+    keepWithNext = 1
+
     def __init__(self, texto, sans, acento, cuerpo=10):
         super().__init__()
         self.texto, self.sans, self.acento, self.cuerpo = texto, sans, acento, cuerpo
+        self.spaceBefore = 9 * mm
+        self.spaceAfter = 3 * mm
 
     def wrap(self, ancho, alto):
         self.ancho = ancho
@@ -349,11 +366,14 @@ class Epigrafe(Flowable):
     """
 
     SANGRIA = 9 * mm
+    keepWithNext = 1
 
     def __init__(self, texto, estilo, acento):
         super().__init__()
         self.parrafo = Paragraph(texto, estilo)
         self.acento = acento
+        self.spaceBefore = 2 * mm
+        self.spaceAfter = 4 * mm
 
     def wrap(self, ancho, alto):
         self.ancho = ancho
@@ -388,7 +408,7 @@ def estilos(serif, sans, acento, tinta=TINTA):
                                    firstLineIndent=0),
         "capitulo": ParagraphStyle("capitulo", fontName=serif, fontSize=21,
                                    leading=26, textColor=tinta,
-                                   spaceBefore=10 * mm, spaceAfter=10 * mm),
+                                   spaceBefore=0, spaceAfter=9 * mm),
         "filete": ParagraphStyle("filete", fontName=serif, fontSize=11,
                                  alignment=TA_CENTER, textColor=GRIS,
                                  spaceBefore=6 * mm, spaceAfter=6 * mm),
@@ -471,20 +491,19 @@ def armar_pdf(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
         for clase, texto in bloques(ruta.read_text(encoding="utf-8")):
             if clase == "titulo":
                 nombre = (texto.partition("·")[2] or texto).strip()
-                hist += [Spacer(1, 12 * mm),
-                         Apertura(numero, sans, acento),
+                # SIN espaciador delante: el capitulo abre en el borde de
+                # arriba de la caja. Antes bajaba 12 mm y el titulo quedaba
+                # cerca de la mitad de la hoja, que es lo que el usuario
+                # marco el 2026-10-28.
+                hist += [Apertura(numero, sans, acento),
                          Capitulo(en_linea(nombre), est["capitulo"],
                                   "%d. %s" % (numero, nombre))]
                 primero_del_apartado = True
             elif clase == "apartado":
-                hist.append(Spacer(1, 7 * mm))
                 hist.append(Apartado(texto, sans, acento))
-                hist.append(Spacer(1, 3 * mm))
                 primero_del_apartado = True
             elif clase == "epigrafe":
-                hist.append(Spacer(1, 2 * mm))
                 hist.append(Epigrafe(en_linea(texto), est["epigrafe"], acento))
-                hist.append(Spacer(1, 4 * mm))
                 primero_del_apartado = True
             elif clase == "filete":
                 hist.append(Paragraph("·", est["filete"]))

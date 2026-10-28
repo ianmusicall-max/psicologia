@@ -15,7 +15,7 @@ hace cuando aparece el primer problema serio, y eso sí está medido.
 
 ## Destino o construcción
 
-> Creer que existe una sola persona para vos vuelve cualquier problema una
+> Creer que existe una sola persona para ti vuelve cualquier problema una
 > señal de error.
 
 Raymond Knee estudió lo que llamó teorías implícitas de las relaciones y
@@ -169,7 +169,7 @@ más.
 
 Eso cambia qué mirar. Menos el currículum del otro —qué hace, cómo es, cuánto
 tienen en común— y más cómo es estar ahí adentro. Es también una invitación a
-proyectar lejos: no quién te conviene este año, sino con quién querés estar
+proyectar lejos: no quién te conviene este año, sino con quién quieres estar
 discutiendo nada en veinte.
 
 ## Se construye
@@ -195,7 +195,7 @@ el punto de partida.
 
 ## Nadie completa a nadie
 
-> Nadie te completa. Como mucho, te acompaña mientras te completás vos.
+> Nadie te completa. Como mucho, te acompaña mientras te completás tú.
 
 Knee, con Amy Canevello y sus colegas, midió qué pasa cuando la autoestima de
 alguien depende de su relación. El resultado: más ansiedad relacional, más
@@ -220,14 +220,14 @@ la versión que dura.
 Creer en el destino hace que el primer problema parezca una respuesta. El
 esfuerzo no es un síntoma. Una pareja no puede ser un pueblo entero. Esperar que
 el otro adivine arruina más que el egoísmo. Y lo que mejor predice que una
-relación funcione no es cómo es el otro, es cómo te sentís adentro.
+relación funcione no es cómo es el otro, es cómo te sientes adentro.
 
 Tres cosas, si quieres quedarte con algo:
 
-Cuando algo cueste, no te preguntes si era la persona. Preguntate qué habría que
+Cuando algo cueste, no te preguntes si era la persona. Pregúntate qué habría que
 resolver.
 
-Si querés algo, pedilo. La versión no pedida no vale más: en general no existe.
+Si quieres algo, pedilo. La versión no pedida no vale más: en general no existe.
 
-Y si estás eligiendo, mirá menos el currículum del otro y más cómo te sentís con
+Y si estás eligiendo, mira menos el currículum del otro y más cómo te sientes con
 él un martes cualquiera. Eso es lo que se midió, y es lo que predice.

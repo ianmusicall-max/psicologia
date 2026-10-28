@@ -16,7 +16,7 @@ puede empujar o hundir, y de la única comparación que tiene datos completos.
 
 ## Las dos mitades no son del mismo tamaño
 
-> Comparás tu día entero con el mejor minuto del otro.
+> Comparas tu día entero con el mejor minuto del otro.
 
 Hui-Tzu Grace Chou y Nicholas Edge midieron algo simple: cuánto creía la gente
 que los demás tenían vidas mejores y más felices que las propias. Quienes
@@ -25,8 +25,8 @@ especialmente de personas a las que no conocían en persona.
 
 El motivo no es la envidia. Es un problema de asimetría de información.
 
-De tu día tenés acceso completo: el aburrimiento de la tarde, la discusión por
-teléfono, el rato tirado en la cama sin hacer nada, la cuenta que no sabés cómo
+De tu día tienes acceso completo: el aburrimiento de la tarde, la discusión por
+teléfono, el rato tirado en la cama sin hacer nada, la cuenta que no sabes cómo
 pagar. Del otro ves quince segundos elegidos entre cien.
 
 Entonces la comparación no es injusta porque uno sea mezquino al hacerla. Es
@@ -99,7 +99,7 @@ está informando nada; está cobrando.
 
 ## La envidia es un dato
 
-> La envidia te está señalando algo que querés. Eso es información.
+> La envidia te está señalando algo que quieres. Eso es información.
 
 Niels van de Ven, Marcel Zeelenberg y Rik Pieters separaron dos envidias que el
 idioma mezcla.
@@ -141,7 +141,7 @@ medida, lo que a nadie le conviene mostrar.
 
 ## La única con datos completos
 
-> Compararte con vos de hace un año es la única comparación con datos reales.
+> Compararte contigo de hace un año es la única comparación con datos reales.
 
 Stuart Albert propuso el término comparación temporal para lo que uno hace
 cuando se mide contra sí mismo en otro momento, y Anne Wilson y Michael Ross
@@ -149,7 +149,7 @@ mostraron después que la gente que lo hace tiende a sentirse mejor, porque suel
 encontrar progreso.
 
 Lo que la hace distinta de todas las demás es que de esa comparación se tienen
-las dos mitades completas. Sabés de dónde salías. Sabés lo que costó. Sabés qué
+las dos mitades completas. Sabes de dónde salías. Sabes lo que costó. Sabes qué
 estabas pensando entonces y qué no sabías todavía.
 
 No hay edición de por medio, no hay selección de los mejores quince segundos, y
@@ -204,15 +204,15 @@ engañarse, sino porque la medida nunca fue objetiva.
 Comparar es automático y a veces útil, pero el material de hoy está editado y es
 enorme. El uso pasivo es el que se asocia a sentirse peor. Un referente solo
 informa si se parece a uno. La envidia señala lo que se quiere. Y la vara con la
-que medís tu vida la arma lo que mirás seguido.
+que mides tu vida la arma lo que miras seguido.
 
 Tres cosas, si quieres quedarte con algo:
 
 Cuando abras una aplicación, hacé algo: escribile a alguien. Veinte minutos
 activos no son lo mismo que veinte minutos deslizando.
 
-Cuando mires a alguien que va mejor, fijate si aparece «esto lo puedo hacer» o
+Cuando mires a alguien que va mejor, fíjate si aparece «esto lo puedo hacer» o
 «yo nunca». Lo segundo no es información.
 
-Y si querés saber si estás avanzando, no mires a nadie. Mirá qué te preocupaba
+Y si quieres saber si estás avanzando, no mires a nadie. Mira qué te preocupaba
 hace un año.

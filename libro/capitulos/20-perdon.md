@@ -17,7 +17,7 @@ cuesta.
 
 ## No es decir que estuvo bien
 
-> Perdonar no es decir que estuvo bien. Es dejar de pagar vos la cuenta.
+> Perdonar no es decir que estuvo bien. Es dejar de pagar tú la cuenta.
 
 Michael McCullough y sus colegas, cuando fueron a medir el perdón, tuvieron que
 definirlo con precisión, y la definición a la que llegaron es más modesta de lo
@@ -56,7 +56,7 @@ es la única que uno puede cumplir solo.
 
 ## Quién paga el rencor
 
-> El rencor es una deuda que cobrás vos todos los días.
+> El rencor es una deuda que cobrás tú todos los días.
 
 Charlotte Witvliet y sus colegas hicieron un experimento que vale más que
 cualquier argumento moral. Pidieron a personas que recordaran una ofensa real,
@@ -90,14 +90,14 @@ arrepentimiento pesan mucho menos de lo que todo el mundo cree.
 De ahí sale el criterio práctico, y es temporal: lo que distingue a una disculpa
 real no es cómo se dijo, sino qué pasa la semana siguiente.
 
-Mirá eso y no el tono. Una disculpa fría seguida de un cambio sostenido vale
+Mira eso y no el tono. Una disculpa fría seguida de un cambio sostenido vale
 más que una disculpa llorada seguida de lo mismo de siempre. Y la segunda, si se
 repite, enseña algo que conviene no enseñar: que acá las cosas se arreglan
 hablando bonito.
 
 ## El que más cuesta
 
-> Perdonarte a vos mismo también cuenta, y suele ser lo último que se hace.
+> Perdonarte a ti mismo también cuenta, y suele ser lo último que se hace.
 
 Mucha gente perdona a otros con facilidad y guarda el juicio más duro para sí
 misma. Y hay una razón por la que el autoperdón es más difícil: con uno mismo no
@@ -119,7 +119,7 @@ devuelve nada a nadie.
 
 ## Sin la conversación que no va a pasar
 
-> No hace falta que el otro lo entienda para que vos puedas seguir.
+> No hace falta que el otro lo entienda para que tú puedas seguir.
 
 Hay gente que espera años una conversación que no va a ocurrir. Que reconozca.
 Que explique. Que entienda el tamaño de lo que hizo.
@@ -159,7 +159,7 @@ sabe qué está perdonando no perdonó nada.
 
 ## Cuando vuelve a pasar
 
-> Si cada vez que perdonás vuelve a pasar, el problema no es tu perdón.
+> Si cada vez que perdonas vuelve a pasar, el problema no es tu perdón.
 
 McNulty siguió parejas a lo largo del tiempo y encontró un resultado que
 incomoda a la literatura amable del perdón: cuando una persona perdona con
@@ -180,7 +180,7 @@ rencor y sin puerta abierta.
 
 ## Lo que se suelta
 
-> Lo que soltás no es la historia. Es el peso de estar reclamándola.
+> Lo que sueltas no es la historia. Es el peso de estar reclamándola.
 
 Everett Worthington, que armó uno de los modelos más usados para trabajar el
 perdón, insiste en que no implica olvidar ni minimizar.
@@ -205,11 +205,11 @@ donde el daño sigue, no es generosidad.
 
 Tres cosas, si quieres quedarte con algo:
 
-Si no querés volver, no necesitás seguir enojado para justificarlo. Son dos
+Si no quieres volver, no necesitas seguir enojado para justificarlo. Son dos
 decisiones distintas.
 
-Si estás esperando que el otro entienda, fijate cuánto hace que esperás. Podés
-cerrar vos lo que el otro dejó abierto.
+Si estás esperando que el otro entienda, fíjate cuánto hace que esperas. Puedes
+cerrar tú lo que el otro dejó abierto.
 
 Y si ya perdonaste esto varias veces, no te preguntes si perdonaste bien.
-Preguntate qué cambió después de cada vez.
+Pregúntate qué cambió después de cada vez.

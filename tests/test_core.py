@@ -6881,3 +6881,156 @@ class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
         fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
         self.assertIn("-impresion", fuente)
         self.assertIn("-pantalla", fuente)
+
+
+class TestElEspanolDelLibroEsNeutro(unittest.TestCase):
+    """Sin voseo, en el banco y en los capítulos.
+
+    Lo pidió el usuario el 2026-10-28: «cambia el idioma universal español
+    latinoamérica». El banco y el libro se tocan JUNTOS, porque una prueba
+    exige que cada capítulo cite sus frases palabra por palabra: si se
+    cambiara uno solo, el libro dejaría de coincidir con la página.
+    """
+
+    VOSEO = re.compile(
+        r"(?<![\wáéíóúñü])("
+        r"vos|sos|querés|podés|tenés|sabés|hacés|creés|sentís|decís|vivís|"
+        r"seguís|elegís|pedís|mirás|pensás|llamás|sufrís|salís|escribís|"
+        r"repetís|insistís|dormís|preferís|reaccionás|comparás|buscás|"
+        r"esperás|necesitás|aguantás|revisás|cambiás|anotás|contás|tratás|"
+        r"llegás|empezás|terminás|perdonás|soltás|ganás|cargás|prestás|"
+        r"volvés|aparecés|decime|fijate|preguntale|preguntate|acordate|"
+        r"quedate|hacete|tomate|sentate|acercate|mirá|contá|pedí|probá|"
+        r"empezá|dejá|poné|buscá|andá|escuchá|anotá|elegí|volvé|aguantá|"
+        r"pensá|llamá|cambiá|revisá|mandá|escribí|tené|seguí|soltá|agarrá|"
+        r"devolvé"
+        r")(?![\wáéíóúñü])", re.IGNORECASE)
+
+    def _buscar(self, carpeta, sufijos):
+        malas = []
+        for ruta in sorted((ROOT / carpeta).rglob("*")):
+            if ruta.suffix not in sufijos:
+                continue
+            for n, linea in enumerate(
+                    ruta.read_text(encoding="utf-8").splitlines(), 1):
+                for m in self.VOSEO.finditer(linea):
+                    malas.append("%s:%d %s" % (ruta.name, n, m.group(1)))
+        return malas
+
+    def test_el_banco_de_frases_no_tiene_voseo(self):
+        self.assertEqual(self._buscar("frases", (".yaml",))[:12], [])
+
+    def test_los_capitulos_no_tienen_voseo(self):
+        self.assertEqual(self._buscar("libro/capitulos", (".md",))[:12], [])
+
+    def test_el_subtitulo_vive_en_un_solo_lugar(self):
+        # Estaba escrito en `src/libro.py` y copiado en el generador, y la
+        # copia quedó en voseo al arreglar el original. Dos copias del mismo
+        # texto es como se descubre tarde que una de las dos está vieja.
+        from src import libro as mod
+        self.assertNotRegex(mod.SUBTITULO, self.VOSEO)
+        fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
+        self.assertIn("SUBTITULO = libro.SUBTITULO", fuente)
+
+
+class TestComoCaeElTextoEnLaPagina(unittest.TestCase):
+    """Que ningún rótulo quede solo al pie y que el capítulo abra arriba.
+
+    Lo marcó el usuario el 2026-10-28: «hay títulos y subtítulos que comienzan
+    a la mitad de la hoja». Eran dos cosas distintas con el mismo síntoma.
+    """
+
+    CHICO = 6          # capítulos que alcanzan para que el defecto aparezca
+    ROTULO = re.compile(r"^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ ,:;«»¿?!'\-]{5,}$")
+
+    def _lp(self):
+        try:
+            import reportlab  # noqa: F401
+            import pypdf      # noqa: F401
+        except ImportError:
+            self.skipTest("sin reportlab o pypdf")
+        return _script("lp", "libro_pdf.py")
+
+    @staticmethod
+    def _apretar(s):
+        return re.sub(r"[\s ]+", "", s).upper()
+
+    def _ignorables(self, lp):
+        from src import frases as fr, libro as mod
+        fuera = {self._apretar(x) for x in
+                 (mod.TITULO, lp.AUTOR, "PRIMERA EDICIÓN", "CAPÍTULO", "ÍNDICE")}
+        fuera.update(self._apretar("%d. %s" % (t.capitulo, t.titulo))
+                     for t in fr.leer())
+        return fuera
+
+    def _armar(self, lp, d, cuantos):
+        solo = Path(d) / "capitulos"
+        solo.mkdir()
+        rutas = sorted((ROOT / "libro" / "capitulos").glob("[0-9]*.md"))[:cuantos]
+        if not rutas:
+            self.skipTest("no hay capítulos escritos")
+        for r in rutas:
+            (solo / r.name).write_text(r.read_text(encoding="utf-8"),
+                                       encoding="utf-8")
+        return solo
+
+    def _rotulos_al_pie(self, lp, ruta):
+        from pypdf import PdfReader
+        fuera = self._ignorables(lp)
+        malas = []
+        for i, pg in enumerate(PdfReader(str(ruta)).pages, 1):
+            lineas = [l.strip() for l in (pg.extract_text() or "").splitlines()]
+            lineas = [l for l in lineas if l and not l.isdigit()
+                      and self._apretar(l) not in fuera]
+            if lineas and self.ROTULO.match(lineas[-1]):
+                malas.append((i, lineas[-1]))
+        return malas
+
+    def test_ningun_rotulo_queda_solo_al_pie(self):
+        # Un apartado que empieza en una hoja y cuyo texto empieza en la otra
+        # es el defecto que más se nota al hojear.
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(lp, "CAPITULOS", self._armar(lp, d, self.CHICO)):
+                pdf = lp.armar_pdf(Path(d) / "x.pdf")
+            self.assertEqual(self._rotulos_al_pie(lp, pdf), [])
+
+    def test_sin_la_guarda_el_defecto_aparece(self):
+        # Del otro lado: si `keepWithNext` no hiciera nada, la prueba de
+        # arriba pasaría sola y no estaría cuidando nada.
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(lp.Apartado, "keepWithNext", 0), \
+                mock.patch.object(lp.Epigrafe, "keepWithNext", 0):
+            with mock.patch.object(lp, "CAPITULOS", self._armar(lp, d, self.CHICO)):
+                pdf = lp.armar_pdf(Path(d) / "y.pdf")
+            self.assertTrue(self._rotulos_al_pie(lp, pdf))
+
+    def test_el_capitulo_abre_arriba_de_la_hoja(self):
+        # Se mide la TINTA de la página, no el código: se busca el primer
+        # renglón con pixeles oscuros. Antes el título caía cerca de la mitad.
+        if not shutil.which("pdftoppm"):
+            self.skipTest("sin pdftoppm no se puede mirar la página")
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("sin PIL")
+        from pypdf import PdfReader
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(lp, "CAPITULOS", self._armar(lp, d, 1)):
+                pdf = lp.armar_pdf(Path(d) / "z.pdf")
+            abre = [i for i, pg in enumerate(PdfReader(str(pdf)).pages, 1)
+                    if "C A P" in (pg.extract_text() or "")]
+            self.assertTrue(abre, "no encontré la apertura del capítulo")
+            subprocess.run(["pdftoppm", "-f", str(abre[0]), "-l", str(abre[0]),
+                            "-r", "60", "-png", str(pdf), str(Path(d) / "pg")],
+                           check=True, capture_output=True)
+            foto = Image.open(sorted(Path(d).glob("pg*.png"))[0]).convert("L")
+        ancho, alto = foto.size
+        pixeles = foto.load()
+        primera = next((y for y in range(alto)
+                        if any(pixeles[x, y] < 128 for x in range(0, ancho, 2))),
+                       alto)
+        self.assertLess(primera / alto, 0.22,
+                        "el capítulo abre al %d%% de la hoja" % (100 * primera / alto))
