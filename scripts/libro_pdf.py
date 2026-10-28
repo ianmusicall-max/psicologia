@@ -71,6 +71,12 @@ SALIDA = ROOT / "libro" / "salida"
 SUBTITULO = "Ideas para quererte, elegir mejor y entenderte con quien querés"
 AUTOR = "José Luis Del Carpio Chirinos"
 
+# UN solo gris para todo lo que no es el texto: titulillos, folios, rotulos
+# de apartado y el subtitulo de la portada. Dos grises distintos en una misma
+# pagina se ven como un error de impresion.
+GRIS = 0.45
+GRIS_HEX = "#737373"
+
 # 6 x 9 pulgadas. Es la medida del libro de bolsillo de no ficción y la que
 # toman las imprentas por demanda sin recortar nada.
 MEDIDA = (6 * inch, 9 * inch)
@@ -85,18 +91,43 @@ ARRIBA, ABAJO = 18 * mm, 18 * mm
 
 # Donde buscar las fuentes del libro. Si no estan, se cae a Times, que viene
 # dentro del PDF por definicion.
+# UNA sola familia para todo el libro, y es la decision de diseno mas grande
+# que hay aca. La version anterior mezclaba Caladea con Carlito -una sans para
+# titulillos, folios y apartados- y eso es justo lo contrario de un libro
+# minimalista: dos familias son dos voces.
+#
+# Con una sola, la jerarquia la hacen el tamano, el gris y el aire, que es de
+# donde se saca en un libro bien hecho.
 FUENTES = {
     "LibroSerif": "/usr/share/fonts/truetype/crosextra/Caladea-Regular.ttf",
     "LibroSerif-Bold": "/usr/share/fonts/truetype/crosextra/Caladea-Bold.ttf",
     "LibroSerif-Italic": "/usr/share/fonts/truetype/crosextra/Caladea-Italic.ttf",
     "LibroSerif-BoldItalic": "/usr/share/fonts/truetype/crosextra/Caladea-BoldItalic.ttf",
-    "LibroSans": "/usr/share/fonts/truetype/crosextra/Carlito-Regular.ttf",
-    "LibroSans-Bold": "/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf",
 }
 
 
-def registrar_fuentes() -> tuple:
-    """Devuelve (serif, sans) ya registradas, o las de Times si no estan."""
+# El espacio que va entre letra y letra para espaciar un rotulo. reportlab no
+# tiene una opcion para eso -ni el estilo ni el lienzo saben de `charSpace`-
+# asi que el aire va DENTRO del texto.
+#
+# Es el espacio duro (U+00A0) y no uno fino: los finos (U+2009, U+202F) no
+# estan en Caladea, y una fuente que no tiene el glifo no dibuja nada. La
+# primera version usaba el fino y los rotulos salieron con las letras
+# PEGADAS -«LOQUELADUREZAHACEDEVERDAD»- que es peor que no espaciarlas.
+FINO = "\u00a0"
+
+
+def espaciar(texto: str) -> str:
+    """El texto con aire entre las letras, como se compone un rotulo chico.
+
+    Entre palabras va el doble, porque si no la frase se lee como una sola
+    palabra larga: es el mismo problema del espaciado de letras, al reves.
+    """
+    return (FINO * 2).join(FINO.join(p) for p in texto.split(" ") if p)
+
+
+def registrar_fuentes() -> str:
+    """La familia del libro ya registrada, o Times si no esta."""
     try:
         for nombre, ruta in FUENTES.items():
             if not Path(ruta).exists():
@@ -104,18 +135,16 @@ def registrar_fuentes() -> tuple:
             pdfmetrics.registerFont(TTFont(nombre, ruta))
     except Exception as e:                                    # noqa: BLE001
         print("  Sin las fuentes del libro (%s); uso Times." % e)
-        return "Times-Roman", "Helvetica"
+        return "Times-Roman"
     pdfmetrics.registerFontFamily(
         "LibroSerif", normal="LibroSerif", bold="LibroSerif-Bold",
         italic="LibroSerif-Italic", boldItalic="LibroSerif-BoldItalic")
-    pdfmetrics.registerFontFamily("LibroSans", normal="LibroSans",
-                                  bold="LibroSans-Bold")
     # La fuente con la que arranca cada pagina. Sin esto el PDF declara
     # Helvetica en todas -aunque no la use para nada- y Helvetica no viaja
     # dentro del archivo: una imprenta puede rechazar un PDF con una fuente
     # sin incrustar, y no hay forma de explicarle que no se usa.
     rl_config.canvas_basefontname = "LibroSerif"
-    return "LibroSerif", "LibroSans"
+    return "LibroSerif"
 
 
 # --------------------------------------------------------------------------
@@ -171,10 +200,10 @@ def bloques(md: str):
 class Libro(BaseDocTemplate):
     """Margenes espejados, titulillos y folio, e indice con paginas de verdad."""
 
-    def __init__(self, destino, serif, sans):
+    def __init__(self, destino, serif):
         super().__init__(str(destino), pagesize=MEDIDA, title=libro.TITULO,
                          author=AUTOR, subject=SUBTITULO)
-        self.serif, self.sans = serif, sans
+        self.serif = serif
         self.capitulo = ""
         self.abre_en = -1
         self.en_blanco = -1
@@ -220,19 +249,21 @@ class Libro(BaseDocTemplate):
         if doc.page in (doc.abre_en, doc.en_blanco):
             return      # la que abre capitulo y la que quedo en blanco, limpias
         lienzo.saveState()
-        lienzo.setFont(doc.sans, 8)
-        lienzo.setFillGray(0.35)
-        impar = doc.page % 2
-        # El titulillo: en la impar el capitulo, en la par el libro. Asi el
-        # lector sabe donde esta mirando cualquiera de las dos paginas.
-        arriba = MEDIDA[1] - ARRIBA + 6 * mm
-        if impar:
-            lienzo.drawRightString(MEDIDA[0] - AFUERA, arriba, doc.capitulo)
+        # Un solo gris en todo el libro (`GRIS`) y la misma familia que el
+        # texto: lo que separa al titulillo del cuerpo es que es mas chico,
+        # mas claro y esta espaciado, no que sea de otra fuente.
+        lienzo.setFont(doc.serif, 7.5)
+        lienzo.setFillGray(GRIS)
+        arriba = MEDIDA[1] - ARRIBA + 7 * mm
+        # Espaciado con el mismo truco que los rotulos: el lienzo de reportlab
+        # no tiene `setCharSpace`, asi que el aire va en el texto.
+        if doc.page % 2:
+            lienzo.drawRightString(MEDIDA[0] - AFUERA, arriba,
+                                   espaciar(doc.capitulo.upper()))
         else:
-            lienzo.drawString(AFUERA, arriba, libro.TITULO)
-        lienzo.setFillGray(0.2)
-        lienzo.setFont(doc.sans, 9)
-        lienzo.drawCentredString(MEDIDA[0] / 2, ABAJO - 8 * mm, str(doc.page))
+            lienzo.drawString(AFUERA, arriba, espaciar(libro.TITULO.upper()))
+        lienzo.setFont(doc.serif, 8.5)
+        lienzo.drawCentredString(MEDIDA[0] / 2, ABAJO - 9 * mm, str(doc.page))
         lienzo.restoreState()
 
     def afterFlowable(self, flowable):
@@ -262,7 +293,21 @@ class AbreEnImpar(ActionFlowable):
             doc.handle_pageBreak()
 
 
-def estilos(serif, sans):
+def estilos(serif):
+    """Una sola familia, un solo gris, un solo tamano de cuerpo.
+
+    La jerarquia la hacen el AIRE y el gris, no el peso ni otra fuente. En
+    todo el libro hay exactamente tres niveles y se distinguen sin negrita:
+
+        capitulo   grande, redonda, centrada, con mucho blanco arriba
+        apartado   del tamano del cuerpo, en versalita espaciada y gris
+        epigrafe   cursiva, con una sangria sola y aire alrededor
+
+    La negrita queda para lo que el texto destaca por dentro, que es el unico
+    lugar donde dice algo: si ademas la usaran los titulos, dejaria de
+    significar nada.
+    """
+    cursiva = serif + "-Italic" if serif != "Times-Roman" else "Times-Italic"
     cuerpo = ParagraphStyle(
         "cuerpo", fontName=serif, fontSize=10.5, leading=15.2,
         alignment=TA_JUSTIFY, spaceAfter=0,
@@ -277,38 +322,40 @@ def estilos(serif, sans):
         "primero": ParagraphStyle("primero", parent=cuerpo, firstLineIndent=0),
         "seguido": ParagraphStyle("seguido", parent=cuerpo,
                                   firstLineIndent=5 * mm),
+        # Sangria de un lado solo. La de los dos lados centra el bloque y lo
+        # convierte en un recuadro sin recuadro; con una sola, el epigrafe
+        # cuelga del margen y se lee como lo que es: una cita.
         "epigrafe": ParagraphStyle(
-            "epigrafe", parent=cuerpo, fontName=serif + "-Italic"
-            if serif != "Times-Roman" else "Times-Italic",
-            fontSize=10, leading=14, leftIndent=7 * mm, rightIndent=4 * mm,
-            firstLineIndent=0, spaceBefore=2 * mm, spaceAfter=4 * mm),
+            "epigrafe", parent=cuerpo, fontName=cursiva, fontSize=10.5,
+            leading=15, leftIndent=8 * mm, rightIndent=0, firstLineIndent=0,
+            spaceBefore=3 * mm, spaceAfter=5 * mm),
         "apartado": ParagraphStyle(
-            "apartado", fontName=sans + "-Bold" if sans != "Helvetica"
-            else "Helvetica-Bold", fontSize=11, leading=14,
-            spaceBefore=8 * mm, spaceAfter=3 * mm),
-        "numero": ParagraphStyle("numero", fontName=sans, fontSize=9,
+            "apartado", fontName=serif, fontSize=8.6, leading=12,
+            textColor=GRIS_HEX, spaceBefore=11 * mm, spaceAfter=4 * mm),
+        "numero": ParagraphStyle("numero", fontName=serif, fontSize=9,
                                  leading=12, alignment=TA_CENTER,
-                                 textColor="#7a7a7a", spaceAfter=3 * mm),
+                                 textColor=GRIS_HEX, spaceAfter=6 * mm),
         "capitulo": ParagraphStyle(
-            "capitulo", fontName=serif + "-Bold" if serif != "Times-Roman"
-            else "Times-Bold", fontSize=19, leading=23, alignment=TA_CENTER,
-            spaceAfter=12 * mm),
-        "filete": ParagraphStyle("filete", fontName=sans, fontSize=10,
-                                 alignment=TA_CENTER, textColor="#9a9a9a",
-                                 spaceBefore=5 * mm, spaceAfter=5 * mm),
+            "capitulo", fontName=serif, fontSize=21, leading=26,
+            alignment=TA_CENTER, spaceAfter=16 * mm),
+        # Un punto solo en vez de los tres asteriscos: separa igual y no se
+        # mira.
+        "filete": ParagraphStyle("filete", fontName=serif, fontSize=11,
+                                 alignment=TA_CENTER, textColor=GRIS_HEX,
+                                 spaceBefore=6 * mm, spaceAfter=6 * mm),
         "titulazo": ParagraphStyle(
-            "titulazo", fontName=serif + "-Bold" if serif != "Times-Roman"
-            else "Times-Bold", fontSize=26, leading=31, alignment=TA_CENTER),
+            "titulazo", fontName=serif, fontSize=23, leading=30,
+            alignment=TA_CENTER),
         "subtitulazo": ParagraphStyle(
-            "subtitulazo", fontName=serif + "-Italic" if serif != "Times-Roman"
-            else "Times-Italic", fontSize=13, leading=18, alignment=TA_CENTER),
-        "autor": ParagraphStyle("autor", fontName=sans, fontSize=12,
-                                alignment=TA_CENTER),
-        "credito": ParagraphStyle("credito", fontName=serif, fontSize=9,
-                                  leading=13, alignment=TA_CENTER,
-                                  textColor="#555555"),
+            "subtitulazo", fontName=cursiva, fontSize=11.5, leading=17,
+            alignment=TA_CENTER, textColor=GRIS_HEX),
+        "autor": ParagraphStyle("autor", fontName=serif, fontSize=9.5,
+                                alignment=TA_CENTER, textColor=GRIS_HEX),
+        "credito": ParagraphStyle("credito", fontName=serif, fontSize=8.5,
+                                  leading=14, alignment=TA_CENTER,
+                                  textColor=GRIS_HEX),
         "indice": ParagraphStyle("indice", fontName=serif, fontSize=10.5,
-                                 leading=18),
+                                 leading=19),
     }
 
 
@@ -323,26 +370,35 @@ class Capitulo(Paragraph):
 
 
 def armar_pdf(destino: Path) -> Path:
-    serif, sans = registrar_fuentes()
-    est = estilos(serif, sans)
-    doc = Libro(destino, serif, sans)
+    serif = registrar_fuentes()
+    est = estilos(serif)
+    doc = Libro(destino, serif)
+    # La portada es casi todo blanco: el titulo arranca abajo del tercio
+    # superior y el autor queda lejos. Un titulo pegado al borde de arriba y
+    # el autor debajo llenan la pagina y la vuelven un cartel.
     hist = [
-        Spacer(1, 38 * mm),
-        Paragraph(libro.TITULO, est["titulazo"]),
-        Spacer(1, 8 * mm),
+        Spacer(1, 62 * mm),
+        Paragraph(en_linea(libro.TITULO), est["titulazo"]),
+        Spacer(1, 10 * mm),
         Paragraph(SUBTITULO, est["subtitulazo"]),
-        Spacer(1, 26 * mm),
-        Paragraph(AUTOR, est["autor"]),
+        Spacer(1, 45 * mm),
+        Paragraph(espaciar(AUTOR.upper()), est["autor"]),
         PageBreak(),
-        Spacer(1, 60 * mm),
-        Paragraph("%s<br/><br/>%s<br/><br/>Primera edición" % (libro.TITULO, AUTOR),
+        Spacer(1, 75 * mm),
+        Paragraph("%s<br/><br/>%s<br/><br/>%s"
+                  % (libro.TITULO, AUTOR, espaciar("PRIMERA EDICIÓN")),
                   est["credito"]),
         PageBreak(),
-        Paragraph("Índice", est["capitulo"]),
+        Spacer(1, 10 * mm),
+        Paragraph(espaciar("ÍNDICE"), est["numero"]),
+        Spacer(1, 8 * mm),
     ]
     indice = TableOfContents()
     indice.levelStyles = [est["indice"]]
-    indice.dotsMinLevel = 0
+    # SIN puntitos. La fila de puntos es el adorno mas viejo de la tipografia
+    # de libro y es exactamente lo que sobra: el titulo a la izquierda y el
+    # numero a la derecha ya dicen lo que hay que decir.
+    indice.dotsMinLevel = 99
     # El indice se dibuja sobre una tabla, y una tabla de reportlab arranca en
     # Helvetica aunque no la use. Eso deja una fuente SIN INCRUSTAR declarada
     # en el PDF, y una imprenta puede rechazarlo por eso: no hay forma de
@@ -371,19 +427,27 @@ def armar_pdf(destino: Path) -> Path:
                 # renglones.
                 enumerado = "%s. %s" % (
                     (re.search(r"\d+", numero) or [""])[0], nombre)
-                hist += [Spacer(1, 14 * mm),
-                         Paragraph(numero.strip().upper(), est["numero"]),
+                # El numero solo, espaciado y chico, y el nombre en redonda
+                # grande. Antes decia «CAPÍTULO 16» en otra fuente y en
+                # negrita: tres senales para decir una sola cosa.
+                solo = (re.search(r"\d+", numero) or [""])[0]
+                hist += [Spacer(1, 26 * mm),
+                         Paragraph(espaciar(solo or numero.strip().upper()),
+                                   est["numero"]),
                          Capitulo(en_linea(nombre), est["capitulo"],
                                   enumerado.lstrip(". "))]
                 primero_del_apartado = True
             elif clase == "apartado":
-                hist.append(Paragraph(en_linea(texto), est["apartado"]))
+                # En versalita espaciada y gris, del tamano del cuerpo. Sin
+                # negrita y sin sans: lo que lo separa del texto es el aire de
+                # arriba, que es casi un renglon y medio.
+                hist.append(Paragraph(espaciar(texto.upper()), est["apartado"]))
                 primero_del_apartado = True
             elif clase == "epigrafe":
                 hist.append(Paragraph(en_linea(texto), est["epigrafe"]))
                 primero_del_apartado = True
             elif clase == "filete":
-                hist.append(Paragraph("* * *", est["filete"]))
+                hist.append(Paragraph("·", est["filete"]))
                 primero_del_apartado = True
             elif clase == "parrafo":
                 hist.append(Paragraph(

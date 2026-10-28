@@ -6609,7 +6609,13 @@ class TestElLibroEnPdfYEpub(unittest.TestCase):
         plano = re.sub(r"\s+", " ", texto)
         self.assertIn("Culpa y vergüenza no son lo mismo", plano)
         self.assertIn("La culpa dice hice algo mal", plano)
-        self.assertIn("Índice", plano)
+        # El índice entra por su renglón, que lleva el número de capítulo.
+        self.assertIn("18. Culpa y vergüenza no son lo mismo", plano)
+        # Y su título está espaciado letra por letra desde el diseño
+        # minimalista del 2026-10-28, así que se compara sin ese aire: lo que
+        # se quiere probar es que la página del índice existe, no cómo se
+        # compuso su título.
+        self.assertIn("índice", re.sub(r"[\s\u00a0]+", "", plano).lower())
 
     def test_el_pdf_no_declara_ninguna_fuente_sin_incrustar(self):
         # Una imprenta puede rechazar un PDF con una fuente que no viaja
