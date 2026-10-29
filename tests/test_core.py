@@ -6987,3 +6987,171 @@ class TestComoCaeElTextoEnLaPagina(unittest.TestCase):
                        alto)
         self.assertLess(primera / alto, 0.22,
                         "el capítulo abre al %d%% de la hoja" % (100 * primera / alto))
+
+
+class TestLaCubiertaQueVaALaImprenta(unittest.TestCase):
+    """Contratapa, lomo y tapa en una hoja: lo que bloqueaba subir el libro.
+
+    Con la tapa sola no se puede imprimir nada. Y una cubierta se arruina de
+    tres maneras que no se ven mirándola: el lomo mal medido corre el dibujo
+    entero, el texto que cae en el hueco del código de barras queda tapado al
+    imprimir, y una tapa que se dibuje aparte de la tapa suelta se queda
+    vieja el día que se cambie la otra.
+    """
+
+    PAGINAS = 191
+
+    def _lp(self):
+        try:
+            import reportlab  # noqa: F401
+            import pypdf      # noqa: F401
+        except ImportError:
+            self.skipTest("sin reportlab o pypdf")
+        return _script("lp", "libro_pdf.py")
+
+    @staticmethod
+    def _flujo(ruta):
+        from pypdf import PdfReader
+        pg = PdfReader(str(ruta)).pages[0]
+        return pg.get_contents().get_data().decode("latin-1")
+
+    def test_el_lomo_es_el_grosor_del_papel_por_las_paginas(self):
+        lp = self._lp()
+        from reportlab.lib.units import inch
+        # Los dos papeles de la imprenta, con el número publicado por hoja.
+        self.assertAlmostEqual(lp.lomo(191, "crema") / inch, 0.4775, places=4)
+        self.assertAlmostEqual(lp.lomo(191, "blanco") / inch, 0.430132,
+                               places=4)
+        # Y un papel que no existe no puede quedar en un lomo de cero: eso
+        # sería una cubierta sin lomo, impresa.
+        with self.assertRaises(ValueError):
+            lp.lomo(191, "reciclado")
+
+    def test_la_hoja_son_las_dos_tapas_mas_el_lomo_mas_el_sangrado(self):
+        lp = self._lp()
+        from reportlab.lib.units import inch
+        ancho, alto = lp.medida_de_cubierta(self.PAGINAS, "crema")
+        self.assertAlmostEqual(ancho / inch, 12.7275, places=3)
+        self.assertAlmostEqual(alto / inch, 9.25, places=3)
+
+    def test_la_tapa_de_la_cubierta_es_LA_MISMA_que_la_tapa_suelta(self):
+        """El dibujo, no un dibujo parecido.
+
+        Se compara el flujo de operadores del PDF y no una captura: la tapa
+        va dentro de un `q ... cm ... Q`, así que si es el mismo dibujo los
+        operadores de adentro son idénticos y aparecen tal cual.
+        """
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            tapa = lp.armar_portada(Path(d) / "tapa.pdf")
+            cub = lp.armar_cubierta(Path(d) / "cub.pdf", self.PAGINAS)
+            suelta = self._flujo(tapa).split("\n")
+            # Sin las primeras líneas: son la matriz de la página y el fondo
+            # blanco, que en la cubierta cubre una hoja de otra medida.
+            nucleo = "\n".join(suelta[3:]).strip()
+            self.assertIn(nucleo, self._flujo(cub),
+                          "la tapa de la cubierta se dibuja aparte")
+
+    def test_el_hueco_del_codigo_de_barras_queda_en_blanco(self):
+        """Si cae texto ahí, la imprenta imprime el código encima."""
+        lp = self._lp()
+        imagen = self._pintar(lp)
+        if imagen is None:
+            return
+        im, k, alto = imagen
+        caja = (lp.SANGRA + lp.MEDIDA[0] - lp.SEGURO - lp.BARRAS[0],
+                lp.SANGRA + lp.SEGURO, *lp.BARRAS)
+        self.assertEqual(self._tinta(im, k, alto, *caja), 0,
+                         "hay tinta donde va el código de barras")
+
+    def test_el_texto_del_lomo_no_se_sale_de_su_banda(self):
+        """Y además hay texto: un lomo vacío pasaría la mitad de arriba."""
+        lp = self._lp()
+        imagen = self._pintar(lp)
+        if imagen is None:
+            return
+        im, k, alto = imagen
+        grueso = lp.lomo(self.PAGINAS, "crema")
+        izquierda = lp.SANGRA + lp.MEDIDA[0]
+        util = self._tinta(im, k, alto, izquierda + lp.SEGURO_LOMO, 0,
+                           grueso - 2 * lp.SEGURO_LOMO, alto)
+        self.assertGreater(util, 500, "el lomo salió sin nada escrito")
+        for nombre, x in (("izquierdo", izquierda),
+                          ("derecho", izquierda + grueso - lp.SEGURO_LOMO)):
+            # Sin el último píxel de alto: el recorte pediría una fila que no
+            # existe y Pillow la rellena de negro, que contaría como tinta.
+            fuera = self._tinta(im, k, alto, x, 1, lp.SEGURO_LOMO, alto - 2)
+            self.assertEqual(fuera, 0,
+                             "el lomo escribe sobre el margen %s" % nombre)
+
+    def test_un_libro_finito_no_lleva_nada_escrito_en_el_lomo(self):
+        """Bajo cierto grosor el texto corrido un milímetro cae en el pliegue."""
+        lp = self._lp()
+        with tempfile.TemporaryDirectory() as d:
+            flaco = self._flujo(lp.armar_cubierta(Path(d) / "a.pdf", 60))
+            gordo = self._flujo(lp.armar_cubierta(Path(d) / "b.pdf", 200))
+        self.assertLess(lp.LOMO_MINIMO, 200)
+        self.assertNotIn("90 Tf", flaco.replace("\n", " "))
+        self.assertIn(lp.libro.TITULO[:12], self._texto_del_lomo(gordo))
+        self.assertNotIn(lp.libro.TITULO[:12], self._texto_del_lomo(flaco))
+
+    @staticmethod
+    def _texto_del_lomo(flujo):
+        """Lo que se dibuja dentro de la rotación de 90 grados."""
+        tramos = flujo.split("0 -1 1 0")[1:]
+        return "".join(tramos)
+
+    def test_la_contratapa_entra_arriba_del_codigo_aunque_crezca(self):
+        """La escalera de cuerpos se elige midiendo, no bajando hasta el piso.
+
+        Es la lección de la balanza: un bucle que achica «hasta que entre» y
+        al llegar al mínimo dibuja igual deja el texto encima de lo que haya
+        debajo, y eso se ve impreso y no acá.
+        """
+        lp = self._lp()
+        largo = [p + " " + p for p in lp.CONTRATAPA] + [lp.CONTRATAPA[1]]
+        original = lp.CONTRATAPA
+        try:
+            lp.CONTRATAPA = largo
+            imagen = self._pintar(lp)
+            if imagen is None:
+                return
+            im, k, alto = imagen
+            caja = (lp.SANGRA + lp.MEDIDA[0] - lp.SEGURO - lp.BARRAS[0],
+                    lp.SANGRA + lp.SEGURO, *lp.BARRAS)
+            self.assertEqual(self._tinta(im, k, alto, *caja), 0,
+                             "con más texto la contratapa pisa el código")
+        finally:
+            lp.CONTRATAPA = original
+
+    # ----------------------------------------------------------------
+    def _pintar(self, lp, dpi=150):
+        """La cubierta dibujada de verdad, en píxeles."""
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("sin Pillow")
+        if not shutil.which("pdftoppm"):
+            self.skipTest("sin pdftoppm no se puede mirar el PDF")
+        from reportlab.lib.units import inch
+        with tempfile.TemporaryDirectory() as d:
+            pdf = lp.armar_cubierta(Path(d) / "c.pdf", self.PAGINAS)
+            subprocess.run(["pdftoppm", "-png", "-r", str(dpi), str(pdf),
+                            str(Path(d) / "p")], check=True,
+                           capture_output=True)
+            png = next(Path(d).glob("p*.png"))
+            im = Image.open(png).convert("L")
+            im.load()
+        ancho, alto = lp.medida_de_cubierta(self.PAGINAS, "crema")
+        return im, (im.size[0] / (ancho / inch)) / 72.0, alto
+
+    @staticmethod
+    def _tinta(im, k, alto, x, y, ancho, altura):
+        """Píxeles con tinta en un rectángulo dado en puntos."""
+        px = im.load()
+        x0, x1 = round(x * k), round((x + ancho) * k)
+        y0 = round((alto - y - altura) * k)
+        y1 = round((alto - y) * k)
+        x1, y1 = min(x1, im.size[0]), min(y1, im.size[1])
+        return sum(1 for yy in range(max(y0, 0), y1)
+                   for xx in range(max(x0, 0), x1) if px[xx, yy] < 240)

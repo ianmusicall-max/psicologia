@@ -12,8 +12,13 @@ multiplica varias veces el costo por ejemplar. Asi que:
 
     ...-impresion.pdf   todo en negro, que es lo que va a la imprenta
     ...-pantalla.pdf    con el acento en rojo, para leer y para mandar
-    ...-portada.pdf     la tapa, blanca
+    ...-portada.pdf     la tapa sola, blanca, para mirar y para el ebook
+    ...-cubierta.pdf    contratapa + lomo + tapa: ESTA es la que se imprime
     ...epub             el ebook, donde el color no cuesta nada
+
+La cubierta es la unica que conserva el rojo en la version de imprenta, y no
+es una excepcion olvidada: la tapa se imprime a color siempre y no cambia el
+precio del ejemplar. Lo que se cobra a color es el interior.
 
 Es el MISMO diseno: lo unico que cambia es el tinte del acento. Por eso
 `armar_pdf` recibe un color y no hay dos maquetas.
@@ -563,7 +568,13 @@ def cayendo(c, x, y, alto, color, giro=-12, grosor=0.055):
     c.restoreState()
 
 
-def _centrado(c, texto, fuente, cuerpo, interlinea, y, color, ancho):
+def _envolver(texto, fuente, cuerpo, ancho):
+    """El texto cortado en los renglones que entran en `ancho`.
+
+    Uno solo para la tapa, el lomo y la contratapa. Con una copia por panel,
+    el dia que una aprenda algo -a partir una palabra larga, por ejemplo- las
+    otras no lo aprenden, y eso se ve impreso.
+    """
     linea, lineas = "", []
     for p in texto.split():
         prueba = (linea + " " + p).strip()
@@ -573,6 +584,11 @@ def _centrado(c, texto, fuente, cuerpo, interlinea, y, color, ancho):
         else:
             linea = prueba
     lineas.append(linea)
+    return lineas
+
+
+def _centrado(c, texto, fuente, cuerpo, interlinea, y, color, ancho):
+    lineas = _envolver(texto, fuente, cuerpo, ancho)
     c.setFillColor(color)
     c.setFont(fuente, cuerpo)
     for i, l in enumerate(lineas):
@@ -580,16 +596,14 @@ def _centrado(c, texto, fuente, cuerpo, interlinea, y, color, ancho):
     return y - (len(lineas) - 1) * interlinea
 
 
-def armar_portada(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
-    """La tapa, BLANCA, como la pidio el usuario.
+def dibujar_tapa(c, serif, sans, acento, tinta):
+    """La tapa, dibujada desde (0,0) sobre una pagina de MEDIDA.
 
-    Blanca y no crema: el crema de la pagina se ve lindo en pantalla y en una
-    miniatura de tienda se apaga contra el fondo de la lista. El blanco corta.
+    Aparte de `armar_portada` porque la cubierta completa la vuelve a dibujar
+    corrida al lugar que le toca, y la tapa suelta y la tapa de la cubierta no
+    pueden ser dos dibujos distintos: el dia que se cambie una, la otra sale
+    vieja y nadie se entera hasta que llega el ejemplar de prueba.
     """
-    serif, sans = registrar_fuentes()
-    c = cv.Canvas(str(destino), pagesize=MEDIDA)
-    c.setFillColor(white)
-    c.rect(0, 0, MEDIDA[0], MEDIDA[1], stroke=0, fill=1)
     cayendo(c, MEDIDA[0] / 2, MEDIDA[1] * 0.70, 52 * mm, acento)
     # El titulo a 40 y no a 46: a 46 los renglones llegaban casi al margen y
     # la tapa se veia apretada. Una tapa necesita el aire tanto como el
@@ -602,6 +616,245 @@ def armar_portada(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
     c.setFont(sans, 9)
     c.setFillColor(GRIS)
     c.drawCentredString(MEDIDA[0] / 2, 22 * mm, espaciar(AUTOR.upper()))
+
+
+def armar_portada(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
+    """La tapa sola, BLANCA, como la pidio el usuario.
+
+    Blanca y no crema: el crema de la pagina se ve lindo en pantalla y en una
+    miniatura de tienda se apaga contra el fondo de la lista. El blanco corta.
+
+    Esta es la que sirve para mirar, para el EPUB y para una tienda que pida
+    solo la tapa. La que se manda a imprimir es `armar_cubierta`.
+    """
+    serif, sans = registrar_fuentes()
+    c = cv.Canvas(str(destino), pagesize=MEDIDA)
+    c.setFillColor(white)
+    c.rect(0, 0, MEDIDA[0], MEDIDA[1], stroke=0, fill=1)
+    dibujar_tapa(c, serif, sans, acento, tinta)
+    c.showPage()
+    c.save()
+    return destino
+
+
+# --------------------------------------------------------------------------
+# La cubierta completa: contratapa, lomo y tapa en UNA sola pagina.
+# --------------------------------------------------------------------------
+#
+# Es lo que pide una imprenta por demanda, y lo que bloqueaba subir el libro:
+# con la tapa sola no se puede imprimir nada.
+
+# El grosor del papel, por hoja. No se elige: lo publica la imprenta, y el
+# lomo es ese numero por la cantidad de paginas. Un lomo mal medido corre el
+# dibujo entero y el titulo de la tapa termina sobre el pliegue.
+PAPEL = {"crema": 0.0025 * inch, "blanco": 0.002252 * inch}
+# Los bordes de afuera llevan sangrado: la guillotina no corta en el mismo
+# lugar en todos los ejemplares.
+SANGRA = 0.125 * inch
+# Y no se escribe a menos de un cuarto de pulgada del corte.
+SEGURO = 0.25 * inch
+# En el lomo el margen es mas chico, porque el lomo entero mide milimetros.
+SEGURO_LOMO = 0.0625 * inch
+# El rectangulo que la imprenta se reserva para el codigo de barras, en la
+# esquina de abajo a la derecha de la contratapa. Tiene que quedar BLANCO: si
+# cae texto ahi, el codigo se imprime encima y la contratapa queda ilegible.
+BARRAS = (2 * inch, 1.2 * inch)
+# Con menos paginas que esto el lomo es mas fino que una letra y no se
+# escribe: el texto corrido un milimetro cae sobre el pliegue, y un milimetro
+# es todo lo que la imprenta garantiza.
+LOMO_MINIMO = 79
+
+# El texto de la contratapa. Va aca y no en los capitulos porque no es parte
+# del libro: es lo que lee alguien que lo tiene en la mano y todavia no lo
+# compro.
+CONTRATAPA = [
+    "Hay cosas sobre el amor que nadie se sienta a explicar.",
+    "Que la intensidad del principio no predice nada. Que una pelea no se "
+    "gana. Que la gente cambia, pero casi nunca porque se lo pidan. Que lo "
+    "que sostiene un v\u00ednculo no es espectacular: es aparecer, decir lo "
+    "que pasa, pedir lo que uno quiere y reparar r\u00e1pido.",
+    "Veintinueve cap\u00edtulos sobre apego, elecci\u00f3n de pareja, celos, "
+    "l\u00edmites, rupturas, duelo, soledad, h\u00e1bitos y miedo, escritos "
+    "a partir de lo que la investigaci\u00f3n en psicolog\u00eda sabe, y de "
+    "lo que todav\u00eda no sabe. Con nombres, estudios y la parte "
+    "inc\u00f3moda incluida.",
+    "No promete una f\u00f3rmula. Propone algo m\u00e1s \u00fatil: entender "
+    "por qu\u00e9 pasa lo que pasa, para poder elegir distinto.",
+]
+# La escalera de cuerpos de la contratapa, de mayor a menor. Se elige el mas
+# grande con el que el texto ENTRA, medido antes de dibujar. Un bucle que
+# achica hasta el piso y despues dibuja igual deja el texto encima del codigo
+# de barras, y eso se ve en el ejemplar impreso y no aca.
+ESCALERA = ((13, 10.5), (12, 10), (11.5, 9.5), (11, 9), (10, 8.5))
+
+
+def lomo(paginas: int, papel: str = "crema") -> float:
+    """El ancho del lomo: el grosor de la hoja por la cantidad de hojas."""
+    if papel not in PAPEL:
+        raise ValueError("papel desconocido: %s (hay %s)"
+                         % (papel, ", ".join(sorted(PAPEL))))
+    return paginas * PAPEL[papel]
+
+
+def medida_de_cubierta(paginas: int, papel: str = "crema"):
+    """(ancho, alto) de la hoja entera, con el sangrado de los cuatro bordes."""
+    return (2 * SANGRA + 2 * MEDIDA[0] + lomo(paginas, papel),
+            2 * SANGRA + MEDIDA[1])
+
+
+def paginas_de(pdf: Path) -> int:
+    """Las paginas del PDF ya armado.
+
+    Se cuentan sobre el ARCHIVO y no sobre un contador de la corrida: el lomo
+    es el grosor del papel por ese numero, asi que tiene que salir de lo que
+    de verdad se va a imprimir.
+    """
+    from pypdf import PdfReader
+    return len(PdfReader(str(pdf)).pages)
+
+
+def _alto_de_contratapa(serif, primero, cuerpo, ancho, aire):
+    """Lo que ocupa el texto de la contratapa, antes de dibujarlo."""
+    alto = 0.0
+    for i, parrafo in enumerate(CONTRATAPA):
+        c_, f_ = ((primero, _variante(serif, "italic")) if i == 0
+                  else (cuerpo, serif))
+        alto += len(_envolver(parrafo, f_, c_, ancho)) * c_ * 1.55 + aire
+    return alto
+
+
+def _contratapa(c, x0, y0, serif, sans, acento, tinta):
+    """Lo que se lee por detras, y el hueco del codigo de barras.
+
+    El hueco no es un margen de cortesia: la imprenta imprime el codigo ahi
+    encima. Por eso el texto se mide contra ese limite y no contra el borde
+    de la hoja.
+    """
+    # Un dedo mas adentro que el minimo de la imprenta: el cuarto de pulgada
+    # es lo que NO se puede pasar, no una medida de diseno. Empezando justo
+    # ahi el renglon sale de 70 caracteres y la contratapa se lee apretada.
+    izq = x0 + SEGURO + 5 * mm
+    ancho = MEDIDA[0] - 2 * (SEGURO + 5 * mm)
+    arriba = y0 + MEDIDA[1] - SEGURO - 22 * mm
+    # El piso: el alto del codigo de barras mas un dedo de aire.
+    piso = y0 + SEGURO + BARRAS[1] + 8 * mm
+
+    c.setFont(sans, 8)
+    c.setFillColor(acento)
+    c.drawString(izq, arriba, espaciar("VEINTINUEVE CAP\u00cdTULOS"))
+    y = arriba - 5 * mm
+    c.setStrokeColor(acento)
+    c.setLineWidth(0.7)
+    c.line(izq, y, izq + 20 * mm, y)
+    y -= 13 * mm
+
+    aire = 4.5 * mm
+    primero, cuerpo = ESCALERA[-1]
+    for pr, cu in ESCALERA:
+        if _alto_de_contratapa(serif, pr, cu, ancho, aire) <= y - piso:
+            primero, cuerpo = pr, cu
+            break
+    for i, parrafo in enumerate(CONTRATAPA):
+        cu, fu = ((primero, _variante(serif, "italic")) if i == 0
+                  else (cuerpo, serif))
+        c.setFont(fu, cu)
+        c.setFillColor(tinta)
+        for linea in _envolver(parrafo, fu, cu, ancho):
+            y -= cu * 1.55
+            c.drawString(izq, y, linea)
+        y -= aire
+
+    # El autor abajo a la IZQUIERDA: a la derecha esta el codigo de barras.
+    c.setFont(sans, 8)
+    c.setFillColor(GRIS)
+    c.drawString(izq, y0 + SEGURO + 6 * mm, espaciar(AUTOR.upper()))
+
+
+def _lomo(c, x, grueso, alto, serif, sans, acento, tinta, paginas):
+    """El titulo y el autor de costado, leyendose de arriba abajo.
+
+    De arriba abajo y con las letras mirando a la tapa: asi se lee derecho
+    cuando el libro esta parado en un estante, que es la unica posicion en
+    que alguien va a mirar el lomo.
+    """
+    if paginas < LOMO_MINIMO:
+        return False
+    util = grueso - 2 * SEGURO_LOMO
+    largo = alto - 2 * SANGRA - 2 * SEGURO_LOMO
+    for cuerpo in (11, 10, 9, 8, 7):
+        titulo = libro.TITULO
+        firma = espaciar(AUTOR.upper())
+        ancho = (pdfmetrics.stringWidth(titulo, serif, cuerpo)
+                 + 10 * mm
+                 + pdfmetrics.stringWidth(firma, sans, cuerpo * 0.72))
+        if cuerpo <= util and ancho <= largo:
+            break
+    else:
+        return False
+    c.saveState()
+    c.translate(x + grueso / 2, alto / 2)
+    c.rotate(-90)
+    c.setFont(serif, cuerpo)
+    c.setFillColor(tinta)
+    desde = -ancho / 2
+    c.drawString(desde, -cuerpo * 0.35, titulo)
+    c.setFont(sans, cuerpo * 0.72)
+    c.setFillColor(GRIS)
+    c.drawString(desde + ancho
+                 - pdfmetrics.stringWidth(firma, sans, cuerpo * 0.72),
+                 -cuerpo * 0.3, firma)
+    c.restoreState()
+    return True
+
+
+def _guias(c, ancho, alto, grueso):
+    """El corte, los pliegues del lomo y la caja del codigo, para MIRAR.
+
+    No van en el archivo que se manda a imprimir: se imprimirian. Por eso hay
+    que pedirlas con --guias y no salen solas.
+    """
+    c.setStrokeColor(HexColor("#C86A6A"))
+    c.setLineWidth(0.4)
+    c.setDash(3, 3)
+    c.rect(SANGRA, SANGRA, ancho - 2 * SANGRA, alto - 2 * SANGRA,
+           stroke=1, fill=0)
+    for x in (SANGRA + MEDIDA[0], SANGRA + MEDIDA[0] + grueso):
+        c.line(x, 0, x, alto)
+    c.rect(SANGRA + MEDIDA[0] - SEGURO - BARRAS[0], SANGRA + SEGURO,
+           *BARRAS, stroke=1, fill=0)
+    c.setDash()
+
+
+def armar_cubierta(destino: Path, paginas: int, papel: str = "crema",
+                   acento=ROJO, tinta=TINTA, guias: bool = False) -> Path:
+    """La hoja entera que va a la imprenta: contratapa, lomo y tapa.
+
+    **Esta SI lleva el acento en rojo, al contrario que el interior.** En
+    impresion por demanda la tapa se imprime a color siempre y no cambia lo
+    que cuesta el ejemplar; lo que se cobra a color es el INTERIOR, y por eso
+    el interior tiene su version en negro y esta no.
+
+    `paginas` no tiene valor por defecto a proposito: es el numero del que
+    sale el lomo, y una cubierta con el lomo de otro libro no sirve para
+    nada. Que lo tenga que pasar quien llama obliga a contarlo.
+    """
+    serif, sans = registrar_fuentes()
+    grueso = lomo(paginas, papel)
+    ancho, alto = medida_de_cubierta(paginas, papel)
+    c = cv.Canvas(str(destino), pagesize=(ancho, alto))
+    c.setFillColor(white)
+    c.rect(0, 0, ancho, alto, stroke=0, fill=1)
+
+    c.saveState()
+    c.translate(SANGRA + MEDIDA[0] + grueso, SANGRA)
+    dibujar_tapa(c, serif, sans, acento, tinta)
+    c.restoreState()
+
+    _contratapa(c, SANGRA, SANGRA, serif, sans, acento, tinta)
+    _lomo(c, SANGRA + MEDIDA[0], grueso, alto, serif, sans, acento, tinta,
+          paginas)
+    if guias:
+        _guias(c, ancho, alto, grueso)
     c.showPage()
     c.save()
     return destino
@@ -629,6 +882,11 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--solo-pdf", action="store_true", help="sin el EPUB")
+    ap.add_argument("--papel", choices=sorted(PAPEL), default="crema",
+                    help="el papel del interior: de el sale el ancho del lomo")
+    ap.add_argument("--guias", action="store_true",
+                    help="dibujar el corte y la caja del codigo en la "
+                         "cubierta (para mirar, NO para imprimir)")
     ap.add_argument("--ver", action="store_true", help="decir que haria")
     args = ap.parse_args(argv)
 
@@ -657,6 +915,28 @@ def main(argv=None) -> int:
               % (para, pdf.name, pdf.stat().st_size / 1e6))
     tapa = armar_portada(SALIDA / (base + "-portada.pdf"))
     print("Tapa:         %s" % tapa.name)
+
+    # La cubierta va DESPUES y cuenta las paginas del PDF de imprenta: el
+    # lomo es el grosor del papel por esas paginas, asi que no se puede
+    # dibujar antes de saber cuantas quedaron.
+    try:
+        hojas = paginas_de(SALIDA / (base + "-impresion.pdf"))
+    except ImportError:
+        print("Sin cubierta:  hace falta pypdf para contar las paginas, y sin"
+              " ese numero el lomo seria un invento.")
+    else:
+        cub = armar_cubierta(SALIDA / (base + "-cubierta.pdf"), hojas,
+                             args.papel, guias=args.guias)
+        a, h = medida_de_cubierta(hojas, args.papel)
+        print("Cubierta:     %s" % cub.name)
+        print("              %d paginas en papel %s, lomo %.2f mm, "
+              "hoja %.1f x %.1f mm%s"
+              % (hojas, args.papel, lomo(hojas, args.papel) / mm,
+                 a / mm, h / mm, "  (CON guias, no imprimir)"
+                 if args.guias else ""))
+        if hojas % 2:
+            print("              Son %d, impar: la imprenta agrega una hoja"
+                  " en blanco al final." % hojas)
     if not args.solo_pdf:
         try:
             epub = armar_epub(SALIDA / (base + ".epub"))
