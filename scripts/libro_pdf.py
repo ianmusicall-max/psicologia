@@ -25,7 +25,7 @@ Es el MISMO diseno: lo unico que cambia es el tinte del acento. Por eso
 
 El diseno lo eligio el usuario el 2026-10-28 sobre tres alternativas
 dibujadas: numero de capitulo grande, apartados con filete, el epigrafe con
-una barra al margen. Lo que NO se tomo de la
+una barra al margen, y un pictograma por capitulo. Lo que NO se tomo de la
 referencia que trajo -una plantilla de catalogo- fue el cuerpo en sans y los
 bloques de color: esa plantilla es casi toda fotos y bloques de cuatro
 renglones, y esto son 49.000 palabras de texto seguido.
@@ -71,7 +71,7 @@ from reportlab.platypus.doctemplate import ActionFlowable  # noqa: E402
 from reportlab.platypus.tableofcontents import TableOfContents  # noqa: E402
 from reportlab.platypus.tables import TableStyle  # noqa: E402
 
-from src import libro  # noqa: E402
+from src import libro, pictogramas  # noqa: E402
 
 CAPITULOS = ROOT / "libro" / "capitulos"
 SALIDA = ROOT / "libro" / "salida"
@@ -289,23 +289,19 @@ class AbreEnImpar(ActionFlowable):
 
 
 class Apertura(Flowable):
-    """El numero grande y la palabra CAPÍTULO, en una pieza.
+    """El pictograma, el numero grande y la palabra CAPÍTULO, en una pieza.
 
-    Van juntos y no como dos parrafos porque se alinean entre si: el numero
-    cuelga del margen y el rotulo se apoya en su propia linea, a la derecha.
-    Repartidos en dos flowables, reportlab podria partirlos en dos paginas.
-
-    Hubo un pictograma arriba de los dos, uno por capitulo. El usuario los
-    saco el 2026-10-29 -«ok sin dibujos»- despues de ver tres estilos. El
-    libro queda sin ningun elemento grafico: el minimalismo que ya tenia se
-    sostiene solo, y los dibujos eran lo unico agregado encima.
+    Van juntos y no como tres parrafos porque los tres se alinean entre si: el
+    numero cuelga del margen, el rotulo se apoya en su linea de base y el
+    dibujo queda arriba de los dos. Repartido en tres flowables, reportlab
+    podria partirlos en dos paginas.
     """
 
     # Nunca se separa de lo que sigue: el numero de capitulo al pie de una
     # pagina y el titulo arriba de la siguiente seria lo peor de los dos.
     keepWithNext = 1
 
-    def __init__(self, numero, sans, acento, alto=18 * mm):
+    def __init__(self, numero, sans, acento, alto=32 * mm):
         super().__init__()
         self.numero, self.sans, self.acento = numero, sans, acento
         self.alto = alto
@@ -320,6 +316,8 @@ class Apertura(Flowable):
 
     def draw(self):
         c = self.canv
+        pictogramas.dibujar(c, self.numero, 13 * mm, self.alto - 7 * mm,
+                            11 * mm, self.acento)
         c.setFillColor(self.acento)
         c.setFont(_variante(self.sans, "bold"), 54)
         c.drawString(0, 0, str(self.numero))
@@ -723,6 +721,25 @@ def _alto_de_contratapa(serif, primero, cuerpo, ancho, aire):
     return alto
 
 
+def cuerpo_de_contratapa(serif, ancho, disponible, aire):
+    """El cuerpo mas grande con el que el texto entra, o se niega.
+
+    Negarse y no dibujar en chiquito hasta el piso: la escalera tiene un
+    ultimo escalon, y por debajo de ese el texto se mete en el hueco del
+    codigo de barras. Una cubierta asi se ve recien en el ejemplar impreso, y
+    para entonces ya se pago. Un error aca cuesta un minuto.
+    """
+    for primero, cuerpo in ESCALERA:
+        if _alto_de_contratapa(serif, primero, cuerpo, ancho, aire) <= disponible:
+            return primero, cuerpo
+    raise ValueError(
+        "el texto de la contratapa no entra arriba del codigo de barras ni "
+        "con el cuerpo mas chico (%g pt): sobran %.0f mm. Hay que acortarlo."
+        % (ESCALERA[-1][1],
+           (_alto_de_contratapa(serif, *ESCALERA[-1], ancho, aire)
+            - disponible) / mm))
+
+
 def _contratapa(c, x0, y0, serif, sans, acento, tinta):
     """Lo que se lee por detras, y el hueco del codigo de barras.
 
@@ -749,11 +766,7 @@ def _contratapa(c, x0, y0, serif, sans, acento, tinta):
     y -= 13 * mm
 
     aire = 4.5 * mm
-    primero, cuerpo = ESCALERA[-1]
-    for pr, cu in ESCALERA:
-        if _alto_de_contratapa(serif, pr, cu, ancho, aire) <= y - piso:
-            primero, cuerpo = pr, cu
-            break
+    primero, cuerpo = cuerpo_de_contratapa(serif, ancho, y - piso, aire)
     for i, parrafo in enumerate(CONTRATAPA):
         cu, fu = ((primero, _variante(serif, "italic")) if i == 0
                   else (cuerpo, serif))
@@ -768,6 +781,11 @@ def _contratapa(c, x0, y0, serif, sans, acento, tinta):
     c.setFont(sans, 8)
     c.setFillColor(GRIS)
     c.drawString(izq, y0 + SEGURO + 6 * mm, espaciar(AUTOR.upper()))
+    # Devuelve donde TERMINO el texto y donde no podia pasar. Es lo que se
+    # mira en la prueba: contar pixeles dentro del hueco del codigo no
+    # alcanza, porque el ultimo renglon de un parrafo es corto y puede
+    # pasarse de largo sin pisar justo ese rectangulo.
+    return y, piso
 
 
 def _lomo(c, x, grueso, alto, serif, sans, acento, tinta, paginas):
@@ -892,7 +910,12 @@ def main(argv=None) -> int:
 
     capitulos = sorted(CAPITULOS.glob("[0-9]*.md"))
     palabras = sum(len(r.read_text(encoding="utf-8").split()) for r in capitulos)
-    print("%d capitulos, %d palabras." % (len(capitulos), palabras))
+    sin_dibujo = [int(r.name.split("-")[0]) for r in capitulos
+                  if int(r.name.split("-")[0]) not in pictogramas.DIBUJOS]
+    print("%d capitulos, %d palabras, %d pictogramas."
+          % (len(capitulos), palabras, len(pictogramas.DIBUJOS)))
+    if sin_dibujo:
+        print("  Sin pictograma: %s (abren sin dibujo)." % sin_dibujo)
     if not capitulos:
         print("No hay capitulos escritos en %s." % CAPITULOS)
         return 1

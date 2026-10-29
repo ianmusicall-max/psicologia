@@ -6746,6 +6746,55 @@ class TestLaCopiaEnDrive(unittest.TestCase):
                         cuerpo.index("drive.guardar_reel("))
 
 
+class TestLosPictogramasDelLibro(unittest.TestCase):
+    """Uno por capítulo, y ninguno repetido. Pedido el 2026-10-28."""
+
+    def test_los_veintinueve_capitulos_tienen_el_suyo(self):
+        from src import pictogramas
+        capitulos = {t.capitulo for t in frases.leer()}
+        faltan = sorted(capitulos - set(pictogramas.DIBUJOS))
+        self.assertEqual(faltan, [], faltan)
+
+    def test_ningun_dibujo_esta_repetido(self):
+        # No alcanza con que las funciones sean distintas: dos funciones
+        # pueden dibujar lo mismo. Se DIBUJA cada una en su propio lienzo y se
+        # comparan los trazos, que es la única manera de verlo sin mirar.
+        #
+        # Es el error que de verdad pasó: en la primera tanda, autoestima y
+        # soledad eran el mismo círculo con un punto, y hábitos y duelo el
+        # mismo anillo abierto. Separados se veían bien.
+        try:
+            from reportlab.pdfgen import canvas as cv
+        except ImportError:
+            self.skipTest("sin reportlab")
+        from reportlab.lib.colors import black
+        from src import pictogramas
+        import hashlib
+        huellas = {}
+        for numero in sorted(pictogramas.DIBUJOS):
+            c = cv.Canvas("/dev/null", pagesize=(100, 100))
+            pictogramas.dibujar(c, numero, 50, 50, 40, black)
+            trazos = c._code + c._currentPageHasImages * [""]
+            huella = hashlib.sha1("".join(trazos).encode()).hexdigest()
+            self.assertNotIn(huella, huellas,
+                             "%d dibuja lo mismo que %d"
+                             % (numero, huellas.get(huella, 0)))
+            huellas[huella] = numero
+
+    def test_un_capitulo_sin_dibujo_no_rompe_el_libro(self):
+        # Quedarse sin libro porque falta un icono sería el peor cambio
+        # posible: una apertura sin dibujo es una apertura sin dibujo.
+        try:
+            from reportlab.pdfgen import canvas as cv
+        except ImportError:
+            self.skipTest("sin reportlab")
+        from reportlab.lib.colors import black
+        from src import pictogramas
+        c = cv.Canvas("/dev/null", pagesize=(100, 100))
+        self.assertFalse(pictogramas.dibujar(c, 999, 50, 50, 40, black))
+        self.assertTrue(pictogramas.dibujar(c, 1, 50, 50, 40, black))
+
+
 class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
     """Dos PDF del mismo diseño, y el de imprenta sin una gota de color."""
 
@@ -6819,14 +6868,12 @@ class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
             datos = PdfReader(str(tapa)).pages[0].get_contents().get_data()
         self.assertIn(b"1 1 1 rg", datos)
 
-    def test_el_libro_no_lleva_ningun_dibujo(self):
-        # Lo decidió el usuario el 2026-10-29 -«ok sin dibujos»- después de
-        # ver tres estilos. Se borró también `src/pictogramas.py`: un dibujo
-        # que no se usa en ningún lado es la clase de código que después
-        # alguien encuentra y cree que sirve.
-        self.assertFalse((ROOT / "src" / "pictogramas.py").exists())
+    def test_cada_capitulo_abre_con_su_pictograma(self):
+        # El dibujo entra por el número del archivo, así que un capítulo
+        # nuevo lo trae solo si está en la tabla.
+        lp = self._lp()
         fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
-        self.assertNotIn("pictogramas.dibujar", fuente)
+        self.assertIn("pictogramas.dibujar", fuente)
         self.assertIn("Apertura(numero", fuente)
 
     def test_salen_los_dos_pdf_y_no_uno(self):
@@ -7101,28 +7148,79 @@ class TestLaCubiertaQueVaALaImprenta(unittest.TestCase):
         tramos = flujo.split("0 -1 1 0")[1:]
         return "".join(tramos)
 
-    def test_la_contratapa_entra_arriba_del_codigo_aunque_crezca(self):
-        """La escalera de cuerpos se elige midiendo, no bajando hasta el piso.
+    def _contratapa_con(self, lp, textos):
+        """Dibuja una contratapa con otro texto y devuelve (fin, piso).
+
+        Se mira dónde TERMINA el bloque y no cuántos píxeles caen dentro del
+        rectángulo del código: el último renglón de un párrafo es corto, así
+        que el texto puede pasarse de largo sin pisar justo ese rectángulo, y
+        contando píxeles eso daría cero. Lo que no se puede romper es que el
+        bloque termine arriba del piso.
+        """
+        from reportlab.pdfgen import canvas as cv
+        original = lp.CONTRATAPA
+        try:
+            lp.CONTRATAPA = textos
+            serif, sans = lp.registrar_fuentes()
+            with tempfile.TemporaryDirectory() as d:
+                c = cv.Canvas(str(Path(d) / "x.pdf"),
+                              pagesize=lp.medida_de_cubierta(self.PAGINAS))
+                return lp._contratapa(c, lp.SANGRA, lp.SANGRA, serif, sans,
+                                      lp.ROJO, lp.TINTA)
+        finally:
+            lp.CONTRATAPA = original
+
+    def test_la_contratapa_termina_arriba_del_hueco_del_codigo(self):
+        """El piso lo calcula la prueba, no lo pregunta.
+
+        Tomando el que devuelve el código, la prueba compara el dibujo contra
+        la misma cuenta que lo dibujó: si alguien baja el piso, el texto baja
+        con él y la comparación sigue dando bien. Eso no es una guarda.
+        """
+        lp = self._lp()
+        from reportlab.lib.units import mm
+        suelo = lp.SANGRA + lp.SEGURO + lp.BARRAS[1]
+        fin, piso = self._contratapa_con(lp, lp.CONTRATAPA)
+        self.assertGreaterEqual(piso, suelo,
+                                "el piso dejó de respetar el código de barras")
+        self.assertGreaterEqual(
+            fin, suelo, "el texto baja %.1f mm dentro del código de barras"
+            % ((suelo - fin) / mm))
+
+    def test_con_mas_texto_achica_la_letra_en_vez_de_bajar(self):
+        """La escalera se elige midiendo, no bajando hasta el piso.
 
         Es la lección de la balanza: un bucle que achica «hasta que entre» y
         al llegar al mínimo dibuja igual deja el texto encima de lo que haya
         debajo, y eso se ve impreso y no acá.
         """
         lp = self._lp()
-        largo = [p + " " + p for p in lp.CONTRATAPA] + [lp.CONTRATAPA[1]]
-        original = lp.CONTRATAPA
-        try:
-            lp.CONTRATAPA = largo
-            imagen = self._pintar(lp)
-            if imagen is None:
-                return
-            im, k, alto = imagen
-            caja = (lp.SANGRA + lp.MEDIDA[0] - lp.SEGURO - lp.BARRAS[0],
-                    lp.SANGRA + lp.SEGURO, *lp.BARRAS)
-            self.assertEqual(self._tinta(im, k, alto, *caja), 0,
-                             "con más texto la contratapa pisa el código")
-        finally:
-            lp.CONTRATAPA = original
+        from reportlab.lib.units import mm
+        serif, _ = lp.registrar_fuentes()
+        ancho = lp.MEDIDA[0] - 2 * (lp.SEGURO + 5 * mm)
+        # Con el texto de hoy el bloque mide 77 mm al cuerpo más grande y la
+        # contratapa le deja 159, así que la escalera no se usa nunca. Se la
+        # aprieta a mano: si no, el día que alguien la borre nadie se entera
+        # hasta que el texto crezca.
+        suelto = lp.cuerpo_de_contratapa(serif, ancho, 200 * mm, 4.5 * mm)
+        apretado = lp.cuerpo_de_contratapa(serif, ancho, 70 * mm, 4.5 * mm)
+        self.assertEqual(suelto, lp.ESCALERA[0], "con lugar de sobra achicó")
+        self.assertLess(apretado[1], suelto[1], "con menos lugar no achicó")
+        # Y con el doble de texto sigue terminando arriba del piso.
+        fin, piso = self._contratapa_con(
+            lp, [p + " " + p for p in lp.CONTRATAPA])
+        self.assertGreaterEqual(fin, piso)
+
+    def test_si_no_entra_ni_con_la_letra_mas_chica_se_niega(self):
+        """Antes que imprimir el texto debajo del código, no armar la tapa.
+
+        El error cuesta un minuto; el ejemplar impreso con el código encima
+        del texto ya está pagado.
+        """
+        lp = self._lp()
+        with self.assertRaises(ValueError) as e:
+            self._contratapa_con(lp, lp.CONTRATAPA * 6)
+        self.assertIn("no entra", str(e.exception))
 
     # ----------------------------------------------------------------
     def _pintar(self, lp, dpi=150):
@@ -7155,3 +7253,42 @@ class TestLaCubiertaQueVaALaImprenta(unittest.TestCase):
         x1, y1 = min(x1, im.size[0]), min(y1, im.size[1])
         return sum(1 for yy in range(max(y0, 0), y1)
                    for xx in range(max(x0, 0), x1) if px[xx, yy] < 240)
+
+    def test_los_numeros_del_instructivo_son_los_que_calcula_el_codigo(self):
+        """`libro/PUBLICAR.md` dice el lomo, la hoja y las páginas.
+
+        Son los tres números que, equivocados, arruinan una tirada entera: el
+        lomo corre el dibujo y el título de la tapa termina sobre el pliegue.
+        Y un capítulo más los cambia a los tres. Escritos a mano y sin nadie
+        que los compare con el código, se quedan viejos en silencio, que es
+        exactamente lo que este repositorio ya se hizo dos veces.
+        """
+        lp = self._lp()
+        from reportlab.lib.units import mm
+        guia = (ROOT / "libro" / "PUBLICAR.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as d:
+            hojas = lp.paginas_de(lp.armar_pdf(Path(d) / "x.pdf"))
+        ancho, alto = lp.medida_de_cubierta(hojas, "crema")
+        espera = {
+            "las páginas": r"\| Páginas \| (\d+) \|",
+            "el lomo": r"\*\*([\d,]+) mm\*\* \((\d+) × 0,0025",
+            "la hoja": r"\*\*([\d,]+) × ([\d,]+) mm\*\*",
+        }
+        dice = {}
+        for que, patron in espera.items():
+            m = re.search(patron, guia)
+            self.assertIsNotNone(m, "PUBLICAR.md ya no dice %s" % que)
+            dice[que] = [float(g.replace(",", ".")) for g in m.groups()]
+        self.assertEqual(dice["las páginas"][0], hojas,
+                         "PUBLICAR.md dice %g páginas y son %d"
+                         % (dice["las páginas"][0], hojas))
+        self.assertEqual(dice["el lomo"][1], hojas)
+        self.assertAlmostEqual(dice["el lomo"][0],
+                               lp.lomo(hojas, "crema") / mm, places=1)
+        self.assertAlmostEqual(dice["la hoja"][0], ancho / mm, places=1)
+        self.assertAlmostEqual(dice["la hoja"][1], alto / mm, places=1)
+        # Y el de papel blanco, que es la otra opción que el instructivo da.
+        blanco = re.search(r"el lomo baja a ([\d,]+) mm", guia)
+        self.assertIsNotNone(blanco, "PUBLICAR.md ya no dice el lomo en blanco")
+        self.assertAlmostEqual(float(blanco.group(1).replace(",", ".")),
+                               lp.lomo(hojas, "blanco") / mm, places=1)
