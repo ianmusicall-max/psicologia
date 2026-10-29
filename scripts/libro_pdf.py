@@ -20,7 +20,7 @@ Es el MISMO diseno: lo unico que cambia es el tinte del acento. Por eso
 
 El diseno lo eligio el usuario el 2026-10-28 sobre tres alternativas
 dibujadas: numero de capitulo grande, apartados con filete, el epigrafe con
-una barra al margen, y un pictograma por capitulo. Lo que NO se tomo de la
+una barra al margen. Lo que NO se tomo de la
 referencia que trajo -una plantilla de catalogo- fue el cuerpo en sans y los
 bloques de color: esa plantilla es casi toda fotos y bloques de cuatro
 renglones, y esto son 49.000 palabras de texto seguido.
@@ -66,7 +66,7 @@ from reportlab.platypus.doctemplate import ActionFlowable  # noqa: E402
 from reportlab.platypus.tableofcontents import TableOfContents  # noqa: E402
 from reportlab.platypus.tables import TableStyle  # noqa: E402
 
-from src import libro, pictogramas  # noqa: E402
+from src import libro  # noqa: E402
 
 CAPITULOS = ROOT / "libro" / "capitulos"
 SALIDA = ROOT / "libro" / "salida"
@@ -284,19 +284,23 @@ class AbreEnImpar(ActionFlowable):
 
 
 class Apertura(Flowable):
-    """El pictograma, el numero grande y la palabra CAPÍTULO, en una pieza.
+    """El numero grande y la palabra CAPÍTULO, en una pieza.
 
-    Van juntos y no como tres parrafos porque los tres se alinean entre si: el
-    numero cuelga del margen, el rotulo se apoya en su linea de base y el
-    dibujo queda arriba de los dos. Repartido en tres flowables, reportlab
-    podria partirlos en dos paginas.
+    Van juntos y no como dos parrafos porque se alinean entre si: el numero
+    cuelga del margen y el rotulo se apoya en su propia linea, a la derecha.
+    Repartidos en dos flowables, reportlab podria partirlos en dos paginas.
+
+    Hubo un pictograma arriba de los dos, uno por capitulo. El usuario los
+    saco el 2026-10-29 -«ok sin dibujos»- despues de ver tres estilos. El
+    libro queda sin ningun elemento grafico: el minimalismo que ya tenia se
+    sostiene solo, y los dibujos eran lo unico agregado encima.
     """
 
     # Nunca se separa de lo que sigue: el numero de capitulo al pie de una
     # pagina y el titulo arriba de la siguiente seria lo peor de los dos.
     keepWithNext = 1
 
-    def __init__(self, numero, sans, acento, alto=32 * mm):
+    def __init__(self, numero, sans, acento, alto=18 * mm):
         super().__init__()
         self.numero, self.sans, self.acento = numero, sans, acento
         self.alto = alto
@@ -311,8 +315,6 @@ class Apertura(Flowable):
 
     def draw(self):
         c = self.canv
-        pictogramas.dibujar(c, self.numero, 13 * mm, self.alto - 7 * mm,
-                            11 * mm, self.acento)
         c.setFillColor(self.acento)
         c.setFont(_variante(self.sans, "bold"), 54)
         c.drawString(0, 0, str(self.numero))
@@ -632,12 +634,7 @@ def main(argv=None) -> int:
 
     capitulos = sorted(CAPITULOS.glob("[0-9]*.md"))
     palabras = sum(len(r.read_text(encoding="utf-8").split()) for r in capitulos)
-    sin_dibujo = [int(r.name.split("-")[0]) for r in capitulos
-                  if int(r.name.split("-")[0]) not in pictogramas.DIBUJOS]
-    print("%d capitulos, %d palabras, %d pictogramas."
-          % (len(capitulos), palabras, len(pictogramas.DIBUJOS)))
-    if sin_dibujo:
-        print("  Sin pictograma: %s (abren sin dibujo)." % sin_dibujo)
+    print("%d capitulos, %d palabras." % (len(capitulos), palabras))
     if not capitulos:
         print("No hay capitulos escritos en %s." % CAPITULOS)
         return 1

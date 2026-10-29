@@ -6746,55 +6746,6 @@ class TestLaCopiaEnDrive(unittest.TestCase):
                         cuerpo.index("drive.guardar_reel("))
 
 
-class TestLosPictogramasDelLibro(unittest.TestCase):
-    """Uno por capítulo, y ninguno repetido. Pedido el 2026-10-28."""
-
-    def test_los_veintinueve_capitulos_tienen_el_suyo(self):
-        from src import pictogramas
-        capitulos = {t.capitulo for t in frases.leer()}
-        faltan = sorted(capitulos - set(pictogramas.DIBUJOS))
-        self.assertEqual(faltan, [], faltan)
-
-    def test_ningun_dibujo_esta_repetido(self):
-        # No alcanza con que las funciones sean distintas: dos funciones
-        # pueden dibujar lo mismo. Se DIBUJA cada una en su propio lienzo y se
-        # comparan los trazos, que es la única manera de verlo sin mirar.
-        #
-        # Es el error que de verdad pasó: en la primera tanda, autoestima y
-        # soledad eran el mismo círculo con un punto, y hábitos y duelo el
-        # mismo anillo abierto. Separados se veían bien.
-        try:
-            from reportlab.pdfgen import canvas as cv
-        except ImportError:
-            self.skipTest("sin reportlab")
-        from reportlab.lib.colors import black
-        from src import pictogramas
-        import hashlib
-        huellas = {}
-        for numero in sorted(pictogramas.DIBUJOS):
-            c = cv.Canvas("/dev/null", pagesize=(100, 100))
-            pictogramas.dibujar(c, numero, 50, 50, 40, black)
-            trazos = c._code + c._currentPageHasImages * [""]
-            huella = hashlib.sha1("".join(trazos).encode()).hexdigest()
-            self.assertNotIn(huella, huellas,
-                             "%d dibuja lo mismo que %d"
-                             % (numero, huellas.get(huella, 0)))
-            huellas[huella] = numero
-
-    def test_un_capitulo_sin_dibujo_no_rompe_el_libro(self):
-        # Quedarse sin libro porque falta un icono sería el peor cambio
-        # posible: una apertura sin dibujo es una apertura sin dibujo.
-        try:
-            from reportlab.pdfgen import canvas as cv
-        except ImportError:
-            self.skipTest("sin reportlab")
-        from reportlab.lib.colors import black
-        from src import pictogramas
-        c = cv.Canvas("/dev/null", pagesize=(100, 100))
-        self.assertFalse(pictogramas.dibujar(c, 999, 50, 50, 40, black))
-        self.assertTrue(pictogramas.dibujar(c, 1, 50, 50, 40, black))
-
-
 class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
     """Dos PDF del mismo diseño, y el de imprenta sin una gota de color."""
 
@@ -6868,12 +6819,14 @@ class TestElLibroParaImprimirYParaPantalla(unittest.TestCase):
             datos = PdfReader(str(tapa)).pages[0].get_contents().get_data()
         self.assertIn(b"1 1 1 rg", datos)
 
-    def test_cada_capitulo_abre_con_su_pictograma(self):
-        # El dibujo entra por el número del archivo, así que un capítulo
-        # nuevo lo trae solo si está en la tabla.
-        lp = self._lp()
+    def test_el_libro_no_lleva_ningun_dibujo(self):
+        # Lo decidió el usuario el 2026-10-29 -«ok sin dibujos»- después de
+        # ver tres estilos. Se borró también `src/pictogramas.py`: un dibujo
+        # que no se usa en ningún lado es la clase de código que después
+        # alguien encuentra y cree que sirve.
+        self.assertFalse((ROOT / "src" / "pictogramas.py").exists())
         fuente = (ROOT / "scripts" / "libro_pdf.py").read_text(encoding="utf-8")
-        self.assertIn("pictogramas.dibujar", fuente)
+        self.assertNotIn("pictogramas.dibujar", fuente)
         self.assertIn("Apertura(numero", fuente)
 
     def test_salen_los_dos_pdf_y_no_uno(self):
