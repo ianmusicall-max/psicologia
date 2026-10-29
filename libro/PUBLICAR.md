@@ -42,6 +42,19 @@ precio por ejemplar.
 La **cubierta sí conserva el rojo**, y no es un olvido: la tapa se imprime a
 color siempre y no cambia lo que cuesta el ejemplar.
 
+### El logo, aparte
+
+La figura que cae, sola y sin el título, sale de otro comando:
+
+```sh
+python3 scripts/logo_libro.py
+```
+
+Deja tres archivos más: el vector (`-logo.pdf`), uno sin fondo
+(`-logo.png`) y uno sobre blanco (`-logo-blanco.png`), para donde la
+transparencia se ve negra. **Es el mismo dibujo de la tapa, no una copia**:
+el día que cambie la postura, el logo cambia con ella.
+
 ---
 
 ## 2. Las medidas, y de dónde salen

@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import math
 import re
 import subprocess
 import sys
@@ -530,6 +531,19 @@ def armar_pdf(destino: Path, acento=ROJO, tinta=TINTA) -> Path:
 # La tapa.
 # --------------------------------------------------------------------------
 
+# La anatomia de la figura, en un cuadrado de lado 1 y aparte del dibujo: de
+# estos mismos numeros sale la caja justa del logo (`caja_de_cayendo`, que usa
+# `scripts/logo_libro.py`). Con una copia alla, el dia que cambie la postura el
+# logo saldria recortado y nadie se enteraria hasta verlo publicado.
+CABEZA = (0.42, 0.10, 0.068)              # centro y radio
+HOMBRO, CADERA = (0.27, 0.06), (-0.17, -0.02)
+MIEMBROS = [((0.30, 0.07), (0.07, 0.11)), ((0.07, 0.11), CADERA),
+            (HOMBRO, (0.09, 0.30)), ((0.09, 0.30), (0.19, 0.50)),
+            (HOMBRO, (0.31, -0.20)), ((0.31, -0.20), (0.15, -0.33)),
+            (CADERA, (-0.40, 0.13)), ((-0.40, 0.13), (-0.58, 0.03)),
+            (CADERA, (-0.37, -0.21)), ((-0.37, -0.21), (-0.21, -0.37))]
+
+
 def cayendo(c, x, y, alto, color, giro=-12, grosor=0.055):
     """Una persona cayendo: el cuerpo horizontal, la espalda arqueada.
 
@@ -551,19 +565,39 @@ def cayendo(c, x, y, alto, color, giro=-12, grosor=0.055):
     c.setLineWidth(grosor)
     c.setLineCap(1)
     c.setLineJoin(1)
-    c.circle(0.42, 0.10, 0.068, stroke=0, fill=1)
-    hombro, cadera = (0.27, 0.06), (-0.17, -0.02)
-    for desde, hasta in [
-            ((0.30, 0.07), (0.07, 0.11)), ((0.07, 0.11), cadera),
-            (hombro, (0.09, 0.30)), ((0.09, 0.30), (0.19, 0.50)),
-            (hombro, (0.31, -0.20)), ((0.31, -0.20), (0.15, -0.33)),
-            (cadera, (-0.40, 0.13)), ((-0.40, 0.13), (-0.58, 0.03)),
-            (cadera, (-0.37, -0.21)), ((-0.37, -0.21), (-0.21, -0.37))]:
+    c.circle(CABEZA[0], CABEZA[1], CABEZA[2], stroke=0, fill=1)
+    for desde, hasta in MIEMBROS:
         p = c.beginPath()
         p.moveTo(*desde)
         p.lineTo(*hasta)
         c.drawPath(p)
     c.restoreState()
+
+
+def caja_de_cayendo(alto, giro=-12, grosor=0.055):
+    """La caja que ocupa la figura, en puntos y relativa a donde se la planta.
+
+    Es exacta y no un recorte a ojo: con el remate redondo -`setLineCap(1)` y
+    `setLineJoin(1)`- cada punta de un trazo es media raya en todas las
+    direcciones, y la cabeza es un circulo, que girado sigue siendo el mismo
+    circulo. Asi que alcanza con girar los extremos y agrandar cada uno por su
+    radio.
+
+    Se mide aca y no rasterizando el PDF para que el logo no dependa de tener
+    poppler instalado, y para que no cambie con la resolucion con la que se
+    mire.
+    """
+    ang = math.radians(giro)
+    cos, sen = math.cos(ang), math.sin(ang)
+    radio = grosor / 2
+    puntos = [CABEZA]
+    for desde, hasta in MIEMBROS:
+        puntos.append((desde[0], desde[1], radio))
+        puntos.append((hasta[0], hasta[1], radio))
+    xs = [(px * cos - py * sen, r) for px, py, r in puntos]
+    ys = [(px * sen + py * cos, r) for px, py, r in puntos]
+    return (min(v - r for v, r in xs) * alto, min(v - r for v, r in ys) * alto,
+            max(v + r for v, r in xs) * alto, max(v + r for v, r in ys) * alto)
 
 
 def _envolver(texto, fuente, cuerpo, ancho):

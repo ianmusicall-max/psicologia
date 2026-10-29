@@ -7292,3 +7292,94 @@ class TestLaCubiertaQueVaALaImprenta(unittest.TestCase):
         self.assertIsNotNone(blanco, "PUBLICAR.md ya no dice el lomo en blanco")
         self.assertAlmostEqual(float(blanco.group(1).replace(",", ".")),
                                lp.lomo(hojas, "blanco") / mm, places=1)
+
+
+class TestElLogoDelLibro(unittest.TestCase):
+    """La figura que cae, sola: para la página, la contraportada de un flyer
+    o cualquier lugar donde haga falta la marca del libro sin el título.
+
+    Se rompe de tres maneras que no se ven mirándolo suelto: que sea un
+    dibujo parecido y no el mismo de la tapa, que la hoja le corte una punta
+    del trazo, y que lleve el fondo blanco pegado -que sobre cualquier color
+    que no sea blanco dibuja un recuadro-.
+    """
+
+    def _lg(self):
+        try:
+            import reportlab  # noqa: F401
+            import pypdf      # noqa: F401
+        except ImportError:
+            self.skipTest("sin reportlab o pypdf")
+        return _script("lg", "logo_libro.py"), _script("lp", "libro_pdf.py")
+
+    @staticmethod
+    def _flujo(ruta):
+        from pypdf import PdfReader
+        return PdfReader(str(ruta)).pages[0].get_contents().get_data().decode(
+            "latin-1")
+
+    def test_el_logo_es_EL_MISMO_dibujo_que_el_de_la_tapa(self):
+        """El dibujo, no uno parecido.
+
+        La figura va dentro de un `q ... cm ... Q` y sus coordenadas son las
+        del cuadrado de lado 1, así que lo único que cambia entre la tapa y
+        el logo es la matriz. Todo lo de adentro tiene que aparecer tal cual.
+        """
+        lg, lp = self._lg()
+        with tempfile.TemporaryDirectory() as d:
+            logo = lg.armar_logo(Path(d) / "logo.pdf")
+            tapa = lp.armar_portada(Path(d) / "tapa.pdf")
+            renglones = self._flujo(logo).split("\n")
+            corte = [i for i, r in enumerate(renglones) if r.endswith(" cm")]
+            self.assertTrue(corte, "el logo ya no planta la figura con un cm")
+            nucleo = "\n".join(renglones[corte[-1] + 1:]).strip()
+            self.assertIn(nucleo, self._flujo(tapa),
+                          "el logo se dibuja aparte de la tapa")
+
+    def test_el_logo_no_lleva_fondo(self):
+        """Un fondo blanco pegado es un recuadro sobre cualquier otro color."""
+        lg, _ = self._lg()
+        with tempfile.TemporaryDirectory() as d:
+            flujo = self._flujo(lg.armar_logo(Path(d) / "logo.pdf"))
+        self.assertNotIn(" re f", flujo, "el logo lleva un rectángulo pintado")
+
+    def test_la_hoja_del_logo_es_la_caja_justa_del_dibujo(self):
+        """Medido en píxeles y no con la misma cuenta que lo dibujó.
+
+        Es lo único que prueba de verdad `caja_de_cayendo`: comparar su
+        resultado contra esa misma fórmula no probaría nada, y una caja
+        apenas chica le come la punta a un brazo.
+        """
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("sin Pillow")
+        if not shutil.which("pdftocairo"):
+            self.skipTest("sin pdftocairo no se puede mirar el PDF")
+        lg, _ = self._lg()
+        with tempfile.TemporaryDirectory() as d:
+            pdf = lg.armar_logo(Path(d) / "logo.pdf")
+            png = lg._rasterizar(pdf, Path(d) / "logo.png", 1200, True)
+            self.assertIsNotNone(png, "no salió el PNG")
+            im = Image.open(png).convert("RGBA")
+            im.load()
+        ancho, alto = im.size
+        caja = im.getchannel("A").getbbox()
+        self.assertIsNotNone(caja, "el logo salió vacío")
+        margenes = (caja[0], ancho - caja[2], caja[1], alto - caja[3])
+        # El aire es el mismo de los cuatro lados: si la caja estuviera
+        # calculada de más por un lado, ese margen sería más ancho.
+        self.assertEqual(len(set(margenes)), 1,
+                         "el dibujo no quedó centrado en su hoja: %s"
+                         % (margenes,))
+        # Y es el que pide AIRE, no uno cualquiera: con 0 el trazo toca el
+        # borde y cualquier recorte se come una punta.
+        self.assertAlmostEqual(margenes[0] / ancho,
+                               lg.AIRE * lg.LADO / _ancho_del_logo(lg),
+                               places=2)
+
+
+def _ancho_del_logo(lg):
+    from scripts.libro_pdf import caja_de_cayendo
+    x0, _, x1, _ = caja_de_cayendo(lg.LADO)
+    return (x1 - x0) + 2 * lg.AIRE * lg.LADO
