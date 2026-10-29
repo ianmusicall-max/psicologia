@@ -253,15 +253,8 @@ DIBUJOS: Dict[int, Callable] = {
 }
 
 
-def dibujar(c, capitulo: int, x: float, y: float, s: float, color,
-            trazo: float = 0) -> bool:
+def dibujar(c, capitulo: int, x: float, y: float, s: float, color) -> bool:
     """Dibuja el pictograma del capitulo. Devuelve False si no tiene.
-
-    `trazo` fija el grosor en puntos en vez de calcularlo con el tamano. Hace
-    falta para la trama de las paginas en blanco: ahi los dibujos van de 26 a
-    120 mm, y con el grosor proporcional los grandes salen con una linea de
-    casi 8 mm y la pagina se lee como un monton de burbujas en vez de como un
-    dibujo.
 
     No levanta error cuando falta: un capitulo sin dibujo es una apertura sin
     dibujo, y el libro sale igual. Quedarse sin libro porque falta un icono
@@ -273,7 +266,7 @@ def dibujar(c, capitulo: int, x: float, y: float, s: float, color,
     c.saveState()
     c.setStrokeColor(color)
     c.setFillColor(color)
-    c.setLineWidth(trazo or TRAZO * s)
+    c.setLineWidth(TRAZO * s)
     c.setLineCap(1)
     c.setLineJoin(1)
     dibujo(c, x, y, s)
