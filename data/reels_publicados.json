@@ -55,5 +55,18 @@
   },
   "publicado": true,
   "cuando": "2026-10-28T15:12:16"
+ },
+ "2026-10-29": {
+  "video": "cul-01.mp4",
+  "titulo": "Culpa y vergüenza no son lo mismo",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/29132147073135338",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/17895514305613535",
+   "youtube": "https://youtube.com/shorts/rhWZV6c3Oy0",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-10-29T16:55:11"
  }
 }
