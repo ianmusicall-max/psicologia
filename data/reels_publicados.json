@@ -68,5 +68,18 @@
   },
   "publicado": true,
   "cuando": "2026-10-29T16:55:11"
+ },
+ "2026-10-30": {
+  "video": "des-01.mp4",
+  "titulo": "Dormir poco no te hace más productivo. Te hace más irritable, más impulsivo y peor juez de ti mismo.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/3028924054127026",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/17917514664464279",
+   "youtube": "https://youtube.com/shorts/TZTisDB6mSI",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-10-30T14:38:42"
  }
 }
