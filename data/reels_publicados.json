@@ -81,5 +81,18 @@
   },
   "publicado": true,
   "cuando": "2026-10-30T14:38:42"
+ },
+ "2026-10-31": {
+  "video": "con-01.mp4",
+  "titulo": "La confianza no se promete. Se acumula en cosas chicas y repetidas.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1851855682835182",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18146681719507200",
+   "youtube": "https://youtube.com/shorts/JfOq00rIJhw",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-10-31T18:14:36"
  }
 }
