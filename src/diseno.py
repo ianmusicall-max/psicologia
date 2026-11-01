@@ -57,14 +57,20 @@ def cuerpo_maximo(texto: str) -> int:
 # medidas en vez de reusar las de arriba.
 # ---------------------------------------------------------------------------
 
-# Lapicero y no plumón: la letra de la referencia es fina, derecha y de
-# imprenta. `Kalam-Bold` se probó primero y es más gruesa, pero inclina y
-# engorda, y lo que se pidió es que parezca escrito con lapicero.
-MAN_FUENTE = "PatrickHand-Regular.ttf"
+# Inclinada y de lapicero, que son dos pedidos del usuario y se probaron en
+# ese orden. `Kalam-Bold` fue la primera -inclinada, pero de plumón-, y
+# `PatrickHand` la segunda -de lapicero, pero derecha-. La que cumple las dos
+# es esta: el mismo trazo inclinado de Kalam en el peso fino.
+#
+# Y se lee más que las dos, que es lo que hay que cuidar en una página para
+# gente de setenta años. Medido con la altura de la x y los pixeles de tinta
+# de "xnueve": Lora-SemiBold a 80 px, que es lo que publica la otra página,
+# da 42 y 4.950; esta a 96 con su trazo da 50 y 6.535.
+MAN_FUENTE = "Kalam-Regular.ttf"
 # El trazo de un lapicero es más parejo y un poco más grueso que el contorno
 # de la fuente. Un pelo de más en cada letra es lo que lo separa de "una
-# tipografía que imita letra" y, de paso, es lo que esta página necesita para
-# que se lea a los setenta.
+# tipografía que imita letra". Subirlo convierte el lapicero en plumón: ahí
+# está la diferencia con `Kalam-Bold`, que se descartó por eso.
 MAN_TRAZO = 0.012
 # Cuánto se mueve cada palabra respecto del renglón, en partes del cuerpo.
 MAN_PULSO = 0.016
