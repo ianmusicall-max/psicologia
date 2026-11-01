@@ -1,0 +1,90 @@
+# Capítulo 5 · El cuerpo que cambia
+#
+# OJO al escribir acá: esta página no da consejos médicos. Lo que se dice es
+# psicología -sueño, dolor, movimiento y cómo se los interpreta- y nunca qué
+# tomar ni qué hacer con una enfermedad. La palabra «trastorno» además rebota
+# en el validador, porque es un diagnóstico usado como adjetivo.
+tema: cuerpo
+capitulo: 5
+eje: apoyo
+titulo: El cuerpo que cambia
+hashtags: [cuerpo, sueno, movimiento]
+tesis: >-
+  El cuerpo cambia y casi nadie explica cómo, así que cada cambio se vive como
+  una señal de que algo se rompió. Dormir distinto, cansarse antes o tardar
+  más en arrancar son cosas que la investigación describe desde hace décadas y
+  que no significan lo que parecen. Saber qué es esperable es lo que permite
+  darse cuenta de lo que no lo es.
+
+frases:
+  - id: cue-01
+    texto: "Dormir de un tirón se vuelve raro con los años. No es que esté durmiendo mal."
+    destacar: [tirón]
+    principio: "El sueño se vuelve más fragmentado y menos profundo con la edad, con despertares nocturnos más frecuentes como patrón normal."
+    fuente: "Ohayon y colegas (2004), metaanálisis de 65 estudios."
+    reflexion: >-
+      Despertarse dos o tres veces de noche es lo que le pasa a la mayoría
+      después de los sesenta, y no quiere decir que algo ande mal. Lo que suele
+      hacer daño es lo que viene después: mirar el reloj, calcular cuántas
+      horas quedan y enojarse. Eso sí despierta del todo. Lo que la noche pide
+      es menos pelea, no más horas.
+
+  - id: cue-02
+    texto: "Cansarse antes no es lo mismo que no poder. Son dos conclusiones distintas."
+    destacar: [poder]
+    principio: "La reducción de capacidad aeróbica con la edad es gradual y el entrenamiento sigue produciendo mejoras a cualquier edad."
+    fuente: "Fiatarone y colegas (1994), ensayo con personas de 72 a 98 años."
+    reflexion: >-
+      En un estudio ya clásico, personas de noventa y tantos hicieron ejercicio
+      de fuerza durante diez semanas y mejoraron de verdad: caminaban mejor y
+      subían escaleras que antes no subían. No se trata de hacer lo mismo que a
+      los cuarenta sino de no confundir una señal con un veredicto. El cuerpo
+      avisa que vaya más despacio; no avisa que se quede quieto.
+
+  - id: cue-03
+    texto: "El dolor ocupa más lugar cuando no hay nada más ocupándolo."
+    destacar: [lugar]
+    principio: "La atención modula la intensidad percibida del dolor: la distracción activa reduce la señal dolorosa medida."
+    fuente: "Bushnell, Čeko y Low (2013); Eccleston y Crombez (1999)."
+    reflexion: >-
+      Esto no dice que el dolor esté en la cabeza, dice que la cabeza le sube o
+      le baja el volumen. Por eso una tarde sin nada duele más que una tarde
+      ocupada, con el mismo cuerpo y la misma causa. No reemplaza a nada de lo
+      que indique un médico: es lo que explica por qué conviene tener algo que
+      hacer, y no es un detalle menor.
+
+  - id: cue-04
+    texto: "Moverse un poco todos los días rinde más que mucho los domingos."
+    destacar: [días]
+    principio: "La actividad física regular de intensidad moderada se asocia a mejor estado de ánimo y función cognitiva en adultos mayores."
+    fuente: "Erickson y colegas (2011); Northey y colegas (2018), metaanálisis."
+    reflexion: >-
+      La caminata de media hora, hecha casi todos los días, aparece una y otra
+      vez en los estudios: ánimo, sueño y memoria. Lo que no aparece es el plan
+      heroico de los domingos, que además deja a cualquiera dolorido tres días.
+      Lo que sostiene es lo chico y repetido, que es lo mismo que pasa con casi
+      todo lo demás.
+
+  - id: cue-05
+    texto: "Si algo que siempre hizo bien de pronto le cuesta, eso sí hay que contarlo."
+    destacar: [contarlo]
+    principio: "Los cambios funcionales abruptos se distinguen del envejecimiento normal, que es lento y gradual, y justifican consulta."
+    fuente: "Fried y colegas (2001); Sarkisian y colegas (2001)."
+    reflexion: >-
+      El cambio de la edad es lento y parejo, tanto que casi no se nota de un
+      mes al otro. Lo que aparece de golpe tiene otra causa. No hace falta
+      saber cuál: alcanza con no guardárselo porque «ya está viejo». La mitad
+      de las consultas que se demoran se demoran por eso, y no por falta de
+      ganas de ir.
+
+  - id: cue-06
+    texto: "El espejo cambió más rápido que usted. Esa diferencia la siente todo el mundo."
+    destacar: [espejo]
+    principio: "La edad subjetiva es en promedio menor que la cronológica a partir de la mediana edad, y esa diferencia se asocia a mejor bienestar."
+    fuente: "Rubin y Berntsen (2006); Westerhof y Barrett (2005)."
+    reflexion: >-
+      Preguntada por la edad que siente, la mayoría de la gente mayor contesta
+      entre diez y veinte años menos de la que tiene. No es negación ni
+      coquetería: por dentro uno sigue siendo el mismo y la foto del documento
+      va por otro lado. Esa distancia incomoda al principio y después se
+      entiende mejor: el que mira el espejo no envejeció al mismo ritmo.

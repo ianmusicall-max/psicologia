@@ -1,0 +1,91 @@
+# Capítulo 6 · Lo que se olvida y lo que no
+#
+# El tema más delicado del banco. La regla que lo gobierna: acá NO se habla de
+# enfermedad, ni como advertencia ni como susto. Se habla de qué olvido es
+# esperable, de por qué los tests salen peor cuando a uno le recuerdan su edad
+# y de cómo se recuerda mejor. Una página de Facebook no diagnostica a nadie.
+tema: memoria
+capitulo: 6
+eje: nucleo
+titulo: Lo que se olvida y lo que no
+hashtags: [memoria, atencion, recuerdos]
+tesis: >-
+  Olvidar un nombre a los treinta es un descuido y a los setenta da miedo, y
+  es el mismo olvido. Lo que cambia no es solo la memoria sino lo que uno
+  concluye de ella, y esa conclusión empeora el resultado: cuando a una
+  persona mayor se le recuerda su edad antes de una prueba, le va peor en esa
+  misma prueba. Saber qué es esperable devuelve algo de calma, y la calma es
+  parte de lo que hace recordar.
+
+frases:
+  - id: mem-01
+    texto: "Tener el nombre en la punta de la lengua pasa a los veinte también."
+    destacar: [lengua]
+    principio: "El fenómeno de la punta de la lengua aparece a todas las edades; con los años se vuelve más frecuente para nombres propios, no para el vocabulario general."
+    fuente: "Burke y colegas (1991); Brown y McNeill (1966)."
+    reflexion: >-
+      Los nombres propios son el caso más difícil para cualquier cerebro: no
+      tienen significado del que agarrarse, son una etiqueta pegada a una cara.
+      Por eso se traban más que las palabras comunes, a cualquier edad. Lo que
+      cambia después de los sesenta es la frecuencia, no la naturaleza del
+      asunto. Si el nombre aparece diez minutos después, el recuerdo estaba.
+
+  - id: mem-02
+    texto: "Recordarle a alguien su edad antes de una prueba le hace sacar menos nota."
+    destacar: [menos]
+    principio: "La amenaza del estereotipo reduce el desempeño en pruebas de memoria de adultos mayores cuando se activa la idea de deterioro por edad."
+    fuente: "Hess y colegas (2003); Lamont, Swift y Abrams (2015), metaanálisis."
+    reflexion: >-
+      Es el experimento que más conviene conocer: al mismo grupo se le toma la
+      misma prueba de memoria, pero a la mitad se le dice antes que sirve para
+      medir el deterioro de la edad. Esa mitad saca peor nota. O sea que parte
+      de lo que se mide no es memoria sino miedo. Eso también explica por qué
+      uno se traba justo cuando alguien lo está mirando.
+
+  - id: mem-03
+    texto: "La memoria de lo que hay que hacer mañana se apoya en papel, no en voluntad."
+    destacar: [papel]
+    principio: "La memoria prospectiva se beneficia de claves externas; las ayudas ambientales compensan eficazmente su declive con la edad."
+    fuente: "Einstein y McDaniel (1990); Henry y colegas (2004)."
+    reflexion: >-
+      Acordarse de hacer algo en el futuro es la tarea que más se resiente con
+      los años, y es también la que mejor se compensa desde afuera: la nota en
+      la puerta, el pastillero de los días, la alarma del teléfono. Usar esas
+      ayudas no es rendirse. Es lo que hace cualquiera que tenga demasiado en
+      la cabeza, a cualquier edad.
+
+  - id: mem-04
+    texto: "Lo que se repite en voz alta y se cuenta a alguien se recuerda mucho mejor."
+    destacar: [cuenta]
+    principio: "La recuperación activa y la elaboración verbal mejoran la retención más que la relectura, también en adultos mayores."
+    fuente: "Roediger y Karpicke (2006); Dunlosky y colegas (2013)."
+    reflexion: >-
+      Leer dos veces no sirve casi nada; contarlo una sí. Lo mismo con un
+      nombre nuevo: decirlo en voz alta, usarlo en una frase, preguntar cómo se
+      escribe. Parece una formalidad y es la diferencia entre que quede o no.
+      Vale para la gente que conoce, para lo que dijo el médico y para dónde
+      dejó las llaves.
+
+  - id: mem-05
+    texto: "Lo que se recuerda de los veinte no es nostalgia: el cerebro guarda más de esos años."
+    destacar: [guarda]
+    principio: "El pico de reminiscencia: los recuerdos autobiográficos se concentran entre los 15 y los 30 años, por ser el período donde se forma la identidad."
+    fuente: "Rubin, Rahhal y Poon (1998); Berntsen y Rubin (2004)."
+    reflexion: >-
+      Si le vienen más recuerdos de aquella época que de hace cinco años, no es
+      que viva en el pasado. Es que ahí pasó casi todo por primera vez, y lo
+      primero se graba distinto. Por eso las canciones de entonces siguen
+      sonando como si fueran de ayer. Contar esos años no es repetirse: es la
+      parte de usted que la gente más joven no conoce.
+
+  - id: mem-06
+    texto: "Dormir poco se parece bastante a tener mala memoria, y es otra cosa."
+    destacar: [dormir]
+    principio: "La consolidación de la memoria depende del sueño; la privación reduce el rendimiento en pruebas de recuerdo sin que exista deterioro de base."
+    fuente: "Walker y Stickgold (2006); Scullin y Bliwise (2015)."
+    reflexion: >-
+      Lo que se aprende durante el día se termina de guardar mientras uno
+      duerme. Después de varias noches cortas, cualquiera falla en lo mismo que
+      antes hacía bien, y a los setenta ese fallo asusta mucho más que a los
+      treinta. Antes de sacar conclusiones conviene mirar cómo viene durmiendo:
+      es la causa más común y la más fácil de confundir.

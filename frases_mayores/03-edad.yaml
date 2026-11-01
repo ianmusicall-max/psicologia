@@ -1,0 +1,94 @@
+# Capítulo 3 · Lo que usted cree sobre su edad
+#
+# El tema más contraintuitivo del banco y el que mejor sostiene a la página:
+# lo que alguien cree sobre su propia vejez cambia lo que hace, y lo que hace
+# cambia cómo envejece. Es correlacional y así hay que escribirlo: acá no se
+# promete nada.
+tema: edad
+capitulo: 3
+eje: nucleo
+titulo: Lo que usted cree sobre su edad
+hashtags: [edad, creencias, autonomia]
+tesis: >-
+  A nadie le enseñaron qué esperar de esta etapa, así que lo que la mayoría
+  tiene en la cabeza lo aprendió de los chistes, de la publicidad y de cómo
+  le hablan en la calle. Eso no es un detalle de ánimo: en seguimientos
+  largos, las personas que no se ven a sí mismas como alguien que ya no sirve
+  se recuperan mejor, piden ayuda antes y viven más años. Lo que se cree
+  sobre la edad no describe la edad, la empuja.
+
+frases:
+  - id: eda-01
+    texto: "Lo que usted cree sobre su edad no la describe: la empuja."
+    destacar: [empuja]
+    principio: "Las autopercepciones del envejecimiento predicen resultados de salud y funcionamiento años después, incluso ajustando por salud inicial."
+    fuente: "Levy, Slade, Kunkel y Kasl (2002), seguimiento de 23 años; Westerhof y colegas (2014)."
+    reflexion: >-
+      A varias personas se les preguntó, antes de los cincuenta, si estaban de
+      acuerdo con frases como «con los años uno ya no sirve para mucho». Dos
+      décadas después, las que no estaban de acuerdo vivían en promedio más
+      años. No es que pensar bonito alargue la vida: lo que cambia es lo que
+      uno hace. Quien cree que ya está fuera de juego deja de caminar, deja de
+      insistir con el médico y deja de aceptar invitaciones.
+
+  - id: eda-02
+    texto: "«Es la edad» es la explicación más fácil y casi nunca la verdadera."
+    destacar: [edad]
+    principio: "Atribuir a la edad síntomas que tienen otra causa retrasa la consulta y el tratamiento de problemas tratables."
+    fuente: "Sarkisian y colegas (2001); Goodwin (1999)."
+    reflexion: >-
+      Un dolor nuevo, un cansancio que antes no estaba, el ánimo por el piso:
+      nada de eso es «la edad», son cosas que pasan a una edad. La diferencia
+      importa porque lo primero no se consulta y lo segundo sí. El cuerpo
+      cambia, claro, pero el cambio es lento y parejo; lo que aparece de golpe
+      tiene otra causa y conviene buscarla.
+
+  - id: eda-03
+    texto: "Que le hablen despacio y en diminutivo no es cariño: es un diagnóstico que nadie hizo."
+    destacar: [diminutivo]
+    principio: "El habla condescendiente dirigida a personas mayores reduce el desempeño y la confianza de quien la recibe, un efecto medido en estudios experimentales."
+    fuente: "Hehman y Bugental (2015); Ryan y colegas (1986)."
+    reflexion: >-
+      Se llama habla de abuelito: voz alta, palabras cortas, todo en
+      diminutivo. Quien lo hace suele creer que está siendo amable. Lo que
+      muestran los estudios es que a quien la recibe le va peor en las mismas
+      tareas que hacía bien, y que al rato empieza a comportarse como la
+      trataron. No hace falta enojarse: alcanza con contestar en el tono normal
+      de siempre.
+
+  - id: eda-04
+    texto: "Aprender algo nuevo a los setenta cuesta más tiempo y da el mismo resultado."
+    destacar: [resultado]
+    principio: "El aprendizaje de habilidades nuevas se mantiene en la vejez; lo que cambia es la velocidad de adquisición, no el techo alcanzable."
+    fuente: "Park y colegas (2014), estudio Synapse; Willis y colegas (2006)."
+    reflexion: >-
+      A un grupo de personas mayores se les enseñó fotografía digital y
+      costura durante tres meses, varias horas por semana. Aprendieron, y
+      además mejoraron en memoria. La clave no fue la actividad sino que era
+      difícil y sostenida: lo fácil y conocido no mueve nada. Tarda más que a
+      los veinte, y llega al mismo lugar.
+
+  - id: eda-05
+    texto: "Decidir por usted «para no preocuparlo» le saca justo lo que lo sostiene."
+    destacar: [decidir]
+    principio: "La percepción de control sobre las decisiones propias se asocia a mejor salud y mayor supervivencia en adultos mayores institucionalizados y en la comunidad."
+    fuente: "Langer y Rodin (1976); Rodin (1986)."
+    reflexion: >-
+      En una residencia se hizo una prueba simple: a un grupo le dieron una
+      planta y les dijeron que la cuidaran ellos; al otro le dieron la misma
+      planta y les dijeron que el personal la cuidaba. El primer grupo estaba
+      mejor meses después. Decidir cansa menos de lo que parece y sostiene más
+      de lo que se cree. Cuando alguien decide por usted con buena intención,
+      le está sacando eso.
+
+  - id: eda-06
+    texto: "Nadie le enseñó a tener setenta años. Está aprendiendo, no fallando."
+    destacar: [aprendiendo]
+    principio: "La vejez carece de guiones sociales claros, a diferencia de otras etapas, lo que deja a cada persona construyendo su propio modelo."
+    fuente: "Riley y Riley (1994); Neugarten (1979)."
+    reflexion: >-
+      Para la escuela, el primer trabajo o criar un hijo hay manuales, consejos
+      y gente alrededor haciendo lo mismo. Para esta etapa no hay casi nada, y
+      lo poco que circula es desánimo disfrazado de chiste. Así que la
+      sensación de estar improvisando no es un defecto suyo: es que de verdad
+      está improvisando, como todos los demás.

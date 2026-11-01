@@ -1,0 +1,93 @@
+# Capítulo 4 · La compañía que de verdad acompaña
+#
+# La soledad es el tema que más aparece en esta edad y el peor escrito en
+# todas partes: se resuelve con «salga más». Lo que la investigación mide es
+# otra cosa, y es lo que se escribe acá.
+#
+# El prefijo es `cer-` y no `sol-`: ese está tomado en el banco de la otra
+# página. Los dos bancos no pueden compartir un id, y hay una prueba que lo
+# exige.
+tema: cercania
+capitulo: 4
+eje: nucleo
+titulo: La compañía que de verdad acompaña
+hashtags: [compania, soledad, amistad]
+tesis: >-
+  La soledad que duele no se mide en personas alrededor: se mide en la
+  distancia entre los vínculos que uno tiene y los que querría tener. Por eso
+  se puede estar rodeado y sentirse solo, y vivir solo sin sentirlo. En esta
+  edad el círculo se achica por razones que no elige nadie, y lo que repone
+  no es más gente sino más cercanía con alguien.
+
+frases:
+  - id: cer-01
+    texto: "Se puede estar rodeado de gente y seguir sintiéndose solo. No está fallando."
+    destacar: [rodeado]
+    principio: "La soledad se define como la discrepancia entre las relaciones deseadas y las percibidas, no como aislamiento objetivo."
+    fuente: "Peplau y Perlman (1982); Cacioppo y Patrick (2008)."
+    reflexion: >-
+      La soledad no cuenta cabezas, mide distancia. Por eso un almuerzo
+      familiar entero puede dejarlo más solo que una tarde a solas: lo que
+      falta no es compañía, es que alguien sepa de verdad cómo está.
+      Entenderlo cambia lo que uno busca. No más reuniones, más verdad en
+      alguna.
+
+  - id: cer-02
+    texto: "Estar solo y sentirse solo son dos cosas distintas, y pesan distinto."
+    destacar: [distintas]
+    principio: "El aislamiento social objetivo y la soledad percibida predicen la mortalidad por vías parcialmente independientes."
+    fuente: "Holt-Lunstad y colegas (2015), metaanálisis de 70 estudios; Steptoe y colegas (2013)."
+    reflexion: >-
+      Hay quien vive solo, se las arregla bien y está en paz. Y hay quien está
+      acompañado todo el día y la pasa mal. Las dos cosas se miden por separado
+      y las dos importan, así que preguntarle a alguien si vive solo no dice
+      casi nada. La pregunta que sí dice es otra: ¿tiene a quién contarle un
+      mal día?
+
+  - id: cer-03
+    texto: "Quien lleva tiempo solo empieza a leer rechazo donde hay distracción."
+    destacar: [rechazo]
+    principio: "La soledad crónica aumenta la vigilancia ante señales sociales negativas y sesga la interpretación de gestos ambiguos como rechazo."
+    fuente: "Cacioppo y Hawkley (2009); Spithoven, Bijttebier y Goossens (2017)."
+    reflexion: >-
+      Es el truco más feo que tiene la soledad: cuanto más dura, más peligrosa
+      hace ver a la gente. Una llamada que no llega, una cara distraída, y la
+      lectura es «no le intereso». Esa lectura hace que uno se retire, y
+      retirarse deja más solo. Saber que el filtro está puesto es lo único que
+      permite no creerle del todo.
+
+  - id: cer-04
+    texto: "Los vínculos que sostienen son pocos. Siempre fueron pocos."
+    destacar: [pocos]
+    principio: "El tamaño del círculo íntimo se mantiene estable a lo largo de la vida aunque la red amplia se reduzca con la edad."
+    fuente: "Dunbar (2018); Lang y Carstensen (1994)."
+    reflexion: >-
+      A cualquier edad, la gente de verdad cercana se cuenta con los dedos de
+      una mano. Lo que cambia con los años es el resto: los conocidos, los
+      compañeros de trabajo, la gente del barrio. Que esa parte se achique se
+      siente como perderlo todo, y no lo es. Vale la pena mirar quiénes son los
+      cinco y llamar a uno hoy.
+
+  - id: cer-05
+    texto: "Pedir compañía no es ser una carga. Es como se arma una."
+    destacar: [pedir]
+    principio: "El temor a ser una carga inhibe la búsqueda de apoyo y predice mayor soledad, aun cuando el entorno está dispuesto a brindarlo."
+    fuente: "Cohen y Wills (1985); Luo y colegas (2012)."
+    reflexion: >-
+      Casi nadie llama porque piensa que va a molestar, y del otro lado piensan
+      lo mismo. Así se queda todo el mundo esperando a que llame el otro. El
+      que llama primero no queda debiendo nada: en los estudios, quien pide
+      apoyo lo recibe más y, lo que sorprende, también cae mejor. Pedir es una
+      invitación, no una deuda.
+
+  - id: cer-06
+    texto: "Una conversación de quince minutos por teléfono cuenta. Está medido."
+    destacar: [cuenta]
+    principio: "Las llamadas breves y frecuentes con una persona entrenada en escucha reducen la soledad medida en cuatro semanas."
+    fuente: "Kahlon y colegas (2021), ensayo aleatorizado durante la pandemia."
+    reflexion: >-
+      Durante los encierros se probó algo mínimo: llamadas cortas, dos o tres
+      veces por semana, de alguien que preguntaba y escuchaba. Cuatro semanas
+      después, la soledad y la ansiedad habían bajado de verdad. No hacía falta
+      una visita ni un plan: hacía falta que alguien llamara. Sirve igual para
+      el que recibe la llamada y para el que la hace.

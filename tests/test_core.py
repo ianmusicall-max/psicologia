@@ -12,6 +12,8 @@ import json
 import os
 import sys
 import re
+import contextlib
+import io
 import time
 import shutil
 import subprocess
@@ -471,6 +473,66 @@ class TestLosEstilos(unittest.TestCase):
             c = diseno._colores(PAGINA, estilo)
             self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
             self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 3.5, estilo)
+
+
+class TestLasDosPaginas(unittest.TestCase):
+    """Desde el 2026-11-01 el repositorio publica DOS páginas: la de vínculos
+    y la de la tercera edad. Lo único que las separa son tres líneas de su
+    yaml, así que lo que hay que cuidar es que de verdad no se toquen."""
+
+    def _mayores(self):
+        return config.cargar(config.archivo_de("mayores"))
+
+    def test_cada_una_tiene_su_banco_y_su_registro(self):
+        otra = self._mayores()
+        self.assertNotEqual(otra.banco, PAGINA.banco)
+        self.assertNotEqual(otra.publicadas, PAGINA.publicadas)
+        # Y la de siempre sigue donde estaba: el valor por defecto es lo único
+        # que corre en el turno que ya publica todos los días.
+        self.assertEqual(PAGINA.banco, "frases")
+        self.assertEqual(PAGINA.publicadas, "data/publicadas.json")
+
+    def test_una_pagina_que_no_existe_falla_y_dice_cuales_hay(self):
+        with self.assertRaises(ValueError) as ctx:
+            config.archivo_de("la-que-no-esta")
+        self.assertIn("mayores", str(ctx.exception))
+
+    def test_el_banco_de_la_pagina_nueva_pasa_su_propia_politica(self):
+        """Con SU página y no con la otra: `revisar` compara los hashtags del
+        tema contra los fijos de la página, y los fijos son distintos."""
+        otra = self._mayores()
+        temas = frases.leer(otra.carpeta_de_frases)
+        self.assertEqual(frases.revisar(temas, otra), [])
+        self.assertTrue(temas)
+
+    def test_el_turno_de_una_saca_frases_del_banco_de_esa(self):
+        """Corre el camino de verdad, que es por donde se publica, y no la
+        configuración: si `publicar_turno` se olvidara de pasar el banco,
+        sacaría una frase de la otra página y la publicaría en esta."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "pt", ROOT / "scripts" / "publicar_turno.py")
+        pt = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(pt)
+        de_la_otra = {f.id for f in frases.todas(frases.leer(
+            self._mayores().carpeta_de_frases))}
+        de_siempre = {f.id for f in frases.todas(TEMAS)}
+        self.assertFalse(de_la_otra & de_siempre, "los dos bancos comparten un id")
+        salida = io.StringIO()
+        with contextlib.redirect_stdout(salida):
+            pt.main(["--pagina", "mayores", "--ver", "--ahora", "2026-11-02T09"])
+        dicho = salida.getvalue().split()
+        self.assertTrue(any(x in de_la_otra for x in dicho), salida.getvalue())
+
+    def test_anotar_en_una_no_escribe_en_el_registro_de_la_otra(self):
+        """Compartir el registro es la forma silenciosa de romper esto: una
+        página le marcaría a la otra como publicadas frases que ahí nunca
+        salieron, y esas frases no volverían a salir."""
+        with tempfile.TemporaryDirectory() as d:
+            una, otra = Path(d) / "una.json", Path(d) / "otra.json"
+            frases.anotar_publicada("mad-01", date(2026, 11, 2), "1_1", "P", ruta=una)
+            self.assertIn("mad-01", frases.publicadas(una))
+            self.assertEqual(frases.publicadas(otra), {})
 
 
 class TestElEstiloManuscrito(unittest.TestCase):

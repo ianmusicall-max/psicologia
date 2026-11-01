@@ -1,0 +1,71 @@
+# La página de frases para la tercera edad: Luis Del Carpio Merino.
+#
+# Es la SEGUNDA página del repositorio. Lo que la separa de la otra está en
+# tres líneas de acá -`banco`, `publicadas` y el par de credenciales- y no en
+# una copia del código: `publicar_turno.py --pagina mayores` lee esto.
+#
+# No lleva reel ni Instagram, y eso la deja en costo CERO de API: la frase ya
+# está escrita en el banco y el flyer lo dibuja PIL. Lo único que se gasta son
+# minutos de GitHub, que en un repositorio público son libres.
+pagina:
+  # Lo que firma el flyer abajo. No hay encabezado: el estilo manuscrito no
+  # lleva, así que esta firma es lo ÚNICO que dice de quién es el flyer.
+  nombre: LUIS DEL CARPIO MERINO
+  firma: Luis Del Carpio Merino
+
+  # La hoja escrita con lapicero. FIJO y sin rotar: los otros cuatro estilos
+  # son de la otra página, y una página que cambia de cara cada post no llega
+  # a tener una. `ROTAN`, en `diseno.py`, es lo que lo garantiza del otro lado.
+  estilo: manuscrito
+  rotar_estilos: false
+
+  # El azul y el papel salieron medidos de la referencia que mandó el usuario:
+  # tinta rgb(0, 3, 163) y papel rgb(249, 246, 234). `suave` no se usa en este
+  # estilo -no hay pie gris- y queda por si algún día lleva otro.
+  paleta:
+    fondo: "#F9F6EA"
+    tinta: "#060A9E"
+    acento: "#060A9E"
+    suave: "#5B6066"
+
+  # Su banco y su registro. Las dos cosas APARTE de la otra página:
+  # - el banco, porque cada archivo de `frases/` es también un capítulo de
+  #   «Lo que nadie te explicó del amor», y un tema de esta página puesto ahí
+  #   saldría impreso en ese libro;
+  # - el registro, porque es lo que dice qué frase sale después. Compartido,
+  #   una página le marcaría a la otra como publicadas frases que ahí nunca
+  #   salieron, y esa frase no volvería a salir nunca.
+  banco: frases_mayores
+  publicadas: data/publicadas_mayores.json
+
+  # Nada de Instagram por ahora: lo pidió el usuario, solo frases en Facebook,
+  # que además es la red donde de verdad está esta audiencia.
+  instagram: false
+  instagram_horas: []
+
+  # Horas de Lima, más temprano que la otra página (8 a 22): esta audiencia
+  # está despierta antes y se acuesta antes.
+  horas: [7, 9, 11, 13, 15, 17, 19]
+
+  # Lo pidió el usuario el 2026-11-01: tres por día los primeros tres días y
+  # seis por día de ahí en adelante.
+  #
+  # EL LÍMITE NO ES LA PARRILLA, ES EL BANCO. `frases.siguiente` no repite
+  # ninguna frase: cuando se acaban, el turno no publica y devuelve error,
+  # así que el flujo de GitHub se pone en rojo hasta que haya más escritas.
+  # Ese rojo es el aviso, y conviene saber que va a llegar: a este ritmo son
+  # 9 frases los tres primeros días y 6 por día después, o sea unas 42 por
+  # semana. `scripts/revisar_banco.py` dice qué día se agota.
+  arranque:
+    - {dias: 3, posts: 3}
+  posts_por_dia: 6
+
+  # Tres los pone el tema y dos la página, como en la otra.
+  hashtags_fijos: [bienestar, adultomayor]
+
+  # VACÍO y así se queda: «no menciones lo de terapia nunca más».
+  pie_sensible: ""
+
+  facebook:
+    page_id_env: MAY_FB_PAGE_ID
+    token_env: MAY_FB_PAGE_TOKEN

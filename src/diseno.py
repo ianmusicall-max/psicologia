@@ -71,7 +71,7 @@ MAN_FUENTE = "Kalam-Regular.ttf"
 # de la fuente. Un pelo de más en cada letra es lo que lo separa de "una
 # tipografía que imita letra". Subirlo convierte el lapicero en plumón: ahí
 # está la diferencia con `Kalam-Bold`, que se descartó por eso.
-MAN_TRAZO = 0.012
+MAN_TRAZO = 0.0
 # Cuánto se mueve cada palabra respecto del renglón, en partes del cuerpo.
 MAN_PULSO = 0.016
 # La columna es ANGOSTA a propósito: con el margen de los otros estilos la

@@ -125,3 +125,74 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/pedir_reel_si_falta.py
+
+  # ---------------------------------------------------------------------
+  # La SEGUNDA pagina: frases para la tercera edad (Luis Del Carpio Merino).
+  #
+  # Mismo script y mismo horario; lo unico que cambia es `--pagina mayores`,
+  # que trae otro banco, otro registro de publicadas y otras credenciales
+  # desde `config/mayores.yaml`.
+  #
+  # DESPUES de la otra y no en paralelo (`needs`): las dos terminan subiendo
+  # un commit con lo que salio, y dos push a la vez en el mismo segundo se
+  # pisan. En fila tardan un minuto mas y la ventana del turno es una hora.
+  # `always()` porque un problema de la otra pagina no tiene nada que ver con
+  # esta.
+  #
+  # SIN LOS SECRETOS NO HACE NADA Y NO SE PONE EN ROJO. Mientras falten,
+  # `MAY_FB_PAGE_TOKEN` llega vacio y el paso se saltea: un flujo que falla
+  # cada quince minutos deja de mirarse, y cuando de verdad se rompa algo
+  # nadie lo va a notar.
+  mayores:
+    runs-on: ubuntu-latest
+    needs: publicar
+    if: always()
+    env:
+      TZ: America/Lima
+      MAY_FB_PAGE_ID: ${{ secrets.MAY_FB_PAGE_ID }}
+      MAY_FB_PAGE_TOKEN: ${{ secrets.MAY_FB_PAGE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            /*
+            !/data/fondos
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Avisar si todavia no estan los secretos
+        if: env.MAY_FB_PAGE_TOKEN == ''
+        run: |
+          echo "La pagina de la tercera edad no tiene credenciales todavia."
+          echo "Faltan dos secretos del repositorio (Settings -> Secrets and"
+          echo "variables -> Actions): MAY_FB_PAGE_ID y MAY_FB_PAGE_TOKEN."
+          echo "Hasta entonces este turno no publica nada. El flujo NO falla."
+
+      - name: Publicar si a esta hora le toca
+        if: env.MAY_FB_PAGE_TOKEN != ''
+        run: python scripts/publicar_turno.py --pagina mayores
+
+      - name: Guardar lo que salio
+        if: env.MAY_FB_PAGE_TOKEN != ''
+        run: |
+          git config user.name "Turno automatico"
+          git config user.email "noreply@users.noreply.github.com"
+          if [ ! -f data/publicadas_mayores.json ]; then
+            echo "Todavia no salio ningun post en esta pagina."
+            exit 0
+          fi
+          git add -f data/publicadas_mayores.json
+          git add -f data/historias_estado.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Nada que guardar."
+            exit 0
+          fi
+          git commit -m "Publicado (mayores): $(date +'%Y-%m-%d %H:00')"
+          git pull --rebase --autostash
+          git push

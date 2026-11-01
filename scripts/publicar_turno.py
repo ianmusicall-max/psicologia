@@ -4,7 +4,8 @@
     publicar_turno.py          publica si corresponde
     publicar_turno.py --ver    dice que haria, sin publicar
 
-Las horas estan en `config/pagina.yaml`. Fuera de esas horas no publicaba
+Las horas estan en el yaml de la pagina (`--pagina mayores` lee
+`config/mayores.yaml`). Fuera de esas horas no publicaba
 nada, y eso fue el problema del 2026-10-26/28: la pagina estuvo dos dias
 enteros sin un solo flyer.
 
@@ -113,20 +114,29 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ver", action="store_true", help="decir que haria, sin publicar")
     ap.add_argument("--ahora", help="fingir esta fecha y hora (YYYY-MM-DDTHH), para probar")
+    # Con dos páginas, esto es lo único que las separa en la línea de comando.
+    # Cada una trae su banco, su registro de publicadas y sus credenciales
+    # desde su propio yaml: acá no hay ni un camino escrito a mano.
+    ap.add_argument("--pagina", default="",
+                    help="qué página publica (p. ej. mayores); vacío es la de siempre")
     args = ap.parse_args(argv)
 
     load_dotenv(ROOT / ".env")
-    pagina = config.cargar()
+    try:
+        pagina = config.cargar(config.archivo_de(args.pagina))
+    except ValueError as e:
+        print(e)
+        return 2
     ahora = datetime.fromisoformat(args.ahora) if args.ahora else datetime.now()
 
-    temas = frases.leer()
+    temas = frases.leer(pagina.carpeta_de_frases)
     problemas = frases.revisar(temas, pagina)
     if problemas:
         print("El banco tiene %d problemas; no publico. El primero: %s"
               % (len(problemas), problemas[0]))
         return 2
 
-    ya = frases.publicadas()
+    ya = frases.publicadas(pagina.archivo_de_publicadas)
     desde = frases.primer_dia(ya) or ahora.date()
     horas_hoy = parrilla.horas_del_dia(pagina, desde, ahora.date())
     hoy = "Hoy (dia %d) salen %d: %s." % (
@@ -192,7 +202,8 @@ def main(argv=None) -> int:
     from src import historias  # noqa: E402
     historias.del_flyer(pagina, ruta)
 
-    frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre, extra={
+    frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre,
+                            ruta=pagina.archivo_de_publicadas, extra={
         "hora": hora, "tema": tema.tema, "eje": tema.eje,
         "estilo": estilo, "instagram": salida.get("instagram") or "",
         # La hora REAL, que en un turno atrasado no es `hora`. Es lo que lee

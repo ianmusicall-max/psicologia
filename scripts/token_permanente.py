@@ -3,6 +3,10 @@
 
     token_permanente.py              muestra que haria y que token saldria
     token_permanente.py --guardar    ademas lo escribe en el .env
+    token_permanente.py --para mayores --pagina <id> --guardar
+                                     el token de la SEGUNDA pagina, en sus
+                                     propias variables (MAY_...), sin tocar
+                                     las de la primera
 
 Un token de pagina NO vence cuando se deriva de un token de usuario LARGO. El
 camino es ese y no otro:
@@ -128,14 +132,28 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--guardar", action="store_true", help="escribir el resultado en el .env")
     ap.add_argument("--pagina", help="id de la pagina, o parte de su nombre")
+    # PARA QUE PAGINA del repositorio se guarda. Lo que cambia son los nombres
+    # de las variables del .env, que cada pagina declara en su yaml. Sin esto,
+    # sacar el token de la segunda pagina PISABA el de la primera, y el
+    # sintoma habria sido que la pagina vieja empieza a publicar en la nueva.
+    ap.add_argument("--para", default="",
+                    help="para que pagina del repo se guarda (p. ej. mayores)")
     args = ap.parse_args(argv)
 
     load_dotenv(ENV)
-    pagina = config.cargar()
-    token = pagina.fb_token
+    # De donde sale el token de ENTRADA y a donde va el de SALIDA. Son dos
+    # cosas distintas: el token de usuario esta siempre en el .env de la
+    # pagina de siempre -o en FB_USER_TOKEN- y de el salen los de todas.
+    origen = config.cargar()
+    try:
+        destino = config.cargar(config.archivo_de(args.para)) if args.para else origen
+    except ValueError as e:
+        print(e)
+        return 2
+    token = origen.fb_token
     app_id, app_secret = os.environ.get("FB_APP_ID"), os.environ.get("FB_APP_SECRET")
     if not token:
-        print("Falta %s en el .env." % pagina.token_env)
+        print("Falta %s en el .env." % origen.token_env)
         return 2
     if not (app_id and app_secret):
         print("Faltan FB_APP_ID y FB_APP_SECRET en el .env: el intercambio lo firma la app.")
@@ -164,18 +182,18 @@ def main(argv=None) -> int:
         if estado == 0:
             print()
             print("Ya es permanente: no hay nada que convertir.")
-            if pagina.fb_page_id != yo.get("id"):
+            if destino.fb_page_id != yo.get("id"):
                 print("Pero %s dice %s y la pagina es %s: corregilo."
-                      % (pagina.page_id_env, pagina.fb_page_id, yo.get("id")))
+                      % (destino.page_id_env, destino.fb_page_id, yo.get("id")))
                 if args.guardar:
-                    _guardar({pagina.page_id_env: yo.get("id")})
+                    _guardar({destino.page_id_env: yo.get("id")})
                     print("Corregido en el .env.")
             return 0
         print()
         print("Para que no venza hace falta el token del USUARIO, no el de la pagina:")
         print("  1. Explorador de la API Graph, elegi tu app y 'Usuario' (no la pagina).")
         print("  2. Permisos: %s, pages_show_list." % ", ".join(NECESARIOS))
-        print("  3. Pone ESE token en %s y corre esto de nuevo." % pagina.token_env)
+        print("  3. Pone ESE token en %s y corre esto de nuevo." % origen.token_env)
         return 1
 
     # Es un token de usuario: este es el camino que da el token permanente.
@@ -199,7 +217,7 @@ def main(argv=None) -> int:
         print("  %s (id %s): %s"
               % (c.get("name"), c.get("id"), _contar(_vencimiento(c["access_token"], app_id, app_secret))))
 
-    elegida, motivo = elegir_pagina(paginas, args.pagina, pagina.fb_page_id)
+    elegida, motivo = elegir_pagina(paginas, args.pagina, destino.fb_page_id)
     if elegida is None:
         print()
         print("NO elijo yo: %s." % motivo)
@@ -214,12 +232,12 @@ def main(argv=None) -> int:
     print()
     print("Elegida: %s (%s)." % (elegida.get("name"), motivo))
 
-    valores = {pagina.page_id_env: elegida["id"], pagina.token_env: elegida["access_token"],
+    valores = {destino.page_id_env: elegida["id"], destino.token_env: elegida["access_token"],
                "FB_USER_TOKEN": usuario_largo}
     print()
     print("Esto es lo que va en el .env:")
-    print("%s=%s" % (pagina.page_id_env, elegida["id"]))
-    print("%s=%s" % (pagina.token_env, elegida["access_token"]))
+    print("%s=%s" % (destino.page_id_env, elegida["id"]))
+    print("%s=%s" % (destino.token_env, elegida["access_token"]))
     if args.guardar:
         _guardar(valores)
         print()

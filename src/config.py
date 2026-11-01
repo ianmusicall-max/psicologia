@@ -12,6 +12,22 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config" / "pagina.yaml"
 
 
+def archivo_de(clave: str = "") -> Path:
+    """El yaml de una página. Sin clave, la de siempre.
+
+    Una clave y no un camino: lo que se escribe en un cron o en un flujo de
+    GitHub tiene que ser corto y difícil de equivocar, y así el día que haya
+    una tercera página no hay ninguna ruta suelta dando vueltas.
+    """
+    if not clave:
+        return CONFIG
+    ruta = ROOT / "config" / ("%s.yaml" % clave)
+    if not ruta.exists():
+        hay = sorted(p.stem for p in (ROOT / "config").glob("*.yaml"))
+        raise ValueError("no existe la página %r; hay %s" % (clave, ", ".join(hay)))
+    return ruta
+
+
 @dataclass
 class Pagina:
     nombre: str
@@ -28,6 +44,21 @@ class Pagina:
     instagram_horas: List[int] = field(default_factory=list)
     page_id_env: str = "PSI_FB_PAGE_ID"
     token_env: str = "PSI_FB_PAGE_TOKEN"
+    # De dónde saca las frases y dónde anota lo que publicó. Hay DOS páginas
+    # desde el 2026-11-01 y cada una tiene su banco y su registro: compartir
+    # el registro haría que una le marcara a la otra como publicadas frases
+    # que nunca salieron ahí, y el banco de una no se puede publicar en la
+    # otra -son dos audiencias y dos libros distintos-.
+    banco: str = "frases"
+    publicadas: str = "data/publicadas.json"
+
+    @property
+    def carpeta_de_frases(self) -> Path:
+        return ROOT / self.banco
+
+    @property
+    def archivo_de_publicadas(self) -> Path:
+        return ROOT / self.publicadas
 
     @property
     def fb_page_id(self) -> Optional[str]:
@@ -70,4 +101,6 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         pie_sensible=(datos.get("pie_sensible") or "").strip(),
         page_id_env=fb.get("page_id_env", "PSI_FB_PAGE_ID"),
         token_env=fb.get("token_env", "PSI_FB_PAGE_TOKEN"),
+        banco=str(datos.get("banco") or "frases"),
+        publicadas=str(datos.get("publicadas") or "data/publicadas.json"),
     )
