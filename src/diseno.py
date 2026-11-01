@@ -9,10 +9,11 @@ entra, así que el error solo puede venir de un cambio en estas constantes.
 from __future__ import annotations
 
 import re
+import random
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 from .config import Pagina
 from .frases import Frase, Tema, PALABRA, destacadas
@@ -48,6 +49,37 @@ def cuerpo_maximo(texto: str) -> int:
     if n <= 110:
         return 80
     return 72
+
+
+# ---------------------------------------------------------------------------
+# El estilo manuscrito: la hoja escrita con plumón. Es el de la página de la
+# tercera edad y no se parece a los otros cuatro, así que tiene sus propias
+# medidas en vez de reusar las de arriba.
+# ---------------------------------------------------------------------------
+
+# Lapicero y no plumón: la letra de la referencia es fina, derecha y de
+# imprenta. `Kalam-Bold` se probó primero y es más gruesa, pero inclina y
+# engorda, y lo que se pidió es que parezca escrito con lapicero.
+MAN_FUENTE = "PatrickHand-Regular.ttf"
+# El trazo de un lapicero es más parejo y un poco más grueso que el contorno
+# de la fuente. Un pelo de más en cada letra es lo que lo separa de "una
+# tipografía que imita letra" y, de paso, es lo que esta página necesita para
+# que se lea a los setenta.
+MAN_TRAZO = 0.012
+# Cuánto se mueve cada palabra respecto del renglón, en partes del cuerpo.
+MAN_PULSO = 0.016
+# La columna es ANGOSTA a propósito: con el margen de los otros estilos la
+# frase sale en dos renglones largos y deja de parecer escrita a mano.
+MAN_MARGEN = 180
+MAN_ZONA_Y, MAN_ZONA_ALTO = 300, 760
+MAN_INTERLINEA = 1.30
+MAN_MAXIMO, MAN_MINIMO = 104, 40
+MAN_FIRMA, MAN_FIRMA_Y = 34, H - 120
+MAN_RAYA_PUNTOS = 9             # en cuántos tramos se quiebra el subrayado
+# El grano del papel. Un fondo de un solo color es lo que delata que esto no
+# se escribió: en la referencia del usuario el crema varía uno o dos niveles
+# de un pixel al siguiente. Es MUY poco a propósito; subirlo ensucia la letra.
+GRANO_FUERZA, GRANO_PANO = 3, 512
 
 
 def _rgb(color: str):
@@ -125,14 +157,45 @@ def _espaciado(draw, xy, texto: str, f, color, escala: int, derecha: bool = Fals
         x += _ancho(draw, c, f) + sep
 
 
+def _raya_a_mano(draw, x0, x1, y, color, grosor: int, semilla: str) -> None:
+    """Un subrayado de plumón: ni recto ni parejo ni horizontal.
+
+    El azar lleva SEMILLA, y la semilla es el id de la frase más la palabra.
+    Sin eso, el flyer que aprobaste en Telegram y el que se publica después
+    serían dos archivos distintos, y volver a dibujar un post daría otro
+    trazo cada vez.
+
+    El temblor y la inclinación salen del grosor, que sale del cuerpo, así
+    que el trazo se ve igual en el flyer de mirar y en el de 2160 px.
+    """
+    r = random.Random(semilla)
+    inclina = r.uniform(-0.6, 0.6) * grosor
+    puntos = []
+    for i in range(MAN_RAYA_PUNTOS + 1):
+        t = i / MAN_RAYA_PUNTOS
+        puntos.append((x0 + (x1 - x0) * t,
+                       y + inclina * t + r.uniform(-0.45, 0.45) * grosor))
+    draw.line(puntos, fill=color, width=grosor, joint="curve")
+
+
 def _escribir(draw, tokens, lineas, flags, f, x0, y, ancho, paso, tinta, acento,
-              centrado: bool = False, resaltado: Optional[str] = None) -> int:
+              centrado: bool = False, resaltado: Optional[str] = None,
+              subrayado: Optional[str] = None, semilla: str = "",
+              trazo: int = 0) -> int:
     """Dibuja los renglones y devuelve dónde terminó.
 
     Con `resaltado`, la palabra marcada no cambia de color: lleva una mancha
     detrás, como un marcador. La mancha se dibuja ANTES que el texto en cada
     renglón, porque pintada encima lo taparía; por eso cada renglón se recorre
     dos veces en vez de dibujarse de una.
+
+    Con `subrayado`, va una raya a mano DEBAJO, que se dibuja después del
+    texto: del mismo color, así que da igual si se tocan. Es el gesto del
+    estilo manuscrito, donde no hay un segundo color con el que destacar.
+
+    Los tres modos viven acá y no en cada estilo a propósito: dibujar token
+    por token con su espacio es la parte que se rompe callada, y copiada en
+    cinco lugares se arregla en uno solo.
     """
     espacio = _ancho(draw, " ", f)
     alto = f.size
@@ -147,11 +210,27 @@ def _escribir(draw, tokens, lineas, flags, f, x0, y, ancho, paso, tinta, acento,
                     draw.rectangle([x - alto * 0.06, y + alto * 0.26,
                                     x + w + alto * 0.06, y + alto * 1.02], fill=resaltado)
                 x += w + espacio
+        # El pulso: a mano, las palabras no se apoyan todas en el mismo
+        # renglón. Son décimas del cuerpo y con semilla, como el subrayado;
+        # sin esto la letra se ve dibujada por una máquina que imita letra.
+        pulso = [round(random.Random(semilla + "pulso" + tokens[i]).uniform(
+            -MAN_PULSO, MAN_PULSO) * alto) if subrayado else 0 for i in linea]
         x = x0_linea
-        for i in linea:
-            color = tinta if resaltado else (acento if flags[i] else tinta)
-            draw.text((x, y), tokens[i], font=f, fill=color)
+        for k, i in enumerate(linea):
+            color = tinta if (resaltado or subrayado) else (acento if flags[i] else tinta)
+            draw.text((x, y + pulso[k]), tokens[i], font=f, fill=color,
+                      stroke_width=trazo, stroke_fill=color)
             x += _ancho(draw, tokens[i], f) + espacio
+        if subrayado:
+            asc, desc = f.getmetrics()
+            x = x0_linea
+            for k, i in enumerate(linea):
+                w = _ancho(draw, tokens[i], f)
+                if flags[i]:
+                    _raya_a_mano(draw, x - alto * 0.03, x + w + alto * 0.03,
+                                 y + pulso[k] + asc + desc * 0.34, subrayado,
+                                 max(3, round(alto * 0.055)), semilla + tokens[i])
+                x += w + espacio
         y += paso
     return y
 
@@ -282,9 +361,99 @@ def _estilo_ficha(draw, frase, tema, pagina, e, c):
 # Los cuatro repartos que quedaron, elegidos por el usuario sobre once. Los
 # otros siete se borraron en vez de dejarlos apagados: un renderer sin camino
 # envejece sin que nadie lo note y despues nadie sabe si se puede tocar.
+def _grano(img: Image.Image, semilla: str) -> Image.Image:
+    """El papel, que no es un color plano.
+
+    Se arma un paño chico de ruido y se repite, en vez de sortear los seis
+    millones de pixeles de un flyer de 2160: lo segundo tarda segundos y acá
+    se dibujan doce por día. Con esta fuerza el repetido no se ve.
+
+    Va con semilla, como el subrayado y por lo mismo: el flyer que se aprueba
+    y el que se publica tienen que ser el mismo archivo.
+    """
+    r = random.Random("grano" + semilla)
+    n = GRANO_PANO
+    pano = Image.frombytes("L", (n, n), bytes(
+        128 + r.randint(-GRANO_FUERZA, GRANO_FUERZA) for _ in range(n * n)))
+    ruido = Image.new("L", img.size)
+    for x in range(0, img.size[0], n):
+        for y in range(0, img.size[1], n):
+            ruido.paste(pano, (x, y))
+    return ImageChops.add(img, ruido.convert("RGB"), scale=1, offset=-128)
+
+
+def _estilo_manuscrito(draw, frase, tema, pagina, e, c):
+    """La hoja escrita a mano con plumón: la frase entre comillas, centrada,
+    y la palabra destacada subrayada.
+
+    Tres cosas lo separan de los otros cuatro, y las tres son a propósito:
+
+    - **No lleva encabezado ni regla de pie.** Lo que se imita es una hoja
+      escrita, no una tarjeta de marca. Lo único que queda es la firma abajo,
+      con la misma letra, porque un flyer que se comparte sin firma deja de
+      ser de la página.
+    - **La palabra destacada no cambia de color: va subrayada.** Un plumón
+      tiene un color solo. Por eso este estilo no usa `acento`.
+    - **La columna es angosta** (`MAN_MARGEN`, 180 contra 96). Es lo que
+      parte la frase en renglones cortos; con el margen de los otros estilos
+      salen dos renglones largos y el efecto se pierde.
+
+    No entra en la rueda diaria: ver `ROTAN`.
+    """
+    tinta = c["tinta"]
+    tokens = frase.texto.split()
+    flags = _banderas(frase, tokens)
+    # Las comillas se pegan al primer y al último token DESPUÉS de calcular
+    # las banderas: `_banderas` cuenta palabras, y una comilla no lo es, pero
+    # el ancho de cada token sí cambia y hay que medirlo con ellas puestas.
+    pintar = list(tokens)
+    pintar[0] = "\u201c" + pintar[0]
+    pintar[-1] = pintar[-1] + "\u201d"
+
+    ancho = (W - 2 * MAN_MARGEN) * e
+    for tam in range(MAN_MAXIMO, MAN_MINIMO - 1, -2):
+        f = _fuente(MAN_FUENTE, tam * e)
+        if any(_ancho(draw, t, f) > ancho for t in pintar):
+            continue
+        lineas = _partir(draw, pintar, f, ancho)
+        paso = int(tam * e * MAN_INTERLINEA)
+        if len(lineas) * paso <= MAN_ZONA_ALTO * e:
+            break
+    else:
+        raise ValueError("la frase no entra en el flyer ni con el cuerpo mínimo: %r"
+                         % frase.texto)
+
+    y = MAN_ZONA_Y * e + (MAN_ZONA_ALTO * e - len(lineas) * paso) // 2
+    # El acento viaja aunque este estilo no lo use: es `_escribir` el que tiene
+    # que saber que con `subrayado` no hay segundo color. Pasándole la tinta en
+    # su lugar, el día que alguien borre esa condición no fallaría nada.
+    _escribir(draw, pintar, lineas, flags, f, MAN_MARGEN * e, y, ancho, paso,
+              tinta, c["acento"], centrado=True, subrayado=tinta, semilla=frase.id,
+              trazo=round(tam * e * MAN_TRAZO))
+
+    firma = pagina.firma or pagina.nombre
+    f_firma = _fuente(MAN_FUENTE, MAN_FIRMA * e)
+    draw.text(((W * e - _ancho(draw, firma, f_firma)) // 2, MAN_FIRMA_Y * e),
+              firma, font=f_firma, fill=tinta)
+
+
 ESTILOS = {"regla": _estilo_regla, "marco": _estilo_marco,
-           "ficha": _estilo_ficha, "marcador": _estilo_marcador}
+           "ficha": _estilo_ficha, "marcador": _estilo_marcador,
+           "manuscrito": _estilo_manuscrito}
 POR_DEFECTO = "regla"
+
+# Los que entran en la RUEDA diaria, que no son todos los que existen.
+#
+# `manuscrito` no está, y esa ausencia es el punto: `estilo_del_turno` rotaba
+# sobre `list(ESTILOS)`, así que agregar un estilo para OTRA página le habría
+# cambiado los flyers a la que rota, sin que nadie lo hubiera pedido y sin que
+# nada fallara. Un estilo nuevo entra en la rueda solo si alguien lo escribe
+# acá.
+ROTAN = ("regla", "marco", "ficha", "marcador")
+
+# Los que además del dibujo llevan grano de papel. Va acá y no adentro del
+# estilo porque el estilo recibe el lápiz y no la hoja.
+CON_GRANO = ("manuscrito",)
 
 
 def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
@@ -304,7 +473,7 @@ def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
     ocho, esos cuatro caian en posiciones pares y salian solo DOS estilos
     distintos en todo el dia. Contando sobre las del dia, salen cuatro.
     """
-    nombres = list(ESTILOS)
+    nombres = list(ROTAN)
     orden = list(horas or [])
     lugar = orden.index(hora) if hora in orden else int(hora)
     return nombres[(lugar + dia.toordinal()) % len(nombres)]
@@ -351,6 +520,8 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
     img = Image.new("RGB", (W * e, H * e), c["fondo"])
     draw = ImageDraw.Draw(img)
     ESTILOS[estilo](draw, frase, tema, pagina, e, c)
+    if estilo in CON_GRANO:
+        img = _grano(img, frase.id)
     return img
 
 

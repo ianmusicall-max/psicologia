@@ -424,13 +424,22 @@ def _contraste(uno, otro):
 
 
 class TestLosEstilos(unittest.TestCase):
-    """Cuatro repartos del mismo flyer. Lo que cambia es la forma, nunca lo
-    que dice. Fueron once; el usuario eligió estos y los otros siete se
-    borraron, porque un renderer sin camino envejece sin que nadie lo note."""
+    """Repartos del mismo flyer. Lo que cambia es la forma, nunca lo que dice.
+    Fueron once; el usuario eligió cuatro y los otros siete se borraron,
+    porque un renderer sin camino envejece sin que nadie lo note. El quinto,
+    `manuscrito`, es de otra página y por eso no rota."""
 
-    def test_son_los_cuatro_que_eligio_el_usuario(self):
-        self.assertEqual(sorted(diseno.ESTILOS), ["ficha", "marcador", "marco", "regla"])
+    def test_son_los_que_eligio_el_usuario(self):
+        self.assertEqual(sorted(diseno.ESTILOS),
+                         ["ficha", "manuscrito", "marcador", "marco", "regla"])
         self.assertEqual(diseno.POR_DEFECTO, "regla")
+
+    def test_la_rueda_diaria_no_son_todos_los_que_existen(self):
+        """`estilo_del_turno` rotaba sobre `list(ESTILOS)`, así que agregar un
+        estilo para OTRA página le habría cambiado los flyers a esta sin que
+        nadie lo pidiera y sin que nada fallara."""
+        self.assertEqual(diseno.ROTAN, ("regla", "marco", "ficha", "marcador"))
+        self.assertNotIn("manuscrito", diseno.ROTAN)
 
     def test_todos_dibujan_el_peor_caso_del_validador(self):
         # 180 caracteres de palabras largas: el máximo que deja pasar el
@@ -462,6 +471,61 @@ class TestLosEstilos(unittest.TestCase):
             c = diseno._colores(PAGINA, estilo)
             self.assertGreaterEqual(_contraste(c["tinta"], c["fondo"]), 7.0, estilo)
             self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 3.5, estilo)
+
+
+class TestElEstiloManuscrito(unittest.TestCase):
+    """La hoja escrita a mano, el estilo de la página de la tercera edad. Sale
+    de una referencia que mandó el usuario: plumón azul sobre papel crema, la
+    frase entre comillas y la palabra importante subrayada a mano."""
+
+    PAGINA = config.Pagina(
+        nombre="LUIS DEL CARPIO MERINO", firma="Luis Del Carpio Merino",
+        estilo="manuscrito",
+        paleta={"fondo": "#F9F6EA", "tinta": "#060A9E",
+                "acento": "#FF0000", "suave": "#5B6066"})
+
+    def _flyer(self, frase):
+        return diseno.render(frase, tema(), self.PAGINA, escala=1, estilo="manuscrito")
+
+    def test_ninguna_hora_de_la_pagina_que_rota_cae_en_manuscrito(self):
+        """Es la mitad de la guarda: la otra es que no esté en ROTAN. Esta
+        recorre el camino de verdad, que es por donde se publica."""
+        dia = date(2026, 11, 1)
+        for n in range(60):
+            for hora in PAGINA.horas:
+                self.assertNotEqual(
+                    diseno.estilo_del_turno(dia + timedelta(days=n), hora, PAGINA.horas),
+                    "manuscrito")
+
+    def test_el_mismo_flyer_redibujado_da_los_mismos_bytes(self):
+        """El subrayado es azar con semilla. Sin semilla, el flyer que se
+        aprueba en Telegram y el que se publica serían dos archivos
+        distintos."""
+        f = una(texto="Los días malos siguen llegando. Lo que cambió es cuánto duran.",
+                destacar=["duran"])
+        self.assertEqual(self._flyer(f).tobytes(), self._flyer(f).tobytes())
+
+    def test_la_palabra_destacada_se_subraya_en_vez_de_pintarse(self):
+        """En este estilo no hay segundo color: un plumón tiene uno solo. Con
+        el acento en rojo chillón, en el flyer no puede haber un pixel rojo, y
+        la palabra marcada tiene que dejar MÁS tinta que sin marcar."""
+        texto = "Los días malos siguen llegando. Lo que cambió es cuánto duran."
+        con = self._flyer(una(texto=texto, destacar=["duran"]))
+        sin = self._flyer(una(texto=texto, destacar=[]))
+        rojos = [p for p in con.getdata() if p[0] > 200 and p[1] < 80 and p[2] < 80]
+        self.assertEqual(rojos, [])
+        azul = lambda im: sum(1 for p in im.getdata() if p[2] - p[0] > 60)
+        self.assertGreater(azul(con), azul(sin))
+
+    def test_el_flyer_lleva_la_firma_de_la_pagina(self):
+        """No tiene encabezado, así que la firma de abajo es lo ÚNICO que dice
+        de quién es. Un flyer que se comparte sin firma deja de ser de la
+        página."""
+        arriba = self._flyer(una()).crop((0, 0, 1080, diseno.MAN_ZONA_Y - 20))
+        abajo = self._flyer(una()).crop((0, diseno.MAN_FIRMA_Y - 10, 1080, 1350))
+        tinta = lambda im: sum(1 for p in im.getdata() if p[2] - p[0] > 60)
+        self.assertEqual(tinta(arriba), 0)
+        self.assertGreater(tinta(abajo), 0)
 
     def test_ninguno_lleva_fondo_oscuro(self):
         # Lo pidió el usuario y por eso es una prueba y no un comentario: se
@@ -1296,7 +1360,7 @@ class TestLaPrueba(unittest.TestCase):
         # Lo pidió el usuario: variar dentro del día.
         dia = self._dia()
         del_dia = [diseno.estilo_del_turno(dia, h, self.HORAS) for h in self.HORAS]
-        self.assertEqual(len(set(del_dia)), len(diseno.ESTILOS))
+        self.assertEqual(len(set(del_dia)), len(diseno.ROTAN))
         self.assertEqual(del_dia[:4], del_dia[4:])
 
     def test_sale_de_la_fecha_y_la_hora_y_no_de_cuantos_se_publicaron(self):
@@ -1310,7 +1374,7 @@ class TestLaPrueba(unittest.TestCase):
         # Sin esto, las 8 llevarían siempre el mismo estilo y no habría forma
         # de separar el estilo de la hora.
         a_las_ocho = [diseno.estilo_del_turno(self._dia(i), 8, self.HORAS) for i in range(4)]
-        self.assertEqual(len(set(a_las_ocho)), len(diseno.ESTILOS))
+        self.assertEqual(len(set(a_las_ocho)), len(diseno.ROTAN))
 
     def test_en_una_semana_cada_estilo_sale_igual_y_en_todas_las_horas(self):
         cuantos, horas_de = {}, {}
@@ -1459,7 +1523,7 @@ class TestLaRampa(unittest.TestCase):
             dia = self._dia(n)
             horas = parrilla.horas_del_dia(self.p, self.desde, dia)
             estilos = [diseno.estilo_del_turno(dia, h, horas) for h in horas]
-            self.assertEqual(len(set(estilos)), min(len(horas), len(diseno.ESTILOS)),
+            self.assertEqual(len(set(estilos)), min(len(horas), len(diseno.ROTAN)),
                              (n, estilos))
 
     def test_el_primer_dia_sale_del_primer_post_publicado(self):
@@ -1700,7 +1764,7 @@ class TestElMenuDelBot(unittest.TestCase):
         for h in horas:
             self.assertIn("%02d:00" % h, texto)
         # Y los modelos del día son distintos entre sí, que es lo que se pidió.
-        nombrados = [e for e in diseno.ESTILOS if e in texto]
+        nombrados = [e for e in diseno.ROTAN if e in texto]
         self.assertEqual(len(nombrados), len(horas))
 
     def test_que_sale_hoy_marca_lo_que_salio_y_avisa_de_lo_que_no(self):
@@ -1873,7 +1937,7 @@ class TestElModeloDelTurnoSeCalculaEnUnLugar(unittest.TestCase):
         pagina.rotar_estilos = True
         horas = [8, 12, 16, 20]
         salen = {diseno.estilo_de(pagina, date(2026, 10, 24), h, horas) for h in horas}
-        self.assertEqual(len(salen), len(diseno.ESTILOS))
+        self.assertEqual(len(salen), len(diseno.ROTAN))
 
 
 # ---------------------------------------------------------------------------
