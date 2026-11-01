@@ -113,7 +113,17 @@ PISTAS = (
      "pages_manage_posts sobre ESTA página. Suele ser que se copió el token "
      "del USUARIO en vez del de la página (el que viene en el bloque de "
      "me/accounts), o que se generó sin tildar ese permiso"),
-    ("(#190)", "el token venció o se revocó: hay que sacar uno nuevo"),
+    # El 190 dice tres cosas distintas con el mismo número, y una de ellas
+    # («Invalid JSON for postcard», que no significa nada) es simplemente un
+    # token mal copiado. Pasó el 2026-11-01 cargando el secreto a mano: el
+    # token viene cortado en varios renglones en el Explorador de Meta y al
+    # seleccionarlo con el mouse se copia con el salto de línea adentro.
+    ("(#190)", "el token no sirve: o venció, o se revocó, o está MAL COPIADO "
+               "(con comillas, con un espacio o cortado en dos renglones). "
+               "Se comprueba pegándolo en el depurador de tokens de Meta"),
+    ("Invalid JSON", "eso es un token mal copiado, no un problema de formato "
+                     "de la petición: suele traer un salto de línea o una "
+                     "comilla pegada"),
     ("(#100)", "casi nunca es que el objeto no exista: suele ser un id de otra "
                "página, o un permiso que falta"),
 )
