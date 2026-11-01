@@ -1,0 +1,98 @@
+# Capítulo 1 · Lo que mejora con los años
+#
+# ESTA CARPETA NO ES `frases/`. Cada archivo de `frases/` es un tema de la
+# página de vínculos Y un capítulo de «Lo que nadie te explicó del amor», así
+# que un tema de esta página puesto ahí saldría impreso en ese libro. Son dos
+# bancos, dos páginas de Facebook y, el día que haya material, dos libros.
+#
+# El formato es el mismo que el otro banco a propósito: `frases.leer(carpeta)`
+# y `diseno.render` ya aceptan esto tal cual, sin tocar una línea de código.
+#
+# LA VOZ: le habla al adulto mayor, de USTED, de igual a igual. No le habla a
+# los hijos sobre él, y no le explica su propia vida. Si una frase se puede
+# leer como «qué valiente a su edad», está mal escrita.
+tema: madurez
+capitulo: 1
+eje: nucleo
+titulo: Lo que mejora con los años
+hashtags: [madurez, emociones, vinculos]
+tesis: >-
+  La vejez no es la juventud con menos cosas. Lo que la investigación encuentra
+  es que con los años las emociones se regulan mejor, los días malos duran
+  menos, el círculo se hace más chico y más cercano, y los conflictos se leen
+  con menos bando. No es resignación ni sabiduría de postal: cuando el tiempo
+  se percibe más corto, se elige distinto. Este capítulo es eso, sin adornarlo:
+  lo que mejora, lo que no, y lo que simplemente cambia.
+
+frases:
+  - id: mad-01
+    texto: "A los setenta se discute menos y se disfruta más. No es resignación: es puntería."
+    destacar: [puntería]
+    principio: "Teoría de la selectividad socioemocional: cuando el tiempo futuro se percibe como limitado, se priorizan las metas emocionales y los vínculos que ya importan."
+    fuente: "Carstensen, Isaacowitz y Charles (1999); Carstensen y colegas (2011)."
+    reflexion: >-
+      No es que ya no le importe nada. Es que aprendió adónde apuntar. A los
+      veinte uno junta gente, prueba de todo y se pelea por tener razón; más
+      adelante el tiempo pasa a ser el recurso escaso y la cuenta cambia sola:
+      ¿esta discusión me deja algo?, ¿esta persona me suma? Lo que desde afuera
+      parece bajar los brazos, medido de cerca, es una elección mejor hecha.
+
+  - id: mad-02
+    texto: "La gente mayor regula mejor sus emociones que la joven. Lo dicen los datos, no la cortesía."
+    destacar: [regula]
+    principio: "En estudios de experiencia diaria, los adultos mayores informan menos afecto negativo y mayor estabilidad emocional que los jóvenes."
+    fuente: "Carstensen y colegas (2011), registros diarios a lo largo de diez años."
+    reflexion: >-
+      Suena a cumplido y no lo es: a miles de personas se les preguntó cómo
+      estaban varias veces al día, durante años. Los mayores tenían menos días
+      malos seguidos y volvían antes a estar bien. Nadie les enseñó una
+      técnica, la práctica de medio siglo hace eso. Así que cuando alguien le
+      diga que a su edad ya no se maneja igual, los números dicen lo contrario.
+
+  - id: mad-03
+    texto: "Los días malos siguen llegando. Lo que cambió es cuánto duran."
+    destacar: [duran]
+    principio: "La frecuencia y la intensidad del afecto negativo descienden a lo largo de la adultez, y la recuperación emocional es más rápida."
+    fuente: "Charles, Reynolds y Gatz (2001); Carstensen y colegas (2011)."
+    reflexion: >-
+      Esto no promete un ánimo parejo, promete algo más creíble: que la tristeza
+      de un miércoles tiene menos chance de llevarse puesta la semana. La
+      diferencia no está en sentir menos, está en salir antes. Y conviene
+      saberlo, porque cuando un día malo aparece a esta edad es fácil pensar
+      que ya se va a quedar.
+
+  - id: mad-04
+    texto: "Dejar de ver a quien no le hace bien no es volverse huraño: es elegir mejor."
+    destacar: [elegir]
+    principio: "El círculo social se reduce con la edad por descarte de los vínculos periféricos, mientras los cercanos se mantienen o se intensifican."
+    fuente: "Lang y Carstensen (1994); English y Carstensen (2014)."
+    reflexion: >-
+      La familia suele leerlo como encierro: dicen que antes salía más. Lo que
+      muestran los estudios es otra cosa: lo que se recorta son los conocidos,
+      los compromisos tibios, la gente que había que atender. Los vínculos que
+      importan no se pierden, se usan más. Un círculo más chico y más cercano
+      no es soledad, es lo que queda cuando se deja de gastar en lo que no era.
+
+  - id: mad-05
+    texto: "Con los años se razona distinto el conflicto ajeno: con menos bando y más contexto."
+    destacar: [contexto]
+    principio: "El razonamiento sabio, que incluye reconocer los límites del propio conocimiento y los puntos de vista en juego, aumenta con la edad frente a conflictos de terceros."
+    fuente: "Grossmann y colegas (2010); Grossmann (2017)."
+    reflexion: >-
+      Cuando a personas de distintas edades se les dan conflictos ajenos para
+      resolver, las mayores piden más datos antes de opinar, aceptan que puede
+      no haber un culpable y miran cómo quedan las dos partes. Es lo que en la
+      calle se llama tener experiencia, y en los estudios aparece medido. Por
+      eso le preguntan, aunque no siempre le avisen que le están preguntando.
+
+  - id: mad-06
+    texto: "Nadie le avisó que esta parte podía ser la más tranquila."
+    destacar: [tranquila]
+    principio: "La satisfacción con la vida describe una curva en U a lo largo de la adultez: baja hacia la mediana edad y vuelve a subir después."
+    fuente: "Blanchflower y Oswald (2008); Stone y colegas (2010)."
+    reflexion: >-
+      La satisfacción con la vida no baja en línea recta. En encuestas de muchos
+      países toca su punto más bajo cerca de los cincuenta y después vuelve a
+      subir. No es que los problemas se vayan, ni que le pase a todo el mundo:
+      es que el promedio va para arriba justo en la etapa de la que nadie habla
+      bien. Si esperaba que esto fuera cuesta abajo, los datos no dicen eso.

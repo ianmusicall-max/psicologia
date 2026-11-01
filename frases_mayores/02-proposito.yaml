@@ -1,0 +1,92 @@
+# Capítulo 2 · Servir para algo no se jubila
+#
+# El tema más pedido de esta audiencia y el que peor se escribe en todas las
+# páginas: casi siempre sale como «reinvéntate». Acá va al revés, por lo que
+# la investigación encuentra: lo que se pierde al jubilarse no es el sueldo
+# sino el rol, y lo que lo repone no es un proyecto grande sino uno concreto
+# que alguien note.
+tema: proposito
+capitulo: 2
+eje: nucleo
+titulo: Servir para algo no se jubila
+hashtags: [proposito, jubilacion, rutina]
+tesis: >-
+  Jubilarse termina con el trabajo, no con la necesidad de ser útil. Lo que más
+  se extraña no es el sueldo: es el rol, la rutina y que alguien lo espere a
+  uno. La investigación sobre propósito encuentra que tener un motivo concreto
+  para levantarse se asocia a más bienestar y a vivir más años, y que ese
+  motivo no tiene que ser grande: alcanza con que sea suyo y con que alguien lo
+  reciba. Este capítulo es sobre eso, incluyendo lo que cuesta.
+
+frases:
+  - id: pro-01
+    texto: "El trabajo se termina. La costumbre de ser útil, no."
+    destacar: [útil]
+    principio: "El propósito en la vida es una dimensión del bienestar psicológico independiente del empleo y del ingreso."
+    fuente: "Ryff (1989); Ryff y Keyes (1995)."
+    reflexion: >-
+      Se jubila el puesto, no la persona. Lo que el trabajo daba, además de
+      plata, era un lugar donde hacía falta: una hora para estar en algún lado
+      y alguien que contaba con eso. Nada de eso depende de un sueldo, pero
+      tampoco aparece solo. Hay que volver a ponerlo en alguna parte, y
+      conviene saberlo antes del primer lunes sin reloj.
+
+  - id: pro-02
+    texto: "De trabajar no se extraña el sueldo: se extraña que alguien lo esperara."
+    destacar: [esperara]
+    principio: "El efecto de la jubilación sobre el bienestar se explica sobre todo por la pérdida de rol y de contacto social cotidiano, más que por la caída del ingreso."
+    fuente: "Wang (2007); Van Solinge y Henkens (2008)."
+    reflexion: >-
+      Quien se jubila con la plata resuelta también lo siente, y eso descarta la
+      explicación fácil. Lo que se pierde de golpe es una red entera: la
+      conversación de todos los días, el saludo, el saberse necesario a una hora
+      fija. Se puede reponer, pero no descansando: se repone poniéndose en otro
+      lugar donde lo esperen.
+
+  - id: pro-03
+    texto: "Tener un motivo para levantarse se asocia a vivir más años. No es una frase de aliento."
+    destacar: [motivo]
+    principio: "En estudios longitudinales, un mayor propósito en la vida predice menor mortalidad en el seguimiento, ajustando por otras variables. Es una asociación, no un tratamiento."
+    fuente: "Hill y Turiano (2014), seguimiento de catorce años; Boyle y colegas (2009)."
+    reflexion: >-
+      A miles de personas se les preguntó cuánto sentido tenía su vida y después
+      se siguió qué pasaba con ellas durante años. Las que puntuaban más alto
+      vivían más, incluso descontando la edad y la salud que tenían al empezar.
+      Es una asociación y no una receta, nadie promete nada. Pero si esto
+      apareciera en una pastilla, estaría en todos los noticieros.
+
+  - id: pro-04
+    texto: "Un propósito no tiene que ser grande. Una planta, un taller, un nieto: alcanza."
+    destacar: [grande]
+    principio: "Las metas personales concretas y alcanzables sostienen el bienestar más que los proyectos abstractos o impuestos por otros."
+    fuente: "Emmons (1992); Sheldon y Elliot (1999)."
+    reflexion: >-
+      No hace falta una obra ni un legado. Lo que los estudios encuentran es que
+      las metas que sostienen son las concretas, propias y de un tamaño que se
+      pueda cumplir esta misma semana: la huerta, el taller de los sábados, el
+      nieto que pasa los martes. Un propósito gigante se admira y no se cumple;
+      uno chico se cumple todos los días, y ahí está la diferencia.
+
+  - id: pro-05
+    texto: "Cuidar a otros también cansa. Que le haga bien no significa que no pese."
+    destacar: [pese]
+    principio: "El cuidado informal se asocia a la vez con sentido y con carga; reconocer el desgaste no invalida el beneficio."
+    fuente: "Pinquart y Sörensen (2003); Roth, Fredman y Haley (2015)."
+    reflexion: >-
+      Muchas personas mayores cuidan: a su pareja, a una hermana, a los nietos
+      de la semana. Y cuidar da propósito, eso está medido. Lo que también está
+      medido es el desgaste, sobre todo cuando no hay con quién repartirlo. Las
+      dos cosas son verdad al mismo tiempo. Decir que está cansado no es queja
+      ni desamor: es la información que hace falta para que alguien ayude.
+
+  - id: pro-06
+    texto: "Pasar lo que sabe a alguien más joven es una necesidad, no un gesto simpático."
+    destacar: [necesidad]
+    principio: "La generatividad, el impulso de contribuir a la generación siguiente, es la tarea central de esta etapa del desarrollo y se asocia a mayor bienestar."
+    fuente: "Erikson (1950); McAdams y de St. Aubin (1992)."
+    reflexion: >-
+      No es nostalgia ni ganas de hablar de uno mismo. Enseñar un oficio, contar
+      cómo era antes, dejar algo escrito: cuando eso encuentra a quién, el
+      bienestar sube; cuando no encuentra a nadie, aparece la sensación de estar
+      de más. Por eso conviene buscarle destinatario. No alcanza con tener para
+      dar, hace falta alguien que lo reciba.
