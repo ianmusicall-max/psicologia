@@ -3,7 +3,7 @@
 
     token_permanente.py              muestra que haria y que token saldria
     token_permanente.py --guardar    ademas lo escribe en el .env
-    token_permanente.py --para mayores --pagina <id> --guardar
+    token_permanente.py --para mayores --pagina <id> --pedir-token --copiar --guardar
                                      el token de la SEGUNDA pagina, en sus
                                      propias variables (MAY_...), sin tocar
                                      las de la primera
@@ -35,7 +35,9 @@ SOLO LEE Y CAMBIA EL .env. No publica nada.
 from __future__ import annotations
 
 import argparse
+import getpass
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -127,6 +129,36 @@ def _guardar(valores: dict) -> None:
     entorno.guardar(valores, ENV)
 
 
+def _pedir_token() -> str:
+    """El token de usuario, tecleado aca y sin que se vea.
+
+    `getpass` no lo muestra en pantalla ni lo deja en el historial del shell,
+    que es lo que lo separa de pegarlo en la linea de comandos.
+    """
+    print("Pega el token de USUARIO del Explorador de Meta y dale Enter.")
+    print("No se va a ver nada mientras pegas: es a proposito.")
+    token = getpass.getpass("Token: ").strip()
+    if "<" in token or ">" in token:
+        print()
+        print("Ese texto todavia trae el ejemplo (<...>) pegado adelante.")
+        print("Copia SOLO el token, que empieza en EAA y no lleva espacios.")
+        return ""
+    if " " in token:
+        print()
+        print("Eso tiene espacios, asi que no es un token suelto.")
+        return ""
+    return token
+
+
+def _al_portapapeles(texto: str) -> bool:
+    """True si de verdad quedo copiado. Solo Mac: `pbcopy` es de ahi."""
+    try:
+        subprocess.run(["pbcopy"], input=texto.encode(), check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    return True
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -138,6 +170,16 @@ def main(argv=None) -> int:
     # sintoma habria sido que la pagina vieja empieza a publicar en la nueva.
     ap.add_argument("--para", default="",
                     help="para que pagina del repo se guarda (p. ej. mayores)")
+    # El token se PIDE, no se edita a mano en el .env. Dos razones, y las dos
+    # pasaron de verdad el 2026-11-01: pegarlo en la Terminal lo deja escrito
+    # en la pantalla -y en una captura-, y editar el .env a mano es el paso
+    # donde se cuela el texto de ejemplo delante del token.
+    ap.add_argument("--pedir-token", action="store_true",
+                    help="pedir el token de usuario de Meta aca, sin que se vea")
+    # Y el de salida tampoco se imprime si se puede evitar: en la Mac va
+    # derecho al portapapeles y de ahi al campo del secreto en GitHub.
+    ap.add_argument("--copiar", action="store_true",
+                    help="copiar el token nuevo al portapapeles en vez de mostrarlo")
     args = ap.parse_args(argv)
 
     load_dotenv(ENV)
@@ -150,10 +192,10 @@ def main(argv=None) -> int:
     except ValueError as e:
         print(e)
         return 2
-    token = origen.fb_token
+    token = _pedir_token() if args.pedir_token else origen.fb_token
     app_id, app_secret = os.environ.get("FB_APP_ID"), os.environ.get("FB_APP_SECRET")
     if not token:
-        print("Falta %s en el .env." % origen.token_env)
+        print("Falta %s en el .env, o corre esto con --pedir-token." % origen.token_env)
         return 2
     if not (app_id and app_secret):
         print("Faltan FB_APP_ID y FB_APP_SECRET en el .env: el intercambio lo firma la app.")
@@ -235,9 +277,13 @@ def main(argv=None) -> int:
     valores = {destino.page_id_env: elegida["id"], destino.token_env: elegida["access_token"],
                "FB_USER_TOKEN": usuario_largo}
     print()
-    print("Esto es lo que va en el .env:")
     print("%s=%s" % (destino.page_id_env, elegida["id"]))
-    print("%s=%s" % (destino.token_env, elegida["access_token"]))
+    if args.copiar and _al_portapapeles(elegida["access_token"]):
+        print("%s: copiado al portapapeles (no lo muestro)." % destino.token_env)
+        print("Pegalo ahora en el secreto de GitHub; el portapapeles se pisa solo")
+        print("con lo proximo que copies.")
+    else:
+        print("%s=%s" % (destino.token_env, elegida["access_token"]))
     if args.guardar:
         _guardar(valores)
         print()

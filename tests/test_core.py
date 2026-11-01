@@ -1274,6 +1274,28 @@ class TestElegirLaPagina(unittest.TestCase):
         self.assertEqual(elegida["id"], "105045932147427")
 
 
+class TestPedirElToken(unittest.TestCase):
+    """El token de usuario se teclea acá y no se edita en el .env.
+
+    Las dos cosas que esto evita pasaron el 2026-11-01: el token quedó a la
+    vista en una captura de la Terminal, y se pegó con el texto de ejemplo
+    `<el código que copiaste>` todavía adelante."""
+
+    def _pedir(self, lo_que_pega):
+        tp = _token_permanente()
+        with mock.patch("getpass.getpass", return_value=lo_que_pega):
+            return tp._pedir_token()
+
+    def test_rechaza_el_ejemplo_pegado_delante_del_token(self):
+        self.assertEqual(self._pedir("<el código que copiaste>EAAVHIfalso"), "")
+
+    def test_rechaza_algo_con_espacios_que_no_es_un_token(self):
+        self.assertEqual(self._pedir("EAAVHI falso 123"), "")
+
+    def test_toma_uno_normal_y_le_saca_los_espacios_de_los_bordes(self):
+        self.assertEqual(self._pedir("  EAAVHIfalso123  "), "EAAVHIfalso123")
+
+
 class TestInstagram(unittest.TestCase):
     """Solo averigua si la cuenta está en condiciones. Nada de esto publica."""
 
