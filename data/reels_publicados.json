@@ -94,5 +94,18 @@
   },
   "publicado": true,
   "cuando": "2026-10-31T18:54:52"
+ },
+ "2026-11-01": {
+  "video": "exp-01.mp4",
+  "titulo": "Creer que existe una sola persona para ti vuelve cualquier problema una señal de error.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/29092200597077136",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/17887703172622551",
+   "youtube": "https://youtube.com/shorts/a2hi2DOfLOA",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-01T16:20:51"
  }
 }
