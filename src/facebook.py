@@ -91,11 +91,41 @@ def subir_foto(pagina: Pagina, caption: str, imagen: Path) -> dict:
     except ValueError:
         datos = {}
     if r.status_code >= 400 or "error" in datos:
-        raise FacebookError("Facebook contestó %s: %s" % (r.status_code, datos.get("error") or r.text[:300]))
+        fallo = datos.get("error") or r.text[:300]
+        raise FacebookError("Facebook contestó %s: %s%s" % (r.status_code, fallo, _pista(fallo)))
     post_id = datos.get("post_id") or datos.get("id")
     if not post_id:
         raise FacebookError("Facebook no devolvió un id: %s" % datos)
     return {"post_id": str(post_id), "foto_id": str(datos.get("id") or "")}
+
+
+# Errores de Meta que dicen una cosa y significan otra. Se traducen acá y no
+# en cada script porque el mensaje viaja a Telegram y al log de GitHub, que es
+# donde alguien lo lee a las tres de la mañana.
+#
+# El de `publish_actions` es el peor de todos: ese permiso NO EXISTE desde
+# 2018, así que el mensaje manda a buscar algo que no se puede arreglar. Lo
+# que de verdad falta es `pages_manage_posts` sobre esa página. Pasó el
+# 2026-11-01 estrenando la segunda página y costó una vuelta entera.
+PISTAS = (
+    ("publish_actions",
+     "ese permiso ya no existe y el mensaje engaña: al token le falta "
+     "pages_manage_posts sobre ESTA página. Suele ser que se copió el token "
+     "del USUARIO en vez del de la página (el que viene en el bloque de "
+     "me/accounts), o que se generó sin tildar ese permiso"),
+    ("(#190)", "el token venció o se revocó: hay que sacar uno nuevo"),
+    ("(#100)", "casi nunca es que el objeto no exista: suele ser un id de otra "
+               "página, o un permiso que falta"),
+)
+
+
+def _pista(error) -> str:
+    """Lo que ese error de Meta significa de verdad, si lo sabemos."""
+    texto = str(error)
+    for aguja, dicho in PISTAS:
+        if aguja in texto:
+            return "\n  -> %s" % dicho
+    return ""
 
 
 def publicar(pagina: Pagina, caption: str, imagen: Path) -> str:

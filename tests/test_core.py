@@ -475,6 +475,33 @@ class TestLosEstilos(unittest.TestCase):
             self.assertGreaterEqual(_contraste(c["acento"], c["fondo"]), 3.5, estilo)
 
 
+class TestLosErroresDeMetaQueEnganan(unittest.TestCase):
+    """Meta contesta cosas que significan otra. El mensaje llega a Telegram y
+    al log de GitHub, así que la traducción tiene que viajar con él."""
+
+    def test_publish_actions_quiere_decir_que_falta_pages_manage_posts(self):
+        # Lo que contestó de verdad el 2026-11-01 al estrenar la segunda
+        # página. El permiso que nombra no existe desde 2018.
+        fallo = {"message": "(#200) The permission(s) publish_actions are not "
+                            "available. It has been deprecated.",
+                 "type": "OAuthException", "code": 200}
+        self.assertIn("pages_manage_posts", facebook._pista(fallo))
+        self.assertIn("me/accounts", facebook._pista(fallo))
+
+    def test_un_error_cualquiera_no_recibe_una_explicacion_inventada(self):
+        self.assertEqual(facebook._pista("algo que nadie vio nunca"), "")
+
+    def test_la_pista_viaja_pegada_al_error(self):
+        pagina = config.Pagina(nombre="X", page_id_env="T_ID", token_env="T_TOK")
+        respuesta = mock.Mock(status_code=403)
+        respuesta.json.return_value = {"error": {"message": "(#200) publish_actions"}}
+        with mock.patch.dict("os.environ", {"T_ID": "1", "T_TOK": "t"}), \
+                mock.patch.object(facebook.requests, "post", return_value=respuesta):
+            with self.assertRaises(facebook.FacebookError) as ctx:
+                facebook.subir_foto(pagina, "hola", Path(__file__))
+        self.assertIn("pages_manage_posts", str(ctx.exception))
+
+
 class TestLasDosPaginas(unittest.TestCase):
     """Desde el 2026-11-01 el repositorio publica DOS páginas: la de vínculos
     y la de la tercera edad. Lo único que las separa son tres líneas de su
