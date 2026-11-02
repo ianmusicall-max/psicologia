@@ -107,5 +107,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-01T16:20:51"
+ },
+ "2026-11-02": {
+  "video": "aut-02.mp4",
+  "titulo": "La autocompasión no es dejarte pasar todo. Es corregirte sin destruirte.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/999261245838475",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18055859438811044",
+   "youtube": "https://youtube.com/shorts/9FlzVqYYSJw",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-02T15:22:56"
  }
 }
