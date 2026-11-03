@@ -1,0 +1,81 @@
+# Capítulo 14 · Agradecer, aunque falte algo
+tema: gratitud
+capitulo: 14
+eje: apoyo
+titulo: Agradecer, aunque falte algo
+hashtags: [gratitud, agradecer, actitud]
+tesis: >-
+  Agradecer no es resignarse a lo que falta: es una práctica con efectos
+  medidos en el bienestar, distinta de fingir que todo está bien. Este
+  capítulo es sobre qué dice la investigación de la gratitud, y por qué no es
+  lo mismo que la positividad forzada.
+
+frases:
+  - id: gra-01
+    texto: "Anotar tres cosas por las que se está agradecido mejora el ánimo en pocas semanas."
+    destacar: [anotar]
+    principio: "La práctica de llevar un diario de gratitud se asocia a mejoras medibles en el bienestar subjetivo en ensayos controlados."
+    fuente: "Emmons y McCullough (2003), estudio sobre diarios de gratitud."
+    reflexion: >-
+      No hace falta que sean grandes cosas. El estudio pedía anotar tres
+      cosas simples por las que agradecer, varias veces por semana, y después
+      de unas semanas el ánimo de quienes lo hacían mejoraba más que el de
+      quienes no. Es una práctica concreta, no una actitud vaga: se mide con
+      lápiz y papel.
+
+  - id: gra-02
+    texto: "Agradecer no es decir que todo está bien. Es notar lo que sí lo está, aunque algo falte."
+    destacar: [notar]
+    principio: "La gratitud como práctica psicológica no niega las dificultades presentes; implica reconocer de forma específica los aspectos positivos coexistentes."
+    fuente: "Emmons (2007), investigación sobre gratitud y afrontamiento."
+    reflexion: >-
+      Hay una diferencia entre negar lo que duele y notar lo que, a pesar de
+      eso, sigue estando bien. Agradecer no pide ignorar una pérdida ni un
+      dolor: pide mirar también lo otro, lo que convive con la dificultad. No
+      es un tapa sobre el problema, es una mirada más completa de la
+      situación entera.
+
+  - id: gra-03
+    texto: "Las intervenciones de gratitud funcionan en personas mayores tanto como en jóvenes."
+    destacar: [funcionan]
+    principio: "Las intervenciones de gratitud muestran efectos positivos sobre el bienestar en adultos mayores, comparables a los encontrados en población más joven."
+    fuente: "Sin y Lyubomirsky (2009), metaanálisis de intervenciones de psicología positiva."
+    reflexion: >-
+      No es una técnica pensada para gente con poco que agradecer de verdad.
+      El metaanálisis que juntó muchos estudios encontró el mismo beneficio
+      en personas mayores que en jóvenes. La edad no vuelve inútil la
+      práctica: al contrario, con más historia vivida hay más de dónde
+      elegir qué agradecer.
+
+  - id: gra-04
+    texto: "Agradecerle algo concreto a una persona, y decírselo, refuerza el vínculo con ella."
+    destacar: [decírselo]
+    principio: "La expresión directa de gratitud hacia otra persona fortalece la calidad percibida del vínculo, más que la gratitud sentida en silencio."
+    fuente: "Algoe, Haidt y Gable (2008), estudio sobre gratitud y vínculos sociales."
+    reflexion: >-
+      Sentir gratitud por alguien y decírselo no son la misma cosa, aunque lo
+      parezca. El vínculo se fortalece más cuando esa gratitud se dice en voz
+      alta, con algo concreto: «gracias por haberte quedado esa tarde», y no
+      un agradecimiento genérico. Lo específico es lo que de verdad llega.
+
+  - id: gra-05
+    texto: "Agradecer no reemplaza al reclamo justo. Las dos cosas pueden convivir."
+    destacar: [convivir]
+    principio: "La gratitud como rasgo no suprime la capacidad de reconocer una injusticia o de expresar una queja legítima; son procesos independientes."
+    fuente: "McCullough, Emmons y Tsang (2002), estudio sobre gratitud como disposición."
+    reflexion: >-
+      Practicar la gratitud no significa tragarse todo lo que molesta. Se
+      puede agradecer una parte de algo y, al mismo tiempo, reclamar lo que
+      no está bien. Confundir una cosa con la otra es lo que convierte la
+      gratitud en resignación, y eso no es lo que la investigación describe.
+
+  - id: gra-06
+    texto: "Agradecer algo que ya se tenía por costumbre vuelve a hacerlo visible."
+    destacar: [visible]
+    principio: "La habituación hedónica hace que los aspectos positivos estables de la vida dejen de generar placer con el tiempo; la gratitud deliberada contrarresta ese efecto."
+    fuente: "Lyubomirsky, Sheldon y Schkade (2005), modelo de la torta del bienestar."
+    reflexion: >-
+      Lo que se tiene hace tiempo deja de notarse, aunque siga siendo valioso:
+      una casa, una salud que funciona, una pareja que acompaña. El cerebro
+      se acostumbra y deja de registrarlo como algo bueno. Detenerse a
+      nombrarlo a propósito es lo que lo vuelve a poner a la vista.

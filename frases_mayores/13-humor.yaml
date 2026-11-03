@@ -1,0 +1,79 @@
+# Capítulo 13 · El humor no se jubila
+tema: humor
+capitulo: 13
+eje: apoyo
+titulo: El humor no se jubila
+hashtags: [humor, risa, emociones]
+tesis: >-
+  Reírse no es un lujo de la vida liviana: es una herramienta que la
+  investigación encuentra asociada a mejor salud emocional, incluso en medio
+  de dificultades. Este capítulo es sobre lo que el humor hace de verdad, que
+  no es escapar de lo difícil sino poder mirarlo de otra manera.
+
+frases:
+  - id: hum-01
+    texto: "Reírse de algo difícil no es minimizarlo: es una forma de poder mirarlo."
+    destacar: [mirarlo]
+    principio: "El humor funciona como una estrategia de regulación emocional que permite distanciarse cognitivamente de una situación estresante sin negarla."
+    fuente: "Martin (2001), revisión sobre humor, risa y salud."
+    reflexion: >-
+      Encontrarle la vuelta graciosa a una situación dura no significa que no
+      importe. Es una manera de poder sostenerla sin que aplaste. El humor no
+      borra el problema, le cambia el ángulo desde el que se lo mira, y eso
+      alcanza para que sea más llevadero sin dejar de ser real.
+
+  - id: hum-02
+    texto: "Las personas mayores regulan mejor sus emociones usando el humor que las jóvenes."
+    destacar: [regulan]
+    principio: "El uso adaptativo del humor como estrategia de regulación emocional es más frecuente y eficaz en adultos mayores que en jóvenes."
+    fuente: "Samson y Gross (2012), estudio sobre humor y regulación emocional a través de la edad."
+    reflexion: >-
+      No es que la gente mayor se ría de menos cosas. Es que sabe usar el
+      humor en el momento justo, para bajarle la intensidad a algo que
+      podría doler más. Esa habilidad se entrena con los años, como tantas
+      otras: no es que se pierda con la edad, se afina.
+
+  - id: hum-03
+    texto: "Compartir una broma con alguien fortalece el vínculo tanto como una conversación seria."
+    destacar: [fortalece]
+    principio: "El humor compartido funciona como un marcador de cercanía social y fortalece el vínculo interpersonal, de forma comparable a la autorrevelación."
+    fuente: "Martin (2001), misma revisión sobre humor y bienestar social."
+    reflexion: >-
+      Reírse juntos de algo tonto puede acercar tanto como una charla
+      profunda. No todo vínculo necesita ser solemne para ser real. Una
+      broma compartida entre dos personas que se conocen bien dice, a su
+      manera, «te entiendo» tanto como cualquier otra cosa.
+
+  - id: hum-04
+    texto: "Reírse de las propias torpezas, sin castigarse, es una forma de quererse."
+    destacar: [quererse]
+    principio: "El humor autodirigido benigno, distinto de la autocrítica, se asocia a mayor autoestima y menor ansiedad."
+    fuente: "Martin, Puhlik-Doris, Larsen, Gray y Weir (2003), escala de estilos de humor."
+    reflexion: >-
+      Hay una diferencia grande entre reírse de uno mismo con cariño y
+      machacarse. Lo primero -olvidar dónde dejó los lentes y reírse de
+      eso- alivia. Lo segundo -tratarse de tonto por lo mismo- lastima. El
+      humor que suma es el que no pega, ni siquiera hacia adentro.
+
+  - id: hum-05
+    texto: "Ver algo gracioso baja la tensión del cuerpo, no solo el ánimo."
+    destacar: [cuerpo]
+    principio: "La risa produce cambios fisiológicos medibles, incluida la reducción de hormonas asociadas al estrés."
+    fuente: "Berk, Tan y Berk (2008), estudio sobre risa y respuesta de estrés."
+    reflexion: >-
+      No es solo una sensación: reírse de verdad baja marcadores físicos del
+      estrés, medidos en sangre. El cuerpo responde al humor igual que
+      responde a otras formas de calma. Buscar algo que haga reír de verdad
+      no es perder el tiempo: es una forma legítima de cuidar la salud.
+
+  - id: hum-06
+    texto: "El sentido del humor no desaparece con la edad. Cambia de qué se ríe, no cuánto."
+    destacar: [cambia]
+    principio: "La apreciación del humor se mantiene estable a lo largo de la vejez, aunque las preferencias de contenido humorístico varían con la edad."
+    fuente: "Ruch y colegas, revisión sobre humor y envejecimiento."
+    reflexion: >-
+      La idea de que la gente mayor pierde el sentido del humor no se
+      sostiene. Lo que cambia es el tipo de chiste que hace gracia -menos
+      absurdo, más irónico, más sobre la propia experiencia-, no la
+      capacidad de reírse. Buscar ese humor que a uno le sigue haciendo
+      gracia es parte de cuidar el buen ánimo.

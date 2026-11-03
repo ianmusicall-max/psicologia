@@ -1,0 +1,84 @@
+# Capítulo 12 · Una pareja de muchos años
+tema: pareja
+capitulo: 12
+eje: apoyo
+titulo: Una pareja de muchos años
+hashtags: [pareja, matrimonio, vinculos]
+tesis: >-
+  Las parejas que llevan décadas juntas discuten distinto a las jóvenes, y no
+  porque hayan perdido pasión sino porque aprendieron algo que a los
+  veinticinco años nadie sabe todavía. Este capítulo es sobre lo que las
+  parejas de muchos años hacen distinto, con lo que mide la investigación de
+  matrimonios de largo plazo.
+
+frases:
+  - id: pvi-01
+    texto: "Las parejas de muchos años discuten con menos enojo que las jóvenes, no con menos temas."
+    destacar: [menos enojo]
+    principio: "Los matrimonios de larga duración muestran menor intensidad de emoción negativa durante el conflicto que los matrimonios jóvenes, sin que el conflicto en sí desaparezca."
+    fuente: "Carstensen, Gottman y Levenson (1995), estudio sobre emoción en matrimonios a lo largo de la vida."
+    reflexion: >-
+      No es que después de treinta años juntos ya no haya de qué discutir. Lo
+      que cambia es el tono: menos grito, menos reproche que se queda
+      pegado. La misma pareja que a los treinta se encendía rápido aprende,
+      con los años, a decir lo mismo sin incendiar todo. Eso no es apatía,
+      es destreza ganada.
+
+  - id: pvi-02
+    texto: "El humor compartido sostiene un matrimonio más que resolver cada desacuerdo."
+    destacar: [humor]
+    principio: "El afecto positivo y el humor durante el conflicto predicen mayor satisfacción marital a largo plazo, más que la resolución efectiva del desacuerdo en sí."
+    fuente: "Gottman y Levenson (2000), seguimiento longitudinal de matrimonios."
+    reflexion: >-
+      Las parejas que duran no son las que nunca pelean ni las que siempre
+      llegan a un acuerdo perfecto. Son las que, en medio de la discusión,
+      todavía se pueden reír de algo. Ese gesto -una broma en el momento
+      justo- pesa más en el largo plazo que tener razón.
+
+  - id: pvi-03
+    texto: "No todos los desacuerdos de una pareja se resuelven. Muchos se aprenden a convivir."
+    destacar: [convivir]
+    principio: "Una proporción considerable de los conflictos maritales son perpetuos -basados en diferencias de personalidad o valores- y la satisfacción depende de cómo se manejan, no de resolverlos."
+    fuente: "Gottman y Silver (1999), investigación sobre conflicto marital perpetuo."
+    reflexion: >-
+      Hay temas que una pareja discute durante décadas sin llegar nunca a un
+      acuerdo final, y eso no significa que algo esté roto. Aprender a
+      convivir con una diferencia, sin que se vuelva una guerra cada vez que
+      aparece, es parte de lo que sostiene un vínculo largo. No todo se
+      resuelve. Mucho se administra.
+
+  - id: pvi-04
+    texto: "Acordarse de cómo empezó todo ayuda a sostener el vínculo en los momentos difíciles."
+    destacar: [empezó]
+    principio: "Revisitar la historia positiva de la relación -cómo se conocieron, los primeros tiempos- fortalece el compromiso y la satisfacción marital."
+    fuente: "Buehlman, Gottman y Katz (1992), estudio sobre narrativas de pareja."
+    reflexion: >-
+      Cómo cuenta una pareja su propia historia dice mucho de cómo le va. Las
+      que recuerdan el principio con cariño, aunque hoy estén pasando un mal
+      momento, tienden a sostenerse mejor. Volver a esa historia de vez en
+      cuando, contarla de nuevo, no es vivir en el pasado: es alimentar la
+      raíz.
+
+  - id: pvi-05
+    texto: "Pedir perdón primero no es perder la discusión: suele ser lo que más rápido la cierra."
+    destacar: [primero]
+    principio: "Las reparaciones tempranas durante el conflicto -un gesto de disculpa o afecto- reducen la escalada y predicen la estabilidad marital a largo plazo."
+    fuente: "Gottman (1999), investigación sobre intentos de reparación en el conflicto."
+    reflexion: >-
+      Decir «perdón, me fui al humo» en medio de una discusión no es
+      rendirse: es el gesto que más rápido corta una pelea que de otro modo
+      escalaría. Las parejas que duran usan esos gestos a tiempo, sin
+      esperar a tener toda la razón para dar el primer paso. No importa quién
+      lo dice primero: importa que alguien lo diga.
+
+  - id: pvi-06
+    texto: "El cariño de todos los días -un gesto chico, una mirada- sostiene más que las grandes ocasiones."
+    destacar: [todos los días]
+    principio: "Los gestos pequeños y frecuentes de afecto cotidiano predicen la satisfacción marital con más fuerza que los eventos grandes y esporádicos."
+    fuente: "Gable, Gonzaga y Strachman (2006), estudio sobre respuestas capitalizadoras en pareja."
+    reflexion: >-
+      No es el aniversario con cena especial lo que más sostiene a una pareja
+      de muchos años: es la mano que se busca al caminar, el café que se
+      sirve sin que lo pidan, el «¿cómo te fue?» de todos los días. Esos
+      gestos chicos, repetidos, construyen más vínculo que cualquier fecha
+      marcada en el calendario.

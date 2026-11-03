@@ -1,0 +1,84 @@
+# Capítulo 10 · La tecnología no es solo de los jóvenes
+tema: tecnologia
+capitulo: 10
+eje: apoyo
+titulo: La tecnología no es solo de los jóvenes
+hashtags: [tecnologia, aprendizaje, conexion]
+tesis: >-
+  La idea de que la gente mayor no puede con la tecnología no resiste los
+  datos: cuando el diseño es claro y hay tiempo para aprender, la adopción es
+  alta. Lo que de verdad frena no es la edad, es la falta de práctica y el
+  miedo a romper algo. Este capítulo es sobre animarse, con lo que la
+  investigación encuentra y no con un consejo de ánimo vacío.
+
+frases:
+  - id: tic-01
+    texto: "No es que no se pueda aprender tecnología a los setenta: es que nadie enseña despacio."
+    destacar: [despacio]
+    principio: "La adopción de tecnología por adultos mayores depende más del diseño de la interfaz y del tiempo de aprendizaje disponible que de la edad en sí."
+    fuente: "Czaja y colegas (2006), proyecto CREATE sobre factores de adopción tecnológica."
+    reflexion: >-
+      Cuando a alguien le explican rápido y con palabras técnicas, cualquiera
+      se pierde, no solo la gente mayor. El estudio que siguió a cientos de
+      adultos mayores encontró que con tiempo y una explicación clara, la
+      mayoría aprendía sin problema. El obstáculo casi nunca es la cabeza: es
+      el apuro de quien enseña.
+
+  - id: tic-02
+    texto: "Una vez que algo le resulta útil, la gente mayor lo adopta tan rápido como cualquiera."
+    destacar: [útil]
+    principio: "Las actitudes de los adultos mayores hacia la tecnología son en general positivas cuando perciben una utilidad clara y concreta para su vida diaria."
+    fuente: "Mitzner y colegas (2010), estudio sobre actitudes hacia la tecnología en la vejez."
+    reflexion: >-
+      No es resistencia al cambio: es que mucha tecnología se presenta sin
+      explicar para qué sirve. Cuando el uso es claro -ver a un nieto por
+      videollamada, pedir un turno médico sin hacer fila- la adopción es
+      rápida. El problema no es la voluntad, es que nadie mostró el beneficio
+      concreto.
+
+  - id: tic-03
+    texto: "Usar videollamadas con la familia se asocia a menos soledad en personas mayores."
+    destacar: [menos]
+    principio: "El uso de tecnología para mantener contacto social, especialmente videollamadas, se asocia a menores niveles de soledad en adultos mayores."
+    fuente: "Chopik (2016), estudio sobre uso de tecnología y bienestar en la vejez."
+    reflexion: >-
+      No cualquier uso de pantalla ayuda igual: lo que sostiene es el contacto
+      con gente real, no el scroll sin rumbo. Una videollamada semanal con un
+      hijo que vive lejos cumple una función parecida a la visita que no se
+      puede hacer siempre. La tecnología no reemplaza el vínculo, lo estira
+      cuando la distancia lo complica.
+
+  - id: tic-04
+    texto: "Equivocarse tocando botones no rompe nada. Ese miedo frena más que la dificultad real."
+    destacar: [miedo]
+    principio: "El temor a cometer errores irreversibles es uno de los principales obstáculos psicológicos para el aprendizaje tecnológico en adultos mayores, más que la dificultad técnica objetiva."
+    fuente: "Mitzner y colegas (2010), mismo estudio sobre actitudes hacia la tecnología."
+    reflexion: >-
+      La mayoría de los botones de un teléfono se pueden tocar sin que pase
+      nada grave. Ese miedo a arruinar el aparato frena más la práctica que
+      la dificultad en sí, porque sin practicar no se aprende. Animarse a
+      tocar y equivocarse, sabiendo que casi nada se rompe de verdad, es
+      parte del aprendizaje y no un riesgo.
+
+  - id: tic-05
+    texto: "Pedirle a un nieto que enseñe no es un fracaso: suele ser el mejor método que hay."
+    destacar: [enseñe]
+    principio: "El aprendizaje intergeneracional de tecnología, con un familiar joven como guía, mejora tanto la adopción como el vínculo entre ambas generaciones."
+    fuente: "Harley y Fitzpatrick (2009), estudio sobre aprendizaje tecnológico intergeneracional."
+    reflexion: >-
+      Ese momento en que un nieto explica cómo mandar un audio no es solo una
+      clase de tecnología: es un rato juntos, y además funciona mejor que
+      cualquier manual. Los estudios lo confirman: aprender de alguien cercano
+      y paciente es más efectivo que aprender solo. Pedir esa ayuda no resta,
+      suma de las dos maneras.
+
+  - id: tic-06
+    texto: "No hace falta entender todo el aparato. Alcanza con dominar lo que a uno le sirve."
+    destacar: [sirve]
+    principio: "El aprendizaje funcional y selectivo de tecnología -centrado en las tareas que la persona de verdad necesita- es más efectivo que intentar dominar el dispositivo entero."
+    fuente: "Vroman, Arthanat y Lysack (2015), estudio sobre adopción tecnológica selectiva en adultos mayores."
+    reflexion: >-
+      No hace falta saber todo lo que un teléfono puede hacer. Alcanza con
+      aprender bien las tres o cuatro cosas que de verdad se van a usar: la
+      llamada, la foto, el mensaje. Intentar dominarlo todo de una vez es lo
+      que agota y hace abandonar. Ir función por función es lo que funciona.

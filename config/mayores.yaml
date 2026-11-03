@@ -43,22 +43,32 @@ pagina:
   instagram: false
   instagram_horas: []
 
-  # Horas de Lima, más temprano que la otra página (8 a 22): esta audiencia
-  # está despierta antes y se acuesta antes.
-  horas: [7, 9, 11, 13, 15, 17, 19]
-
-  # Lo pidió el usuario el 2026-11-01: tres por día los primeros tres días y
-  # seis por día de ahí en adelante.
+  # Horas de Lima, más temprano que la otra página: esta audiencia está
+  # despierta antes y se acuesta antes.
   #
-  # EL LÍMITE NO ES LA PARRILLA, ES EL BANCO. `frases.siguiente` no repite
-  # ninguna frase: cuando se acaban, el turno no publica y devuelve error,
-  # así que el flujo de GitHub se pone en rojo hasta que haya más escritas.
-  # Ese rojo es el aviso, y conviene saber que va a llegar: a este ritmo son
-  # 9 frases los tres primeros días y 6 por día después, o sea unas 42 por
-  # semana. `scripts/revisar_banco.py` dice qué día se agota.
-  arranque:
-    - {dias: 3, posts: 3}
-  posts_por_dia: 6
+  # CINCO por día, cada CUATRO horas, pedido el 2026-11-03 y en reemplazo de
+  # la parrilla anterior (siete horas, 3 posts los primeros tres días y 6
+  # después). Son cinco lugares repartidos parejo entre las 7 y las 23: el
+  # último cae tarde para esta audiencia -se le avisó al usuario-, pero es
+  # lo que pide la cuenta exacta de "cada cuatro horas" con cinco posts.
+  horas: [7, 11, 15, 19, 23]
+
+  # Sin rampa: la página ya estaba en marcha (el primer flyer salió el
+  # 2026-11-03 a las 07h), así que no hace falta empezar despacio. Con
+  # `horas` de cinco lugares y `posts_por_dia` en 5, `horas_del_dia` siempre
+  # devuelve las cinco -ver `parrilla.horas_del_dia`: cuando `cuantos` llega
+  # o supera el total de horas, las da todas-, así que un `arranque` vacío
+  # no deja ningún día a medias.
+  arranque: []
+  posts_por_dia: 5
+
+  # EL LÍMITE SIGUE SIENDO EL BANCO Y NO LA PARRILLA. `frases.siguiente` no
+  # repite ninguna frase: cuando se acaban, el turno no publica y devuelve
+  # error, y el flujo de GitHub se pone en rojo, que es el aviso. A 5 por
+  # día hacen falta 150 frases para cubrir 30 días sin repetir ninguna, y
+  # el banco de hoy (2026-11-03) tiene exactamente esas 150, en 25
+  # capítulos. `scripts/revisar_banco.py` dice qué día se agota si el
+  # ritmo cambia.
 
   # Tres los pone el tema y dos la página, como en la otra.
   hashtags_fijos: [bienestar, adultomayor]

@@ -1,0 +1,83 @@
+# Capítulo 9 · Ser abuelo o abuela
+tema: nietos
+capitulo: 9
+eje: apoyo
+titulo: Ser abuelo o abuela
+hashtags: [nietos, familia, generaciones]
+tesis: >-
+  Ser abuelo puede ser una de las fuentes de bienestar más grandes de esta
+  etapa, y también puede desgastar, y la diferencia no está en querer a los
+  nietos sino en cuánto se cuida de la propia vida al mismo tiempo. Este
+  capítulo separa las dos cosas: lo que ese rol da, y lo que conviene cuidar
+  para que siga dando.
+
+frases:
+  - id: nie-01
+    texto: "Cuidar nietos de vez en cuando se asocia a mejor ánimo que cuidarlos todos los días."
+    destacar: [vez]
+    principio: "El cuidado no intensivo de nietos se asocia a mayor bienestar en los abuelos, mientras que el cuidado intensivo y sostenido puede asociarse a mayor estrés."
+    fuente: "Hughes, Waite, LaPierre y Luo (2007), estudio longitudinal sobre abuelos cuidadores."
+    reflexion: >-
+      Un domingo con los nietos suma. Hacerse cargo de ellos todos los días,
+      sin descanso y sin haberlo elegido, puede pesar como cualquier trabajo
+      de cuidado sin fin. No es contradictorio querer mucho a los nietos y, al
+      mismo tiempo, necesitar un límite de horas. Las dos cosas son ciertas a
+      la vez.
+
+  - id: nie-02
+    texto: "No hay un solo modo de ser abuelo. El distante también quiere, a su manera."
+    destacar: [distante]
+    principio: "Existen distintos estilos de relación entre abuelos y nietos -cercano, de apoyo formal, distante- y ninguno es en sí mismo mejor; dependen del contexto familiar."
+    fuente: "Silverstein y Marenco (2001), tipología de roles de abuelos."
+    reflexion: >-
+      El abuelo que llama una vez por mes y el que almuerza todos los
+      domingos pueden querer exactamente lo mismo. Los estudios encuentran
+      varios estilos de acompañar, y ninguno es automáticamente el correcto.
+      Compararse con otra familia que vive distinto no sirve de mucho: cada
+      vínculo encuentra su propia forma.
+
+  - id: nie-03
+    texto: "Contar cómo era antes no es aburrir: para un nieto, es historia en primera persona."
+    destacar: [historia]
+    principio: "La transmisión intergeneracional de la historia familiar fortalece la identidad y la resiliencia de los más jóvenes."
+    fuente: "Duke, Lazarus y Fivush (2008), estudio sobre narrativa familiar e identidad."
+    reflexion: >-
+      Los chicos que conocen la historia de su familia -no solo los nombres,
+      sino las anécdotas, los tropiezos, cómo se resolvieron- tienen una base
+      más firme para entenderse a sí mismos. Ese relato casi siempre lo trae
+      el abuelo o la abuela. No es nostalgia para adentro: es un regalo que
+      ningún libro reemplaza.
+
+  - id: nie-04
+    texto: "Decir que no a cuidar un fin de semana no lo vuelve un mal abuelo."
+    destacar: ["no"]
+    principio: "Negociar los límites del cuidado de nietos sin culpa se asocia a menor sobrecarga y a una relación más sostenible en el tiempo."
+    fuente: "Hayslip y Kaminski (2005), revisión sobre abuelos cuidadores."
+    reflexion: >-
+      El cariño no se mide en cuántas veces se dice que sí. Un abuelo que
+      pone un límite cuando lo necesita está cuidando la relación, no
+      restándole amor: un vínculo sin descanso para ninguna de las dos partes
+      se desgasta más rápido que uno con sus límites claros.
+
+  - id: nie-05
+    texto: "Los nietos aprenden a regular sus emociones mirando cómo lo hace el abuelo."
+    destacar: [mirando]
+    principio: "Los niños aprenden estrategias de regulación emocional por modelado de las figuras cercanas, abuelos incluidos, más que por instrucción directa."
+    fuente: "Morris, Silk, Steinberg, Myers y Robinson (2007), modelo de socialización emocional familiar."
+    reflexion: >-
+      No hace falta dar una clase de paciencia. Un nieto que ve a su abuelo
+      enojarse y calmarse sin gritar aprende de eso más que de cualquier
+      sermón. Lo que se transmite no es lo que se dice, es lo que el chico ve
+      hacer cuando las cosas se ponen difíciles.
+
+  - id: nie-06
+    texto: "Ser abuelo da propósito, y el propósito también necesita descanso."
+    destacar: [descanso]
+    principio: "El rol de abuelo aporta sentido y generatividad, pero su efecto positivo sobre el bienestar depende de que no desplace el autocuidado del abuelo."
+    fuente: "Moore y Rosenthal (2017), revisión sobre el rol de abuelos y bienestar."
+    reflexion: >-
+      Lo que da sentido también puede agotar si ocupa todo el lugar. El rol
+      de abuelo suma bienestar cuando convive con el resto de la vida -el
+      propio descanso, los propios planes-, no cuando los reemplaza. Cuidar
+      bien a los nietos empieza por cuidarse a uno mismo lo suficiente como
+      para seguir teniendo ganas.

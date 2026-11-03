@@ -1,0 +1,83 @@
+# Capítulo 24 · La estructura del día sostiene el ánimo
+tema: rutina
+capitulo: 24
+eje: apoyo
+titulo: La estructura del día sostiene el ánimo
+hashtags: [rutina, animo, estructura]
+tesis: >-
+  Cuando se termina el trabajo, se va con él una estructura que ordenaba el
+  día sin que nadie la tuviera que pensar. La investigación encuentra que esa
+  estructura importa para el ánimo más de lo que parece. Este capítulo es
+  sobre reponerla, a propósito.
+
+frases:
+  - id: rut-01
+    texto: "Tener horarios fijos para dormir y comer ayuda a prevenir bajones de ánimo."
+    destacar: [horarios]
+    principio: "La estabilidad de los ritmos sociales diarios -horarios de sueño, comidas y actividad- protege contra los episodios de ánimo bajo."
+    fuente: "Ehlers, Frank y Kupfer (1988), teoría de los ritmos sociales."
+    reflexion: >-
+      No es solo una cuestión de orden. Cuando el cuerpo tiene horarios
+      estables -dormir, comer, moverse casi siempre a la misma hora- el
+      ánimo se sostiene mejor. Esta teoría se usa incluso como tratamiento
+      para ciertas dificultades del ánimo: ordenar el día no es un detalle
+      menor, es parte del cuidado.
+
+  - id: rut-02
+    texto: "Un día sin ninguna estructura se vive más largo y más pesado que uno con algo de orden."
+    destacar: [pesado]
+    principio: "La ausencia de actividad estructurada se asocia a mayor percepción de aburrimiento y a síntomas depresivos en adultos mayores."
+    fuente: "Jacobson, Martell y Dimidjian (2001), modelo de activación conductual."
+    reflexion: >-
+      Un día entero sin nada planeado, aunque suene a descanso, suele sentirse
+      pesado y largo. El cuerpo y la mente funcionan mejor con algo de
+      estructura, aunque sea simple: una hora para salir a caminar, otra
+      para alguna tarea. No hace falta llenar la agenda, alcanza con que el
+      día tenga alguna forma.
+
+  - id: rut-03
+    texto: "Hacer algo, aunque no den ganas, suele mejorar el ánimo más rápido que esperar a tener ganas."
+    destacar: [esperar]
+    principio: "La activación conductual -actuar antes de sentir motivación, no después- es más efectiva para mejorar el ánimo que esperar a sentirse con ganas."
+    fuente: "Jacobson, Martell y Dimidjian (2001), mismo modelo de activación conductual."
+    reflexion: >-
+      La lógica habitual es «cuando tenga ganas, salgo a caminar». La que
+      mejor funciona, según los estudios, es al revés: salir a caminar
+      ayuda a que lleguen las ganas, no al contrario. Esperar a sentirse
+      con ánimo para moverse puede significar esperar mucho tiempo. Mover
+      el cuerpo primero suele destrabar lo demás.
+
+  - id: rut-04
+    texto: "Mantener una tarea con horario fijo, aunque sea chica, da algo a lo que sostenerse."
+    destacar: [sostenerse]
+    principio: "Las actividades con horario y responsabilidad regular, aunque sean de poca exigencia, aportan estructura temporal y sentido de propósito cotidiano."
+    fuente: "Csikszentmihalyi y Hunter (2003), investigación sobre estructura del tiempo y bienestar."
+    reflexion: >-
+      Regar las plantas todas las mañanas, sacar al perro a la misma hora,
+      pasar por la panadería un día fijo: tareas chicas, con horario, dan
+      algo concreto que esperar y que cumplir. No necesitan ser importantes
+      para el mundo. Alcanza con que sean propias y con que se repitan.
+
+  - id: rut-05
+    texto: "Separar el fin de semana del resto de los días ayuda, aunque ya no se trabaje."
+    destacar: [separar]
+    principio: "Mantener la distinción entre días laborables y de descanso tras la jubilación preserva el sentido temporal y previene la pérdida de estructura del tiempo."
+    fuente: "Ekerdt (1986), estudio sobre la ética de la jubilación ocupada."
+    reflexion: >-
+      Sin trabajo, todos los días pueden volverse iguales, y eso cuesta más
+      de lo que parece: se pierde la noción de cuándo toca descansar de
+      verdad. Mantener algo distinto los fines de semana -una comida
+      especial, una actividad que solo pasa esos días- ayuda a que la semana
+      no se vuelva un solo bloque sin forma.
+
+  - id: rut-06
+    texto: "Una rutina que deja espacio para lo imprevisto sostiene mejor que una muy rígida."
+    destacar: [espacio]
+    principio: "La flexibilidad dentro de la estructura -una rutina con margen, no rígida- se asocia a mejor adaptación que la rigidez total o la ausencia completa de estructura."
+    fuente: "Monk y colegas (1991), estudio sobre regularidad de ritmos sociales y bienestar."
+    reflexion: >-
+      No se trata de armar un horario tan estricto que una visita inesperada
+      lo arruine todo. La mejor estructura es la que da un marco -más o
+      menos a esta hora como esto, más o menos a esta hora salgo- sin
+      ahogar lo que pueda surgir. Demasiado rígida cansa igual que
+      demasiado suelta.
