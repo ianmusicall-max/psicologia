@@ -462,6 +462,20 @@ ROTAN = ("regla", "marco", "ficha", "marcador")
 CON_GRANO = ("manuscrito",)
 
 
+def _rotar(lista: List, dia, hora: int, horas: Optional[List[int]] = None):
+    """El elemento de `lista` que le toca a ESE turno: la fecha y la hora
+    deciden, no el orden en que se publican.
+
+    Es la cuenta que ya usaba `estilo_del_turno`, separada para que una
+    segunda rotación -los papeles de la página de la tercera edad- la
+    comparta sin copiarla. Mismo motivo que siempre: una cuenta copiada es
+    una cuenta que un día se desincroniza de la original.
+    """
+    orden = list(horas or [])
+    lugar = orden.index(hora) if hora in orden else int(hora)
+    return lista[(lugar + dia.toordinal()) % len(lista)]
+
+
 def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
     """El estilo de ESE post. Dentro de un dia, cada post lleva uno distinto.
 
@@ -479,10 +493,7 @@ def estilo_del_turno(dia, hora: int, horas: Optional[List[int]] = None) -> str:
     ocho, esos cuatro caian en posiciones pares y salian solo DOS estilos
     distintos en todo el dia. Contando sobre las del dia, salen cuatro.
     """
-    nombres = list(ROTAN)
-    orden = list(horas or [])
-    lugar = orden.index(hora) if hora in orden else int(hora)
-    return nombres[(lugar + dia.toordinal()) % len(nombres)]
+    return _rotar(list(ROTAN), dia, hora, horas)
 
 
 def estilo_de(pagina: Pagina, dia, hora: int, horas_del_dia: Optional[List[int]] = None) -> str:
@@ -512,17 +523,47 @@ def _colores(pagina: Pagina, estilo: str) -> dict:
     return {"fondo": fondo, "tinta": tinta, "acento": acento, "suave": suave}
 
 
+def fondo_del_turno(fondos: List[str], dia, hora: int,
+                    horas: Optional[List[int]] = None) -> str:
+    """El papel de ESE turno, de una lista de colores a rotar.
+
+    Misma cuenta que `estilo_del_turno` y por la misma razón: sale de la
+    fecha y la hora, así que volver a dibujar el mismo post da el mismo
+    papel, y un día entero no repite color -mientras la lista tenga al
+    menos tantos colores como turnos tiene el día-.
+    """
+    return _rotar(fondos, dia, hora, horas)
+
+
+def fondo_de(pagina: Pagina, dia, hora: int,
+            horas_del_dia: Optional[List[int]] = None) -> str:
+    """El papel de ESE turno, mirando si la página tiene varios para rotar.
+
+    Sin `pagina.fondos` -la página de siempre, hoy- se queda con el único
+    fondo de su paleta, intacto. Es la misma forma que `estilo_de`, y por lo
+    mismo: para que el día que esto se copie a un tercer lugar no se repita
+    la cuenta a mano.
+    """
+    if not pagina.fondos:
+        return pagina.color("fondo", "#F3EFE6")
+    return fondo_del_turno(pagina.fondos, dia, hora, horas_del_dia)
+
+
 def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
-           estilo: Optional[str] = None) -> Image.Image:
+           estilo: Optional[str] = None, fondo: Optional[str] = None) -> Image.Image:
     """El flyer. `escala` 2 es el que se publica (2160x2700); 1 sirve para mirar.
 
     `estilo` elige el reparto: lo que cambia es la forma, nunca lo que dice.
+    `fondo`, si se pasa, reemplaza el de la paleta -es lo que usa la rotación
+    de papeles de `fondo_de`-. Sin él, se dibuja con el de siempre.
     """
     e = escala
     estilo = estilo or getattr(pagina, "estilo", None) or POR_DEFECTO
     if estilo not in ESTILOS:
         raise ValueError("no existe el estilo %r; hay %s" % (estilo, ", ".join(sorted(ESTILOS))))
     c = _colores(pagina, estilo)
+    if fondo:
+        c = dict(c, fondo=fondo)
     img = Image.new("RGB", (W * e, H * e), c["fondo"])
     draw = ImageDraw.Draw(img)
     ESTILOS[estilo](draw, frase, tema, pagina, e, c)
@@ -543,8 +584,9 @@ def guardar(img: Image.Image, ruta: Path) -> Path:
 
 
 def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta=None,
-            escala: int = 2, estilo: Optional[str] = None) -> Path:
+            escala: int = 2, estilo: Optional[str] = None,
+            fondo: Optional[str] = None) -> Path:
     """El valor por defecto se resuelve acá y no en la firma: en la firma se
     evalúa al importar y `diseno.FLYERS` dejaría de mandar."""
-    return guardar(render(frase, tema, pagina, escala, estilo),
+    return guardar(render(frase, tema, pagina, escala, estilo, fondo),
                    Path(carpeta or FLYERS) / ("%s.jpg" % frase.id))

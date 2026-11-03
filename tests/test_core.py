@@ -572,6 +572,67 @@ class TestLasDosPaginas(unittest.TestCase):
             self.assertEqual(frases.publicadas(otra), {})
 
 
+class TestLaRotacionDePapeles(unittest.TestCase):
+    """Los doce papeles de la página de la tercera edad, pedidos el
+    2026-11-03. Rotan como ya rotaban los estilos -misma cuenta, separada a
+    `_rotar`- y por eso comparten sus mismas garantías: la fecha y la hora
+    deciden, no el orden en que se publica, y un día entero no repite."""
+
+    FONDOS = ["#F9F6EA", "#FCFCF8", "#EDE0C8", "#E9E8E2", "#E7F0F6", "#FBF3CE",
+             "#EFEAF5", "#E7EEE4", "#FBEAE0", "#E6DCC4", "#E3F0EA", "#F2E9D8"]
+    HORAS = [7, 11, 15, 19, 23]
+
+    def test_la_pagina_de_siempre_no_tiene_fondos_y_no_rota(self):
+        # Si `pagina.fondos` viniera con algo por defecto, la otra página
+        # heredaría una rotación que nadie le pidió.
+        self.assertEqual(PAGINA.fondos, [])
+        self.assertEqual(diseno.fondo_de(PAGINA, date(2026, 11, 3), 8),
+                         PAGINA.color("fondo", "#F3EFE6"))
+
+    def test_los_cinco_turnos_de_un_dia_no_repiten_papel(self):
+        dia = date(2026, 11, 3)
+        del_dia = [diseno.fondo_del_turno(self.FONDOS, dia, h, self.HORAS)
+                  for h in self.HORAS]
+        self.assertEqual(len(set(del_dia)), len(self.HORAS))
+
+    def test_el_mismo_turno_redibujado_da_el_mismo_papel(self):
+        dia = date(2026, 11, 3)
+        uno = diseno.fondo_del_turno(self.FONDOS, dia, 11, self.HORAS)
+        self.assertEqual(uno, diseno.fondo_del_turno(self.FONDOS, dia, 11, self.HORAS))
+
+    def test_el_reparto_se_corre_de_un_dia_al_otro(self):
+        de_hoy = diseno.fondo_del_turno(self.FONDOS, date(2026, 11, 3), 7, self.HORAS)
+        de_manana = diseno.fondo_del_turno(self.FONDOS, date(2026, 11, 4), 7, self.HORAS)
+        self.assertNotEqual(de_hoy, de_manana)
+
+    def test_fondo_de_rota_solo_si_la_pagina_tiene_fondos(self):
+        mayores = config.cargar(config.archivo_de("mayores"))
+        self.assertEqual(len(mayores.fondos), 12)
+        a = diseno.fondo_de(mayores, date(2026, 11, 3), 7, self.HORAS)
+        b = diseno.fondo_de(mayores, date(2026, 11, 3), 11, self.HORAS)
+        self.assertNotEqual(a, b)
+
+    def test_render_dibuja_con_el_fondo_que_se_le_pasa(self):
+        """Corre el camino de verdad: `render` con `fondo=` tiene que dar un
+        flyer de ESE color, no del que trae la paleta."""
+        mayores = config.cargar(config.archivo_de("mayores"))
+        temas = frases.leer(mayores.carpeta_de_frases)
+        f, t = temas[0].frases[0], temas[0]
+        img = diseno.render(f, t, mayores, escala=1, estilo="manuscrito", fondo="#EDE0C8")
+        # Una esquina, lejos del texto y del grano, tiene que acercarse al
+        # color pedido.
+        r, g, b = img.getpixel((5, 5))
+        self.assertLess(abs(r - 0xED) + abs(g - 0xE0) + abs(b - 0xC8), 15)
+
+    def test_sin_fondo_usa_el_de_la_paleta_de_siempre(self):
+        mayores = config.cargar(config.archivo_de("mayores"))
+        temas = frases.leer(mayores.carpeta_de_frases)
+        f, t = temas[0].frases[0], temas[0]
+        img = diseno.render(f, t, mayores, escala=1, estilo="manuscrito")
+        r, g, b = img.getpixel((5, 5))
+        self.assertLess(abs(r - 0xF9) + abs(g - 0xF6) + abs(b - 0xEA), 15)
+
+
 class TestElEstiloManuscrito(unittest.TestCase):
     """La hoja escrita a mano, el estilo de la página de la tercera edad. Sale
     de una referencia que mandó el usuario: plumón azul sobre papel crema, la

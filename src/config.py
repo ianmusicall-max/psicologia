@@ -51,6 +51,11 @@ class Pagina:
     # otra -son dos audiencias y dos libros distintos-.
     banco: str = "frases"
     publicadas: str = "data/publicadas.json"
+    # Papeles para rotar, además del `fondo` de la paleta. VACÍO en la
+    # página de siempre -queda con su único fondo, como hasta hoy-; con la
+    # lista puesta, `diseno.fondo_de` reparte uno distinto por turno. Son
+    # colores de PAPEL y no de tinta: la tinta sigue siendo la de `paleta`.
+    fondos: List[str] = field(default_factory=list)
 
     @property
     def carpeta_de_frases(self) -> Path:
@@ -103,4 +108,5 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         token_env=fb.get("token_env", "PSI_FB_PAGE_TOKEN"),
         banco=str(datos.get("banco") or "frases"),
         publicadas=str(datos.get("publicadas") or "data/publicadas.json"),
+        fondos=[str(c) for c in (datos.get("fondos") or [])],
     )

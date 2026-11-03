@@ -28,6 +28,31 @@ pagina:
     acento: "#060A9E"
     suave: "#5B6066"
 
+  # Los papeles que rotan, pedido el 2026-11-03. `paleta.fondo` de arriba
+  # queda como el PRIMERO de la lista y no se borra: es el que usa cualquier
+  # script que dibuje sin pasar por `publicar_turno.py` (`probar_estilos.py`,
+  # por ejemplo), y es el valor de reserva de `diseno.fondo_de` si esta
+  # lista alguna vez quedara vacía.
+  #
+  # Son DOCE y no uno: con `horas` en cinco lugares por día, `diseno.fondo_de`
+  # -la misma cuenta que ya usa `estilo_del_turno`, que sale de la fecha y la
+  # hora- le toca un papel distinto a cada uno de los cinco posts del día, y
+  # como 5 < 12 ningún día repite ninguno. La tinta queda fija -azul, la de
+  # `paleta` de arriba-: lo que varía es solo el papel.
+  fondos:
+    - "#F9F6EA"   # crema, el original
+    - "#FCFCF8"   # hueso
+    - "#EDE0C8"   # kraft
+    - "#E9E8E2"   # gris perla
+    - "#E7F0F6"   # celeste pálido
+    - "#FBF3CE"   # amarillo pálido
+    - "#EFEAF5"   # lavanda
+    - "#E7EEE4"   # salvia
+    - "#FBEAE0"   # durazno
+    - "#E6DCC4"   # papel envejecido
+    - "#E3F0EA"   # menta
+    - "#F2E9D8"   # arena
+
   # Su banco y su registro. Las dos cosas APARTE de la otra página:
   # - el banco, porque cada archivo de `frases/` es también un capítulo de
   #   «Lo que nadie te explicó del amor», y un tema de esta página puesto ahí

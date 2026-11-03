@@ -176,13 +176,17 @@ def main(argv=None) -> int:
     # `diseno.estilo_de`, que es la misma que usa el boton del bot: copiada,
     # el bot mostraria un flyer y este publicaria otro.
     estilo = diseno.estilo_de(pagina, ahora.date(), hora, horas_hoy)
+    # Rota el papel SOLO si la página tiene varios (`pagina.fondos`); la de
+    # siempre queda con el único de su paleta, sin que nadie tenga que
+    # acordarse de nada.
+    fondo = diseno.fondo_de(pagina, ahora.date(), hora, horas_hoy)
     texto = frases.caption(frase, tema, pagina)
 
     print("%s · %s · estilo %s · %02d h" % (frase.id, tema.tema, estilo, hora))
     if args.ver:
         return 0
 
-    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo)
+    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, fondo=fondo)
     # Por HORA y no solo por el interruptor: desde el 2026-10-24 a Instagram
     # van dos de los ocho posts del dia.
     if pagina.instagram_en(hora):
@@ -205,7 +209,7 @@ def main(argv=None) -> int:
     frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre,
                             ruta=pagina.archivo_de_publicadas, extra={
         "hora": hora, "tema": tema.tema, "eje": tema.eje,
-        "estilo": estilo, "instagram": salida.get("instagram") or "",
+        "estilo": estilo, "fondo": fondo, "instagram": salida.get("instagram") or "",
         # La hora REAL, que en un turno atrasado no es `hora`. Es lo que lee
         # `hace_muy_poco` para no sacar dos flyers pegados.
         "cuando": ahora.isoformat(timespec="seconds"),
