@@ -17,6 +17,9 @@ data/*
 # repo, cada corrida creeria que no salio nada y volveria a publicar la
 # primera frase. El propio turno lo vuelve a subir despues de publicar.
 !data/publicadas.json
+# Lo mismo para la segunda pagina (Luis Del Carpio Merino), desde el
+# 2026-11-01: tiene su propio registro y por la misma razon.
+!data/publicadas_mayores.json
 # Lo que tardo la voz en cada reel. Se versiona por lo mismo: cada corrida es
 # una maquina nueva, asi que sin esto la serie se pierde y `VOZ_MAS_LENTA`
 # vuelve a depender de una sola medicion, que es como se llego al 1,75.

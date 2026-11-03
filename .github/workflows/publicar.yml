@@ -102,9 +102,23 @@ jobs:
             exit 0
           fi
           git commit -m "Publicado: $(date +'%Y-%m-%d %H:00')"
-          # El turno de la hora siguiente puede haber subido algo mientras
-          # tanto; se rebasea antes de empujar en vez de fallar.
-          git pull --rebase --autostash
+          # El turno de la hora siguiente -o, desde el 2026-11-03, el job
+          # "mayores" de esta misma corrida- puede haber subido algo
+          # mientras tanto, y los dos tocan `data/historias_estado.json`.
+          # `-X theirs` se queda con LO QUE SE ESTA APLICANDO (este commit,
+          # el del post que ACABA de salir) si el rebase choca en ese
+          # renglon. Perder la nota de historias de la otra corrida no
+          # pierde ningun post: ese registro es solo un aviso.
+          #
+          # Y si el rebase falla igual, no se corta la corrida: el post YA
+          # salio, y eso es lo que importa. Paso el 2026-11-03 con la
+          # pagina nueva, sin este resguardo: el registro de un post real
+          # se perdio y el turno siguiente lo habria vuelto a publicar.
+          git pull --rebase --autostash -X theirs || {
+            echo "El rebase fallo igual; dejo el registro sin subir. El post ya salio."
+            git rebase --abort || true
+            exit 0
+          }
           git push
 
       # EL RESPALDO DEL REEL. GitHub no corre los cron de este repositorio:
@@ -194,5 +208,10 @@ jobs:
             exit 0
           fi
           git commit -m "Publicado (mayores): $(date +'%Y-%m-%d %H:00')"
-          git pull --rebase --autostash
+          # Mismo resguardo que el job "publicar": ver el comentario de ahi.
+          git pull --rebase --autostash -X theirs || {
+            echo "El rebase fallo igual; dejo el registro sin subir. El post ya salio."
+            git rebase --abort || true
+            exit 0
+          }
           git push

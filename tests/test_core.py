@@ -3576,6 +3576,30 @@ class TestElTurnoDeGithub(unittest.TestCase):
         self.assertIn("!data/publicadas.json",
                       (ROOT / ".gitignore").read_text(encoding="utf-8"))
 
+    def test_la_segunda_pagina_tambien_guarda_lo_publicado(self):
+        # Mismo agujero que arriba, para la pagina de la tercera edad: un
+        # registro que no viaja con el repo hace que la maquina siguiente
+        # vuelva a publicar la primera frase del banco.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        self.assertIn("data/publicadas_mayores.json", texto)
+        self.assertIn("!data/publicadas_mayores.json",
+                      (ROOT / ".gitignore").read_text(encoding="utf-8"))
+
+    def test_un_choque_al_guardar_no_tumba_la_corrida(self):
+        # Pasó el 2026-11-03: las dos páginas tocan el mismo
+        # historias_estado.json en la misma corrida, el rebase chocó y el
+        # job murió DESPU�S de que el post ya había salido en Facebook. El
+        # registro de esa publicación se perdió, y el turno siguiente la
+        # habría repetido.
+        #
+        # `-X theirs` se queda con el commit que se está aplicando (el
+        # post que ACABA de salir) si el rebase choca, y si choca igual el
+        # paso no corta la corrida: el post ya salió, que es lo que importa.
+        texto = self.FLUJO.read_text(encoding="utf-8")
+        for bloque in texto.split("git commit -m")[1:]:
+            self.assertIn("-X theirs", bloque[:1200], bloque[:120])
+            self.assertIn("rebase --abort", bloque[:1200], bloque[:120])
+
     def test_no_arranca_dos_corridas_a_la_vez(self):
         # Dos a la vez se pisarían al subir el estado, y cancelar la que está
         # andando podría cortarla justo mientras publica.
