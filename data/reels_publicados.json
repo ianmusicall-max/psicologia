@@ -120,5 +120,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-02T15:22:56"
+ },
+ "2026-11-03": {
+  "video": "com-02.mp4",
+  "titulo": "Cómo empieza una conversación decide cómo termina. Los primeros tres minutos ya cuentan el final.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1789753365573090",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/17909764464329577",
+   "youtube": "https://youtube.com/shorts/o0DZudeS-uI",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-03T18:47:53"
  }
 }
