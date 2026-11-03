@@ -124,6 +124,12 @@ PISTAS = (
     ("Invalid JSON", "eso es un token mal copiado, no un problema de formato "
                      "de la petición: suele traer un salto de línea o una "
                      "comilla pegada"),
+    ("Session has expired",
+     "el token era el CORTO del Explorador (dura unas horas), no el "
+     "permanente. Hay que AMPLIARLO antes de sacar el de la página: "
+     "pegar el token de usuario en el depurador de tokens de Meta y usar "
+     "'Ampliar token de acceso', y recién con ESE volver a pedir "
+     "me/accounts. Pasó el 2026-11-03 saltando ese paso."),
     ("(#100)", "casi nunca es que el objeto no exista: suele ser un id de otra "
                "página, o un permiso que falta"),
 )

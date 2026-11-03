@@ -488,6 +488,16 @@ class TestLosErroresDeMetaQueEnganan(unittest.TestCase):
         self.assertIn("pages_manage_posts", facebook._pista(fallo))
         self.assertIn("me/accounts", facebook._pista(fallo))
 
+    def test_session_has_expired_quiere_decir_token_corto_no_ampliado(self):
+        # Lo que paso el 2026-11-03: se cargo el token CORTO del Explorador
+        # en vez de ampliarlo primero. Dura unas horas y despues cualquier
+        # llamada da este mensaje.
+        fallo = {"message": "Error validating access token: Session has "
+                            "expired on Tuesday, 03-Nov-26 00:00:00 PST. "
+                            "The current time is Tuesday, 03-Nov-26 "
+                            "06:59:20 PST.", "code": 190, "error_subcode": 463}
+        self.assertIn("Ampliar", facebook._pista(fallo))
+
     def test_un_error_cualquiera_no_recibe_una_explicacion_inventada(self):
         self.assertEqual(facebook._pista("algo que nadie vio nunca"), "")
 
