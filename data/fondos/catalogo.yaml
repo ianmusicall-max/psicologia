@@ -752,3 +752,39 @@ calle-paseo-perro.mp4:
   # Hay carteles de negocios en las fachadas, en otro alfabeto, chicos y
   # lejos. A cuatro segundos y con el brillo bajado no se leen, igual que en
   # `ciudad-lluvia-semaforos`.
+
+vela-oscuridad-chispas.mp4:
+  que_es: Una vela encendida en la oscuridad, con chispas o particulas en el aire pasando delante de la llama, luces azules desenfocadas al fondo
+  etiquetas: [vela, oscuridad, llama, calidez, intimidad, quietud]
+
+vela-vaso-repisa.mp4:
+  que_es: Una vela en un vaso de vidrio sobre una repisa oscura, con una pared verde opaca arriba
+  etiquetas: [vela, llama, interior, calidez, quietud]
+
+vela-pastel-silueta.mp4:
+  que_es: La silueta de una persona encendiendo una vela larga sobre una torta pequena, sombra grande y dramatica en la pared
+  etiquetas: [vela, celebracion, silueta, interior, calidez, gente]
+
+cortina-luz-sombras.mp4:
+  que_es: Una cortina de tul iluminada por el sol de costado, con sombras de ramas proyectadas encima
+  etiquetas: [cortina, luz, sombras, interior, calidez, quietud]
+
+vela-girasol-baldosas.mp4:
+  que_es: Una vela roja en un vaso facetado sobre un piso de baldosas, un girasol en una botella de vidrio al lado, mano encendiendo con un fosforo, cortina clara de fondo
+  etiquetas: [vela, flor, interior, calidez, quietud]
+
+vela-jardin-fosforo.mp4:
+  # El usuario volvio a mandar, en la misma tanda del 2026-11-04, el video
+  # que YA esta como `vela-ventana-lluvia` (misma huella, confirmado por
+  # md5): dos velas, lluvia y luces de ciudad desenfocadas. Este es otro
+  # clip, con una sola vela y el jardin de afuera en foco.
+  que_es: Una ventana con lluvia y un jardin verde afuera, una vela y un portavelas en el alfeizar, mano encendiendo un fosforo
+  etiquetas: [ventana, lluvia, vela, verde, jardin, interior, calidez]
+
+gatitos-sombra-pared.mp4:
+  que_es: Dos gatitos caminando junto a una pared iluminada por el sol en angulo, con su propia sombra marcada
+  etiquetas: [gato, luz, sombra, interior, calidez, quietud]
+
+lampara-persiana-noche.mp4:
+  que_es: Una lampara encendida junto a una ventana con persianas, de noche, luz verde azulada afuera
+  etiquetas: [lampara, ventana, noche, interior, quietud, melancolia]
