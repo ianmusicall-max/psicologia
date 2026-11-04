@@ -133,5 +133,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-03T18:47:53"
+ },
+ "2026-11-04": {
+  "video": "hab-02.mp4",
+  "titulo": "Un hábito no se construye con fuerza de voluntad. Se construye con un lugar, una hora y una señal.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1866708537850213",
+   "historia": "1 tarjeta",
+   "instagram": "error: raw.githubusercontent.com dijo Error: Media upload has failed with error code 2207077 · subiendo los bytes: Instagram rechazo el video (400): {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
+   "youtube": "https://youtube.com/shorts/fQNNTaf-ThE",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-04T18:44:25"
  }
 }
