@@ -788,3 +788,107 @@ gatitos-sombra-pared.mp4:
 lampara-persiana-noche.mp4:
   que_es: Una lampara encendida junto a una ventana con persianas, de noche, luz verde azulada afuera
   etiquetas: [lampara, ventana, noche, interior, quietud, melancolia]
+
+calle-nieve-pareja.mp4:
+  que_es: Una calle nevada de noche, un farol encendido en primer plano, dos personas cruzando bajo la luz de los autos con los faros prendidos
+  etiquetas: [nieve, noche, calle, exterior, soledad, melancolia]
+
+rio-persona-atardecer.mp4:
+  que_es: Una persona de espaldas junto a un rio al atardecer, con el perfil de una ciudad al otro lado del agua
+  etiquetas: [atardecer, rio, ciudad, soledad, melancolia, exterior]
+
+paseo-rascacielos-noche.mp4:
+  que_es: Un paseo peatonal vacio de noche frente a un perfil de rascacielos iluminados
+  etiquetas: [noche, ciudad, exterior, quietud, soledad]
+
+anden-tren-penumbra.mp4:
+  que_es: Un anden de tren o metro en penumbra, con una persona sentada y luces tenues en el techo
+  etiquetas: [noche, transporte, interior, quietud, melancolia]
+
+lluvia-calle-paraguas.mp4:
+  que_es: Una calle bajo la lluvia de noche, gente caminando con paraguas y reflejos rojos en el pavimento
+  etiquetas: [lluvia, noche, calle, exterior, melancolia]
+
+calle-edificio-noche.mp4:
+  que_es: Una calle tranquila de noche con un edificio alto iluminado al fondo
+  etiquetas: [noche, ciudad, exterior, quietud]
+
+atardecer-rojo-ciudad.mp4:
+  que_es: Un cielo rojo intenso al atardecer sobre la silueta de una ciudad
+  etiquetas: [atardecer, ciudad, exterior, melancolia]
+
+autopista-luces-noche.mp4:
+  que_es: Una autopista de noche con las luces de los autos formando lineas rojas y blancas
+  etiquetas: [noche, ciudad, exterior, movimiento]
+
+lluvia-reloj-cruce.mp4:
+  que_es: Una calle bajo la lluvia de noche, con una torre de reloj al fondo y una persona cruzando entre semaforos en rojo
+  etiquetas: [lluvia, noche, calle, exterior, melancolia]
+
+niebla-silueta-calida.mp4:
+  que_es: La silueta de una persona caminando entre niebla o humo con luz calida anaranjada
+  etiquetas: [niebla, noche, exterior, soledad, melancolia, calidez]
+
+neon-verde-fachada.mp4:
+  que_es: Una fachada oscura de noche con un patron de luces verdes, abstracto
+  etiquetas: [noche, exterior, quietud, melancolia]
+
+carretera-vacia-noche.mp4:
+  que_es: Una carretera mojada y vacia de noche, con luces de autos lejanas
+  etiquetas: [noche, lluvia, exterior, quietud, soledad]
+
+escalera-luces-abstracto.mp4:
+  que_es: Una escalera o escalinata en penumbra con luces geometricas, vista abstracta
+  etiquetas: [noche, interior, quietud, melancolia]
+
+silueta-rio-skyline.mp4:
+  que_es: La silueta de una persona mirando el perfil de una ciudad al otro lado del rio, al anochecer
+  etiquetas: [atardecer, rio, ciudad, soledad, melancolia, exterior]
+
+ventana-tren-noche.mp4:
+  que_es: El interior de un tren de noche, visto desde la ventana con reflejos y penumbra
+  etiquetas: [noche, transporte, interior, quietud, melancolia]
+
+edificio-ventanas-atardecer.mp4:
+  que_es: La fachada de un edificio alto con ventanas iluminadas, al atardecer
+  etiquetas: [atardecer, ciudad, exterior, quietud]
+
+calle-vacia-farolas.mp4:
+  que_es: Una calle vacia de noche iluminada por farolas
+  etiquetas: [noche, calle, exterior, quietud, soledad]
+
+ciudad-autopista-aerea.mp4:
+  que_es: Vista aerea de una ciudad de noche con una autopista iluminada
+  etiquetas: [noche, ciudad, exterior, quietud]
+
+parque-atardecer-ciclista.mp4:
+  que_es: Un parque al atardecer con una persona sentada en una banca y otra en bicicleta
+  etiquetas: [atardecer, exterior, quietud, melancolia]
+
+playa-paseo-gris.mp4:
+  que_es: Un paseo junto a la playa en un dia gris y nublado, con gente caminando despacio
+  etiquetas: [playa, exterior, melancolia, quietud]
+
+calle-tranvia-amarillo.mp4:
+  que_es: Una calle europea de noche con un tranvia amarillo y edificios iluminados
+  etiquetas: [noche, calle, exterior, quietud]
+
+aereo-ventanas-abstracto.mp4:
+  que_es: Vista aerea nocturna y abstracta de ventanas iluminadas y calles
+  etiquetas: [noche, ciudad, exterior, quietud, melancolia]
+
+semaforo-verde-fachada.mp4:
+  que_es: Un semaforo en verde en primer plano contra la fachada de un edificio
+  etiquetas: [exterior, quietud]
+
+lluvia-faros-noche.mp4:
+  que_es: Una calle mojada de noche con los faros de los autos reflejados en el pavimento
+  etiquetas: [lluvia, noche, calle, exterior, melancolia]
+
+aereo-avenida-naranja.mp4:
+  que_es: Vista aerea de una avenida larga de noche iluminada con luces anaranjadas
+  etiquetas: [noche, ciudad, exterior, quietud, melancolia]
+
+calle-niebla-farol.mp4:
+  que_es: Una calle residencial con niebla al atardecer, un farol encendido y cables de luz
+  etiquetas: [niebla, exterior, quietud, melancolia]
