@@ -82,23 +82,21 @@ MAN_INTERLINEA = 1.30
 MAN_MAXIMO, MAN_MINIMO = 104, 40
 MAN_FIRMA, MAN_FIRMA_Y = 34, H - 120
 MAN_RAYA_PUNTOS = 9             # en cuántos tramos se quiebra el subrayado
-# El grano del papel. Un fondo de un solo color es lo que delata que esto no
-# se escribió: en la referencia del usuario el crema varía uno o dos niveles
-# de un pixel al siguiente. Es MUY poco a propósito; subirlo ensucia la letra.
-GRANO_FUERZA, GRANO_PANO = 3, 512
-
-# El papel envejecido (2026-11-05, pedido con una foto de referencia): manchas
-# suaves, de un tono más oscuro y otro más claro que el mismo fondo, mezcladas
-# en una grilla chica y agrandadas con interpolación -así salen redondeadas,
-# como una mancha de verdad, y no estática-. Las dos mezclas parten del MISMO
-# color de fondo, así que cada uno de los doce papeles de la rotación
-# conserva el suyo y gana la misma textura.
-MOTEADO_OSCURO, MOTEADO_CLARO = 0.11, 0.16
-MOTEADO_PANO = (24, 30)
+# El papel envejecido (2026-11-05, pedido con una foto de referencia). Lo
+# que tiene la referencia es GRANO -la fibra del papel, claro y oscuro al
+# lado sin cambiar de tono- y no manchas de otro color: la primera versión
+# mezclaba hacia un marrón y salían manchas de humo, y el usuario avisó que
+# no era la misma textura. Ahora las dos capas son ruido de LUMINOSIDAD -el
+# mismo delta en los tres canales, como ya hacía el grano viejo- en dos
+# escalas: una fina, casi de un pixel, y una más ancha para que no se vea
+# como estática de televisión. Ninguna cambia el color del papel, solo su
+# brillo, que es lo que distingue una fibra de una mancha.
+GRANO_FUERZA, GRANO_PANO = 19, 256
+HILO_FUERZA, HILO_PANO = 4, (56, 70)
 # El leve oscurecido hacia las esquinas, como una foto de papel bajo luz
-# pareja y no de estudio. Alfa sobre un marrón oscuro, no multiplicación: así
-# el centro queda intacto y la esquina no se apaga del todo.
-VINETA_FUERZA = 18
+# pareja y no de estudio. Mezclado hacia negro y no hacia un color: así
+# oscurece sin teñir, y el centro queda intacto.
+VINETA_FUERZA = 14
 
 
 def _rgb(color: str):
@@ -400,27 +398,30 @@ def _vineta(size: Tuple[int, int]) -> Image.Image:
 
 
 def _papel(fondo: str, size: Tuple[int, int], semilla: str) -> Image.Image:
-    """El fondo, que no es un color plano sino un papel: manchas suaves,
-    grano fino de fibra y una esquina un poco mas oscura que el centro.
+    """El fondo, que no es un color plano sino un papel: grano de fibra en
+    dos escalas y una esquina un poco mas oscura que el centro.
 
-    Se dibuja ANTES del texto y no encima -al reves de como era antes-: en
-    un papel de verdad la tinta queda sobre la mancha, no la mancha sobre la
-    tinta, y con manchas que ahora SI se notan, pintarlas encima del texto le
-    bajaria el contraste justo donde cae una.
+    Se dibuja ANTES del texto y no encima: en un papel de verdad la tinta
+    queda sobre la fibra, no al reves.
 
     Va con semilla, como el subrayado y por lo mismo: el flyer que se aprueba
     y el que se publica tienen que ser el mismo archivo.
     """
     r = random.Random("papel" + semilla)
-    oscuro = _mezclar(fondo, "#3A2E1E", MOTEADO_OSCURO)
-    claro = _mezclar(fondo, "#FFFDF4", MOTEADO_CLARO)
-    gw, gh = MOTEADO_PANO
-    manchas = Image.frombytes("L", (gw, gh),
-                              bytes(r.randint(0, 255) for _ in range(gw * gh)))
-    mascara = manchas.resize(size, Image.BICUBIC)
-    img = Image.composite(Image.new("RGB", size, claro),
-                          Image.new("RGB", size, oscuro), mascara)
+    img = Image.new("RGB", size, fondo)
 
+    # El hilo: una grilla chica agrandada con interpolacion, para que la
+    # fibra no quede perfectamente pareja de punta a punta -el papel de
+    # verdad tampoco lo es-. Mas ancha que el grano de abajo y mas floja.
+    gw, gh = HILO_PANO
+    hilo = Image.frombytes("L", (gw, gh), bytes(
+        128 + r.randint(-HILO_FUERZA, HILO_FUERZA) for _ in range(gw * gh)))
+    hilo = hilo.resize(size, Image.BICUBIC)
+    img = ImageChops.add(img, hilo.convert("RGB"), scale=1, offset=-128)
+
+    # El grano fino: un paño chico de ruido por pixel, repetido en vez de
+    # sortear los seis millones de pixeles de un flyer de 2160 -lo segundo
+    # tarda segundos y aca se dibujan doce por dia-.
     n = GRANO_PANO
     pano = Image.frombytes("L", (n, n), bytes(
         128 + r.randint(-GRANO_FUERZA, GRANO_FUERZA) for _ in range(n * n)))
@@ -430,7 +431,7 @@ def _papel(fondo: str, size: Tuple[int, int], semilla: str) -> Image.Image:
             ruido.paste(pano, (x, y))
     img = ImageChops.add(img, ruido.convert("RGB"), scale=1, offset=-128)
 
-    oscurecido = Image.new("RGB", size, _mezclar(fondo, "#2B2013", 0.6))
+    oscurecido = Image.new("RGB", size, _mezclar(fondo, "#000000", 0.22))
     alfa = _vineta(size).point(lambda v: v * VINETA_FUERZA // 255)
     return Image.composite(oscurecido, img, alfa)
 
