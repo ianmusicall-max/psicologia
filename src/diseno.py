@@ -27,6 +27,13 @@ FLYERS = ROOT / "data" / "flyers"
 MUESTRAS = ROOT / "data" / "estilos"
 
 W, H = 1080, 1350
+# El tamaño al que se publica: W*ESCALA_PUBLICAR x H*ESCALA_PUBLICAR. Subido
+# de 2 a 4 el 2026-11-05 a pedido del usuario ("sube la calidad por 2 a las
+# imágenes"): 4320x5400 en vez de 2160x2700. Una sola constante y no un 2 o
+# un 4 suelto en cada lugar que dibuja para publicar -`dibujar_todas.py`
+# también la usa-, para que el día que vuelva a cambiar no haya que
+# encontrar todos los lugares donde quedó copiada.
+ESCALA_PUBLICAR = 4
 MARGEN = 96
 ARRIBA = 92            # línea base del encabezado
 ZONA_Y = 230           # donde empieza la zona de la frase
@@ -598,9 +605,10 @@ def fondo_de(pagina: Pagina, dia, hora: int,
     return fondo_del_turno(pagina.fondos, dia, hora, horas_del_dia)
 
 
-def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
+def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = ESCALA_PUBLICAR,
            estilo: Optional[str] = None, fondo: Optional[str] = None) -> Image.Image:
-    """El flyer. `escala` 2 es el que se publica (2160x2700); 1 sirve para mirar.
+    """El flyer. `escala` ESCALA_PUBLICAR (4) es el que se publica (4320x5400);
+    1 sirve para mirar.
 
     `estilo` elige el reparto: lo que cambia es la forma, nunca lo que dice.
     `fondo`, si se pasa, reemplaza el de la paleta -es lo que usa la rotación
@@ -623,19 +631,32 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
     return img
 
 
+CALIDAD_JPG = 85
+
 def guardar(img: Image.Image, ruta: Path) -> Path:
     """JPG de calidad alta. Escribe aparte y renombra: si el disco se llena a
-    mitad de camino no queda un archivo de 0 bytes que después se suba."""
+    mitad de camino no queda un archivo de 0 bytes que después se suba.
+
+    `CALIDAD_JPG` bajó de 92 a 85 el 2026-11-05, al subir ESCALA_PUBLICAR: a
+    4320x5400 el papel con grano (CON_PAPEL) pesa casi 10 MB con calidad 92
+    -medido sobre una muestra, siempre en esa franja porque lo que pesa es el
+    grano y no el texto-, y el límite de la API de Facebook para una foto son
+    10 MB. Publicar ahí es apostar el turno a que la frase de ese día no
+    empuje el archivo un poco más. A 85 la misma muestra da unos 7,3 MB, con
+    margen real, y a este tamaño y con este contenido -letra y grano, no una
+    foto- no se nota la diferencia. La página sin papel pesa una fracción de
+    eso con cualquiera de los dos números.
+    """
     ruta = Path(ruta)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     tmp = ruta.with_suffix(".parcial")
-    img.save(tmp, format="JPEG", quality=92, subsampling=0)
+    img.save(tmp, format="JPEG", quality=CALIDAD_JPG, subsampling=0)
     tmp.replace(ruta)
     return ruta
 
 
 def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta=None,
-            escala: int = 2, estilo: Optional[str] = None,
+            escala: int = ESCALA_PUBLICAR, estilo: Optional[str] = None,
             fondo: Optional[str] = None) -> Path:
     """El valor por defecto se resuelve acá y no en la firma: en la firma se
     evalúa al importar y `diseno.FLYERS` dejaría de mandar."""

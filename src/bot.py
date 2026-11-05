@@ -304,7 +304,8 @@ def modelos(pagina: Pagina) -> str:
     tema = frases.tema_de(temas, frase)
     nombres = sorted(diseno.ESTILOS)
     for estilo in nombres:
-        # escala 1 y no 2: es para mirar, y el de publicar pesa cuatro veces más.
+        # escala 1 y no la de publicar: es para mirar, y la de publicar pesa
+        # ESCALA_PUBLICAR al cuadrado veces más (2026-11-05: 16 veces).
         img = diseno.render(frase, tema, pagina, escala=1, estilo=estilo)
         ruta = diseno.guardar(img, Path(diseno.MUESTRAS) / ("%s-%s.jpg" % (estilo, frase.id)))
         telegram.enviar_foto(ruta, estilo)
