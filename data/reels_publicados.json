@@ -146,5 +146,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-04T18:44:25"
+ },
+ "2026-11-05": {
+  "video": "due-02.mp4",
+  "titulo": "No se supera una pérdida. Se aprende a cargarla de una forma que te deje seguir caminando.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2001655114125285",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18575017345073796",
+   "youtube": "https://youtube.com/shorts/8W5_hniFDek",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-05T14:55:52"
  }
 }
