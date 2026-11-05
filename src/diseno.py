@@ -87,6 +87,19 @@ MAN_RAYA_PUNTOS = 9             # en cuántos tramos se quiebra el subrayado
 # de un pixel al siguiente. Es MUY poco a propósito; subirlo ensucia la letra.
 GRANO_FUERZA, GRANO_PANO = 3, 512
 
+# El papel envejecido (2026-11-05, pedido con una foto de referencia): manchas
+# suaves, de un tono más oscuro y otro más claro que el mismo fondo, mezcladas
+# en una grilla chica y agrandadas con interpolación -así salen redondeadas,
+# como una mancha de verdad, y no estática-. Las dos mezclas parten del MISMO
+# color de fondo, así que cada uno de los doce papeles de la rotación
+# conserva el suyo y gana la misma textura.
+MOTEADO_OSCURO, MOTEADO_CLARO = 0.11, 0.16
+MOTEADO_PANO = (24, 30)
+# El leve oscurecido hacia las esquinas, como una foto de papel bajo luz
+# pareja y no de estudio. Alfa sobre un marrón oscuro, no multiplicación: así
+# el centro queda intacto y la esquina no se apaga del todo.
+VINETA_FUERZA = 18
+
 
 def _rgb(color: str):
     return tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
@@ -367,25 +380,59 @@ def _estilo_ficha(draw, frase, tema, pagina, e, c):
 # Los cuatro repartos que quedaron, elegidos por el usuario sobre once. Los
 # otros siete se borraron en vez de dejarlos apagados: un renderer sin camino
 # envejece sin que nadie lo note y despues nadie sabe si se puede tocar.
-def _grano(img: Image.Image, semilla: str) -> Image.Image:
-    """El papel, que no es un color plano.
+def _vineta(size: Tuple[int, int]) -> Image.Image:
+    """Un paño chico con un circulo mas claro al medio y mas oscuro hacia las
+    cuatro esquinas, agrandado despues: calcular la distancia al centro
+    pixel por pixel en un flyer de 2160 tarda demasiado, y en un paño de unos
+    pocos puntos por lado el costo es el mismo de siempre, unos milisegundos.
+    """
+    gw, gh = 18, 22
+    diag = ((gw - 1) ** 2 + (gh - 1) ** 2) ** 0.5
+    centro_x, centro_y = (gw - 1) / 2, (gh - 1) / 2
+    datos = bytearray(gw * gh)
+    for y in range(gh):
+        for x in range(gw):
+            d = ((x - centro_x) ** 2 + (y - centro_y) ** 2) ** 0.5 / (diag / 2)
+            # Al cuadrado: la caida es suave al centro y se nota solo cerca
+            # del borde, no a mitad de camino.
+            datos[y * gw + x] = min(255, round(255 * min(1.0, d) ** 2))
+    return Image.frombytes("L", (gw, gh), bytes(datos)).resize(size, Image.BICUBIC)
 
-    Se arma un paño chico de ruido y se repite, en vez de sortear los seis
-    millones de pixeles de un flyer de 2160: lo segundo tarda segundos y acá
-    se dibujan doce por día. Con esta fuerza el repetido no se ve.
+
+def _papel(fondo: str, size: Tuple[int, int], semilla: str) -> Image.Image:
+    """El fondo, que no es un color plano sino un papel: manchas suaves,
+    grano fino de fibra y una esquina un poco mas oscura que el centro.
+
+    Se dibuja ANTES del texto y no encima -al reves de como era antes-: en
+    un papel de verdad la tinta queda sobre la mancha, no la mancha sobre la
+    tinta, y con manchas que ahora SI se notan, pintarlas encima del texto le
+    bajaria el contraste justo donde cae una.
 
     Va con semilla, como el subrayado y por lo mismo: el flyer que se aprueba
     y el que se publica tienen que ser el mismo archivo.
     """
-    r = random.Random("grano" + semilla)
+    r = random.Random("papel" + semilla)
+    oscuro = _mezclar(fondo, "#3A2E1E", MOTEADO_OSCURO)
+    claro = _mezclar(fondo, "#FFFDF4", MOTEADO_CLARO)
+    gw, gh = MOTEADO_PANO
+    manchas = Image.frombytes("L", (gw, gh),
+                              bytes(r.randint(0, 255) for _ in range(gw * gh)))
+    mascara = manchas.resize(size, Image.BICUBIC)
+    img = Image.composite(Image.new("RGB", size, claro),
+                          Image.new("RGB", size, oscuro), mascara)
+
     n = GRANO_PANO
     pano = Image.frombytes("L", (n, n), bytes(
         128 + r.randint(-GRANO_FUERZA, GRANO_FUERZA) for _ in range(n * n)))
-    ruido = Image.new("L", img.size)
-    for x in range(0, img.size[0], n):
-        for y in range(0, img.size[1], n):
+    ruido = Image.new("L", size)
+    for x in range(0, size[0], n):
+        for y in range(0, size[1], n):
             ruido.paste(pano, (x, y))
-    return ImageChops.add(img, ruido.convert("RGB"), scale=1, offset=-128)
+    img = ImageChops.add(img, ruido.convert("RGB"), scale=1, offset=-128)
+
+    oscurecido = Image.new("RGB", size, _mezclar(fondo, "#2B2013", 0.6))
+    alfa = _vineta(size).point(lambda v: v * VINETA_FUERZA // 255)
+    return Image.composite(oscurecido, img, alfa)
 
 
 def _estilo_manuscrito(draw, frase, tema, pagina, e, c):
@@ -457,9 +504,10 @@ POR_DEFECTO = "regla"
 # acá.
 ROTAN = ("regla", "marco", "ficha", "marcador")
 
-# Los que además del dibujo llevan grano de papel. Va acá y no adentro del
-# estilo porque el estilo recibe el lápiz y no la hoja.
-CON_GRANO = ("manuscrito",)
+# Los que llevan el papel envejecido (manchas, grano y viñeta) en vez del
+# fondo plano. Va acá y no adentro del estilo porque el estilo recibe el
+# lápiz y no la hoja: es la hoja la que cambia, no cómo se escribe sobre ella.
+CON_PAPEL = ("manuscrito",)
 
 
 def _rotar(lista: List, dia, hora: int, horas: Optional[List[int]] = None):
@@ -564,11 +612,13 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = 2,
     c = _colores(pagina, estilo)
     if fondo:
         c = dict(c, fondo=fondo)
-    img = Image.new("RGB", (W * e, H * e), c["fondo"])
+    tamano = (W * e, H * e)
+    if estilo in CON_PAPEL:
+        img = _papel(c["fondo"], tamano, frase.id)
+    else:
+        img = Image.new("RGB", tamano, c["fondo"])
     draw = ImageDraw.Draw(img)
     ESTILOS[estilo](draw, frase, tema, pagina, e, c)
-    if estilo in CON_GRANO:
-        img = _grano(img, frase.id)
     return img
 
 

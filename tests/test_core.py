@@ -619,18 +619,25 @@ class TestLaRotacionDePapeles(unittest.TestCase):
         temas = frases.leer(mayores.carpeta_de_frases)
         f, t = temas[0].frases[0], temas[0]
         img = diseno.render(f, t, mayores, escala=1, estilo="manuscrito", fondo="#EDE0C8")
-        # Una esquina, lejos del texto y del grano, tiene que acercarse al
-        # color pedido.
+        # Una esquina, lejos del texto, tiene que quedar en la FAMILIA del
+        # color pedido. El margen subió de 15 a 60 el 2026-11-05: el papel
+        # envejecido deja manchas y viñeta que SÍ se notan (a propósito, a
+        # pedido del usuario con una foto de referencia), así que la esquina
+        # ya no es un color plano. 60 sigue estando lejos de la diferencia
+        # real entre este color y el de la paleta de siempre (68): si el
+        # `fondo=` se ignorara, la prueba lo sigue agarrando.
         r, g, b = img.getpixel((5, 5))
-        self.assertLess(abs(r - 0xED) + abs(g - 0xE0) + abs(b - 0xC8), 15)
+        self.assertLess(abs(r - 0xED) + abs(g - 0xE0) + abs(b - 0xC8), 60)
 
     def test_sin_fondo_usa_el_de_la_paleta_de_siempre(self):
         mayores = config.cargar(config.archivo_de("mayores"))
         temas = frases.leer(mayores.carpeta_de_frases)
         f, t = temas[0].frases[0], temas[0]
         img = diseno.render(f, t, mayores, escala=1, estilo="manuscrito")
+        # Mismo margen y mismo motivo que la prueba de arriba: el papel
+        # envejecido del 2026-11-05.
         r, g, b = img.getpixel((5, 5))
-        self.assertLess(abs(r - 0xF9) + abs(g - 0xF6) + abs(b - 0xEA), 15)
+        self.assertLess(abs(r - 0xF9) + abs(g - 0xF6) + abs(b - 0xEA), 60)
 
 
 class TestElEstiloManuscrito(unittest.TestCase):
