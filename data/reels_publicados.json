@@ -159,5 +159,14 @@
   },
   "publicado": true,
   "cuando": "2026-11-05T14:55:52"
+ },
+ "2026-11-06": {
+  "video": "fam-02.mp4",
+  "titulo": "Puedes querer mucho a alguien y aun así no poder verlo seguido. No son cosas opuestas.",
+  "salidas": {
+   "aprobacion": "sin respuesta"
+  },
+  "publicado": false,
+  "cuando": "2026-11-06T17:52:46"
  }
 }
