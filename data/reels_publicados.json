@@ -168,5 +168,18 @@
   },
   "publicado": false,
   "cuando": "2026-11-06T17:52:46"
+ },
+ "2026-11-07": {
+  "video": "des-02.mp4",
+  "titulo": "El descanso no es el premio por haber terminado. Es parte del trabajo de poder seguir.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1109239121718279",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18037614683854330",
+   "youtube": "https://youtube.com/shorts/vVJEeGIClUc",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-07T17:16:48"
  }
 }
