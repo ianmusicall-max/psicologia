@@ -181,5 +181,14 @@
   },
   "publicado": true,
   "cuando": "2026-11-07T17:16:48"
+ },
+ "2026-11-08": {
+  "video": "sen-02.mp4",
+  "titulo": "Para qué, no solo por qué",
+  "salidas": {
+   "aprobacion": "sin respuesta"
+  },
+  "publicado": false,
+  "cuando": "2026-11-08T16:07:22"
  }
 }
