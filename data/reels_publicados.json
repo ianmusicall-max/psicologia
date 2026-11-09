@@ -190,5 +190,18 @@
   },
   "publicado": false,
   "cuando": "2026-11-08T16:07:22"
+ },
+ "2026-11-09": {
+  "video": "con-02.mp4",
+  "titulo": "Después de una traición, la transparencia no es castigo. Es la obra.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1167135555995287",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18195225463403473",
+   "youtube": "https://youtube.com/shorts/6cY3JjfiE5A",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-09T15:18:18"
  }
 }
