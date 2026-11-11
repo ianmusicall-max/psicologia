@@ -208,9 +208,13 @@
   "video": "hog-02.mp4",
   "titulo": "Ayudar en casa es la palabra del problema. No se ayuda en lo propio.",
   "salidas": {
-   "aprobacion": "sin respuesta"
+   "facebook": "https://www.facebook.com/reel/29190063620629617",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18080398991740769",
+   "youtube": "https://youtube.com/shorts/IW6KzbHbHaw",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
   },
-  "publicado": false,
-  "cuando": "2026-11-10T20:34:17"
+  "publicado": true,
+  "cuando": "2026-11-10T21:28:53"
  }
 }
