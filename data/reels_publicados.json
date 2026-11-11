@@ -203,5 +203,14 @@
   },
   "publicado": true,
   "cuando": "2026-11-09T15:18:18"
+ },
+ "2026-11-10": {
+  "video": "hog-02.mp4",
+  "titulo": "Ayudar en casa es la palabra del problema. No se ayuda en lo propio.",
+  "salidas": {
+   "aprobacion": "sin respuesta"
+  },
+  "publicado": false,
+  "cuando": "2026-11-10T20:34:17"
  }
 }
