@@ -225,5 +225,18 @@
   },
   "publicado": false,
   "cuando": "2026-11-11T22:38:52"
+ },
+ "2026-11-12": {
+  "video": "emo-03.mp4",
+  "titulo": "Lo que no te permites sentir no desaparece. Cambia de forma y vuelve cuando menos lo esperas.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1167469079045187",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18335589562263436",
+   "youtube": "https://youtube.com/shorts/8kH4mwtFKPM",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-12T18:08:22"
  }
 }
