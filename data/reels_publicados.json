@@ -216,5 +216,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-10T21:28:53"
+ },
+ "2026-11-11": {
+  "video": "aut-03.mp4",
+  "titulo": "Tratarte como a alguien que importa",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2213734409539495",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18114507503231902",
+   "youtube": "https://youtube.com/shorts/EvqsZliaHxk",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-11T20:36:17"
  }
 }
