@@ -221,13 +221,9 @@
   "video": "aut-03.mp4",
   "titulo": "Tratarte como a alguien que importa",
   "salidas": {
-   "facebook": "https://www.facebook.com/reel/2213734409539495",
-   "historia": "1 tarjeta",
-   "instagram": "https://www.instagram.com/reel/18114507503231902",
-   "youtube": "https://youtube.com/shorts/EvqsZliaHxk",
-   "drive": "no: el token no tiene el permiso de Drive todavía"
+   "aprobacion": "sin respuesta"
   },
-  "publicado": true,
-  "cuando": "2026-11-11T20:36:17"
+  "publicado": false,
+  "cuando": "2026-11-11T22:38:52"
  }
 }
