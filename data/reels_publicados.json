@@ -238,5 +238,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-12T18:08:22"
+ },
+ "2026-11-13": {
+  "video": "com-03.mp4",
+  "titulo": "Hablar para que el otro pueda escuchar",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1483256990567756",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18352728766271184",
+   "youtube": "https://youtube.com/shorts/ZRNZ8rCEhdQ",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-13T18:33:23"
  }
 }
