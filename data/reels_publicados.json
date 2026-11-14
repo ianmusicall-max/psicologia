@@ -251,5 +251,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-13T18:33:23"
+ },
+ "2026-11-14": {
+  "video": "rec-03.mp4",
+  "titulo": "La pregunta no es solo si te hace feliz. Es en quién te estás convirtiendo al lado de esa persona.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2105401916763303",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18141749845620977",
+   "youtube": "https://youtube.com/shorts/Dge2eMC1Y6Q",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-14T17:45:45"
  }
 }
