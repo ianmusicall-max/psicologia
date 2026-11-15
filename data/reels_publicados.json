@@ -264,5 +264,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-14T17:45:45"
+ },
+ "2026-11-15": {
+  "video": "ele-03.mp4",
+  "titulo": "Elegir a alguien, y qué predice que funcione",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2683480175450522",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18039260792896373",
+   "youtube": "https://youtube.com/shorts/SmDCuYhJpI8",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-15T16:06:35"
  }
 }
