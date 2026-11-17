@@ -277,5 +277,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-15T16:06:35"
+ },
+ "2026-11-16": {
+  "video": "pen-03.mp4",
+  "titulo": "«Siempre» y «nunca» casi nunca son ciertos. Son palabras que usa el dolor cuando quiere tener razón.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2502167013647316",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18145677790590531",
+   "youtube": "https://youtube.com/shorts/ttL48CjbMPg",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-16T19:17:37"
  }
 }
