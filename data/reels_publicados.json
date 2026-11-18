@@ -290,5 +290,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-16T19:17:37"
+ },
+ "2026-11-17": {
+  "video": "ami-03.mp4",
+  "titulo": "La mitad de las personas que tú considerás amigas no te consideran a ti. Y es mutuo, con otros.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1889950905764253",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18083590607741900",
+   "youtube": "https://youtube.com/shorts/xOk7u3wd8MA",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-17T19:32:13"
  }
 }
