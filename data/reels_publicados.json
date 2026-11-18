@@ -303,5 +303,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-17T19:32:13"
+ },
+ "2026-11-18": {
+  "video": "sen-03.mp4",
+  "titulo": "Para qué, no solo por qué",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1511547801030136",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18081226604736377",
+   "youtube": "https://youtube.com/shorts/Z6kaU3T45vI",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-18T18:17:30"
  }
 }
