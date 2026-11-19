@@ -316,5 +316,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-18T18:17:30"
+ },
+ "2026-11-19": {
+  "video": "sol-03.mp4",
+  "titulo": "Estar solo un rato no es lo mismo que estar aislado mucho tiempo.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/2595043154349654",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18130937191851659",
+   "youtube": "https://youtube.com/shorts/mN5CHBkW6gI",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-19T16:53:52"
  }
 }
