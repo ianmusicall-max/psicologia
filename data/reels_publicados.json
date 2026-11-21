@@ -342,5 +342,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-20T19:28:27"
+ },
+ "2026-11-21": {
+  "video": "hog-03.mp4",
+  "titulo": "Cada uno cree que hace más de la mitad. Los dos tienen razón en parte.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1451641033849200",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18171750901464332",
+   "youtube": "https://youtube.com/shorts/TSzMMCjBi8U",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-21T16:12:48"
  }
 }
