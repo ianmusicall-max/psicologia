@@ -355,5 +355,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-21T16:12:48"
+ },
+ "2026-11-22": {
+  "video": "emo-04.mp4",
+  "titulo": "La tristeza no es debilidad. Es la forma en que la mente procesa una pérdida.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/4594707024074985",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18094898153225488",
+   "youtube": "https://youtube.com/shorts/dOl2nDG6arM",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-22T17:09:34"
  }
 }
