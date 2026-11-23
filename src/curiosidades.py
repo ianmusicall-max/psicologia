@@ -23,10 +23,7 @@ class Curiosidad:
     destacar: list[str] = field(default_factory=list)
 
     def caption(self) -> str:
-        return (f"{self.lugar}\n\n{self.texto}\n\n{self.detalle}\n\n"
-                f"Fuente del dato: {self.fuente}\n"
-                f"Foto (adaptada al formato): {self.credito} · {self.licencia}\n"
-                f"{self.foto_fuente}")
+        return f"{self.lugar}\n\n{self.texto}\n\n{self.detalle}"
 
 
 def leer(ruta: Path) -> list[Curiosidad]:

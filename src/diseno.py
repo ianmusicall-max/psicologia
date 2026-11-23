@@ -88,6 +88,7 @@ MAN_ZONA_Y, MAN_ZONA_ALTO = 300, 760
 MAN_INTERLINEA = 1.30
 MAN_MAXIMO, MAN_MINIMO = 104, 40
 MAN_FIRMA, MAN_FIRMA_Y = 34, H - 120
+FOTO_MARGEN, FOTO_ALTO = 24, 780
 MAN_RAYA_PUNTOS = 9             # en cuántos tramos se quiebra el subrayado
 # El papel envejecido (2026-11-05, pedido con una foto de referencia). Lo
 # que tiene la referencia es GRANO -la fibra del papel, claro y oscuro al
@@ -473,7 +474,11 @@ def _estilo_manuscrito(draw, frase, tema, pagina, e, c, *, foto=False):
         pintar[-1] = pintar[-1] + "\u201d"
 
     margen = MARGEN if foto else MAN_MARGEN
-    zona_y, zona_alto = (710, 470) if foto else (MAN_ZONA_Y, MAN_ZONA_ALTO)
+    if foto:
+        zona_y = FOTO_MARGEN + FOTO_ALTO + 32
+        zona_alto = MAN_FIRMA_Y - 50 - zona_y
+    else:
+        zona_y, zona_alto = MAN_ZONA_Y, MAN_ZONA_ALTO
     maximo = 76 if foto else MAN_MAXIMO
     ancho = (W - 2 * margen) * e
     for tam in range(maximo, MAN_MINIMO - 1, -2):
@@ -642,8 +647,9 @@ def render_curiosidad(dato, pagina: Pagina, escala: int = ESCALA_PUBLICAR,
     _estilo_manuscrito(ImageDraw.Draw(img), dato, None, pagina, escala, colores, foto=True)
     with Image.open(dato.foto) as original:
         foto = ImageOps.fit(ImageOps.exif_transpose(original).convert("RGB"),
-                            ((W - 96) * escala, 630 * escala), Image.Resampling.LANCZOS)
-    img.paste(foto, (48 * escala, 48 * escala))
+                            ((W - 2 * FOTO_MARGEN) * escala, FOTO_ALTO * escala),
+                            Image.Resampling.LANCZOS)
+    img.paste(foto, (FOTO_MARGEN * escala, FOTO_MARGEN * escala))
     return img
 
 CALIDAD_JPG = 85
