@@ -62,8 +62,9 @@ pagina:
   #   salieron, y esa frase no volvería a salir nunca.
   banco: frases_mayores
   publicadas: data/publicadas_mayores.json
+  curiosidades: config/curiosidades_mayores.yaml
 
-  # Nada de Instagram por ahora: lo pidió el usuario, solo frases en Facebook,
+  # Nada de Instagram por ahora: esta página publica en Facebook,
   # que además es la red donde de verdad está esta audiencia.
   instagram: false
   instagram_horas: []

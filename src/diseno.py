@@ -13,7 +13,7 @@ import random
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from PIL import Image, ImageChops, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 
 from .config import Pagina
 from .frases import Frase, Tema, PALABRA, destacadas
@@ -443,7 +443,7 @@ def _papel(fondo: str, size: Tuple[int, int], semilla: str) -> Image.Image:
     return Image.composite(oscurecido, img, alfa)
 
 
-def _estilo_manuscrito(draw, frase, tema, pagina, e, c):
+def _estilo_manuscrito(draw, frase, tema, pagina, e, c, *, foto=False):
     """La hoja escrita a mano con plumón: la frase entre comillas, centrada,
     y la palabra destacada subrayada.
 
@@ -468,27 +468,31 @@ def _estilo_manuscrito(draw, frase, tema, pagina, e, c):
     # las banderas: `_banderas` cuenta palabras, y una comilla no lo es, pero
     # el ancho de cada token sí cambia y hay que medirlo con ellas puestas.
     pintar = list(tokens)
-    pintar[0] = "\u201c" + pintar[0]
-    pintar[-1] = pintar[-1] + "\u201d"
+    if not foto:
+        pintar[0] = "\u201c" + pintar[0]
+        pintar[-1] = pintar[-1] + "\u201d"
 
-    ancho = (W - 2 * MAN_MARGEN) * e
-    for tam in range(MAN_MAXIMO, MAN_MINIMO - 1, -2):
+    margen = MARGEN if foto else MAN_MARGEN
+    zona_y, zona_alto = (710, 470) if foto else (MAN_ZONA_Y, MAN_ZONA_ALTO)
+    maximo = 76 if foto else MAN_MAXIMO
+    ancho = (W - 2 * margen) * e
+    for tam in range(maximo, MAN_MINIMO - 1, -2):
         f = _fuente(MAN_FUENTE, tam * e)
         if any(_ancho(draw, t, f) > ancho for t in pintar):
             continue
         lineas = _partir(draw, pintar, f, ancho)
         paso = int(tam * e * MAN_INTERLINEA)
-        if len(lineas) * paso <= MAN_ZONA_ALTO * e:
+        if len(lineas) * paso <= zona_alto * e:
             break
     else:
         raise ValueError("la frase no entra en el flyer ni con el cuerpo mínimo: %r"
                          % frase.texto)
 
-    y = MAN_ZONA_Y * e + (MAN_ZONA_ALTO * e - len(lineas) * paso) // 2
+    y = zona_y * e + (zona_alto * e - len(lineas) * paso) // 2
     # El acento viaja aunque este estilo no lo use: es `_escribir` el que tiene
     # que saber que con `subrayado` no hay segundo color. Pasándole la tinta en
     # su lugar, el día que alguien borre esa condición no fallaría nada.
-    _escribir(draw, pintar, lineas, flags, f, MAN_MARGEN * e, y, ancho, paso,
+    _escribir(draw, pintar, lineas, flags, f, margen * e, y, ancho, paso,
               tinta, c["acento"], centrado=True, subrayado=tinta, semilla=frase.id,
               trazo=round(tam * e * MAN_TRAZO))
 
@@ -630,6 +634,17 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = ESCALA_PUBLIC
     ESTILOS[estilo](draw, frase, tema, pagina, e, c)
     return img
 
+
+def render_curiosidad(dato, pagina: Pagina, escala: int = ESCALA_PUBLICAR,
+                      fondo: Optional[str] = None) -> Image.Image:
+    colores = _colores(pagina, "manuscrito")
+    img = _papel(fondo or colores["fondo"], (W * escala, H * escala), dato.id)
+    _estilo_manuscrito(ImageDraw.Draw(img), dato, None, pagina, escala, colores, foto=True)
+    with Image.open(dato.foto) as original:
+        foto = ImageOps.fit(ImageOps.exif_transpose(original).convert("RGB"),
+                            ((W - 96) * escala, 630 * escala), Image.Resampling.LANCZOS)
+    img.paste(foto, (48 * escala, 48 * escala))
+    return img
 
 CALIDAD_JPG = 85
 

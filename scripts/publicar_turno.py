@@ -49,7 +49,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, diseno, frases, parrilla  # noqa: E402
+from src import config, curiosidades, diseno, frases, parrilla  # noqa: E402
 
 
 # Cuanto tiene que haber pasado desde el ultimo post para publicar uno
@@ -165,12 +165,6 @@ def main(argv=None) -> int:
         print("Son las %02d y el turno de las %02d no salio. Lo publico ahora."
               % (ahora.hour, hora))
 
-    frase = frases.siguiente(temas, ya)
-    if frase is None:
-        print("Ya salieron las %d frases del banco. Toca escribir mas."
-              % len(frases.todas(temas)))
-        return 1
-    tema = frases.tema_de(temas, frase)
     # Las horas de HOY, no la parrilla entera: es lo que hace que en un dia
     # de cuatro posts salgan cuatro estilos y no dos. La cuenta vive en
     # `diseno.estilo_de`, que es la misma que usa el boton del bot: copiada,
@@ -180,13 +174,38 @@ def main(argv=None) -> int:
     # siempre queda con el único de su paleta, sin que nadie tenga que
     # acordarse de nada.
     fondo = diseno.fondo_de(pagina, ahora.date(), hora, horas_hoy)
-    texto = frases.caption(frase, tema, pagina)
+    dato = None
+    banco_curiosidades = pagina.archivo_de_curiosidades
+    if banco_curiosidades and curiosidades.toca_curiosidad(ya):
+        dato = curiosidades.siguiente(curiosidades.leer(banco_curiosidades), ya)
+        if dato is None:
+            print("Se agotaron las curiosidades. Sale una frase hasta que se amplíe el banco.")
 
-    print("%s · %s · estilo %s · %02d h" % (frase.id, tema.tema, estilo, hora))
+    if dato:
+        contenido_id = dato.id
+        tema_nombre, eje = dato.lugar, ""
+        tipo = curiosidades.TIPO
+        texto = dato.caption()
+    else:
+        frase = frases.siguiente(temas, ya)
+        if frase is None:
+            print("Ya salieron las %d frases del banco. Toca escribir mas."
+                  % len(frases.todas(temas)))
+            return 1
+        tema = frases.tema_de(temas, frase)
+        contenido_id, tema_nombre, eje = frase.id, tema.tema, tema.eje
+        tipo = "frase"
+        texto = frases.caption(frase, tema, pagina)
+
+    print("%s · %s · estilo %s · %02d h" % (contenido_id, tema_nombre, estilo, hora))
     if args.ver:
         return 0
 
-    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, fondo=fondo)
+    if dato:
+        imagen = diseno.render_curiosidad(dato, pagina, fondo=fondo)
+        ruta = diseno.guardar(imagen, diseno.FLYERS / f"{dato.id}.jpg")
+    else:
+        ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, fondo=fondo)
     # Por HORA y no solo por el interruptor: desde el 2026-10-24 a Instagram
     # van dos de los ocho posts del dia.
     if pagina.instagram_en(hora):
@@ -206,9 +225,10 @@ def main(argv=None) -> int:
     from src import historias  # noqa: E402
     historias.del_flyer(pagina, ruta)
 
-    frases.anotar_publicada(frase.id, ahora.date(), salida["post_id"], pagina.nombre,
+    frases.anotar_publicada(contenido_id, ahora.date(), salida["post_id"], pagina.nombre,
                             ruta=pagina.archivo_de_publicadas, extra={
-        "hora": hora, "tema": tema.tema, "eje": tema.eje,
+        "hora": hora, "tema": tema_nombre, "eje": eje,
+        **({"tipo": tipo} if banco_curiosidades else {}),
         "estilo": estilo, "fondo": fondo, "instagram": salida.get("instagram") or "",
         # La hora REAL, que en un turno atrasado no es `hora`. Es lo que lee
         # `hace_muy_poco` para no sacar dos flyers pegados.

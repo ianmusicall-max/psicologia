@@ -56,6 +56,11 @@ class Pagina:
     # lista puesta, `diseno.fondo_de` reparte uno distinto por turno. Son
     # colores de PAPEL y no de tinta: la tinta sigue siendo la de `paleta`.
     fondos: List[str] = field(default_factory=list)
+    curiosidades: str = ""
+
+    @property
+    def archivo_de_curiosidades(self) -> Optional[Path]:
+        return ROOT / self.curiosidades if self.curiosidades else None
 
     @property
     def carpeta_de_frases(self) -> Path:
@@ -109,4 +114,5 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         banco=str(datos.get("banco") or "frases"),
         publicadas=str(datos.get("publicadas") or "data/publicadas.json"),
         fondos=[str(c) for c in (datos.get("fondos") or [])],
+        curiosidades=str(datos.get("curiosidades") or ""),
     )

@@ -1,0 +1,66 @@
+# El turno toma la primera curiosidad que no figure en el registro.
+- id: mundo-01
+  lugar: "Valparaíso, Chile"
+  texto: "En Valparaíso, hay ascensores que suben a los cerros sobre rieles."
+  destacar: [sobre rieles]
+  detalle: "En una ciudad de calles empinadas, estos funiculares conectaron la parte baja con los barrios de los cerros. La foto muestra el ascensor Artillería en 2007."
+  fuente: https://chile.travel/blog/magicos-ascensores-de-valparaiso-tesoros-patrimoniales-2/
+  foto: ../assets/curiosidades/valparaiso.jpg
+  credito: Éric Depagne
+  foto_fuente: https://commons.wikimedia.org/wiki/File:Ascensor_Artilleria_in_Valpara%C3%ADso.jpg
+  licencia: "CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0/"
+
+- id: mundo-02
+  lugar: "Noruega"
+  texto: "En Noruega, el derecho a recorrer la naturaleza está protegido por ley."
+  destacar: [protegido por ley]
+  detalle: "El allemannsretten permite caminar por terrenos abiertos, aunque tengan dueño. También permite acampar bajo ciertas condiciones. Por regla general, la carpa debe quedar al menos a 150 metros de una casa o cabaña habitada. La foto muestra Reine, en las islas Lofoten."
+  fuente: https://www.environmentagency.no/areas-of-activity/right-to-roam/camping/
+  foto: ../assets/curiosidades/noruega.jpg
+  credito: Petr Kraumann
+  foto_fuente: https://commons.wikimedia.org/wiki/File:Reine,_Lofoten_-_panoramio.jpg
+  licencia: "CC BY 3.0 · https://creativecommons.org/licenses/by/3.0/"
+
+- id: mundo-03
+  lugar: "Lago Titicaca, Perú"
+  texto: "En el Titicaca hay familias que viven en islas flotantes hechas de totora."
+  destacar: [islas flotantes]
+  detalle: "Las familias uro-aimaras usan esta planta acuática para construir las islas y también para hacer viviendas y embarcaciones."
+  fuente: https://www.peru.travel/attractions/uros-islands
+  foto: ../assets/curiosidades/uros.jpg
+  credito: Didier Moïse
+  foto_fuente: https://commons.wikimedia.org/wiki/File:Uros_Floating_Islands,_Lake_Titicaca,_Peru.jpg
+  licencia: "CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0/"
+
+- id: mundo-04
+  lugar: "Djenné, Malí"
+  texto: "En Djenné, renovar el barro de la Gran Mezquita es una tradición anual."
+  destacar: [tradición anual]
+  detalle: "La comunidad se reúne para renovar la capa de barro que protege los muros de esta mezquita de tierra. El trabajo forma parte del calendario de celebraciones de la ciudad."
+  fuente: https://whc.unesco.org/en/urban-heritage-atlas/djenne/
+  foto: ../assets/curiosidades/djenne.jpg
+  credito: Jurgen
+  foto_fuente: https://commons.wikimedia.org/wiki/File:The_Great_Mosque,_Djenne.jpg
+  licencia: "CC BY 2.0 · https://creativecommons.org/licenses/by/2.0/"
+
+- id: mundo-05
+  lugar: "Shirakawa-gō, Japón"
+  texto: "Bajo los techos de paja de Shirakawa-gō se criaban gusanos de seda."
+  destacar: [gusanos de seda]
+  detalle: "Las casas tradicionales de estilo gasshō tienen techos muy inclinados. En aldeas como Ōgimachi, la cría de gusanos de seda y el cultivo de moreras formaron parte de la economía local."
+  fuente: https://whc.unesco.org/en/list/734/
+  foto: ../assets/curiosidades/shirakawa.jpg
+  credito: Raita Futo
+  foto_fuente: https://commons.wikimedia.org/wiki/File:Winter_in_Shirakawa-go_(51815451686).jpg
+  licencia: "CC BY 2.0 · https://creativecommons.org/licenses/by/2.0/"
+
+- id: mundo-06
+  lugar: "Venecia, Italia"
+  texto: "Venecia tiene una calle de agua por la que van barcos de pasajeros y hasta taxis."
+  destacar: [calle de agua]
+  detalle: "Por el Gran Canal pasan barcos del transporte público, taxis acuáticos, góndolas y embarcaciones de carga. La foto de archivo muestra el puente de Rialto y las góndolas hacia 1890."
+  fuente: https://www.veneziaunica.it/sites/default/files/redazione-turismo/itinerari/documenti/Giardini%20sul%20Canal%20Grande.pdf
+  foto: ../assets/curiosidades/venecia.jpg
+  credito: Biblioteca del Congreso de Estados Unidos
+  foto_fuente: https://www.loc.gov/pictures/item/2013650407/
+  licencia: Dominio público
