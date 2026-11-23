@@ -368,5 +368,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-22T17:09:34"
+ },
+ "2026-11-23": {
+  "video": "mie-03.mp4",
+  "titulo": "Decir tengo miedo cambia la conversación entera.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/1896252561391724",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18655276921010045",
+   "youtube": "https://youtube.com/shorts/leilb9yrFeE",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-23T17:57:51"
  }
 }
