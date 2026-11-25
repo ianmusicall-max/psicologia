@@ -381,5 +381,14 @@
   },
   "publicado": true,
   "cuando": "2026-11-23T17:57:51"
+ },
+ "2026-11-24": {
+  "video": "ape-04.mp4",
+  "titulo": "Tu forma de amar no es una sentencia. Se aprendió, y con alguien seguro se vuelve a aprender.",
+  "salidas": {
+   "aprobacion": "sin respuesta"
+  },
+  "publicado": false,
+  "cuando": "2026-11-24T23:38:54"
  }
 }
