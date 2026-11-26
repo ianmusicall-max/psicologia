@@ -403,5 +403,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-25T15:57:02"
+ },
+ "2026-11-26": {
+  "video": "hab-04.mp4",
+  "titulo": "Fallar un día no borra el hábito. Lo que lo borra es decidir que ya no vale la pena seguir.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/4597060087107432",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18021878774955565",
+   "youtube": "https://youtube.com/shorts/EQg-LwP5CHk",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-26T17:19:25"
  }
 }
