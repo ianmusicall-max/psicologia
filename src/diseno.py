@@ -47,6 +47,30 @@ ENCABEZADO = 24
 PIE = 24
 ESPACIADO = 3          # entre letras del encabezado
 
+# El dibujo chico debajo de la frase (pedido el 2026-11-27, con una foto de
+# referencia: una ilustración minimalista). Solo en los CUATRO estilos que
+# rotan -no en `manuscrito`, que es de la otra página, la que no lo pidió-.
+#
+# Va en el hueco que YA quedaba entre el texto y el pie, y no en un lugar
+# nuevo: `regla`, `marcador` y `ficha` comparten `PIE_Y`, así que el centro
+# del dibujo es el mismo para los tres. `RECORTE_ILUS` es lo que falta
+# restarle a la zona del texto para que ese hueco alcance para el dibujo más
+# su aire -se calcula del hueco que ya había y no se escribe a mano, para que
+# el día que `ILUS_LADO` cambie no haya que ir a buscar este número también.
+ILUS_LADO = 150
+ILUS_AIRE = 20
+RECORTE_ILUS = (ILUS_LADO + 2 * ILUS_AIRE) - (PIE_Y - (ZONA_Y + ZONA_ALTO))
+ILUS_Y = PIE_Y - ILUS_AIRE - ILUS_LADO // 2
+
+# `marco` no usa `PIE_Y`: tiene su propio pie, más arriba, dentro del filete.
+# Su centro se calcula igual -a mitad de camino entre donde termina la zona
+# del texto (con el recorte) y el título que va debajo-, y no con un número
+# suelto, por la misma razón que `ILUS_Y` de arriba.
+MARCO_BORDE = 56
+_MARCO_ZONA_FIN = (ZONA_Y + 10) + (ZONA_ALTO - 60 - RECORTE_ILUS)
+_MARCO_TITULO_Y = H - MARCO_BORDE - 96
+ILUS_Y_MARCO = (_MARCO_ZONA_FIN + _MARCO_TITULO_Y) // 2
+
 # Frase corta, letra grande; frase larga, un poco más chica. Es lo mismo que
 # la caja de cierre de los flyers de salud: el tamaño se administra solo.
 def cuerpo_maximo(texto: str) -> int:
@@ -292,25 +316,26 @@ def _texto_medido(draw, frase, ancho, alto, e):
 # vive arriba, para que agregar un estilo no sea copiar un renderer entero.
 # ---------------------------------------------------------------------------
 
-def _estilo_regla(draw, frase, tema, pagina, e, c):
+def _estilo_regla(draw, frase, tema, pagina, e, c, ilustracion=None):
     """El de siempre: una regla de acento y el texto alineado a la izquierda."""
     _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
     ancho = (W - 2 * MARGEN) * e
-    alto = ZONA_ALTO * e - (RAYA[1] + RAYA_AIRE) * e
+    zona_alto = ZONA_ALTO - (RECORTE_ILUS if ilustracion else 0)
+    alto = zona_alto * e - (RAYA[1] + RAYA_AIRE) * e
     tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, alto, e)
     f = _fuente("Lora-SemiBold.ttf", tam * e)
     paso = int(tam * e * INTERLINEA)
     bloque = (RAYA[1] + RAYA_AIRE) * e + paso * len(lineas)
-    y = ZONA_Y * e + (ZONA_ALTO * e - bloque) // 2
+    y = ZONA_Y * e + (zona_alto * e - bloque) // 2
     draw.rectangle([MARGEN * e, y, MARGEN * e + RAYA[0] * e, y + RAYA[1] * e], fill=c["acento"])
     _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y + (RAYA[1] + RAYA_AIRE) * e,
               ancho, paso, c["tinta"], c["acento"])
     _pie(draw, pagina, tema, e, c["suave"])
 
 
-def _estilo_marco(draw, frase, tema, pagina, e, c):
+def _estilo_marco(draw, frase, tema, pagina, e, c, ilustracion=None):
     """Como la página de un libro: un filete alrededor y el texto centrado."""
-    borde, grueso = 56, 2
+    borde, grueso = MARCO_BORDE, 2
     draw.rectangle([borde * e, borde * e, (W - borde) * e, (H - borde) * e],
                    outline=c["suave"], width=grueso * e)
     draw.rectangle([(borde + 10) * e, (borde + 10) * e, (W - borde - 10) * e, (H - borde - 10) * e],
@@ -321,10 +346,11 @@ def _estilo_marco(draw, frase, tema, pagina, e, c):
     total = sum(_ancho(draw, x, f_enc) for x in rotulo) + sep * (len(rotulo) - 1)
     _espaciado(draw, ((W - total) // 2 * e, (borde + 54) * e), rotulo, f_enc, c["acento"], e)
     ancho = (W - 2 * (borde + 64)) * e
-    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (ZONA_ALTO - 60) * e, e)
+    zona_alto = ZONA_ALTO - 60 - (RECORTE_ILUS if ilustracion else 0)
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, zona_alto * e, e)
     f = _fuente("Lora-SemiBold.ttf", tam * e)
     paso = int(tam * e * INTERLINEA)
-    y = (ZONA_Y + 10) * e + ((ZONA_ALTO - 60) * e - paso * len(lineas)) // 2
+    y = (ZONA_Y + 10) * e + (zona_alto * e - paso * len(lineas)) // 2
     _escribir(draw, tokens, lineas, flags, f, (borde + 64) * e, y, ancho, paso,
               c["tinta"], c["acento"], centrado=True)
     f_tit = _fuente("Lora-Italic.ttf", (PIE + 4) * e)
@@ -335,21 +361,22 @@ def _estilo_marco(draw, frase, tema, pagina, e, c):
     _espaciado(draw, ((W - total) // 2 * e, (H - borde - 54) * e), firma, f_pie, c["suave"], e)
 
 
-def _estilo_marcador(draw, frase, tema, pagina, e, c):
+def _estilo_marcador(draw, frase, tema, pagina, e, c, ilustracion=None):
     """La palabra marcada con resaltador en vez de en color. Es el gesto de
     alguien subrayando un libro, que es lo que la pagina quiere provocar."""
     _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
     ancho = (W - 2 * MARGEN) * e
-    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, ZONA_ALTO * e, e)
+    zona_alto = ZONA_ALTO - (RECORTE_ILUS if ilustracion else 0)
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, zona_alto * e, e)
     f = _fuente("Lora-SemiBold.ttf", tam * e)
     paso = int(tam * e * INTERLINEA)
-    y = ZONA_Y * e + (ZONA_ALTO * e - paso * len(lineas)) // 2
+    y = ZONA_Y * e + (zona_alto * e - paso * len(lineas)) // 2
     _escribir(draw, tokens, lineas, flags, f, MARGEN * e, y, ancho, paso,
               c["tinta"], c["acento"], resaltado=_mezclar(c["fondo"], c["acento"], 0.34))
     _pie(draw, pagina, tema, e, c["suave"])
 
 
-def _estilo_ficha(draw, frase, tema, pagina, e, c):
+def _estilo_ficha(draw, frase, tema, pagina, e, c, ilustracion=None):
     """Papel rayado limpio: el cuaderno sin fingir letra manuscrita.
 
     Las rayas se dibujan DESPUES de medir el texto, a su mismo paso, para que
@@ -358,10 +385,11 @@ def _estilo_ficha(draw, frase, tema, pagina, e, c):
     """
     margen_izq = 150
     ancho = (W - margen_izq - MARGEN) * e
-    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, (ZONA_ALTO - 40) * e, e)
+    zona_alto = ZONA_ALTO - 40 - (RECORTE_ILUS if ilustracion else 0)
+    tokens, tam, lineas, flags = _texto_medido(draw, frase, ancho, zona_alto * e, e)
     f = _fuente("Lora-SemiBold.ttf", tam * e)
     paso = int(tam * e * INTERLINEA)
-    y0 = ZONA_Y * e + ((ZONA_ALTO - 40) * e - paso * len(lineas)) // 2
+    y0 = ZONA_Y * e + (zona_alto * e - paso * len(lineas)) // 2
     raya = _mezclar(c["fondo"], c["suave"], 0.38)
     primera, ultima = y0 - 3 * paso, y0 + paso * (len(lineas) + 3)
     y = y0 + int(tam * e * 1.06)
@@ -372,11 +400,15 @@ def _estilo_ficha(draw, frase, tema, pagina, e, c):
     # primera raya cae sobre el encabezado y lo tacha.
     if y < tope:
         y += paso
-    while y < min(ultima, (PIE_Y - 40) * e):
+    # Con ilustracion, las rayas del cuaderno no pueden cruzar el dibujo: paran
+    # en su borde de arriba, con el mismo aire que lo separa del texto.
+    fin = (ILUS_Y - ILUS_LADO // 2 - ILUS_AIRE) * e if ilustracion else (PIE_Y - 40) * e
+    while y < min(ultima, fin):
         draw.rectangle([MARGEN * e, y, (W - MARGEN) * e, y + 1 * e], fill=raya)
         y += paso
+    fin_barra = (ILUS_Y - ILUS_LADO // 2 - ILUS_AIRE) * e if ilustracion else (PIE_Y - 30) * e
     draw.rectangle([(margen_izq - 34) * e, 150 * e, (margen_izq - 34) * e + 2 * e,
-                    (PIE_Y - 30) * e], fill=_mezclar(c["fondo"], c["acento"], 0.55))
+                    fin_barra], fill=_mezclar(c["fondo"], c["acento"], 0.55))
     _cabecera(draw, pagina, tema, e, c["tinta"], c["acento"])
     _escribir(draw, tokens, lineas, flags, f, margen_izq * e, y0, ancho, paso,
               c["tinta"], c["acento"])
@@ -444,7 +476,7 @@ def _papel(fondo: str, size: Tuple[int, int], semilla: str) -> Image.Image:
     return Image.composite(oscurecido, img, alfa)
 
 
-def _estilo_manuscrito(draw, frase, tema, pagina, e, c, *, foto=False):
+def _estilo_manuscrito(draw, frase, tema, pagina, e, c, *, foto=False, ilustracion=None):
     """La hoja escrita a mano con plumón: la frase entre comillas, centrada,
     y la palabra destacada subrayada.
 
@@ -525,6 +557,24 @@ ROTAN = ("regla", "marco", "ficha", "marcador")
 # fondo plano. Va acá y no adentro del estilo porque el estilo recibe el
 # lápiz y no la hoja: es la hoja la que cambia, no cómo se escribe sobre ella.
 CON_PAPEL = ("manuscrito",)
+
+# Dónde cae el centro del dibujo chico en cada estilo. Los tres que comparten
+# `PIE_Y` (`regla`, `marcador`, `ficha`) comparten también el centro; `marco`
+# tiene su propio pie, más arriba del lienzo, y el suyo es distinto.
+_ILUS_POS = {"regla": (W // 2, ILUS_Y), "marcador": (W // 2, ILUS_Y),
+            "ficha": (W // 2, ILUS_Y), "marco": (W // 2, ILUS_Y_MARCO)}
+
+
+def _pegar_ilustracion(img: Image.Image, ruta: Path, e: int, cx: int, cy: int) -> None:
+    """Pega el dibujo chico centrado en (cx, cy), lógicos, escalados por `e`.
+
+    Con transparencia (`ilus` como máscara de sí misma): lo que el modelo dejó
+    fuera de la escena no tapa el papel ni el texto de abajo.
+    """
+    lado = ILUS_LADO * e
+    with Image.open(ruta) as original:
+        ilus = original.convert("RGBA").resize((lado, lado), Image.Resampling.LANCZOS)
+    img.paste(ilus, (cx * e - lado // 2, cy * e - lado // 2), ilus)
 
 
 def _rotar(lista: List, dia, hora: int, horas: Optional[List[int]] = None):
@@ -615,13 +665,20 @@ def fondo_de(pagina: Pagina, dia, hora: int,
 
 
 def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = ESCALA_PUBLICAR,
-           estilo: Optional[str] = None, fondo: Optional[str] = None) -> Image.Image:
+           estilo: Optional[str] = None, fondo: Optional[str] = None,
+           ilustracion: Optional[Path] = None) -> Image.Image:
     """El flyer. `escala` ESCALA_PUBLICAR (4) es el que se publica (4320x5400);
     1 sirve para mirar.
 
     `estilo` elige el reparto: lo que cambia es la forma, nunca lo que dice.
     `fondo`, si se pasa, reemplaza el de la paleta -es lo que usa la rotación
     de papeles de `fondo_de`-. Sin él, se dibuja con el de siempre.
+
+    `ilustracion`, si se pasa, es la ruta de un PNG (de `src/ilustraciones.py`)
+    que se pega chico debajo del texto. Solo tiene efecto en los estilos que
+    `ROTAN`: `manuscrito` es de la otra página y no la pidió. Pasarla en ese
+    caso no rompe nada -simplemente no se dibuja-, porque es quien llama
+    (`pagina.ilustraciones`) el que decide si hay algo que pasar.
     """
     e = escala
     estilo = estilo or getattr(pagina, "estilo", None) or POR_DEFECTO
@@ -636,7 +693,9 @@ def render(frase: Frase, tema: Tema, pagina: Pagina, escala: int = ESCALA_PUBLIC
     else:
         img = Image.new("RGB", tamano, c["fondo"])
     draw = ImageDraw.Draw(img)
-    ESTILOS[estilo](draw, frase, tema, pagina, e, c)
+    ESTILOS[estilo](draw, frase, tema, pagina, e, c, ilustracion=ilustracion)
+    if ilustracion and estilo in ROTAN:
+        _pegar_ilustracion(img, ilustracion, e, *_ILUS_POS[estilo])
     return img
 
 
@@ -678,8 +737,8 @@ def guardar(img: Image.Image, ruta: Path) -> Path:
 
 def dibujar(frase: Frase, tema: Tema, pagina: Pagina, carpeta=None,
             escala: int = ESCALA_PUBLICAR, estilo: Optional[str] = None,
-            fondo: Optional[str] = None) -> Path:
+            fondo: Optional[str] = None, ilustracion: Optional[Path] = None) -> Path:
     """El valor por defecto se resuelve acá y no en la firma: en la firma se
     evalúa al importar y `diseno.FLYERS` dejaría de mandar."""
-    return guardar(render(frase, tema, pagina, escala, estilo, fondo),
+    return guardar(render(frase, tema, pagina, escala, estilo, fondo, ilustracion),
                    Path(carpeta or FLYERS) / ("%s.jpg" % frase.id))

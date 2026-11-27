@@ -93,6 +93,13 @@ pagina:
   # rojo si el texto vuelve a aparecer en cualquier lado.
   pie_sensible: ""
 
+  # Un dibujo chico y minimalista debajo de la frase, generado con IA
+  # (gpt-image-2) y guardado en `data/ilustraciones/<id>.png`: una ilustración
+  # por frase, pagada una sola vez. Pedido por el usuario el 2026-11-27 con
+  # una referencia (una pareja sentada, estilo flat). Solo esta página: la de
+  # Luis Del Carpio queda igual.
+  ilustraciones: true
+
   facebook:
     page_id_env: PSI_FB_PAGE_ID
     token_env: PSI_FB_PAGE_TOKEN

@@ -49,7 +49,7 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from src import config, curiosidades, diseno, frases, parrilla  # noqa: E402
+from src import config, curiosidades, diseno, frases, ilustraciones, parrilla  # noqa: E402
 
 
 # Cuanto tiene que haber pasado desde el ultimo post para publicar uno
@@ -205,7 +205,11 @@ def main(argv=None) -> int:
         imagen = diseno.render_curiosidad(dato, pagina, fondo=fondo)
         ruta = diseno.guardar(imagen, diseno.FLYERS / f"{dato.id}.jpg")
     else:
-        ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, fondo=fondo)
+        # Antes de dibujar y no adentro de `diseno.dibujar`: conseguirla puede
+        # pegarle a OpenAI, y `diseno` dibuja siempre determinista y sin red.
+        ilustracion = ilustraciones.para(pagina, frase, tema)
+        ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, fondo=fondo,
+                              ilustracion=ilustracion)
     # Por HORA y no solo por el interruptor: desde el 2026-10-24 a Instagram
     # van dos de los ocho posts del dia.
     if pagina.instagram_en(hora):

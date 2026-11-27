@@ -7,6 +7,10 @@
 # (Settings -> Secrets and variables -> Actions):
 #   PSI_FB_PAGE_ID     el id de la pagina
 #   PSI_FB_PAGE_TOKEN  el token permanente de pagina
+#
+# OPENAI_API_KEY (ya existe, la usan reel.yml y reel-diario.yml) es para el
+# dibujo chico debajo de la frase (`src/ilustraciones.py`). Sin ella el turno
+# publica igual, nomas sin el dibujo: ver `ilustraciones.para`.
 name: Publicar
 
 on:
@@ -55,6 +59,7 @@ jobs:
       TZ: America/Lima
       PSI_FB_PAGE_ID: ${{ secrets.PSI_FB_PAGE_ID }}
       PSI_FB_PAGE_TOKEN: ${{ secrets.PSI_FB_PAGE_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       # SIN los clips de fondo. Pesan cientos de megas, este turno no los usa
       # -el que arma videos es otro flujo- y corre 96 veces por dia: bajarlos
@@ -95,6 +100,11 @@ jobs:
           # Como salio la historia del flyer. Puede no existir -el primer
           # turno antes de que esto se desplegara- asi que no corta el paso.
           git add -f data/historias_estado.json 2>/dev/null || true
+          # Las ilustraciones nuevas de este turno (o ninguna, si no hizo
+          # falta pedir una: `ilustraciones.para` mira la cache primero). Sin
+          # subirlas, el proximo checkout -que arranca de cero- las pediria
+          # de nuevo y las pagaria dos veces.
+          git add -f data/ilustraciones 2>/dev/null || true
           # Si no salio nada -fuera de hora, o ya habia salido- no hay que
           # commitear: un commit vacio por hora ensuciaria la historia.
           if git diff --staged --quiet; then

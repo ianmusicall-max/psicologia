@@ -57,6 +57,10 @@ class Pagina:
     # colores de PAPEL y no de tinta: la tinta sigue siendo la de `paleta`.
     fondos: List[str] = field(default_factory=list)
     curiosidades: str = ""
+    # El dibujo chico debajo de la frase, generado con IA (`src/ilustraciones.py`).
+    # APAGADO por defecto -como `instagram`- así una página nueva no empieza a
+    # gastar en OpenAI sin que nadie lo haya pedido para ella.
+    ilustraciones: bool = False
 
     @property
     def archivo_de_curiosidades(self) -> Optional[Path]:
@@ -115,4 +119,5 @@ def cargar(ruta: Path = CONFIG) -> Pagina:
         publicadas=str(datos.get("publicadas") or "data/publicadas.json"),
         fondos=[str(c) for c in (datos.get("fondos") or [])],
         curiosidades=str(datos.get("curiosidades") or ""),
+        ilustraciones=bool(datos.get("ilustraciones", False)),
     )

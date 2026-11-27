@@ -30,7 +30,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Callable, Optional
 
-from . import diario, diseno, facebook, frases, libro, medir, parrilla, telegram
+from . import diario, diseno, facebook, frases, ilustraciones, libro, medir, parrilla, telegram
 from .config import Pagina
 
 # Con menos de esto se avisa: escribir un capítulo nuevo lleva su tiempo y
@@ -99,7 +99,8 @@ def mostrar_siguiente(pagina: Pagina, ahora: Optional[datetime] = None) -> Optio
         return None
     tema = frases.tema_de(temas, frase)
     estilo = _estilo_de_ahora(pagina, ya, ahora)
-    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo)
+    ilustracion = ilustraciones.para(pagina, frase, tema)
+    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, ilustracion=ilustracion)
     quedan = len(frases.todas(temas)) - len(ya)
     telegram.enviar_foto(ruta, "%s · capítulo %d, %s · modelo %s · quedan %d"
                          % (frase.id, tema.capitulo, tema.titulo, estilo, quedan))
@@ -460,7 +461,12 @@ def publicar(pagina: Pagina, frase_id: str, publicar_fn: Optional[Callable] = No
     # archivo, dos pulsaciones de «Ver la que toca» en horas distintas dejan en
     # disco el flyer de la segunda, y apretar el Publicar de la primera subiría
     # un modelo y anotaría otro.
-    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo)
+    #
+    # La ilustración sigue siendo la misma que vio en el preview -no es azar
+    # con semilla, es un archivo en disco (`ilustraciones.guardada`), así que
+    # redibujar no le cambia el dibujo chico-.
+    ilustracion = ilustraciones.para(pagina, frase, tema)
+    ruta = diseno.dibujar(frase, tema, pagina, estilo=estilo, ilustracion=ilustracion)
     try:
         salida = publicar_fn(pagina, frases.caption(frase, tema, pagina), ruta)
     except Exception as e:                       # noqa: BLE001

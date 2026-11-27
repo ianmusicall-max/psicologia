@@ -322,6 +322,21 @@ nadie lo note y después nadie sabe si se puede tocar.
 Ninguno lleva fondo oscuro, y eso es una prueba y no una intención: dibuja
 cada estilo y mira el fondo de verdad.
 
+### El dibujo chico debajo de la frase
+
+Con `ilustraciones: true` en `config/pagina.yaml` (solo la página principal,
+pedido el 2026-11-27 con una foto de referencia), cada flyer de los cuatro
+estilos de arriba lleva un dibujo minimalista chico, en el hueco que ya
+quedaba entre el texto y el pie. `manuscrito` -la página de Luis Del Carpio-
+no lo lleva.
+
+Lo genera `src/ilustraciones.py` con `gpt-image-2` y lo guarda en
+`data/ilustraciones/<id>.png`: una ilustración por frase, pagada una sola vez
+y reusada siempre que esa frase se vuelve a dibujar -es la misma razón que el
+papel con semilla o el subrayado a mano del estilo manuscrito: el flyer que se
+aprueba y el que se publica tienen que ser el mismo archivo-. Un problema con
+OpenAI nunca cuesta un turno: el post sale igual, sin el dibujo.
+
 ## La prueba: una rampa hasta ocho por día
 
 El ritmo sube por etapas: **4 posts los primeros 3 días, 5 los 4 siguientes, 6

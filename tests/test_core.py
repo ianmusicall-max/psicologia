@@ -27,8 +27,8 @@ from unittest import mock
 from PIL import Image, ImageDraw
 
 from src import (bot, config, diseno, entorno, facebook, frases, historias,
-                 instagram, libro, fondos, medir, parrilla, semana, telegram,
-                 traducir, video)
+                 ilustraciones, instagram, libro, fondos, medir, parrilla, semana,
+                 telegram, traducir, video)
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMAS = frases.leer()
@@ -720,6 +720,185 @@ class TestElEstiloManuscrito(unittest.TestCase):
             fila = [img.getpixel((x, y)) for x in range(diseno.W - 200, diseno.W - 120)]
             self.assertFalse(all(abs(p[0] - raya[0]) < 6 and abs(p[1] - raya[1]) < 6
                                  for p in fila), y)
+
+
+def _ilustracion_solida(ruta: Path, color=(255, 0, 0, 255)) -> Path:
+    """Un PNG opaco de un solo color, chico. Sirve para encontrarlo en el
+    flyer sin ambigüedad: ese rojo puro no existe en ninguna paleta de la
+    página, así que un pixel así solo puede venir de haberlo pegado."""
+    Image.new("RGBA", (64, 64), color).save(ruta)
+    return ruta
+
+
+class TestElDibujoChicoEnElFlyer(unittest.TestCase):
+    """El dibujo chico y minimalista debajo de la frase, pedido el 2026-11-27
+    con una foto de referencia. Solo en los cuatro estilos de `ROTAN` -la
+    página de Luis Del Carpio no lo pidió- y en el hueco que ya quedaba entre
+    el texto y el pie, nunca encima de ninguno de los dos."""
+
+    def setUp(self):
+        self.d = tempfile.TemporaryDirectory()
+        self.addCleanup(self.d.cleanup)
+        self.ilus = _ilustracion_solida(Path(self.d.name) / "prueba.png")
+
+    def _tiene_el_color(self, img) -> bool:
+        return any(p[:3] == (255, 0, 0) for p in img.getdata())
+
+    def test_sin_ilustracion_no_se_pega_nada(self):
+        for estilo in diseno.ESTILOS:
+            img = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo=estilo)
+            self.assertFalse(self._tiene_el_color(img), estilo)
+
+    def test_se_pega_en_los_cuatro_que_rotan(self):
+        for estilo in diseno.ROTAN:
+            img = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1,
+                                estilo=estilo, ilustracion=self.ilus)
+            cx, cy = diseno._ILUS_POS[estilo]
+            self.assertEqual(img.getpixel((cx, cy))[:3], (255, 0, 0), estilo)
+
+    def test_no_se_pega_en_manuscrito_aunque_se_la_pasen(self):
+        """`manuscrito` es de la otra página. Si algún día alguien la prendiera
+        ahí por error -o la pasara a mano, como acá-, el dibujo no tiene que
+        aparecer: `render` solo pega en los estilos de `ROTAN`."""
+        mayores = config.cargar(config.archivo_de("mayores"))
+        temas = frases.leer(mayores.carpeta_de_frases)
+        f, t = temas[0].frases[0], temas[0]
+        img = diseno.render(f, t, mayores, escala=1, estilo="manuscrito", ilustracion=self.ilus)
+        self.assertFalse(self._tiene_el_color(img))
+
+    def test_el_mismo_flyer_redibujado_pega_los_mismos_pixeles(self):
+        """Mismo motivo que el subrayado a mano: el flyer que se aprueba y el
+        que se publica tienen que ser el mismo archivo. Acá no hay azar -el
+        archivo ya está en disco- pero vale la pena dejarlo fijado."""
+        img1 = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1,
+                             estilo="regla", ilustracion=self.ilus)
+        img2 = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1,
+                             estilo="regla", ilustracion=self.ilus)
+        self.assertEqual(img1.tobytes(), img2.tobytes())
+
+    def test_la_zona_del_texto_se_achica_lo_mismo_en_los_cuatro_estilos(self):
+        """No alcanza con que el dibujo se pea bien hoy: si la zona del texto
+        no se achicara, una frase larga lo taparía. Se espía `reparto` -por
+        donde pasan los cuatro estilos- y se compara el alto que recibe con y
+        sin ilustración: la diferencia tiene que ser EXACTAMENTE `RECORTE_ILUS`,
+        no una aproximación."""
+        original = diseno.reparto
+        altos = {}
+
+        def espia(draw, tokens, ancho, alto, tam_max, escala=1):
+            altos.setdefault(self._estilo, []).append(alto)
+            return original(draw, tokens, ancho, alto, tam_max, escala)
+
+        with mock.patch.object(diseno, "reparto", espia):
+            for estilo in diseno.ROTAN:
+                self._estilo = estilo
+                diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1, estilo=estilo)
+                diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1,
+                              estilo=estilo, ilustracion=self.ilus)
+        for estilo in diseno.ROTAN:
+            sin, con = altos[estilo]
+            self.assertEqual(sin - con, diseno.RECORTE_ILUS, estilo)
+
+    def test_las_rayas_de_la_ficha_no_cruzan_el_dibujo(self):
+        # A la derecha del dibujo -que queda centrado y angosto- pero dentro
+        # del ancho completo en que las rayas del cuaderno se dibujan siempre.
+        img = diseno.render(TEMAS[0].frases[0], TEMAS[0], PAGINA, escala=1,
+                            estilo="ficha", ilustracion=self.ilus)
+        raya = diseno._rgb(diseno._mezclar(PAGINA.color("fondo", "#F3EFE6"),
+                                           PAGINA.color("suave", "#8C8F93"), 0.38))
+        arriba = diseno.ILUS_Y - diseno.ILUS_LADO // 2
+        abajo = diseno.ILUS_Y + diseno.ILUS_LADO // 2
+        x = diseno.W - 110
+        for y in range(arriba, abajo):
+            p = img.getpixel((x, y))
+            self.assertFalse(abs(p[0] - raya[0]) < 6 and abs(p[1] - raya[1]) < 6
+                             and abs(p[2] - raya[2]) < 6, (x, y, p))
+
+
+class TestLasIlustracionesDeIA(unittest.TestCase):
+    """`src/ilustraciones.py`: el dibujo chico se genera con IA y se guarda en
+    disco, porque -al contrario que el papel o el subrayado a mano- no hay
+    semilla que lo haga reproducible. La única forma de que el flyer que se
+    aprueba y el que se publica sean el mismo archivo es generarlo UNA vez."""
+
+    def setUp(self):
+        self.d = tempfile.TemporaryDirectory()
+        self.addCleanup(self.d.cleanup)
+        self.cache = Path(self.d.name)
+        self.frase = una(destacar=["aviso"])
+        self.tema = tema()
+        self.pedidas = []
+
+    def _pedir(self, clave, cuerpo):
+        self.pedidas.append((clave, cuerpo))
+        buf = io.BytesIO()
+        Image.new("RGBA", (8, 8), (10, 20, 30, 255)).save(buf, format="PNG")
+        return buf.getvalue()
+
+    def test_guardada_devuelve_none_sin_nada_en_disco(self):
+        self.assertIsNone(ilustraciones.guardada(self.frase.id, self.cache))
+
+    def test_un_archivo_vacio_no_cuenta_como_guardado(self):
+        # Lo mismo que un flyer cortado a mitad de escritura: un .png de 0
+        # bytes es lo que deja una corrida que se cortó, y usarlo tal cual
+        # sería pegar una imagen vacía en el flyer.
+        (self.cache / ("%s.png" % self.frase.id)).write_bytes(b"")
+        self.assertIsNone(ilustraciones.guardada(self.frase.id, self.cache))
+
+    def test_pide_y_guarda_cuando_no_hay_cache(self):
+        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": "sk-prueba"}):
+            ruta = ilustraciones.ilustracion_de(self.frase, self.tema, cache=self.cache,
+                                                pedir=self._pedir)
+        self.assertTrue(ruta.exists())
+        self.assertEqual(len(self.pedidas), 1)
+        self.assertEqual(self.pedidas[0][0], "sk-prueba")
+
+    def test_no_vuelve_a_pedir_si_ya_esta_guardada(self):
+        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": "sk-prueba"}):
+            ilustraciones.ilustracion_de(self.frase, self.tema, cache=self.cache, pedir=self._pedir)
+            ilustraciones.ilustracion_de(self.frase, self.tema, cache=self.cache,
+                                         pedir=lambda *a: self.fail("pidió de nuevo"))
+        self.assertEqual(len(self.pedidas), 1)
+
+    def test_sin_clave_no_pide_nada_y_avisa(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(ilustraciones.IlustracionError) as c:
+                ilustraciones.ilustracion_de(self.frase, self.tema, cache=self.cache,
+                                             pedir=lambda *a: self.fail("pidió sin clave"))
+        self.assertIn("OPENAI_API_KEY", str(c.exception))
+
+    def test_para_sin_la_bandera_de_la_pagina_no_pide_nada(self):
+        sin = dataclasses.replace(PAGINA, ilustraciones=False)
+        ruta = ilustraciones.para(sin, self.frase, self.tema, cache=self.cache,
+                                  pedir=lambda *a: self.fail("pidió sin la bandera"))
+        self.assertIsNone(ruta)
+
+    def test_para_pide_cuando_la_pagina_lo_tiene_prendido(self):
+        con = dataclasses.replace(PAGINA, ilustraciones=True)
+        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": "sk-prueba"}):
+            ruta = ilustraciones.para(con, self.frase, self.tema, cache=self.cache, pedir=self._pedir)
+        self.assertIsNotNone(ruta)
+        self.assertEqual(len(self.pedidas), 1)
+
+    def test_para_no_deja_pasar_un_error_de_openai(self):
+        """Un problema con OpenAI no puede costar el turno: publicar sin el
+        dibujo es mucho mejor que no publicar nada, la misma razón por la que
+        `historias.del_flyer` nunca levanta error."""
+        con = dataclasses.replace(PAGINA, ilustraciones=True)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            ruta = ilustraciones.para(con, self.frase, self.tema, cache=self.cache,
+                                      pedir=lambda *a: self.fail("no debería llegar a pedir"))
+        self.assertIsNone(ruta)
+
+    def test_la_escena_no_repite_el_estilo_entre_frases(self):
+        # El encargo de CÓMO se dibuja (`ESTILO`) es el mismo para las 243: lo
+        # que cambia es de qué habla cada una.
+        otra = una(id="pru-02", texto="Otra frase distinta.", destacar=["calma"])
+        una_escena = ilustraciones._escena(self.frase, self.tema)
+        otra_escena = ilustraciones._escena(otra, self.tema)
+        self.assertTrue(una_escena.endswith(ilustraciones.ESTILO))
+        self.assertTrue(otra_escena.endswith(ilustraciones.ESTILO))
+        self.assertNotEqual(una_escena, otra_escena)
 
 
 class TestElLibro(unittest.TestCase):
@@ -3101,14 +3280,18 @@ class TestLaVozDeIA(unittest.TestCase):
 
     def test_son_las_unicas_llamadas_pagas_del_repo(self):
         # Si algún día aparece otra, tiene que venir a cambiar esta lista y a
-        # leer por qué. Las dos de hoy:
+        # leer por qué. Las tres de hoy:
         #
-        #   video.py     las voces (OpenAI y ElevenLabs)
-        #   traducir.py  el español del banco pasado a inglés, porque el reel
-        #                sale con la voz en inglés y el subtítulo en español
+        #   video.py          las voces (OpenAI y ElevenLabs)
+        #   traducir.py       el español del banco pasado a inglés, porque el
+        #                     reel sale con la voz en inglés y el subtítulo
+        #                     en español
+        #   ilustraciones.py  el dibujo chico debajo de la frase (2026-11-27),
+        #                     una por frase y guardada en disco: no se vuelve
+        #                     a pagar la misma.
         #
-        # La traducción es la más barata de las dos por lejos -un capítulo son
-        # unos 200 tokens de un modelo chico, y queda en disco- pero es un
+        # La traducción es la más barata de las tres por lejos -un capítulo
+        # son unos 200 tokens de un modelo chico, y queda en disco- pero es un
         # gasto igual, y lo que se publica sale de ahí.
         pagas = []
         for archivo in sorted(list((ROOT / "src").glob("*.py"))
@@ -3116,7 +3299,7 @@ class TestLaVozDeIA(unittest.TestCase):
             texto = archivo.read_text(encoding="utf-8")
             if "api.openai.com" in texto or "api.elevenlabs.io" in texto:
                 pagas.append(archivo.name)
-        self.assertEqual(pagas, ["traducir.py", "video.py"])
+        self.assertEqual(pagas, ["ilustraciones.py", "traducir.py", "video.py"])
 
 
 class TestLaVozEnInglesConSubtituloEnEspanol(unittest.TestCase):
