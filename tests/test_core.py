@@ -6441,6 +6441,29 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
     """Lo pidio el usuario el 2026-10-26: "sube las frases y los videos a las
     historias de facebook"."""
 
+    @classmethod
+    def setUpClass(cls):
+        # `historias.anotar` escribe en `historias.ESTADO` -una constante de
+        # modulo, `data/historias_estado.json`- y no acepta una ruta
+        # alternativa. Una prueba de esta clase que llame a `del_flyer` o
+        # `del_reel` sin mockear ESE atributo escribe de VERDAD en el archivo
+        # del repositorio: paso con `test_el_flyer_no_se_borra_al_limpiar_la_vertical`
+        # -se vio corriendo la suite completa dos veces y comparando
+        # `git diff data/historias_estado.json`- y nada se puso en rojo,
+        # porque ninguna prueba miraba el archivo real. Esta lo mira: si
+        # cambia durante esta clase, alguna prueba no mockeo `historias.ESTADO`.
+        cls._estado_real = historias.ESTADO
+        cls._antes = cls._estado_real.read_bytes() if cls._estado_real.exists() else None
+
+    @classmethod
+    def tearDownClass(cls):
+        despues = cls._estado_real.read_bytes() if cls._estado_real.exists() else None
+        if despues != cls._antes:
+            raise AssertionError(
+                "una prueba de TestLasHistoriasDeLaPagina escribio en el "
+                "archivo real (%s): le falta mockear `historias.ESTADO` hacia "
+                "un directorio temporal" % cls._estado_real)
+
     def _pagina(self):
         return config.cargar()
 
@@ -6471,6 +6494,7 @@ class TestLasHistoriasDeLaPagina(unittest.TestCase):
             Image.new("RGB", (40, 50), (0, 0, 0)).save(flyer)
             with mock.patch.object(historias, "vertical", return_value=flyer), \
                  mock.patch.object(historias, "subir_foto", return_value="1"), \
+                 mock.patch.object(historias, "ESTADO", Path(d) / "estado.json"), \
                  mock.patch.dict(os.environ, {"HISTORIAS": "1"}):
                 historias.del_flyer(self._pagina(), flyer)
             self.assertTrue(flyer.exists(), "se llevo el flyer del post")
