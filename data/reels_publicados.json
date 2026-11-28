@@ -416,5 +416,18 @@
   },
   "publicado": true,
   "cuando": "2026-11-26T17:19:25"
+ },
+ "2026-11-27": {
+  "video": "rup-04.mp4",
+  "titulo": "Después de una ruptura no duele solo la otra persona. Duele no saber quién eres sin ella.",
+  "salidas": {
+   "facebook": "https://www.facebook.com/reel/988216203937204",
+   "historia": "1 tarjeta",
+   "instagram": "https://www.instagram.com/reel/18008911403793443",
+   "youtube": "https://youtube.com/shorts/BPRKwXKK1p0",
+   "drive": "no: el token no tiene el permiso de Drive todavía"
+  },
+  "publicado": true,
+  "cuando": "2026-11-27T19:16:59"
  }
 }
